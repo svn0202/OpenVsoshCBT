@@ -30,10 +30,10 @@ VERSION=$(shell cat VERSION)
 RELEASE=$(shell cat RELEASE)
 
 # Current directory
-CURRENTDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+CURRENTDIR=$(CURDIR)/
 
 # Target directory for build/test/report artifacts
-TARGETDIR=$(CURRENTDIR)target
+TARGETDIR=target
 
 # Application source directories that we own (excludes bundled third-party libs).
 SRCDIRS=admin public shared index.php
@@ -72,7 +72,7 @@ COMPOSER=$(PHP) -d "apc.enable_cli=0" $(shell which composer)
 PHPDOC=$(shell which phpDocumentor)
 
 # Mago version
-MAGOVERSION=1.40.2
+MAGOVERSION=1.43.0
 
 # --- MAKE TARGETS ---
 
@@ -110,11 +110,11 @@ lang:
 ## Create missing target directories for test and build artifacts
 .PHONY: ensuretarget
 ensuretarget:
-	@mkdir -p $(TARGETDIR)/test
-	@mkdir -p $(TARGETDIR)/report
-	@mkdir -p $(TARGETDIR)/doc
-	@mkdir -p $(TARGETDIR)/coverage
-	@mkdir -p $(TARGETDIR)/logs
+	@mkdir -p "$(TARGETDIR)/test"
+	@mkdir -p "$(TARGETDIR)/report"
+	@mkdir -p "$(TARGETDIR)/doc"
+	@mkdir -p "$(TARGETDIR)/coverage"
+	@mkdir -p "$(TARGETDIR)/logs"
 
 ## Format the source code with mago
 .PHONY: format
@@ -153,8 +153,8 @@ qa: lint test
 ## Generate the source code API documentation with phpDocumentor
 .PHONY: doc
 doc: ensuretarget
-	rm -rf $(TARGETDIR)/doc
-	$(PHPDOC) -d ./admin/code,./public/code,./shared/code -t $(TARGETDIR)/doc/
+	rm -rf "$(TARGETDIR)/doc"
+	$(PHPDOC) -d ./admin/code,./public/code,./shared/code -t "$(TARGETDIR)/doc/"
 
 ## Start a local PHP development web server on PORT (default 8080)
 .PHONY: serve
@@ -164,7 +164,7 @@ serve:
 ## Build the Docker image
 .PHONY: docker
 docker:
-	docker build -t $(DOCKERTAG) .
+	docker build -t "$(DOCKERTAG)" .
 
 ## Start the full stack via docker compose (TCExam app + MariaDB)
 .PHONY: up
@@ -183,11 +183,11 @@ dockertest: dockertestup dockertestdown
 ## Build and start the test environment, run the suite, copy reports back, capture the exit code
 .PHONY: dockertestup
 dockertestup: ensuretarget
-	@echo 0 > $(TARGETDIR)/make.exit
+	@echo 0 > "$(TARGETDIR)/make.exit"
 	$(DOCKERCOMPOSETEST) down --volumes --remove-orphans || true
 	$(DOCKERCOMPOSETEST) build
-	$(DOCKERCOMPOSETEST) run --rm tcexam_integration || echo $${?} > $(TARGETDIR)/make.exit
-	$(DOCKERCOMPOSETEST) logs --no-color > $(TARGETDIR)/report/docker-compose.log 2>&1 || true
+	$(DOCKERCOMPOSETEST) run --rm tcexam_integration || echo $${?} > "$(TARGETDIR)/make.exit"
+	$(DOCKERCOMPOSETEST) logs --no-color > "$(TARGETDIR)/report/docker-compose.log" 2>&1 || true
 
 ## Tear down the test environment and propagate the captured test exit code
 .PHONY: dockertestdown
@@ -198,15 +198,15 @@ dockertestdown:
 ## Run mago lint + static analysis in a container (no host mago install required)
 .PHONY: dockerlint
 dockerlint:
-	docker build -f mago.Dockerfile -t $(OWNER)/$(PROJECT)-mago:local .
-	docker run --rm -v "$(CURRENTDIR):/app" -w /app --entrypoint sh $(OWNER)/$(PROJECT)-mago:local -c '\
+	docker build -f mago.Dockerfile -t "$(OWNER)/$(PROJECT)-mago:local" .
+	docker run --rm -v "$(CURRENTDIR):/app" -w /app --entrypoint sh "$(OWNER)/$(PROJECT)-mago:local" -c '\
 		mago --config mago.src.toml lint; mago --config mago.src.toml analyze; \
 		mago --config mago.test.toml lint; mago --config mago.test.toml analyze'
 
 ## Delete the vendor and target directories (keeps the app cache/ data)
 .PHONY: clean
 clean:
-	rm -rf ./vendor $(TARGETDIR)
+	rm -rf ./vendor "$(TARGETDIR)"
 
 ## Increase the version patch number in the VERSION file
 .PHONY: versionup
