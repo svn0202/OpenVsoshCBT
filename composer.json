@@ -76,10 +76,10 @@
             "@test"
         ],
         "post-install-cmd": [
-            "[ -d vendor/tecnickcom/tc-lib-pdf-font ] && make -C vendor/tecnickcom/tc-lib-pdf-font deps fonts"
+            "make fonts"
         ],
         "post-update-cmd": [
-            "[ -d vendor/tecnickcom/tc-lib-pdf-font ] && make -C vendor/tecnickcom/tc-lib-pdf-font deps fonts"
+            "make fonts"
         ]
     }
 }
