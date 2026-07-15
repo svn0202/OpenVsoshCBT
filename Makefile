@@ -100,7 +100,7 @@ deps: ensuretarget
 ## Generate the default PDF fonts into the vendored tc-lib-pdf-font/target/fonts (as in tc-lib-pdf)
 .PHONY: fonts
 fonts:
-	cd vendor/tecnickcom/tc-lib-pdf-font/ && make deps fonts
+	cd vendor/tecnickcom/tc-lib-pdf-font/ && make fonts
 
 ## Pre-generate and validate the per-language translation caches from the TMX source (plan Stage 6)
 .PHONY: lang
