@@ -17,6 +17,18 @@
 - [Лицензия и происхождение](development/licensing.md)
 - [Журнал изменений OpenVsoshCBT](development/changes.md)
 
+## Русский справочник TCExam
+
+- [Общее описание](reference/description.md)
+- [Основные возможности](reference/features.md)
+- [Первый тест](reference/first-test.md)
+- [Типы вопросов](reference/question-types.md)
+- [Расчёт баллов](reference/scoring.md)
+- [Безопасность](reference/security.md)
+- [Установка](reference/installation.md)
+- [Структура базы данных](reference/database.md)
+- [Структура исходного кода](reference/source-code.md)
+
 ## Где документация TCExam
 
 Оригинальные руководства сохранены в `doc/`, `install/README.md`,

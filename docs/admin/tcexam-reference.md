@@ -1,46 +1,36 @@
-# Карта официальной документации TCExam
+# Русская документация TCExam/OpenVsoshCBT
 
-Локальные документы не копируют сайт целиком. Ссылки ведут к первоисточнику,
-а здесь указана применимость к OpenVsoshCBT.
+Ссылки ниже открывают локальные Markdown-страницы внутри репозитория. Это
+русская редакция документации для TCExam 17.2.4 и OpenVsoshCBT, сверенная с
+официальным сайтом и текущим кодом.
 
-## Официальные источники
+## Пользователю и администратору
 
-- [Документация TCExam](https://tcexam.org/docs/?lang=en)
-- [Официальный Git-репозиторий](https://github.com/tecnickcom/tcexam)
-- [Описание](https://tcexam.org/docs/description/)
-- [Функции](https://tcexam.org/docs/features/)
-- [Первый тест](https://tcexam.org/docs/first_test/)
-- [Типы вопросов](https://tcexam.org/docs/question-types/)
-- [Расчёт баллов](https://tcexam.org/docs/scoring/)
-- [Безопасность](https://tcexam.org/docs/security/)
-- [Установка](https://tcexam.org/docs/installation/)
-- [Документация БД](https://tcexam.org/docs/database_docs/)
-- [Документация исходного кода](https://tcexam.org/docs/srcdoc/tcexam/)
+- [Общее описание](../reference/description.md)
+- [Основные возможности](../reference/features.md)
+- [Создание первого теста](../reference/first-test.md)
+- [Типы вопросов](../reference/question-types.md)
+- [Расчёт баллов](../reference/scoring.md)
+- [Безопасность](../reference/security.md)
+- [Установка](../reference/installation.md)
 
-Наиболее актуальные технические инструкции входят в репозиторий:
+## Разработчику
 
-- `install/README.md` — полная установка;
-- `doc/UPGRADE.md` — обновление;
-- `doc/TRANSLATORS.md` — локализация;
-- `doc/LATEX.md` — формулы;
-- `SECURITY.md` — безопасность;
-- `CONTRIBUTING.md` — разработка.
+- [Структура базы данных](../reference/database.md)
+- [Структура исходного кода](../reference/source-code.md)
 
-## Что считать устаревшим
+## Дополнительные руководства OpenVsoshCBT
 
-Старые страницы могут описывать TCExam 14 и рекомендовать слишком широкие
-права вроде `chmod 777`. Для OpenVsoshCBT применяются инструкции TCExam 17 из
-текущего Git и принцип минимальных прав/SELinux.
+- [Развёртывание на РЕД ОС](deployment-redos.md)
+- [Регламент проведения олимпиады](olympiad-runbook.md)
+- [Обновление](upgrade.md)
+- [Решение проблем](troubleshooting.md)
 
-## Первый пробный тест
+## Первоисточники
 
-1. Создайте группу и участника.
-2. Создайте модуль и тему.
-3. Создайте и включите вопросы/ответы.
-4. Создайте тест и набор тем.
-5. Назначьте тест группе и задайте период.
-6. Настройте длительность, попытки, баллы и результаты.
-7. Завершите весь сценарий контрольным участником.
+- [Официальная документация TCExam](https://tcexam.org/docs/?lang=en)
+- [Официальный Git-репозиторий TCExam](https://github.com/tecnickcom/tcexam)
 
-Для олимпиады этого недостаточно: выполните
-[расширенный регламент](olympiad-runbook.md).
+Старые страницы сайта могут относиться к прежним версиям TCExam. Если текст
+сайта расходится с кодом, для OpenVsoshCBT приоритет имеют текущий код,
+документация в репозитории и результаты тестов.
