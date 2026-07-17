@@ -10,7 +10,11 @@ body.app-page {
     --tmf-muted: #849bc8;
     min-width: 0;
     min-height: 100vh;
-    background: var(--tmf-canvas);
+    background-color: #070b16;
+    background-image: linear-gradient(rgba(6, 10, 24, .28), rgba(6, 10, 24, .28)), url("../../images/fon_kosmos.jpg");
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
     color: var(--tmf-text);
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -923,3 +927,92 @@ body.app-page footer.footer .upstream-credit { opacity: .72; }
     body.app-page table.testlist tr { min-height: 220px; }
     body.app-page .upstream-credit { display: none; }
 }
+
+/* Cosmic authenticated theme: preserve the current layout while carrying the
+ * deep-space palette through every surface of the public application. */
+body.app-page {
+    --tmf-canvas: #080d1c;
+    --tmf-border: rgba(118, 164, 228, .35);
+    --tmf-text: #e7f0ff;
+    --tmf-muted: #a9c0ea;
+    --tmf-blue: #426ec1;
+    --tmf-blue-dark: #244b98;
+    background-color: #070b16;
+    color: var(--tmf-text);
+}
+
+body.app-page .header {
+    background: linear-gradient(110deg, #081938 0%, #12366f 56%, #172b63 100%);
+    border-bottom: 1px solid rgba(127, 181, 255, .35);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, .42);
+}
+
+body.app-page main.body > h1,
+body.app-page main.body > .container,
+body.app-page .tceformbox,
+body.app-page .tcecontentbox:not(:has(table.testlist)),
+body.app-page main.body > .container.anyFormBox {
+    border-color: rgba(118, 164, 228, .36);
+    background: rgba(8, 18, 43, .86);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, .28);
+    color: var(--tmf-text);
+}
+
+body.app-page main.body > h1 { color: #f0f6ff; }
+body.app-page .catalog-welcome p { color: #d9e7ff; }
+body.app-page .catalog-welcome div {
+    border-left-color: #4a9dff;
+    background: rgba(42, 102, 194, .25);
+    color: #dbeaff;
+}
+
+body.app-page .catalog-toolbar label { color: #a9c7f5; }
+body.app-page #catalog-search {
+    border-color: rgba(124, 169, 230, .45);
+    background: rgba(4, 13, 32, .68);
+    color: #eaf3ff;
+}
+body.app-page #catalog-search::placeholder { color: #91a9d0; }
+body.app-page .catalog-count { color: #a7bee7; }
+
+body.app-page table.testlist tr {
+    border-color: rgba(128, 168, 224, .38);
+    background: rgba(9, 21, 48, .9);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .24);
+}
+body.app-page table.testlist tr:hover {
+    border-color: #65a8ff;
+    box-shadow: 0 0 0 1px rgba(101, 168, 255, .18), 0 10px 28px rgba(0, 0, 0, .38);
+}
+body.app-page table.testlist tr.test-card-available {
+    border-color: rgba(81, 214, 172, .7);
+    background: linear-gradient(145deg, rgba(11, 36, 57, .95), rgba(8, 25, 51, .94));
+}
+body.app-page table.testlist td:first-child a { color: #b6d7ff; }
+body.app-page table.testlist td:first-child a:hover,
+body.app-page table.testlist td:first-child a:focus-visible { color: #ffffff; }
+body.app-page table.testlist td:nth-child(2),
+body.app-page table.testlist td:nth-child(3),
+body.app-page table.testlist td:nth-child(2)::before,
+body.app-page table.testlist td:nth-child(3)::before { color: #a9c3ee !important; }
+body.app-page .card-datetime {
+    background-color: rgba(25, 46, 82, .82);
+    color: #dbe9ff;
+}
+
+body.app-page #scrollayer.scrollmenu {
+    background: linear-gradient(180deg, #081936, #071126);
+    border-right: 1px solid rgba(112, 164, 235, .28);
+}
+body.app-page .app-menu-heading { background: rgba(6, 18, 44, .92); }
+body.app-page .tmf-user-panel {
+    background: #091633;
+    border-left-color: rgba(112, 164, 235, .35);
+    color: #e7f0ff;
+}
+body.app-page .tmf-user-panel-title { border-bottom-color: rgba(112, 164, 235, .28); }
+body.app-page .tmf-user-panel dt { color: #b9cff3; }
+body.app-page .tmf-user-panel dd { background: rgba(25, 49, 91, .7); color: #dceaff; }
+
+body.app-page footer.footer { background: rgba(4, 10, 24, .72); }
+body.app-page footer.footer span.copyright { color: #91a8d0; }
