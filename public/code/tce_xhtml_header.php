@@ -71,7 +71,7 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1" />' . 
 echo '<meta name="language" content="' . $l['a_meta_language'] . '" />' . K_NEWLINE;
 echo '<meta name="tcexam_level" content="' . $pagelevel . '" />' . K_NEWLINE;
 echo
-    '<meta name="description" content="[TCExam] '
+    '<meta name="description" content="'
         . htmlspecialchars($thispage_description, ENT_COMPAT, $l['a_meta_charset'])
         . ' ['
         . base64_decode(K_KEY_SECURITY)
@@ -96,12 +96,15 @@ echo
         . '" />'
         . K_NEWLINE
 ;
-echo '<link rel="stylesheet" href="' . $thispage_style . '" />' . K_NEWLINE;
+$theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.css';
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-30" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
-echo '<body>' . K_NEWLINE;
+$body_class = ($_SESSION['session_user_level'] < 1) ? ' class="login-page"' : ' class="app-page"';
+echo '<body' . $body_class . '>' . K_NEWLINE;
 // accessibility: skip link to the main content (must be the first focusable element)
 echo
     '<a href="#maincontent" class="skiplink" accesskey="2" title="[2] '
