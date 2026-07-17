@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 104" role="img" aria-labelledby="title desc">
+  <title id="title">ВСОШ</title>
+  <desc id="desc">Всероссийская олимпиада школьников</desc>
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="0" y="88" font-size="92" letter-spacing="-7">ВС</text>
+    <text x="266" y="88" font-size="92">Ш</text>
+  </g>
+  <text x="143" y="88" fill="#27a9e1" font-family="Arial, Helvetica, sans-serif" font-size="92" font-weight="900">О</text>
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" letter-spacing=".4">
+    <text x="385" y="28">ВСЕРОССИЙСКАЯ</text>
+    <text x="385" y="58">ОЛИМПИАДА</text>
+    <text x="385" y="88">ШКОЛЬНИКОВ</text>
+  </g>
+</svg>
