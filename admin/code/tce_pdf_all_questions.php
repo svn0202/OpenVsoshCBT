@@ -60,7 +60,7 @@ if (isset($_REQUEST['hide_answers']) && $_REQUEST['hide_answers'] == 1) {
 $doc_title = unhtmlentities($l['t_questions_list']);
 $doc_description = F_compact_string(unhtmlentities($l['hp_select_all_questions']));
 
-$qtype = ['S', 'M', 'T', '0']; // question types
+$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 $qright = [' ', '*']; // answer right marker
 
 // --- create the PDF document (tc-lib-pdf) ---
@@ -207,7 +207,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                                     ++$idx;
                                     $adisabled = !F_getBoolean($ma['answer_enabled']);
                                     $astyle = $adisabled ? 'color:#999999;' : '';
-                                    $rightmark = $mq['question_type'] != 4
+                                    $rightmark = !in_array((int) $mq['question_type'], [4, 5], true)
                                         ? $qright[(int) F_getBoolean($ma['answer_isright'])]
                                         : '';
                                     $apos = $ma['answer_position'] > 0 ? $ma['answer_position'] : '';

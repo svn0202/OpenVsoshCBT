@@ -160,6 +160,7 @@ function F_TSVQuestionImporter($tsvfile)
         'M' => 2,
         'T' => 3,
         'O' => 4,
+        'C' => 5,
     ];
     $tsvfp = fopen($tsvfile, 'r');
     if ($tsvfp === false) {

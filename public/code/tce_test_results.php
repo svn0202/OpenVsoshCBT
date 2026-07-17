@@ -283,8 +283,8 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                     if ($ra = F_db_query($sqla, $db)) {
                         while ($ma = F_db_fetch_array($ra)) {
                             echo '<li>';
-                            if ($m['question_type'] == 4) {
-                                // ORDER
+                            if (in_array((int) $m['question_type'], [4, 5], true)) {
+                                // ORDER / MATCHING
                                 if ($ma['logansw_position'] > 0) {
                                     if ($ma['logansw_position'] == $ma['answer_position']) {
                                         echo
@@ -326,7 +326,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                             }
 
                             echo '&nbsp;';
-                            if ($m['question_type'] == 4) {
+                            if (in_array((int) $m['question_type'], [4, 5], true)) {
                                 echo
                                     '<abbr title="'
                                         . $l['w_position']

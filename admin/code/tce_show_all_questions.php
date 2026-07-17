@@ -314,6 +314,7 @@ $qtype = [
     '<abbr class="offbox" title="' . $l['w_multiple_answers'] . '">M</abbr>',
     '<abbr class="offbox" title="' . $l['w_free_answer'] . '">T</abbr>',
     '<abbr class="offbox" title="' . $l['w_ordering_answer'] . '">O</abbr>',
+    '<abbr class="offbox" title="' . $l['w_matching_answer'] . '">C</abbr>',
 ]; // question types
 $qstat = '';
 $nqsum = 0;
@@ -607,6 +608,11 @@ function F_show_select_questions(
                         $questlist .= ' <abbr class="offbox" title="' . $l['w_ordering_answer'] . '">O</abbr>';
                         break;
                     }
+                case 5:
+                    {
+                        $questlist .= ' <abbr class="offbox" title="' . $l['w_matching_answer'] . '">C</abbr>';
+                        break;
+                    }
             }
 
             $questlist .=
@@ -714,7 +720,7 @@ function F_show_select_questions(
                             $answlist .= '<abbr class="offbox" title="' . $l['w_disabled'] . '">-</abbr>';
                         }
 
-                        if ($m['question_type'] != 4) {
+                        if (!in_array((int) $m['question_type'], [4, 5], true)) {
                             if (F_getBoolean($ma['answer_isright'])) {
                                 $answlist .= ' <abbr class="okbox" title="' . $l['h_answer_right'] . '">T</abbr>';
                             } else {

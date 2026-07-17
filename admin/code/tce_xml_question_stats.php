@@ -100,7 +100,7 @@ function F_xml_export_question_stats($test_id)
     require_once '../code/tce_functions_auth_sql.php';
 
     $boolean = ['false', 'true'];
-    $type = ['single', 'multiple', 'text', 'ordering'];
+    $type = ['single', 'multiple', 'text', 'ordering', 'matching'];
 
     $xml = ''; // XML data to be returned
 

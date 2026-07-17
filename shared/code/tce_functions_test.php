@@ -1323,8 +1323,8 @@ function F_createTest($test_id, $user_id)
     $wrong_answers_mcsa_questions_ids = [];
     // IDs of MCMA questions with more than one answer
     $answers_mcma_questions_ids = [];
-    // IDs of ORDER questions with more than one ordering answer
-    $answers_order_questions_ids = '';
+    // IDs of ORDER and MATCHING questions with more than one positioned answer
+    $answers_order_questions_ids = [];
     // 1. create user's test entry
     // ------------------------------
     $date = date(K_TIMESTAMP_FORMAT);
@@ -1398,6 +1398,16 @@ function F_createTest($test_id, $user_id)
                     . ')';
                 if ($m['tsubset_type'] > 0) {
                     $sqlq .= ' AND question_type=' . $m['tsubset_type'];
+                } else {
+                    // Keep malformed MATCHING questions out of mixed-type sets.
+                    $sqlq .=
+                        ' AND (question_type<>5 OR question_id IN (
+						SELECT answer_question_id FROM '
+                        . K_TABLE_ANSWERS
+                        . " WHERE answer_enabled='1' AND answer_position>0
+						GROUP BY answer_question_id
+						HAVING (COUNT(answer_id)>1)
+						AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))";
                 }
 
                 if ($m['tsubset_type'] == 1) {
@@ -1470,22 +1480,27 @@ function F_createTest($test_id, $user_id)
                             . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"]
                             . ')';
                     }
-                } elseif ($m['tsubset_type'] == 4) {
-                    // ORDERING ----------------------------------------
-                    if (empty($answers_order_questions_ids)) {
-                        $answers_order_questions_ids = '0';
+                } elseif (in_array((int) $m['tsubset_type'], [4, 5], true)) {
+                    // ORDERING / MATCHING -----------------------------
+                    $position_type = (int) $m['tsubset_type'];
+                    if (!isset($answers_order_questions_ids[$position_type])) {
+                        $answers_order_questions_ids[$position_type] = '0';
+                        $matching_having = $position_type === 5
+                            ? ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                            : '';
                         $sqlt =
                             'SELECT answer_question_id FROM '
                             . K_TABLE_ANSWERS
-                            . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)";
+                            . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)"
+                            . $matching_having;
                         if ($rt = F_db_query($sqlt, $db)) {
                             while ($mt = F_db_fetch_array($rt)) {
-                                $answers_order_questions_ids .= ',' . $mt['answer_question_id'];
+                                $answers_order_questions_ids[$position_type] .= ',' . $mt['answer_question_id'];
                             }
                         }
                     }
 
-                    $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids . ')';
+                    $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids[$position_type] . ')';
                 }
 
                 if ($random_questions) {
@@ -1673,6 +1688,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
                     break;
                 }
             case 4:
+            case 5:
                 { // ORDERING
                     // select answers
                     $randorder = true;
@@ -1752,7 +1768,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $test_id = (int) $test_id;
     $testlog_id = (int) $testlog_id;
     $unanswered = true;
-    $answer_id = F_getAnswerIdFromPosition($testlog_id, $answpos);
+    $answer_id = [];
     // get test data
     $testdata = F_getTestData($test_id);
     // get question information
@@ -1773,6 +1789,12 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
         F_display_db_error();
         return false;
     }
+
+    if ((int) $question_type === 5) {
+        $answpos = F_normalizeMatchingPositions((array) $answpos);
+    }
+
+    $answer_id = F_getAnswerIdFromPosition($testlog_id, $answpos);
 
     // calculate question score
     $question_right_score = $testdata['test_score_right'] * $question_difficulty;
@@ -1885,8 +1907,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             break;
                         }
                     case 4:
+                    case 5:
                         {
-                            // ORDER
+                            // ORDER / MATCHING
                             if (!empty($answer_id[$m['logansw_answer_id']])) {
                                 // selected
                                 $unanswered = false;
@@ -1933,7 +1956,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
             if ($question_type > 1) {
                 // normalize score
                 if (F_getBoolean($testdata['test_mcma_partial_score'])) {
-                    // use partial scoring for MCMA and ORDER questions
+                    // use partial scoring for MCMA, ORDER and MATCHING questions
                     $answer_score = round($answer_score / $num_answers, 3);
                 } elseif ($answer_score >= ($question_right_score * $num_answers)) {
                     // all-or-nothing points
@@ -2175,6 +2198,11 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 // group the answer options so assistive technologies announce them as a set
                 $str .= '<fieldset class="answergroup">' . K_NEWLINE;
                 $str .= '<legend class="sr-only">' . $l['w_answers'] . '</legend>' . K_NEWLINE;
+                if ((int) $m['question_type'] === 5) {
+                    $str .= '<p class="matching-instructions">' . $l['h_matching_test'] . '</p>' . K_NEWLINE;
+                    $str .= '<p id="matching-status" class="sr-only" aria-live="polite"></p>' . K_NEWLINE;
+                }
+
                 if (F_getBoolean($m['question_inline_answers'])) {
                     // inline display
                     $str .= '<ol class="answer_inline">' . K_NEWLINE;
@@ -2182,8 +2210,8 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     $str .= '<ol class="answer">' . K_NEWLINE;
                 }
 
-                if ($m['question_type'] == 4) {
-                    // get max positions for odering questions
+                if (in_array((int) $m['question_type'], [4, 5], true)) {
+                    // get max positions for ordering and matching questions
                     $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id=' . $testlog_id . '');
                 }
 
@@ -2344,16 +2372,23 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     break;
                                 }
                             case 4:
+                            case 5:
                                 {
-                                    // ORDER - ordering questions
+                                    // ORDER / MATCHING position questions
+                                    $matching_class = (int) $m['question_type'] === 5
+                                        ? ' class="matching-position"'
+                                        : '';
                                     $str .=
-                                        '<select name="answpos['
+                                        '<select' . $matching_class . ' name="answpos['
                                         . $anspos
                                         . ']" id="answpos_'
                                         . $anspos
                                         . '">'
                                         . K_NEWLINE;
-                                    if (F_getBoolean($testdata['test_noanswer_enabled'])) {
+                                    if (
+                                        (int) $m['question_type'] === 5
+                                        || F_getBoolean($testdata['test_noanswer_enabled'])
+                                    ) {
                                         $str .= '<option value="0">&nbsp;</option>' . K_NEWLINE;
                                     }
 
@@ -2441,6 +2476,20 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     . '){document.getElementById("answertext").value=localStorage.answertext'
                     . $testlog_id
                     . ';}'
+                    . K_NEWLINE;
+            }
+
+            if ((int) $m['question_type'] === 5) {
+                $str .=
+                    'document.querySelectorAll("select.matching-position").forEach(function(select){'
+                    . 'select.addEventListener("change",function(){'
+                    . 'if(this.value==="0"){return;}'
+                    . 'var current=this;document.querySelectorAll("select.matching-position").forEach(function(other){'
+                    . 'if(other!==current&&other.value===current.value){other.value="0";'
+                    . 'document.getElementById("matching-status").textContent='
+                    . json_encode($l['m_matching_position_reassigned'])
+                    . ';}'
+                    . '});});});'
                     . K_NEWLINE;
             }
 

@@ -126,7 +126,7 @@ if (isset($_REQUEST['question_description'])) {
 
 $question_explanation = isset($_REQUEST['question_explanation']) ? utrim($_REQUEST['question_explanation']) : '';
 
-$qtype = ['S', 'M', 'T', 'O']; // question types
+$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'question_description';
@@ -1030,6 +1030,15 @@ if ($question_type == 4) {
 
 echo ' title="' . $l['h_enable_ordering_answer'] . '" />';
 echo '<label for="ordering_answer">' . $l['w_ordering_answer'] . '</label>' . K_NEWLINE;
+echo '<br />' . K_NEWLINE;
+
+echo '<input type="radio" name="question_type" id="matching_answer" value="5"';
+if ($question_type == 5) {
+    echo ' checked="checked"';
+}
+
+echo ' title="' . $l['h_enable_matching_answer'] . '" />';
+echo '<label for="matching_answer">' . $l['w_matching_answer'] . '</label>' . K_NEWLINE;
 
 echo '</fieldset>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;

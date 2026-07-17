@@ -6,6 +6,7 @@
 
 - [Развёртывание на РЕД ОС](admin/deployment-redos.md)
 - [Регламент проведения олимпиады](admin/olympiad-runbook.md)
+- [Создание вопросов на сопоставление](admin/matching-questions.md)
 - [Обновление без потери рабочего экземпляра](admin/upgrade.md)
 - [Решение известных проблем](admin/troubleshooting.md)
 - [Карта официальной документации TCExam](admin/tcexam-reference.md)

@@ -85,7 +85,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
     $module_id = (int) $module_id;
     $subject_id = (int) $subject_id;
     $expmode = (int) $expmode;
-    $qtype = ['S', 'M', 'T', 'O'];
+    $qtype = ['S', 'M', 'T', 'O', 'C'];
     $tsv = ''; // TSV data to be returned
 
     // headers

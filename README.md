@@ -53,6 +53,7 @@ make lang
 - [Оглавление](docs/README.md)
 - [Развёртывание на РЕД ОС](docs/admin/deployment-redos.md)
 - [Регламент проведения олимпиады](docs/admin/olympiad-runbook.md)
+- [Создание вопросов на сопоставление](docs/admin/matching-questions.md)
 - [Безопасное обновление](docs/admin/upgrade.md)
 - [Решение известных проблем](docs/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](docs/admin/tcexam-reference.md)
