@@ -98,12 +98,13 @@ echo
 ;
 $theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.css';
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
-echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-32" />' . K_NEWLINE;
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-33" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
-$body_class = ($_SESSION['session_user_level'] < 1) ? ' class="login-page"' : ' class="app-page"';
+$is_login_page = (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_login.php');
+$body_class = ($_SESSION['session_user_level'] < 1 || $is_login_page) ? ' class="login-page"' : ' class="app-page"';
 echo '<body' . $body_class . '>' . K_NEWLINE;
 // accessibility: skip link to the main content (must be the first focusable element)
 echo
