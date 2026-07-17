@@ -32,12 +32,12 @@ require_once '../../shared/config/tce_config.php';
 /**
  * Default site name.
  */
-define('K_SITE_TITLE', 'TCExam');
+define('K_SITE_TITLE', 'OpenVsoshCBT');
 
 /**
  * Default site description.
  */
-define('K_SITE_DESCRIPTION', 'TCExam by Tecnick.com');
+define('K_SITE_DESCRIPTION', 'OpenVsoshCBT — олимпиады и тестирование на базе TCExam');
 
 /**
  * Default site author.
@@ -52,7 +52,7 @@ define('K_SITE_REPLY', '');
 /**
  * Default keywords.
  */
-define('K_SITE_KEYWORDS', 'TCExam, eExam, e-exam, web, exam');
+define('K_SITE_KEYWORDS', 'OpenVsoshCBT, TCExam, олимпиада, тестирование, экзамен');
 
 /**
  * Path to default html icon.

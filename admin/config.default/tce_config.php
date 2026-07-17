@@ -84,12 +84,12 @@ define('K_ALLOWED_UPLOAD_EXTENSIONS', serialize([
 /**
  * TCExam title.
  */
-define('K_TCEXAM_TITLE', 'TCExam');
+define('K_TCEXAM_TITLE', 'OpenVsoshCBT');
 
 /**
  * TCExam description.
  */
-define('K_TCEXAM_DESCRIPTION', 'TCExam by Tecnick.com');
+define('K_TCEXAM_DESCRIPTION', 'OpenVsoshCBT — олимпиады и тестирование на базе TCExam');
 
 /**
  * TCExam Author.
@@ -104,7 +104,7 @@ define('K_TCEXAM_REPLY_TO', '');
 /**
  * Default html meta keywords.
  */
-define('K_TCEXAM_KEYWORDS', 'TCExam, eExam, e-exam, web, exam');
+define('K_TCEXAM_KEYWORDS', 'OpenVsoshCBT, TCExam, олимпиада, тестирование, экзамен');
 
 /**
  * Relative path to html icon.

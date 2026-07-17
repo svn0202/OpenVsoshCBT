@@ -129,7 +129,9 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
 
 echo '<div class="minibutton" dir="ltr">';
 echo
-    '<span class="copyright"><a href="https://tcexam.org/">TCExam</a> ver. '
+    '<span class="copyright"><a href="'
+        . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES)
+        . '">OpenVsoshCBT source</a> | based on <a href="https://tcexam.org/">TCExam</a> ver. '
         . K_TCEXAM_VERSION
         . ' - Copyright &copy; 2004-2026 Nicola Asuni - <a href="https://tecnick.com">Tecnick.com LTD</a></span>'
 ;
