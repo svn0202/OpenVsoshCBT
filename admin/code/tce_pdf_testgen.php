@@ -56,7 +56,7 @@ $test_num = isset($_REQUEST['num']) ? (int) $_REQUEST['num'] : 1;
 
 $doc_title = unhtmlentities($l['w_test']);
 $doc_description = F_compact_string(unhtmlentities($l['h_test']));
-$qtype = ['S', 'M', 'T', 'O']; // question types
+$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
 $rtl_doc = $l['a_meta_dir'] == 'rtl';
 $dirlabel = $rtl_doc ? 'left' : 'right';
@@ -257,7 +257,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
     $right_answers_mcsa_questions_ids = '';
     $wrong_answers_mcsa_questions_ids = [];
     $answers_mcma_questions_ids = [];
-    $answers_order_questions_ids = '';
+    $answers_order_questions_ids = [];
     $selected_questions = '0';
 
     // 2. for each set of subjects
@@ -302,6 +302,16 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 . ')';
             if ($m['tsubset_type'] > 0) {
                 $sqlq .= ' AND question_type=' . $m['tsubset_type'];
+            } else {
+                // Keep malformed MATCHING questions out of mixed-type sets.
+                $sqlq .=
+                    ' AND (question_type<>5 OR question_id IN (
+					SELECT answer_question_id FROM '
+                    . K_TABLE_ANSWERS
+                    . " WHERE answer_enabled='1' AND answer_position>0
+					GROUP BY answer_question_id
+					HAVING (COUNT(answer_id)>1)
+					AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))";
             }
 
             if ($m['tsubset_type'] == 1) {
@@ -369,22 +379,27 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     $sqlq .=
                         ' AND question_id IN (' . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] . ')';
                 }
-            } elseif ($m['tsubset_type'] == 4) {
-                // ORDERING
-                if ($answers_order_questions_ids === '') {
-                    $answers_order_questions_ids = '0';
+            } elseif (in_array((int) $m['tsubset_type'], [4, 5], true)) {
+                // ORDERING / MATCHING
+                $position_type = (int) $m['tsubset_type'];
+                if (!isset($answers_order_questions_ids[$position_type])) {
+                    $answers_order_questions_ids[$position_type] = '0';
+                    $matching_having = $position_type === 5
+                        ? ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                        : '';
                     $sqlt =
                         'SELECT answer_question_id FROM '
                         . K_TABLE_ANSWERS
-                        . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)";
+                        . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)"
+                        . $matching_having;
                     if ($rt = F_db_query($sqlt, $db)) {
                         while ($mt = F_db_fetch_array($rt)) {
-                            $answers_order_questions_ids .= ',' . $mt['answer_question_id'];
+                            $answers_order_questions_ids[$position_type] .= ',' . $mt['answer_question_id'];
                         }
                     }
                 }
 
-                $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids . ')';
+                $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids[$position_type] . ')';
             }
 
             if ($random_questions) {
@@ -514,6 +529,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         );
                         break;
                     case 4: // ORDERING
+                    case 5: // MATCHING
                         $randorder = true;
                         $answers_ids += F_selectAnswers($q['id'], '', true, 0, 0, $randorder, $test_answers_order_mode);
                         break;
@@ -539,7 +555,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     if ($ra = F_db_query($sqla, $db)) {
                         if ($ma = F_db_fetch_array($ra)) {
                             $rightanswer = '';
-                            if ($q['type'] == 4) {
+                            if (in_array((int) $q['type'], [4, 5], true)) {
                                 $rightanswer = $ma['answer_position'];
                             } elseif (F_getBoolean($ma['answer_isright'])) {
                                 $rightanswer = 'X';

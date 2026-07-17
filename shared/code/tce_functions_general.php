@@ -97,6 +97,35 @@ function F_getBoolean($str)
 }
 
 /**
+ * Remove duplicate positive positions from a matching answer.
+ * The first occurrence is retained and later duplicates become unanswered.
+ *
+ * @param array $positions Submitted positions, keyed by displayed answer position.
+ * @return array Normalized positions with no repeated positive value.
+ */
+function F_normalizeMatchingPositions(array $positions): array
+{
+    $seen = [];
+    foreach ($positions as $key => $position) {
+        $position = (int) $position;
+        if ($position <= 0) {
+            $positions[$key] = 0;
+            continue;
+        }
+
+        if (isset($seen[$position])) {
+            $positions[$key] = 0;
+            continue;
+        }
+
+        $seen[$position] = true;
+        $positions[$key] = $position;
+    }
+
+    return $positions;
+}
+
+/**
  * Check if specified fields are unique on table.
  * @param $table (string) table name
  * @param $where (string) SQL where clause

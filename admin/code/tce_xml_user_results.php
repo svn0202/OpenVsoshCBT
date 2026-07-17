@@ -127,8 +127,8 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
     require_once '../config/tce_config.php';
 
     // define symbols for answers list
-    $qtype = ['S', 'M', 'T', 'O']; // question types
-    $type = ['single', 'multiple', 'text', 'ordering'];
+    $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
+    $type = ['single', 'multiple', 'text', 'ordering', 'matching'];
     $boolean = ['false', 'true'];
     $allowed_order_fields = ['testuser_creation_time', 'total_score'];
     if (!in_array($order_field, $allowed_order_fields, true)) {

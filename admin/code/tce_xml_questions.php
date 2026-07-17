@@ -118,7 +118,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
     $expmode = (int) $expmode;
 
     $boolean = ['false', 'true'];
-    $type = ['single', 'multiple', 'text', 'ordering'];
+    $type = ['single', 'multiple', 'text', 'ordering', 'matching'];
 
     $xml = ''; // XML data to be returned
 

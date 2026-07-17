@@ -217,7 +217,7 @@ if (!isset($_REQUEST['test_logout_on_timeout']) || empty($_REQUEST['test_logout_
 $test_max_score = isset($_REQUEST['test_max_score']) ? (float) $_REQUEST['test_max_score'] : 0;
 
 $test_max_score_new = 0; // test max score
-$qtype = ['S', 'M', 'T', 'O']; // question types
+$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 $qordmode = [$l['w_position'], $l['w_alphabetic'], $l['w_id'], $l['w_type'], $l['w_subject']];
 $aordmode = [$l['w_position'], $l['w_alphabetic'], $l['w_id']];
 
@@ -383,6 +383,16 @@ switch ($menu_mode) {
 					AND question_enabled=\'1\'';
                 if ($tsubset_type > 0) {
                     $sqlq .= ' AND question_type=' . $tsubset_type . '';
+                } else {
+                    // Keep malformed MATCHING questions out of mixed-type sets.
+                    $sqlq .= ' AND (question_type<>5 OR question_id IN (
+							SELECT answer_question_id
+							FROM ' . K_TABLE_ANSWERS . '
+							WHERE answer_enabled=\'1\'
+							AND answer_position>0
+							GROUP BY answer_question_id
+							HAVING (COUNT(answer_id)>1)
+							AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))';
                 }
 
                 if ($tsubset_type == 1) {
@@ -422,8 +432,8 @@ switch ($menu_mode) {
                     }
 
                     $sqlq .= ' )';
-                } elseif ($tsubset_type == 4) {
-                    // ordering question
+                } elseif (in_array((int) $tsubset_type, [4, 5], true)) {
+                    // ordering or matching question
                     // check if the selected question has enough answers
                     $sqlq .= ' AND question_id IN (
 							SELECT answer_question_id
@@ -431,7 +441,12 @@ switch ($menu_mode) {
 							WHERE answer_enabled=\'1\'
 							AND answer_position>0
 							GROUP BY answer_question_id
-							HAVING (COUNT(answer_id)>1))';
+							HAVING (COUNT(answer_id)>1)';
+                    if ((int) $tsubset_type === 5) {
+                        $sqlq .= ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))';
+                    }
+
+                    $sqlq .= ')';
                 }
 
                 $sqlq .= $sql_questions_position;
@@ -1792,6 +1807,12 @@ if (isset($test_id) && $test_id > 0) {
     }
 
     echo '>' . $l['w_ordering_answer'] . '</option>' . K_NEWLINE;
+    echo '<option value="5"';
+    if ($tsubset_type == 5) {
+        echo ' selected="selected"';
+    }
+
+    echo '>' . $l['w_matching_answer'] . '</option>' . K_NEWLINE;
     echo '</select>' . K_NEWLINE;
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;

@@ -848,7 +848,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     {
         global $db, $l;
         $testuser_id = (int) ($data['id'] ?? 0);
-        $qtype = ['S', 'M', 'T', 'O'];
+        $qtype = ['S', 'M', 'T', 'O', 'C'];
 
         $sql =
             'SELECT * FROM '
@@ -1006,7 +1006,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * Compute the answer marker symbol/fill and index symbol/fill for an answer row.
      * Mirrors the legacy selected/right/position logic.
      *
-     * @param int   $qtype Question type (1=MCSA, 2=MCMA, 4=ordering).
+     * @param int   $qtype Question type (1=MCSA, 2=MCMA, 4=ordering, 5=matching).
      * @param array $ma    Answer log record.
      * @param int   $idx   1-based answer index.
      *
@@ -1018,7 +1018,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $markfill = false;
         $right = F_getBoolean($ma['answer_isright']);
 
-        if ($qtype == 4) {
+        if (in_array($qtype, [4, 5], true)) {
             $marker = $ma['logansw_position'] > 0 ? (string) $ma['logansw_position'] : ' ';
             $markfill = $ma['logansw_position'] > 0 && $ma['logansw_position'] == $ma['answer_position'];
             $index = (string) $ma['answer_position'];
