@@ -1028,13 +1028,22 @@ body.login-page {
     font-family: Arial, Helvetica, sans-serif;
 }
 body.login-page .header {
-    display: none;
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 62px;
+    margin: 0;
+    padding: 0 18px;
+    background: rgba(0, 0, 0, .26);
+    box-sizing: border-box;
 }
 body.login-page .header div.left {
     display: flex;
     align-items: center;
     width: auto;
-    height: 58px;
+    height: 62px;
     margin: 0;
     padding: 0;
     background: transparent;
@@ -1056,8 +1065,9 @@ body.login-page .login-menu-toggle {
 body.login-page .header a.site-brand {
     display: flex;
     align-items: center;
-    width: 114px;
-    height: 25px;
+    width: auto;
+    height: 40px;
+    gap: 20px;
     color: transparent;
     background: transparent;
 }
@@ -1072,6 +1082,17 @@ body.login-page .header a.site-brand img.login-engine-wordmark {
     height: 21px;
     object-fit: contain;
 }
+body.login-page .header a.site-brand img.login-vsosh-wordmark {
+    display: block;
+    width: 230px;
+    height: 38px;
+    object-fit: contain;
+}
+body.login-page .header a.site-brand img.login-engine-wordmark {
+    width: 114px;
+    height: 21px;
+    opacity: .86;
+}
 body.login-page .header div.right { display: none; }
 body.login-page #scrollayer { display: none; }
 body.login-page main.body {
@@ -1081,7 +1102,7 @@ body.login-page main.body {
     justify-content: center;
     width: 100%;
     min-height: 0;
-    padding: 63px 12px 70px;
+    padding: 82px 12px 70px;
     box-sizing: border-box;
 }
 body.login-page main.body > h1 { display: none; }
