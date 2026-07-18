@@ -59,6 +59,12 @@ class TMXResourceBundle
      */
     private string $current_language = '';
 
+    /** English text used when a unit has no requested-language variant. */
+    private string $fallback_data = '';
+
+    /** Whether the current unit contains the requested-language variant. */
+    private bool $has_requested_translation = false;
+
     /**
      * Boolean value true when we are inside a seg element
      * @private
@@ -89,7 +95,29 @@ class TMXResourceBundle
         // set selecteed language
         $this->language = strtoupper($language);
 
-        if (F_file_exists($this->cachefile)) {
+        $source_exists = F_file_exists($tmxfile);
+        $source_size = $source_exists ? filesize($tmxfile) : false;
+        $cached_source_size = false;
+        if ($source_exists && F_file_exists($this->cachefile)) {
+            $cache_header = file_get_contents($this->cachefile, false, null, 0, 512);
+            if (
+                is_string($cache_header)
+                && preg_match('/^\/\/ SOURCE SIZE: ([0-9]+)$/m', $cache_header, $matches) === 1
+            ) {
+                $cached_source_size = (int) $matches[1];
+            }
+        }
+
+        $cache_is_fresh = F_file_exists($this->cachefile)
+            && (
+                !$source_exists
+                || (
+                    filemtime($this->cachefile) >= filemtime($tmxfile)
+                    && $source_size !== false
+                    && $cached_source_size === $source_size
+                )
+            );
+        if ($cache_is_fresh) {
             // read data from cache
             require_once $this->cachefile;
             $this->resource = $tmx;
@@ -106,9 +134,12 @@ class TMXResourceBundle
                     . '// DATE: '
                     . date('Y-m-d H:i:s')
                     . "\n"
+                    . '// SOURCE SIZE: '
+                    . ($source_size === false ? 0 : $source_size)
+                    . "\n"
                     . '// *** DELETE THIS FILE TO RELOAD DATA FROM TMX FILE ***'
                     . "\n",
-                    FILE_APPEND | LOCK_EX,
+                    LOCK_EX,
                 );
             }
 
@@ -130,8 +161,7 @@ class TMXResourceBundle
                 ));
             }
 
-            // free this XML parser
-            xml_parser_free($this->parser);
+            // PHP 8 manages the XMLParser object's lifetime automatically.
             if (!empty($this->cachefile)) {
                 // close cache file
                 file_put_contents($this->cachefile, '
@@ -165,6 +195,8 @@ class TMXResourceBundle
                     if (array_key_exists('tuid', $attribs)) {
                         $this->current_key = $attribs['tuid'];
                     }
+                    $this->fallback_data = '';
+                    $this->has_requested_translation = false;
 
                     break;
                 }
@@ -203,6 +235,22 @@ class TMXResourceBundle
             case 'tu':
                 {
                     // translation unit element, unit father of every element to be translated. It can contain a unique identifier (tuid).
+                    if (!$this->has_requested_translation) {
+                        $this->resource[$this->current_key] = $this->fallback_data;
+                    }
+                    if (!empty($this->cachefile)) {
+                        file_put_contents(
+                            $this->cachefile,
+                            "\n"
+                            . '$'
+                            . "tmx['"
+                            . $this->current_key
+                            . "']='"
+                            . str_replace("'", '\\\'', $this->resource[$this->current_key] ?? '')
+                            . "';",
+                            FILE_APPEND,
+                        );
+                    }
                     $this->current_key = '';
                     break;
                 }
@@ -216,22 +264,11 @@ class TMXResourceBundle
                 {
                     // segment, it contains the translated text
                     $this->segdata = false;
-                    if ($this->current_data !== '' || !array_key_exists($this->current_key, $this->resource)) {
-                        $this->resource[$this->current_key] = $this->current_data; // set new array element
-                        if (!empty($this->cachefile) && $this->current_language === $this->language) {
-                            // write element to cache file
-                            file_put_contents(
-                                $this->cachefile,
-                                "\n"
-                                . '$'
-                                . "tmx['"
-                                . $this->current_key
-                                . "']='"
-                                . str_replace("'", '\\\'', $this->current_data)
-                                . "';",
-                                FILE_APPEND,
-                            );
-                        }
+                    if (strcasecmp($this->current_language, $this->language) === 0) {
+                        $this->resource[$this->current_key] = $this->current_data;
+                        $this->has_requested_translation = true;
+                    } elseif (strcasecmp($this->current_language, 'EN') === 0) {
+                        $this->fallback_data = $this->current_data;
                     }
 
                     break;
@@ -256,7 +293,10 @@ class TMXResourceBundle
             return;
         }
 
-        if (strcasecmp($this->current_language, $this->language) != 0) {
+        if (
+            strcasecmp($this->current_language, $this->language) !== 0
+            && strcasecmp($this->current_language, 'EN') !== 0
+        ) {
             return;
         }
 

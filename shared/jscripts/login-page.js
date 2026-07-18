@@ -4,6 +4,12 @@
     var menuToggle = document.querySelector('.login-menu-toggle');
     var menu = document.getElementById('scrollayer');
     var body = document.body;
+    var text = {
+        openMenu: body.dataset.openMenu || '',
+        closeMenu: body.dataset.closeMenu || '',
+        showPassword: body.dataset.showPassword || '',
+        hidePassword: body.dataset.hidePassword || ''
+    };
 
     function setMenuOpen(open) {
         if (!menuToggle || !menu) {
@@ -12,7 +18,7 @@
         body.classList.toggle('login-menu-open', open);
         menuToggle.querySelector('[aria-hidden="true"]').textContent = open ? '×' : '☰';
         menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        menuToggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+        menuToggle.setAttribute('aria-label', open ? text.closeMenu : text.openMenu);
         menu.setAttribute('aria-hidden', open ? 'false' : 'true');
     }
 
@@ -44,7 +50,7 @@
             var show = password.type === 'password';
             password.type = show ? 'text' : 'password';
             toggle.setAttribute('aria-pressed', show ? 'true' : 'false');
-            toggle.setAttribute('aria-label', show ? 'Скрыть пароль' : 'Показать пароль');
+            toggle.setAttribute('aria-label', show ? text.hidePassword : text.showPassword);
             toggle.textContent = show ? '⊘' : '◉';
         });
 

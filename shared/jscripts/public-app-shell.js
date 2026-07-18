@@ -13,6 +13,14 @@
     var userClose = document.querySelector('.tmf-user-close');
     var scrim = document.querySelector('.app-menu-scrim');
     var themeToggle = document.querySelector('.tmf-theme-toggle');
+    var text = {
+        openMenu: page.dataset.openMenu || '',
+        closeMenu: page.dataset.closeMenu || '',
+        themeDark: page.dataset.themeDark || '',
+        themeLight: page.dataset.themeLight || '',
+        enableDarkTheme: page.dataset.enableDarkTheme || '',
+        enableLightTheme: page.dataset.enableLightTheme || ''
+    };
 
     function getSavedTheme() {
         try {
@@ -29,8 +37,8 @@
         if (themeToggle) {
             themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
             themeToggle.querySelector('i').textContent = isDark ? '☀' : '☾';
-            themeToggle.querySelector('span').textContent = isDark ? 'Светлая' : 'Тёмная';
-            themeToggle.title = isDark ? 'Включить светлую тему' : 'Включить тёмную тему';
+            themeToggle.querySelector('span').textContent = isDark ? text.themeLight : text.themeDark;
+            themeToggle.title = isDark ? text.enableLightTheme : text.enableDarkTheme;
         }
     }
 
@@ -41,8 +49,8 @@
         var userOpen = page.classList.contains('tmf-user-open');
         if (menuToggle) {
             menuToggle.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
-            menuToggle.setAttribute('aria-label', menuOpen ? 'Закрыть меню' : 'Открыть меню');
-            menuToggle.setAttribute('title', menuOpen ? 'Закрыть меню' : 'Открыть меню');
+            menuToggle.setAttribute('aria-label', menuOpen ? text.closeMenu : text.openMenu);
+            menuToggle.setAttribute('title', menuOpen ? text.closeMenu : text.openMenu);
         }
         if (userToggle) {
             userToggle.setAttribute('aria-expanded', userOpen ? 'true' : 'false');

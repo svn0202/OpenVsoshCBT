@@ -37,16 +37,18 @@ $pending_onboarding = F_getPendingOnboardingTests((int) $_SESSION['session_user_
 echo '<div class="container">' . K_NEWLINE;
 
 echo '<div class="catalog-welcome">' . K_NEWLINE;
-echo '<p>Приветствуем вас на платформе тестирования!</p>' . K_NEWLINE;
-echo '<div>Обязательно ознакомьтесь с инструкциями до начала работы с тестами. В большинстве тестов доступна только одна попытка.</div>' . K_NEWLINE;
+echo '<p>' . htmlspecialchars($l['ov_catalog_welcome_title'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+echo '<div>' . htmlspecialchars($l['ov_catalog_welcome_text'], ENT_QUOTES, $l['a_meta_charset']) . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 if (!empty($pending_onboarding)) {
     echo '<section class="onboarding-prompt" id="onboarding-prompt" aria-labelledby="onboarding-title">' . K_NEWLINE;
     echo '<div class="onboarding-prompt-copy">' . K_NEWLINE;
-    echo '<span class="onboarding-kicker">Перед началом олимпиады</span>' . K_NEWLINE;
-    echo '<h2 id="onboarding-title">Познакомьтесь с платформой</h2>' . K_NEWLINE;
-    echo '<p>Пройдите вводные тесты один раз. После завершения они исчезнут из этого блока.</p>' . K_NEWLINE;
+    echo '<span class="onboarding-kicker">'
+        . htmlspecialchars($l['ov_onboarding_kicker'], ENT_QUOTES, $l['a_meta_charset']) . '</span>' . K_NEWLINE;
+    echo '<h2 id="onboarding-title">'
+        . htmlspecialchars($l['ov_onboarding_title'], ENT_QUOTES, $l['a_meta_charset']) . '</h2>' . K_NEWLINE;
+    echo '<p>' . htmlspecialchars($l['ov_onboarding_description'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
     echo '<ol class="onboarding-steps">' . K_NEWLINE;
     foreach ($pending_onboarding as $intro_test) {
         echo '<li data-onboarding-test="' . (int) $intro_test['test_id'] . '">';
@@ -60,9 +62,12 @@ if (!empty($pending_onboarding)) {
 }
 
 echo '<div class="catalog-toolbar" role="search">' . K_NEWLINE;
-echo '<label for="catalog-search">Найти тест</label>' . K_NEWLINE;
+echo '<label for="catalog-search">'
+    . htmlspecialchars($l['ov_catalog_search_label'], ENT_QUOTES, $l['a_meta_charset']) . '</label>' . K_NEWLINE;
 echo '<div class="catalog-search-wrap">' . K_NEWLINE;
-echo '<input type="search" id="catalog-search" placeholder="Предмет или класс" autocomplete="off" />' . K_NEWLINE;
+echo '<input type="search" id="catalog-search" placeholder="'
+    . htmlspecialchars($l['ov_catalog_search_placeholder'], ENT_QUOTES, $l['a_meta_charset'])
+    . '" autocomplete="off" />' . K_NEWLINE;
 echo '<span class="catalog-count" id="catalog-count" aria-live="polite"></span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
@@ -75,10 +80,34 @@ echo '<div class="pagehelp">' . $thispage_description . '</div>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;
 
+$catalog_translations = [
+    'locale' => str_replace('_', '-', strtolower((string) $l['a_meta_language'])),
+    'statusAvailable' => $l['ov_status_available'],
+    'statusProgress' => $l['ov_status_progress'],
+    'statusRepeat' => $l['ov_status_repeat'],
+    'statusUpcoming' => $l['ov_status_upcoming'],
+    'statusClosed' => $l['ov_status_closed'],
+    'testUnavailable' => $l['ov_test_unavailable'],
+    'sectionActive' => $l['ov_section_active'],
+    'sectionActiveDescription' => $l['ov_section_active_description'],
+    'sectionFuture' => $l['ov_section_future'],
+    'sectionFutureDescription' => $l['ov_section_future_description'],
+    'sectionPast' => $l['ov_section_past'],
+    'sectionPastDescription' => $l['ov_section_past_description'],
+    'testCount' => $l['ov_test_count'],
+    'searchCount' => $l['ov_search_count'],
+];
+echo '<script type="application/json" id="catalog-i18n">'
+    . json_encode($catalog_translations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
+    . '</script>' . K_NEWLINE;
+
 echo <<<'HTML'
 <script>
 (function () {
     'use strict';
+    var i18nElement = document.getElementById('catalog-i18n');
+    var text = i18nElement ? JSON.parse(i18nElement.textContent) : {};
+    var locale = text.locale || document.documentElement.lang || 'en';
     var table = document.querySelector('table.testlist');
     var search = document.getElementById('catalog-search');
     var count = document.getElementById('catalog-count');
@@ -92,15 +121,15 @@ echo <<<'HTML'
     var onboardingIds = Array.prototype.slice.call(document.querySelectorAll('[data-onboarding-test]')).map(function (item) {
         return item.getAttribute('data-onboarding-test');
     });
-    var dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+    var dateFormatter = new Intl.DateTimeFormat(locale, {
         day: 'numeric', month: 'long', year: 'numeric'
     });
-    var timeFormatter = new Intl.DateTimeFormat('ru-RU', {
+    var timeFormatter = new Intl.DateTimeFormat(locale, {
         hour: '2-digit', minute: '2-digit'
     });
 
     rows.forEach(function (row) {
-        row.dataset.search = row.textContent.toLocaleLowerCase('ru-RU');
+        row.dataset.search = row.textContent.toLocaleLowerCase(locale);
         var moments = [];
         [2, 3].forEach(function (position) {
             var cell = row.querySelector('td:nth-child(' + position + ')');
@@ -116,7 +145,7 @@ echo <<<'HTML'
                 dateTime.className = 'card-datetime';
                 var date = document.createElement('span');
                 date.className = 'card-date';
-                date.textContent = dateFormatter.format(parsed).replace(' г.', '');
+                date.textContent = dateFormatter.format(parsed);
                 var time = document.createElement('span');
                 time.className = 'card-time';
                 time.textContent = timeFormatter.format(parsed);
@@ -130,7 +159,7 @@ echo <<<'HTML'
         status.className = 'test-status';
         if (row.querySelector('a.buttongreen')) {
             row.classList.add('test-card-available');
-            status.textContent = 'Доступен';
+            status.textContent = text.statusAvailable;
             var titleCell = row.querySelector('td:first-child');
             var actionCell = row.querySelector('td:nth-child(5)');
             var actionLink = actionCell && actionCell.querySelector('a.buttongreen');
@@ -156,23 +185,23 @@ echo <<<'HTML'
             }
         } else if (row.querySelector('a.xmlbutton')) {
             row.classList.add('test-card-progress');
-            status.textContent = 'В процессе';
+            status.textContent = text.statusProgress;
         } else if (row.querySelector('a.buttonblue')) {
             row.classList.add('test-card-repeat');
-            status.textContent = 'Можно повторить';
+            status.textContent = text.statusRepeat;
         } else if (moments[2] && moments[2].getTime() > Date.now()) {
             row.classList.add('test-card-upcoming');
-            status.textContent = 'Скоро';
+            status.textContent = text.statusUpcoming;
         } else {
             row.classList.add('test-card-closed');
-            status.textContent = 'Завершён';
+            status.textContent = text.statusClosed;
         }
         if (row.classList.contains('test-card-closed') || row.classList.contains('test-card-upcoming')) {
             var titleCell = row.querySelector('td:first-child');
             if (titleCell) {
                 var lock = document.createElement('span');
                 lock.className = 'test-lock-icon';
-                lock.setAttribute('aria-label', 'Тест сейчас недоступен');
+                lock.setAttribute('aria-label', text.testUnavailable);
                 titleCell.appendChild(lock);
             }
         }
@@ -195,9 +224,9 @@ echo <<<'HTML'
         return section;
     }
 
-    var activeSection = makeTestSection('catalog-section-active', 'Доступны сейчас', 'Тесты, которые можно начать или продолжить');
-    var futureSection = makeTestSection('catalog-section-future', 'Будущие', 'Откроются позднее — ближайшие даты показаны первыми');
-    var pastSection = makeTestSection('catalog-section-past', 'Завершены', 'Завершённые тесты — сначала самые недавние');
+    var activeSection = makeTestSection('catalog-section-active', text.sectionActive, text.sectionActiveDescription);
+    var futureSection = makeTestSection('catalog-section-future', text.sectionFuture, text.sectionFutureDescription);
+    var pastSection = makeTestSection('catalog-section-past', text.sectionPast, text.sectionPastDescription);
     var activeBody = activeSection.querySelector('tbody');
     var futureBody = futureSection.querySelector('tbody');
     var pastBody = pastSection.querySelector('tbody');
@@ -247,7 +276,7 @@ echo <<<'HTML'
     }
 
     function updateCatalog() {
-        var query = search.value.trim().toLocaleLowerCase('ru-RU');
+        var query = search.value.trim().toLocaleLowerCase(locale);
         var visible = 0;
         rows.forEach(function (row) {
             var show = query === '' || row.dataset.search.indexOf(query) !== -1;
@@ -260,9 +289,9 @@ echo <<<'HTML'
             var sectionRows = Array.prototype.slice.call(section.querySelectorAll('tbody tr'));
             var sectionVisible = sectionRows.filter(function (row) { return !row.hidden; }).length;
             section.hidden = sectionVisible === 0;
-            section.querySelector('.section-count').textContent = sectionVisible + ' тестов';
+            section.querySelector('.section-count').textContent = text.testCount.replace('%d', sectionVisible);
         });
-        count.textContent = query === '' ? rows.length + ' тестов' : 'Найдено: ' + visible;
+        count.textContent = query === '' ? text.testCount.replace('%d', rows.length) : text.searchCount.replace('%d', visible);
         catalogBox.classList.toggle('catalog-empty', visible === 0);
     }
 

@@ -2652,22 +2652,13 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     }
 
     // build quick navigator links (previous - next)
-    $lang = strtolower((string) $l['a_meta_language']);
-    $mobile_labels = $lang === 'ru'
-        ? [
-            'question' => 'Вопрос',
-            'zoom_in' => 'Увеличить текст',
-            'zoom_out' => 'Уменьшить текст',
-            'theme' => 'Сменить тему',
-            'review' => 'Сомневаюсь',
-        ]
-        : [
-            'question' => $l['w_question'],
-            'zoom_in' => 'Increase text size',
-            'zoom_out' => 'Decrease text size',
-            'theme' => 'Switch colour theme',
-            'review' => 'Mark for review',
-        ];
+    $mobile_labels = [
+        'question' => $l['w_question'],
+        'zoom_in' => $l['ov_increase_text'],
+        'zoom_out' => $l['ov_decrease_text'],
+        'theme' => $l['ov_switch_theme'],
+        'review' => $l['ov_mark_for_review'],
+    ];
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar>' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'

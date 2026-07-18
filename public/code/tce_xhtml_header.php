@@ -112,8 +112,22 @@ if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php
     $body_classes[] = 'exam-page';
 }
 
-$body_class = ' class="' . implode(' ', $body_classes) . '"';
-echo '<body' . $body_class . '>' . K_NEWLINE;
+$body_attributes = ' class="' . implode(' ', $body_classes) . '"';
+$shell_translations = [
+    'open-menu' => $l['ov_open_menu'],
+    'close-menu' => $l['ov_close_menu'],
+    'show-password' => $l['ov_show_password'],
+    'hide-password' => $l['ov_hide_password'],
+    'theme-dark' => $l['ov_theme_dark'],
+    'theme-light' => $l['ov_theme_light'],
+    'enable-dark-theme' => $l['ov_enable_dark_theme'],
+    'enable-light-theme' => $l['ov_enable_light_theme'],
+];
+foreach ($shell_translations as $name => $translation) {
+    $body_attributes .= ' data-' . $name . '="'
+        . htmlspecialchars((string) $translation, ENT_QUOTES, $l['a_meta_charset']) . '"';
+}
+echo '<body' . $body_attributes . '>' . K_NEWLINE;
 // accessibility: skip link to the main content (must be the first focusable element)
 echo
     '<a href="#maincontent" class="skiplink" accesskey="2" title="[2] '

@@ -41,11 +41,19 @@ function F_saveOnboardingConfig($instruction_test_id, $demo_test_id)
 
 function F_getPendingOnboardingTests($user_id)
 {
-    global $db;
+    global $db, $l;
     $config = F_getOnboardingConfig();
     $labels = [
-        'instruction_test_id' => ['kind' => 'instruction', 'eyebrow' => 'Сначала ознакомьтесь', 'label' => 'Тест-инструкция'],
-        'demo_test_id' => ['kind' => 'demo', 'eyebrow' => 'Затем попробуйте', 'label' => 'Демо-тест'],
+        'instruction_test_id' => [
+            'kind' => 'instruction',
+            'eyebrow' => $l['ov_onboarding_instruction_eyebrow'],
+            'label' => $l['ov_onboarding_instruction_label'],
+        ],
+        'demo_test_id' => [
+            'kind' => 'demo',
+            'eyebrow' => $l['ov_onboarding_demo_eyebrow'],
+            'label' => $l['ov_onboarding_demo_label'],
+        ],
     ];
     $pending = [];
 
