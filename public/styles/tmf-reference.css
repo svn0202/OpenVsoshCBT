@@ -1088,7 +1088,11 @@ body.login-page .header a.site-brand img.login-vsosh-wordmark {
     display: block;
     width: 400px;
     height: auto;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .94);
     object-fit: contain;
+    box-sizing: content-box;
 }
 body.login-page .header a.site-brand img.login-engine-wordmark {
     width: 114px;
@@ -1209,11 +1213,25 @@ body.login-page .login-box #login {
     padding: 0 18px;
     border: 0;
     border-radius: 999px;
-    background: #3f5f9d;
+    background: linear-gradient(135deg, #315a9f 0%, #267aa7 100%);
     color: #fff;
     font-size: 28px;
     font-weight: 700;
     text-transform: uppercase;
+    box-shadow: 0 8px 18px rgba(31, 89, 155, .28);
+    transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+}
+body.login-page .login-box #login:hover,
+body.login-page .login-box #login:focus-visible {
+    background: linear-gradient(135deg, #244986 0%, #1a668e 100%);
+    box-shadow: 0 10px 22px rgba(31, 89, 155, .38);
+    transform: translateY(-1px);
+}
+body.login-page .login-box input[type="text"]:focus,
+body.login-page .login-box input[type="password"]:focus {
+    border-bottom-color: #27a9e1;
+    box-shadow: 0 2px 0 #27a9e1;
+    outline: none;
 }
 body.login-page .login-support {
     padding: 38px 55px 42px;
@@ -1234,12 +1252,28 @@ body.login-page footer.footer {
     background: rgba(70, 70, 70, .65);
     text-align: center;
 }
+body.login-page #footer,
+body.login-page footer#footer {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 52px;
+    margin: 0;
+    padding: 9px 18px 11px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(4, 10, 18, .78) !important;
+    color: rgba(225, 235, 245, .78);
+    text-align: center;
+}
 body.login-page footer .minibutton:not(:last-child),
 body.login-page footer .userbar { display: none; }
 body.login-page footer .minibutton:last-child { display: block; }
 body.login-page footer span.copyright { color: #222; font-size: 13px; line-height: 1.4; }
 body.login-page footer span.institution-credit { color: #222; }
 body.login-page footer span.upstream-credit { display: none; }
+body.login-page #footer span.copyright,
+body.login-page #footer span.institution-credit { color: rgba(225, 235, 245, .8) !important; }
+body.login-page #footer a { color: #37b7e8 !important; }
 @media (max-width: 560px) {
     body.login-page main.body { padding-top: 78px; padding-bottom: 64px; }
     body.login-page .login-brand { padding-top: 30px; }
