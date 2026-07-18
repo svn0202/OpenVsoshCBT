@@ -41,7 +41,7 @@ if ($is_app_page) {
     echo '<img class="tmf-engine-wordmark" '
         . 'src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" alt="TCExam" />' . K_NEWLINE;
 } else {
-    echo '<img class="login-vsosh-wordmark" src="../../images/vsosh-wordmark-header.svg?v=20260718-2" '
+    echo '<img class="login-vsosh-wordmark" src="../../images/vsosh-wordmark-transparent.png?v=20260718-1" '
         . 'alt="ВСОШ — Всероссийская олимпиада школьников" />' . K_NEWLINE;
     echo '<img class="login-engine-wordmark" src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" '
         . 'alt="TCExam" />' . K_NEWLINE;
