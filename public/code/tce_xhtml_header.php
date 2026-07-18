@@ -98,7 +98,7 @@ echo
 ;
 $theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.css';
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
-echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-35" />' . K_NEWLINE;
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-36" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
