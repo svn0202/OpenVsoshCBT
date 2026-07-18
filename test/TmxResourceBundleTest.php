@@ -45,12 +45,12 @@ final class TmxResourceBundleTest extends TestCase
         $this->assertSame('World', $res['world']);
     }
 
-    public function testMissingLanguageYieldsEmptyString(): void
+    public function testMissingLanguageFallsBackToEnglish(): void
     {
         $bundle = new TMXResourceBundle($this->fixture(), 'XX', '');
         $res = $bundle->getResource();
         $this->assertArrayHasKey('greeting', $res);
-        $this->assertSame('', $res['greeting']);
+        $this->assertSame('Hello', $res['greeting']);
     }
 
     public function testParsesEntitiesAndAccents(): void
@@ -59,5 +59,68 @@ final class TmxResourceBundleTest extends TestCase
         $res = $bundle->getResource();
         // the XML parser decodes &amp; to & and preserves the accented UTF-8 characters
         $this->assertSame('Caffè & Tè', $res['special']);
+    }
+
+    public function testRebuildsStaleCacheAfterSourceUpdate(): void
+    {
+        $dir = sys_get_temp_dir() . '/openvsosh-tmx-' . bin2hex(random_bytes(6));
+        mkdir($dir, 0o700, true);
+        $source = $dir . '/language.tmx';
+        $cache = $dir . '/language_it.php';
+        copy($this->fixture(), $source);
+
+        try {
+            $first = new TMXResourceBundle($source, 'IT', $cache);
+            $this->assertSame('Ciao', $first->getResource()['greeting']);
+
+            $updated = str_replace('<seg>Ciao</seg>', '<seg>Salve</seg>', (string) file_get_contents($source));
+            file_put_contents($source, $updated);
+            touch($source, time() + 2);
+            clearstatcache(true, $source);
+            clearstatcache(true, $cache);
+
+            $second = new TMXResourceBundle($source, 'IT', $cache);
+            $this->assertSame('Salve', $second->getResource()['greeting']);
+        } finally {
+            if (is_file($cache)) {
+                unlink($cache);
+            }
+            if (is_file($source)) {
+                unlink($source);
+            }
+            rmdir($dir);
+        }
+    }
+
+    public function testRebuildsCacheWhenUpdatedSourceKeepsAnOlderTimestamp(): void
+    {
+        $dir = sys_get_temp_dir() . '/openvsosh-tmx-' . bin2hex(random_bytes(6));
+        mkdir($dir, 0o700, true);
+        $source = $dir . '/language.tmx';
+        $cache = $dir . '/language_it.php';
+        copy($this->fixture(), $source);
+
+        try {
+            $first = new TMXResourceBundle($source, 'IT', $cache);
+            $this->assertSame('Ciao', $first->getResource()['greeting']);
+
+            $updated = str_replace('<seg>Ciao</seg>', '<seg>Buongiorno</seg>', (string) file_get_contents($source));
+            file_put_contents($source, $updated);
+            touch($source, time() - 10);
+            touch($cache, time());
+            clearstatcache(true, $source);
+            clearstatcache(true, $cache);
+
+            $second = new TMXResourceBundle($source, 'IT', $cache);
+            $this->assertSame('Buongiorno', $second->getResource()['greeting']);
+        } finally {
+            if (is_file($cache)) {
+                unlink($cache);
+            }
+            if (is_file($source)) {
+                unlink($source);
+            }
+            rmdir($dir);
+        }
     }
 }

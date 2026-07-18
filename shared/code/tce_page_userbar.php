@@ -129,14 +129,22 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
 
 echo '<div class="minibutton" dir="ltr">';
 echo
-    '<span class="copyright"><span class="institution-credit">&copy; ГАОУ ДПО СО «ИРО», 2024–2026</span><br />'
-        . '<span class="support-credit">Служба поддержки: olymp@gia66.ru</span><br />'
+    '<span class="copyright"><span class="institution-credit">&copy; '
+        . htmlspecialchars($l['ov_institution_copyright'], ENT_QUOTES, $l['a_meta_charset'])
+        . '</span><br />'
+        . '<span class="support-credit">'
+        . htmlspecialchars($l['ov_support_service'], ENT_QUOTES, $l['a_meta_charset'])
+        . ': olymp@gia66.ru</span><br />'
         . '<span class="upstream-credit"><a href="'
         . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
-        . '" rel="noopener">OpenVsoshCBT</a> на базе TCExam ver. '
+        . '" rel="noopener">OpenVsoshCBT</a> '
+        . htmlspecialchars($l['ov_based_on'], ENT_QUOTES, $l['a_meta_charset'])
+        . ' TCExam ver. '
         . K_TCEXAM_VERSION
         . ' · Copyright &copy; 2004–2026 Nicola Asuni, Tecnick.com LTD · <a href="'
         . K_PATH_URL
-        . 'LICENSE">AGPL-3.0-or-later</a> · без гарантий</span></span>'
+        . 'LICENSE">AGPL-3.0-or-later</a> · '
+        . htmlspecialchars($l['ov_no_warranty'], ENT_QUOTES, $l['a_meta_charset'])
+        . '</span></span>'
 ;
 echo '</div>' . K_NEWLINE;

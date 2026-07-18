@@ -45,11 +45,15 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     $str = '<div class="container login-container">' . K_NEWLINE;
     $str .= '<div class="tceformbox login-box">' . K_NEWLINE;
     $str .= '<div class="login-brand">' . K_NEWLINE;
-    $str .= '<img src="../../images/vsosh-logo.png" alt="РЦОИ и ОКО" width="77" height="77" />' . K_NEWLINE;
-    $str .= '<p>Платформа тестирования</p>' . K_NEWLINE;
+    $str .= '<img src="../../images/vsosh-logo.png" alt="'
+        . htmlspecialchars($l['ov_rcoko_alt'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" width="77" height="77" />' . K_NEWLINE;
+    $str .= '<p>' . htmlspecialchars($l['ov_testing_platform'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
-    $str .= '<p class="login-intro">Используйте учетные данные, полученные<br />'
-        . '<strong>в вашей образовательной организации</strong></p>' . K_NEWLINE;
+    $str .= '<p class="login-intro">'
+        . htmlspecialchars($l['ov_login_intro'], ENT_QUOTES, $l['a_meta_charset']) . '<br />'
+        . '<strong>' . htmlspecialchars($l['ov_login_intro_organization'], ENT_QUOTES, $l['a_meta_charset'])
+        . '</strong></p>' . K_NEWLINE;
     $str .=
         '<form action="'
         . $faction
@@ -64,7 +68,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     // user name
     $str .= getFormRowTextInput(
         'xuser_name',
-        'Логин',
+        $l['w_username'],
         $l['h_login_name'],
         '',
         $username,
@@ -77,12 +81,12 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         true,
         'username',
         '',
-        'Начинается с "st..."',
+        $l['ov_username_placeholder'],
     );
     // password
     $str .= getFormRowTextInput(
         'xuser_password',
-        'Пароль',
+        $l['w_password'],
         $l['h_password'],
         '',
         '',
@@ -95,9 +99,10 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         true,
         'current-password',
         '',
-        'Начинается с "p..."',
+        $l['ov_password_placeholder'],
     );
-    $str .= '<button class="password-toggle" type="button" aria-label="Показать пароль" '
+    $str .= '<button class="password-toggle" type="button" aria-label="'
+        . htmlspecialchars($l['ov_show_password'], ENT_QUOTES, $l['a_meta_charset']) . '" '
         . 'aria-pressed="false">◉</button>' . K_NEWLINE;
     // One Time Password code (OTP)
     if (K_OTP_LOGIN) {
@@ -133,8 +138,8 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     $str .= F_getCSRFTokenField() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
     $str .= '<div class="login-support">' . K_NEWLINE;
-    $str .= '<p>Обратитесь в свою школу при возникновении проблем с доступом</p>' . K_NEWLINE;
-    $str .= '<p>Результаты вы можете посмотреть на сайте: '
+    $str .= '<p>' . htmlspecialchars($l['ov_login_support'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+    $str .= '<p>' . htmlspecialchars($l['ov_results_site'], ENT_QUOTES, $l['a_meta_charset']) . ': '
         . '<a href="https://vsoshlk.irro.ru">vsoshlk.irro.ru</a></p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
@@ -150,6 +155,30 @@ function F_login_form()
     global $l, $thispage_title;
     global $xuser_name, $xuser_password;
     require_once '../config/tce_config.php';
+
+    // Keep the administration area from rendering its own copy of the participant login page.
+    // Anonymous visitors use the regular public login and return to the requested admin page
+    // after a successful operator/administrator login.
+    $script_name = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+    $admin_code_pos = strpos($script_name, '/admin/code/');
+    if ((int) ($_SESSION['session_user_level'] ?? 0) === 0 && $admin_code_pos !== false) {
+        $request_method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? $script_name);
+        $request_path = parse_url($request_uri, PHP_URL_PATH);
+        if (
+            in_array($request_method, ['GET', 'HEAD'], true)
+            && is_string($request_path)
+            && hash_equals($script_name, $request_path)
+        ) {
+            $_SESSION['session_login_redirect'] = $request_uri;
+        }
+
+        $install_path = substr($script_name, 0, $admin_code_pos);
+        $login_page = $install_path . '/public/code/index.php';
+        header('Location: ' . $login_page, true, 302);
+        exit();
+    }
+
     // HTTP-Basic authentication
     require_once '../../shared/config/tce_httpbasic.php';
     if (K_HTTPBASIC_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
