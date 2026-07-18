@@ -32,9 +32,10 @@
 
 ## Где документация TCExam
 
-Оригинальные руководства сохранены в `doc/`, `install/README.md`,
-`SECURITY.md` и `CONTRIBUTING.md`. Локальные документы описывают только
-особенности OpenVsoshCBT, РЕД ОС и олимпиадного процесса.
+Оригинальные руководства TCExam находятся рядом в этом каталоге, а также в
+`install/README.md`, `SECURITY.md` и `CONTRIBUTING.md`. Разделы `admin/`,
+`development/` и `reference/` описывают OpenVsoshCBT, РЕД ОС и олимпиадный
+процесс.
 
 ## Главный принцип эксплуатации
 

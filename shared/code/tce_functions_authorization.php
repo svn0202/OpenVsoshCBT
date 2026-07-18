@@ -42,19 +42,14 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     require_once '../config/tce_config.php';
     require_once '../../shared/config/tce_user_registration.php';
     require_once '../../shared/code/tce_functions_form.php';
-    $str = '';
-    $str .= '<div class="container">' . K_NEWLINE;
-    if (K_USRREG_ENABLED) {
-        $str .=
-            '<small><a href="../../public/code/tce_user_registration.php" title="'
-            . $l['t_user_registration']
-            . '">'
-            . $l['w_user_registration_link']
-            . '</a></small>'
-            . K_NEWLINE;
-    }
-
-    $str .= '<div class="tceformbox">' . K_NEWLINE;
+    $str = '<div class="container login-container">' . K_NEWLINE;
+    $str .= '<div class="tceformbox login-box">' . K_NEWLINE;
+    $str .= '<div class="login-brand">' . K_NEWLINE;
+    $str .= '<img src="../../images/vsosh-logo.png" alt="РЦОИ и ОКО" width="77" height="77" />' . K_NEWLINE;
+    $str .= '<p>Платформа тестирования</p>' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= '<p class="login-intro">Используйте учетные данные, полученные<br />'
+        . '<strong>в вашей образовательной организации</strong></p>' . K_NEWLINE;
     $str .=
         '<form action="'
         . $faction
@@ -69,7 +64,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     // user name
     $str .= getFormRowTextInput(
         'xuser_name',
-        $l['w_username'],
+        'Логин',
         $l['h_login_name'],
         '',
         $username,
@@ -81,11 +76,13 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         '',
         true,
         'username',
+        '',
+        'Начинается с "st..."',
     );
     // password
     $str .= getFormRowTextInput(
         'xuser_password',
-        $l['w_password'],
+        'Пароль',
         $l['h_password'],
         '',
         '',
@@ -97,7 +94,11 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         '',
         true,
         'current-password',
+        '',
+        'Начинается с "p..."',
     );
+    $str .= '<button class="password-toggle" type="button" aria-label="Показать пароль" '
+        . 'aria-pressed="false">◉</button>' . K_NEWLINE;
     // One Time Password code (OTP)
     if (K_OTP_LOGIN) {
         $str .= getFormRowTextInput(
@@ -117,21 +118,8 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         );
     }
 
-    if (defined('K_PASSWORD_RESET') && K_PASSWORD_RESET) {
-        // print a link to password reset page
-        $str .= '<div class="row">' . K_NEWLINE;
-        $str .=
-            '<span class="formw"><a href="../../public/code/tce_password_reset.php" title="'
-            . $l['h_reset_password']
-            . '" style="font-size:90%;">'
-            . $l['w_forgot_password']
-            . '</a></span>'
-            . K_NEWLINE;
-        $str .= '</div>' . K_NEWLINE;
-    }
-
     // buttons
-    $str .= '<div class="row">' . K_NEWLINE;
+    $str .= '<div class="row login-submit">' . K_NEWLINE;
     $str .=
         '<input type="submit" name="login" id="login" value="'
         . $l['w_login']
@@ -144,8 +132,12 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     $str .= '</div>' . K_NEWLINE;
     $str .= F_getCSRFTokenField() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
+    $str .= '<div class="login-support">' . K_NEWLINE;
+    $str .= '<p>Обратитесь в свою школу при возникновении проблем с доступом</p>' . K_NEWLINE;
+    $str .= '<p>Результаты вы можете посмотреть на сайте: '
+        . '<a href="https://vsoshlk.irro.ru">vsoshlk.irro.ru</a></p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
-    $str .= '<div class="pagehelp">' . $l['hp_login'] . '</div>' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
     return $str . ('</div>' . K_NEWLINE);
 }
 

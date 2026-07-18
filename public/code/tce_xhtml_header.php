@@ -98,14 +98,21 @@ echo
 ;
 $theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.css';
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
-echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-40" />' . K_NEWLINE;
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260718-56" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
 $is_login_page = (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_login.php'
     || (isset($thispage_title, $l['t_login_form']) && $thispage_title === $l['t_login_form']));
-$body_class = ($_SESSION['session_user_level'] < 1 || $is_login_page) ? ' class="login-page"' : ' class="app-page"';
+$body_classes = ($_SESSION['session_user_level'] < 1 || $is_login_page)
+    ? ['login-page']
+    : ['app-page', 'theme-light'];
+if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php') {
+    $body_classes[] = 'exam-page';
+}
+
+$body_class = ' class="' . implode(' ', $body_classes) . '"';
 echo '<body' . $body_class . '>' . K_NEWLINE;
 // accessibility: skip link to the main content (must be the first focusable element)
 echo

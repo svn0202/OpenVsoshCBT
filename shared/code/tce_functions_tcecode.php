@@ -42,6 +42,13 @@ function F_decode_tcecode($text_to_decode)
         return '';
     }
 
+    // Some external question banks store descriptions as HTML rather than
+    // TCExam code. Render that markup through a strict allow-list instead of
+    // showing the tags as text (or trusting imported HTML verbatim).
+    if (F_has_html_markup($text_to_decode)) {
+        return F_sanitize_html_content($text_to_decode);
+    }
+
     // escape some special HTML characters
     $newtext = htmlspecialchars($text_to_decode ?? '', ENT_QUOTES, $l['a_meta_charset']);
 
@@ -97,6 +104,202 @@ function F_decode_tcecode($text_to_decode)
     $newtext = str_replace('<br /><li', '<li', $newtext);
     $newtext = str_replace('</li><br />', '</li>', $newtext);
     return str_replace('<br /><param', '<param', $newtext);
+}
+
+/**
+ * Returns true when the content contains supported HTML markup.
+ * Comparisons such as "x < y" must continue through the regular TCECode path.
+ * @param $text (string) content to inspect
+ * @return bool true for HTML content
+ */
+function F_has_html_markup($text)
+{
+    return preg_match(
+        '/<\/?(?:a|b|blockquote|br|code|del|div|em|h[1-6]|hr|i|img|li|mark|ol|p|pre|s|small|span|strong|sub|sup|table|tbody|td|tfoot|th|thead|tr|u|ul)(?:\s|\/?>)/i',
+        (string) $text,
+    ) === 1;
+}
+
+/**
+ * Sanitize imported HTML while preserving useful question formatting.
+ * @param $html (string) imported HTML fragment
+ * @return string safe HTML fragment
+ */
+function F_sanitize_html_content($html)
+{
+    if ($html === '' || !class_exists('DOMDocument')) {
+        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    $document = new DOMDocument('1.0', 'UTF-8');
+    $previous_errors = libxml_use_internal_errors(true);
+    $loaded = $document->loadHTML(
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>'
+            . '<div id="tce-imported-content">' . $html . '</div></body></html>',
+        LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING,
+    );
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous_errors);
+    if (!$loaded) {
+        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    $container = $document->getElementById('tce-imported-content');
+    if (!$container instanceof DOMElement) {
+        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    F_sanitize_html_node($container);
+    $result = '';
+    foreach ($container->childNodes as $child) {
+        $result .= $document->saveHTML($child);
+    }
+
+    return $result;
+}
+
+/**
+ * Recursively sanitize one imported HTML branch.
+ * @param $parent (DOMNode) branch to sanitize
+ * @return void
+ */
+function F_sanitize_html_node($parent)
+{
+    $allowed_tags = [
+        'a', 'b', 'blockquote', 'br', 'code', 'del', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
+        'i', 'img', 'li', 'mark', 'ol', 'p', 'pre', 's', 'small', 'span', 'strong', 'sub', 'sup', 'table',
+        'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u', 'ul',
+    ];
+    $drop_with_contents = ['applet', 'embed', 'form', 'iframe', 'math', 'object', 'script', 'style', 'svg', 'template'];
+
+    for ($node = $parent->firstChild; $node !== null;) {
+        $next = $node->nextSibling;
+        if ($node instanceof DOMComment) {
+            $parent->removeChild($node);
+        } elseif ($node instanceof DOMElement) {
+            $tag = strtolower($node->tagName);
+            if (in_array($tag, $drop_with_contents, true)) {
+                $parent->removeChild($node);
+            } elseif (!in_array($tag, $allowed_tags, true)) {
+                F_sanitize_html_node($node);
+                while ($node->firstChild !== null) {
+                    $parent->insertBefore($node->firstChild, $node);
+                }
+
+                $parent->removeChild($node);
+            } else {
+                F_sanitize_html_attributes($node, $tag);
+                F_sanitize_html_node($node);
+            }
+        }
+
+        $node = $next;
+    }
+}
+
+/**
+ * Keep only safe attributes used by formatted questions.
+ * @param $element (DOMElement) element to sanitize
+ * @param $tag (string) normalized tag name
+ * @return void
+ */
+function F_sanitize_html_attributes($element, $tag)
+{
+    $allowed = ['dir', 'lang', 'style', 'title'];
+    if ($tag === 'a') {
+        $allowed = array_merge($allowed, ['href', 'target']);
+    } elseif ($tag === 'img') {
+        $allowed = array_merge($allowed, ['alt', 'height', 'src', 'width']);
+    } elseif ($tag === 'td' || $tag === 'th') {
+        $allowed = array_merge($allowed, ['colspan', 'rowspan', 'scope']);
+    } elseif ($tag === 'ol') {
+        $allowed[] = 'start';
+    }
+
+    foreach (iterator_to_array($element->attributes) as $attribute) {
+        $name = strtolower($attribute->name);
+        if (!in_array($name, $allowed, true)) {
+            $element->removeAttributeNode($attribute);
+            continue;
+        }
+
+        if (($name === 'href' || $name === 'src') && !F_is_safe_html_url($attribute->value, $name === 'src')) {
+            $element->removeAttributeNode($attribute);
+        } elseif ($name === 'style') {
+            $style = F_sanitize_html_style($attribute->value);
+            if ($style === '') {
+                $element->removeAttribute('style');
+            } else {
+                $element->setAttribute('style', $style);
+            }
+        } elseif (in_array($name, ['height', 'width', 'colspan', 'rowspan', 'start'], true)
+            && preg_match('/^\d{1,4}$/', $attribute->value) !== 1
+        ) {
+            $element->removeAttributeNode($attribute);
+        } elseif ($name === 'target' && !in_array($attribute->value, ['_blank', '_self'], true)) {
+            $element->removeAttributeNode($attribute);
+        }
+    }
+
+    if ($tag === 'a' && $element->getAttribute('target') === '_blank') {
+        $element->setAttribute('rel', 'noopener noreferrer');
+    }
+}
+
+/**
+ * Validate a URL found in imported HTML.
+ * @param $url (string) URL to validate
+ * @param $image (bool) true for an image source
+ * @return bool true when safe to render
+ */
+function F_is_safe_html_url($url, $image = false)
+{
+    $url = trim(html_entity_decode((string) $url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    if ($url === '' || preg_match('/[\x00-\x20]/', $url) === 1) {
+        return false;
+    }
+
+    if ($url[0] === '/' || $url[0] === '#' || str_starts_with($url, './') || str_starts_with($url, '../')) {
+        return true;
+    }
+
+    if (preg_match('/^https?:\/\//i', $url) === 1) {
+        return filter_var($url, FILTER_VALIDATE_URL) !== false;
+    }
+
+    return !$image && preg_match('/^mailto:[^\s@]+@[^\s@]+$/i', $url) === 1;
+}
+
+/**
+ * Retain a small, non-executable subset of inline presentation styles.
+ * @param $style (string) style declaration
+ * @return string safe style declaration
+ */
+function F_sanitize_html_style($style)
+{
+    $allowed = [
+        'font-style' => ['italic', 'normal'],
+        'font-weight' => ['bold', 'normal'],
+        'text-align' => ['center', 'justify', 'left', 'right'],
+        'text-decoration' => ['line-through', 'none', 'underline'],
+        'vertical-align' => ['baseline', 'middle', 'sub', 'super', 'text-bottom', 'text-top'],
+        'white-space' => ['normal', 'pre', 'pre-line', 'pre-wrap'],
+    ];
+    $safe = [];
+    foreach (explode(';', (string) $style) as $declaration) {
+        $parts = explode(':', $declaration, 2);
+        if (count($parts) !== 2) {
+            continue;
+        }
+
+        $property = strtolower(trim($parts[0]));
+        $value = strtolower(trim($parts[1]));
+        if (isset($allowed[$property]) && in_array($value, $allowed[$property], true)) {
+            $safe[] = $property . ': ' . $value;
+        }
+    }
+
+    return implode('; ', $safe);
 }
 
 // ============================================================
@@ -574,6 +777,17 @@ function F_remove_tcecode($str)
  */
 function F_tcecodeToLine($str)
 {
+    if (F_has_html_markup($str)) {
+        $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $str = F_compact_string($str);
+        $str = htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        if (strlen($str) > K_QUESTION_LINE_MAX_LENGTH) {
+            return F_substrHTML($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
+        }
+
+        return $str;
+    }
+
     $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str);
     $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str);
     $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str);
@@ -602,7 +816,11 @@ function F_tcecodeToTitle($str)
 {
     require_once '../config/tce_config.php';
     global $l;
-    $str = F_remove_tcecode($str);
+    if (F_has_html_markup($str)) {
+        $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    } else {
+        $str = F_remove_tcecode($str);
+    }
     $str = F_compact_string($str);
     return htmlspecialchars($str, ENT_QUOTES | ENT_COMPAT, $l['a_meta_charset']);
 }

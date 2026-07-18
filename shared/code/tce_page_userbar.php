@@ -129,10 +129,14 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
 
 echo '<div class="minibutton" dir="ltr">';
 echo
-    '<span class="copyright"><a href="'
-        . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES)
-        . '">OpenVsoshCBT source</a> | based on <a href="https://tcexam.org/">TCExam</a> ver. '
+    '<span class="copyright"><span class="institution-credit">&copy; ГАОУ ДПО СО «ИРО», 2024–2026</span><br />'
+        . '<span class="support-credit">Служба поддержки: olymp@gia66.ru</span><br />'
+        . '<span class="upstream-credit"><a href="'
+        . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
+        . '" rel="noopener">OpenVsoshCBT</a> на базе TCExam ver. '
         . K_TCEXAM_VERSION
-        . ' - Copyright &copy; 2004-2026 Nicola Asuni - <a href="https://tecnick.com">Tecnick.com LTD</a></span>'
+        . ' · Copyright &copy; 2004–2026 Nicola Asuni, Tecnick.com LTD · <a href="'
+        . K_PATH_URL
+        . 'LICENSE">AGPL-3.0-or-later</a> · без гарантий</span></span>'
 ;
 echo '</div>' . K_NEWLINE;

@@ -32,27 +32,27 @@ require_once '../../shared/config/tce_config.php';
 /**
  * Default site name.
  */
-define('K_SITE_TITLE', 'OpenVsoshCBT');
+define('K_SITE_TITLE', 'Площадка для ВСОШ');
 
 /**
  * Default site description.
  */
-define('K_SITE_DESCRIPTION', 'OpenVsoshCBT — олимпиады и тестирование на базе TCExam');
+define('K_SITE_DESCRIPTION', 'Платформа для проведения онлайн-этапа ВСОШ');
 
 /**
  * Default site author.
  */
-define('K_SITE_AUTHOR', 'Nicola Asuni - Tecnick.com LTD');
+define('K_SITE_AUTHOR', 'Связь со службой поддержки');
 
 /**
  * Default html reply-to meta tag.
  */
-define('K_SITE_REPLY', '');
+define('K_SITE_REPLY', 'olymp@gia66.ru');
 
 /**
  * Default keywords.
  */
-define('K_SITE_KEYWORDS', 'OpenVsoshCBT, TCExam, олимпиада, тестирование, экзамен');
+define('K_SITE_KEYWORDS', 'ВСОШ, олимпиада, ИРО, РЦОИиОКО, оценка качества образования');
 
 /**
  * Path to default html icon.
@@ -62,17 +62,17 @@ define('K_SITE_ICON', '../../favicon.ico');
 /**
  * Theme for the public area
  */
-define('K_PUBLIC_THEME', 'default');
+define('K_PUBLIC_THEME', 'picoman');
 
 /**
  * Path to public CSS stylesheet for LTR languages.
  */
-define('K_SITE_STYLE', K_PATH_STYLE_SHEETS . K_PUBLIC_THEME . '.css');
+define('K_SITE_STYLE', K_PATH_STYLE_SHEETS . K_PUBLIC_THEME . '.css?v=20260718-1');
 
 /**
  * Path to CSS stylesheet for RTL languages.
  */
-define('K_SITE_STYLE_RTL', K_PATH_STYLE_SHEETS . K_PUBLIC_THEME . '_rtl.css');
+define('K_SITE_STYLE_RTL', K_PATH_STYLE_SHEETS . K_PUBLIC_THEME . '_rtl.css?v=20260718-1');
 
 // --- OPTIONS / COSTANTS ------------------------------------------------------
 

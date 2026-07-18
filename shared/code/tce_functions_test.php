@@ -35,23 +35,18 @@ function F_getUserTests()
     $str = ''; // temp string
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
-    // select tests hiding old repeated tests
+    // Return the complete catalogue. The public page separates current,
+    // future and completed tests and applies a useful date order to each.
     $sql =
         'SELECT * FROM '
         . K_TABLE_TESTS
-        . ' WHERE (test_id IN (SELECT tsubset_test_id FROM '
+        . ' WHERE test_id IN (SELECT tsubset_test_id FROM '
         . K_TABLE_TEST_SUBJSET
-        . ") AND (test_begin_time < '"
-        . $current_time
-        . "')";
-    if (K_HIDE_EXPIRED_TESTS) {
-        $sql .= " AND (test_end_time > '" . $current_time . "')";
-    }
-
-    $sql .= ') ORDER BY test_begin_time DESC';
+        . ') ORDER BY test_begin_time DESC';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) { // for each active test
             $expired = false;
+            $upcoming = strtotime($current_time) < strtotime($m['test_begin_time']);
             // check user's authorization
             if (F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 // the user's IP is valid, check test status
@@ -64,7 +59,11 @@ function F_getUserTests()
                     $datestyle = '';
                 }
 
-                $str .= '<tr>' . K_NEWLINE;
+                $str .= '<tr data-test-id="' . (int) $m['test_id'] . '" data-begin="'
+                    . htmlspecialchars((string) $m['test_begin_time'], ENT_QUOTES)
+                    . '" data-end="'
+                    . htmlspecialchars((string) $m['test_end_time'], ENT_QUOTES)
+                    . '">' . K_NEWLINE;
                 if ($m['test_password'] !== null && strlen($m['test_password']) > 0) {
                     $str .= '<td style="background-color:#ffffcc;">';
                 } else {
@@ -135,7 +134,7 @@ function F_getUserTests()
                 $str .= '</td>' . K_NEWLINE;
                 // display various action links by status case
                 $str .= '<td style="text-align:center;">';
-                if (!$expired) {
+                if (!$expired && !$upcoming) {
                     switch ($test_status) {
                         case 0:
                             { // 0 = the test generation process is started but not completed
@@ -2577,7 +2576,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         while ($m = F_db_fetch_array($r)) {
             ++$i;
             if ($m['testlog_id'] != $testlog_id) {
-                $str .= '<li>';
+                $str .= '<li data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="submit" name="jumpquestion_'
                     . $m['testlog_id']
@@ -2590,7 +2589,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     $testlog_id_next = $m['testlog_id'];
                 }
             } else {
-                $str .= '<li class="selected">';
+                $str .= '<li class="selected" data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="button" name="jumpquestion_'
                     . $m['testlog_id']
@@ -2653,6 +2652,50 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     }
 
     // build quick navigator links (previous - next)
+    $lang = strtolower((string) $l['a_meta_language']);
+    $mobile_labels = $lang === 'ru'
+        ? [
+            'question' => 'Вопрос',
+            'zoom_in' => 'Увеличить текст',
+            'zoom_out' => 'Уменьшить текст',
+            'theme' => 'Сменить тему',
+            'review' => 'Сомневаюсь',
+        ]
+        : [
+            'question' => $l['w_question'],
+            'zoom_in' => 'Increase text size',
+            'zoom_out' => 'Decrease text size',
+            'theme' => 'Switch colour theme',
+            'review' => 'Mark for review',
+        ];
+
+    $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar>' . K_NEWLINE;
+    $toolbar .= '<strong class="exam-question-number">'
+        . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])
+        . ' <span>' . $qsel . '</span> / ' . $i . '</strong>' . K_NEWLINE;
+    $toolbar .= '<div class="exam-mobile-actions">' . K_NEWLINE;
+    $toolbar .= '<button type="button" data-exam-action="zoom-out" title="'
+        . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $l['a_meta_charset'])
+        . '">&minus;</button>' . K_NEWLINE;
+    $toolbar .= '<button type="button" data-exam-action="zoom-in" title="'
+        . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $l['a_meta_charset'])
+        . '">&plus;</button>' . K_NEWLINE;
+    $toolbar .= '<button type="button" data-exam-action="theme" title="'
+        . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" aria-label="' . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $l['a_meta_charset'])
+        . '">◐</button>' . K_NEWLINE;
+    $toolbar .= '<button type="button" data-exam-action="fullscreen" title="'
+        . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
+        . '">⛶</button>' . K_NEWLINE;
+    $toolbar .= '</div>' . K_NEWLINE;
+    $toolbar .= '<label class="exam-review-toggle"><input type="checkbox" data-exam-review /> '
+        . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $l['a_meta_charset'])
+        . '</label>' . K_NEWLINE;
+    $toolbar .= '</div>' . K_NEWLINE;
+
     $navlink = '';
 
     // button for previous question
@@ -2716,18 +2759,17 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $navlink .= '<input type="hidden" name="autonext" id="autonext" value="" />' . K_NEWLINE;
     $navlink = '<div class="navlink">' . $navlink . '</div>' . K_NEWLINE;
     $rstr = '';
+    $rstr .= $toolbar;
     $rstr .= '<br />' . K_NEWLINE;
     $rstr .= $navlink;
     $rstr .= '<br />' . K_NEWLINE;
     if (F_getBoolean($testdata['test_menu_enabled']) && !$disable) {
         // display questions menu
         $rstr .= '<span id="questionssection"></span>' . K_NEWLINE;
-        $rstr .= '<div class="tcecontentbox">' . K_NEWLINE; //fieldset
-        //$rstr .= '<legend>';
-        $rstr .= $l['w_questions'];
-        //$rstr .= '</legend>'.K_NEWLINE;
+        $rstr .= '<details class="tcecontentbox exam-question-list">' . K_NEWLINE;
+        $rstr .= '<summary>' . $l['w_questions'] . '</summary>' . K_NEWLINE;
         $rstr .= '<ol class="qlist">' . K_NEWLINE . $str . '</ol>' . K_NEWLINE;
-        $rstr .= '</div>' . K_NEWLINE; //fieldset
+        $rstr .= '</details>' . K_NEWLINE;
         $rstr .= '<br />' . K_NEWLINE;
     }
 

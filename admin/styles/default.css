@@ -163,8 +163,8 @@ blockquote.tcecode{
 }
 
 body {
-    background-color: #FFFFFF;
-    color: #000000;
+    background-color: #F4F7FB;
+    color: #172033;
     font-family: Arial,FreeSans,sans-serif;
     font-size: 100%;
     margin-bottom: 0px;
@@ -180,9 +180,9 @@ body {
 /* BODY ------------ */
 .body {
     clear: both;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    width: 99%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 /*  confirmation box for delete/cancel action  ------------------- */
@@ -200,7 +200,239 @@ div.container {
     margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     width: 99%;
-    overflow:auto
+    overflow:auto;
+}
+
+/* Local OpenVsoshCBT help landing page. */
+div.container.local-help {
+    width: auto;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 8px 24px 48px;
+    overflow: visible;
+}
+
+.local-help-hero {
+    position: relative;
+    overflow: hidden;
+    margin: 4px 0 32px;
+    padding: 32px 36px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #0B3B82 0%, #075DB2 64%, #1A78C7 100%);
+    box-shadow: 0 16px 42px rgba(11, 59, 130, 0.18);
+    color: #FFFFFF;
+}
+
+.local-help-hero::after {
+    position: absolute;
+    right: -70px;
+    bottom: -120px;
+    width: 300px;
+    height: 300px;
+    border: 54px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    content: '';
+}
+
+.local-help-eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.local-help-hero p {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 20px;
+    line-height: 1.45;
+}
+
+.local-help-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.local-help-actions a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 17px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.local-help-primary,
+.local-help-primary:visited {
+    background: #FFFFFF;
+    color: #0B4C96;
+}
+
+.local-help-secondary,
+.local-help-secondary:visited {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+}
+
+.local-help-section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 2px 16px;
+}
+
+.local-help-section-heading h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 20px;
+}
+
+.local-help-section-heading span {
+    color: #68758A;
+    font-size: 13px;
+}
+
+.local-help-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+a.local-help-card,
+a.local-help-card:visited {
+    display: flex;
+    flex-direction: column;
+    min-height: 196px;
+    padding: 22px;
+    border: 1px solid #DCE4EF;
+    border-radius: 14px;
+    background: #FFFFFF;
+    box-shadow: 0 7px 22px rgba(31, 55, 88, 0.06);
+    color: #172033;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+a.local-help-card:hover,
+a.local-help-card:focus {
+    border-color: #83AFE0;
+    box-shadow: 0 13px 30px rgba(31, 82, 142, 0.13);
+    color: #172033;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+.local-help-category {
+    margin-bottom: 14px;
+    color: #1265B0;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.local-help-card-title {
+    margin-bottom: 9px;
+    color: #172033;
+    font-size: 17px;
+    line-height: 1.28;
+}
+
+.local-help-card-description {
+    color: #68758A;
+    font-size: 14px;
+    line-height: 1.48;
+}
+
+.local-help-card-more {
+    margin-top: auto;
+    padding-top: 18px;
+    color: #1265B0;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.local-help-support {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 24px;
+    padding: 20px 24px;
+    border: 1px solid #DCE4EF;
+    border-radius: 14px;
+    background: #EAF2FC;
+}
+
+.local-help-support div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.local-help-support strong {
+    color: #172033;
+    font-size: 16px;
+}
+
+.local-help-support span {
+    color: #68758A;
+    font-size: 14px;
+}
+
+.local-help-support > a {
+    font-weight: bold;
+}
+
+@media (max-width: 900px) {
+    .local-help-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    div.container.local-help {
+        padding: 4px 12px 32px;
+    }
+
+    .local-help-hero {
+        padding: 25px 22px;
+        border-radius: 14px;
+    }
+
+    .local-help-hero p {
+        font-size: 17px;
+    }
+
+    .local-help-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .local-help-section-heading span {
+        display: none;
+    }
+
+    .local-help-support {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
 
 div.content {
@@ -208,8 +440,18 @@ div.content {
     margin: 0px 0px 0px 0px;
     padding: 5px 15px 5px 15px;
     text-align: left;
-    width: 98%;
-    box-sizing: border-box
+    width: 100%;
+    box-sizing: border-box;
+}
+
+div.content > h1 {
+    max-width: 1120px;
+    margin: 22px auto 14px;
+    padding: 0 24px;
+    color: #172033;
+    font-size: 28px;
+    line-height: 1.2;
+    box-sizing: border-box;
 }
 
 /* ---------- */
@@ -237,9 +479,12 @@ div.float {
 
 /* header (logo + timer) ------------ */
 .header {
-    background-color: #003399;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(110deg, #07336F 0%, #0A4C97 100%);
     border: 0px none;
-    height: 40px;
+    height: 74px;
     margin: 0px 0px 0px 0px;
     padding: 0px 0px 0px 0px;
     width: 100%;
@@ -247,38 +492,75 @@ div.float {
 
 /* header logo ------------ */
 .header div.left {
-    background-color: #003399;
-    background-image: url(../../images/logo_tcexam_118x25.png);
-    background-position: top;
-    background-repeat: no-repeat;
+    background: transparent;
     border: 0px none;
-    float: left;
-    height: 25px;
-    margin: 4px 0px 0px 4px;
-    padding: 0px 0px 0px 0px;
+    float: none;
+    height: 74px;
+    margin: 0px;
+    padding: 10px 22px;
     text-align: left;
-    width: 118px;
+    width: auto;
+    box-sizing: border-box;
+}
+
+.header a.site-brand {
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 18px;
+    line-height: 1.15;
+    text-decoration: none;
+}
+
+.header a.site-brand img {
+    width: 246px;
+    height: 54px;
+    object-fit: contain;
+}
+
+.header .site-brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.header .site-brand-section strong {
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+.header .site-brand-section small {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 12px;
 }
 
 /* header banner ------------ */
 .header div.right {
-    background-color: #003399;
+    background: transparent;
     border: 0px none;
-    float: right;
-    height: 25px;
+    float: none;
+    height: auto;
     margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
+    padding: 0 22px 0 0;
     text-align: right;
     width: 400px;
 }
 
 .header div.right input{
-    background-color: #003399;
+    background: transparent;
     border: 0px none;
     color: #FFFFFF;
-    font-size: 100%;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: normal;
     text-align: right;
+}
+
+.header label.timerlabel {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
 }
 
 div.message {
@@ -303,6 +585,19 @@ div.minibutton span.copyright {
     font-family: Arial,FreeSans,sans-serif;
     font-size: 70%;
     text-decoration: none;
+}
+
+div.minibutton span.institution-credit {
+    font-weight: normal;
+}
+
+div.minibutton span.upstream-credit {
+    color: #666666;
+    font-size: 80%;
+}
+
+div.minibutton span.upstream-credit a {
+    color: inherit;
 }
 
 div.navlink {
@@ -749,30 +1044,36 @@ td.numeric {
 /* MENU ------------ */
 
 .scrollmenu {
-    float: left;
+    float: none;
     font-family: Arial, Helvetica, sans-serif;
     height: auto;
     margin: 0 auto;
     width: 100%;
-    color: #FFAA00;
-    font-size: 75%;
+    color: #172033;
+    font-size: 14px;
     font-weight: bold;
     text-decoration: none;
-    background: #003399;
+    background: #FFFFFF;
     border: 0;
+    border-bottom: 1px solid #DCE4EF;
+    box-shadow: 0 3px 12px rgba(31, 55, 88, 0.06);
 }
 
 .scrollmenu ul {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
     list-style-type: none;
     margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    width: 99%;
+    padding: 7px 18px;
+    width: auto;
 }
 
 .scrollmenu ul li {
-    float: left;
-    height: 20px;
-    line-height: 20px;
+    float: none;
+    height: auto;
+    line-height: normal;
     margin: 0;
     padding: 0;
     position: relative;
@@ -786,28 +1087,27 @@ ul.menu {
 
 ul.menu li > ul {
     display: none;
-    background-color: #003399;
+    background-color: #FFFFFF;
 }
 
 ul.menu li a {
-    color: #FFFFFF;
+    color: #344156;
     display: block;
     text-decoration: none;
-    padding: 0px 6px 0px 6px;
-    border-top: 1px solid #4a98ff;
-    border-left: 1px solid #4a98ff;
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
 }
 
 ul.menu li a:visited {
-    color: #FFFFFF;
+    color: #344156;
     display: block;
     text-decoration: none;
 }
 
 ul.menu li a:hover, ul.menu li a:focus {
-    color: #FFAA00;
+    background: #EDF4FC;
+    color: #0B559F;
     text-decoration: none;
 }
 
@@ -816,25 +1116,28 @@ ul.menu li:hover > ul, ul.menu *:focus + ul {
     position: absolute;
     visibility: visible;
     left: 0px;
-    top: 20px;
-    width: 150px;
+    top: 36px;
+    width: 210px;
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: #003399;
-    z-index: 1;
+    border: 1px solid #DCE4EF;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 12px 28px rgba(31, 55, 88, 0.14);
+    z-index: 10;
 }
 
 ul.menu li:hover, ul.menu li.CSStoHighlight {
-    background-color: #003399;
-    color: #FFCC00;
+    background-color: transparent;
+    color: #0B559F;
 }
 
 ul.menu ul li {
-    background-color: #003399;
-    float: left;
+    background-color: #FFFFFF;
+    float: none;
     list-style-type: none;
-    margin-bottom: 2px;
+    margin-bottom: 0;
     padding: 0;
     text-decoration: none;
     width: 100%;
@@ -844,45 +1147,42 @@ ul.menu ul li:hover > ul, ul.menu ul *:focus + ul {
     display: block;
     position: absolute;
     visibility: visible;
-    left: 140px;
+    left: 205px;
     top: 0px;
     margin: 0;
     padding: 0;
-    background-color: #003399;
-    z-index: 1;
+    background-color: #FFFFFF;
+    z-index: 10;
 }
 
 ul.menu li a.active {
-    color: #003399;
+    color: #0B559F;
     display: block;
-    text-decoration: underline;
-    padding: 0px 6px 0 6px;
-    border-top: 1px solid #003399;
-    border-left: 1px solid #003399;
-    border-right: 1px solid #003399;
-    border-bottom: 1px solid white;
-    background-color: white;
+    text-decoration: none;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #EDF4FC;
 }
 
 ul.menu li span.active {
-    color: #003399;
+    color: #FFFFFF;
     display: block;
     text-decoration: none;
-    padding: 0px 6px 0 6px;
-    border-top: 1px solid #003399;
-    border-left: 1px solid #003399;
-    border-right: 1px solid #003399;
-    border-bottom: 1px solid white;
-    background-color: white;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #0B559F;
 }
 
 ul.menu ul li *.active {
-    color: #003399;
+    color: #0B559F;
     display: block;
     text-decoration: none;
-    padding: 0px 6px 0 6px;
-    border: 1px solid #003399;
-    background-color: white;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #EDF4FC;
 }
 
 ul.menu ul.CSStoShow {

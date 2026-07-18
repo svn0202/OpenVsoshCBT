@@ -84,27 +84,27 @@ define('K_ALLOWED_UPLOAD_EXTENSIONS', serialize([
 /**
  * TCExam title.
  */
-define('K_TCEXAM_TITLE', 'OpenVsoshCBT');
+define('K_TCEXAM_TITLE', 'Площадка для ВСОШ');
 
 /**
  * TCExam description.
  */
-define('K_TCEXAM_DESCRIPTION', 'OpenVsoshCBT — олимпиады и тестирование на базе TCExam');
+define('K_TCEXAM_DESCRIPTION', 'Платформа для проведения онлайн-этапа ВСОШ');
 
 /**
  * TCExam Author.
  */
-define('K_TCEXAM_AUTHOR', 'Nicola Asuni - Tecnick.com LTD');
+define('K_TCEXAM_AUTHOR', 'Связь со службой поддержки');
 
 /**
  * Reply-to meta tag.
  */
-define('K_TCEXAM_REPLY_TO', '');
+define('K_TCEXAM_REPLY_TO', 'olymp@gia66.ru');
 
 /**
  * Default html meta keywords.
  */
-define('K_TCEXAM_KEYWORDS', 'OpenVsoshCBT, TCExam, олимпиада, тестирование, экзамен');
+define('K_TCEXAM_KEYWORDS', 'ВСОШ, олимпиада, ИРО, РЦОИиОКО, оценка качества образования');
 
 /**
  * Relative path to html icon.

@@ -26,7 +26,10 @@ echo '</main>' . K_NEWLINE; //close main.body
 echo '<footer class="footer" role="contentinfo">' . K_NEWLINE;
 include '../../shared/code/tce_page_userbar.php'; // display user bar
 echo '</footer>' . K_NEWLINE;
-include '../config/theme/' . K_PUBLIC_THEME . '.php'; // load extra script for the selected theme
+include '../config/theme/picoman.php'; // public theme by Maman Sulaeman
+echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'mobile-exam.js" defer="defer"></script>' . K_NEWLINE;
+echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'login-page.js?v=20260718-1" defer="defer"></script>' . K_NEWLINE;
+echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'public-app-shell.js?v=20260718-5" defer="defer"></script>' . K_NEWLINE;
 
 echo '<!-- ' . base64_decode(K_KEY_SECURITY) . ' -->' . K_NEWLINE;
 echo '</body>' . K_NEWLINE;

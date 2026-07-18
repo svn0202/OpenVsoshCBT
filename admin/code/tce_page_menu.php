@@ -56,6 +56,14 @@ $menu = [
         'key' => '',
         'enabled' => true,
     ],
+    'tce_onboarding_settings.php' => [
+        'link' => 'tce_onboarding_settings.php',
+        'title' => 'Выбрать тест-инструкцию и демо-тест',
+        'name' => 'Настройки',
+        'level' => K_AUTH_ADMIN_TESTS,
+        'key' => '',
+        'enabled' => true,
+    ],
     'tce_edit_backup.php' => [
         'link' => 'tce_edit_backup.php',
         'title' => $l['t_backup_editor'],
@@ -67,14 +75,14 @@ $menu = [
     'public' => [
         'link' => '../../public/code/index.php',
         'title' => $l['h_public_link'],
-        'name' => $l['w_public'],
+        'name' => 'На площадку',
         'level' => 0,
         'key' => '',
         'enabled' => true,
     ],
-    'tcexam.org' => [
-        'link' => 'https://tcexam.org/',
-        'title' => $l['h_guide'],
+    'tce_page_help.php' => [
+        'link' => 'tce_page_help.php',
+        'title' => 'Помощь по OpenVsoshCBT',
         'name' => $l['w_guide'],
         'level' => K_AUTH_ADMIN_INFO,
         'key' => '',

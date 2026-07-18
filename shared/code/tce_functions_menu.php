@@ -50,7 +50,9 @@ function F_menu_link($link, $data, $level = 0)
         $str .= '>' . $data['name'] . '</a>';
     } else {
         // current page (active link): mark it for assistive technologies
-        $str .= '<span class="active" aria-current="page">' . $data['name'] . '</span>';
+        $str .= '<span class="active" data-menu-link="'
+            . htmlspecialchars($data['link'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" aria-current="page">' . $data['name'] . '</span>';
     }
 
     if (isset($data['sub']) && !empty($data['sub'])) {

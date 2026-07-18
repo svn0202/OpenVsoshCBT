@@ -329,6 +329,7 @@ function getRequiredMark($required = false)
  * @param $required (boolean) If true the field is marked as required.
  * @param $autocomplete (string) HTML autocomplete token (e.g. 'email', 'username', 'current-password', 'new-password').
  * @param $inputtype (string) Override for the HTML input type (e.g. 'email', 'tel', 'number'); ignored for password/date/datetime fields.
+ * @param $placeholder (string) Optional short hint displayed inside an empty input.
  * @return string
  */
 function getFormRowTextInput(
@@ -347,6 +348,7 @@ function getFormRowTextInput(
     $required = false,
     $autocomplete = '',
     $inputtype = '',
+    $placeholder = '',
 ) {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
@@ -434,6 +436,10 @@ function getFormRowTextInput(
 
     if (strlen($autocomplete) > 0) {
         $str .= ' autocomplete="' . $autocomplete . '"';
+    }
+
+    if (strlen($placeholder) > 0) {
+        $str .= ' placeholder="' . htmlspecialchars($placeholder, ENT_COMPAT, $l['a_meta_charset']) . '"';
     }
 
     if (strlen($tip) > 0) {
