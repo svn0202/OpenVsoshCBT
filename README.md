@@ -46,21 +46,21 @@ make lang
 ```
 
 После этого следуйте [официальному руководству установки](install/README.md)
-и [инструкции OpenVsoshCBT для РЕД ОС](docs/admin/deployment-redos.md).
+и [инструкции OpenVsoshCBT для РЕД ОС](doc/admin/deployment-redos.md).
 
 ## Документация OpenVsoshCBT
 
-- [Оглавление](docs/README.md)
-- [Развёртывание на РЕД ОС](docs/admin/deployment-redos.md)
-- [Регламент проведения олимпиады](docs/admin/olympiad-runbook.md)
-- [Создание вопросов на сопоставление](docs/admin/matching-questions.md)
-- [Безопасное обновление](docs/admin/upgrade.md)
-- [Решение известных проблем](docs/admin/troubleshooting.md)
-- [Карта официальной документации TCExam](docs/admin/tcexam-reference.md)
-- [Стратегия переноса функций TMFCBT](docs/development/upstream-strategy.md)
-- [Матрица функций](docs/development/feature-porting-matrix.md)
-- [Лицензия и правила публикации](docs/development/licensing.md)
-- [Изменения OpenVsoshCBT](docs/development/changes.md)
+- [Оглавление](doc/README.md)
+- [Развёртывание на РЕД ОС](doc/admin/deployment-redos.md)
+- [Регламент проведения олимпиады](doc/admin/olympiad-runbook.md)
+- [Создание вопросов на сопоставление](doc/admin/matching-questions.md)
+- [Безопасное обновление](doc/admin/upgrade.md)
+- [Решение известных проблем](doc/admin/troubleshooting.md)
+- [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)
+- [Стратегия переноса функций TMFCBT](doc/development/upstream-strategy.md)
+- [Матрица функций](doc/development/feature-porting-matrix.md)
+- [Лицензия и правила публикации](doc/development/licensing.md)
+- [Изменения OpenVsoshCBT](doc/development/changes.md)
 
 Документация в репозитории является самостоятельным руководством для
 OpenVsoshCBT, а не копией сайта TCExam. Первоисточники указаны ссылками.

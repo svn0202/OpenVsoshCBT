@@ -77,7 +77,8 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 ] : (array) $_REQUEST['answpos'];
         }
 
-        if (!empty($_REQUEST['answertext'])) {
+        // `empty()` treats the valid short answer "0" as missing.
+        if (isset($_REQUEST['answertext']) && is_string($_REQUEST['answertext'])) {
             $answer_text = $_REQUEST['answertext'];
         }
 

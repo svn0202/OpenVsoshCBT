@@ -24,7 +24,10 @@ require_once 'tce_xhtml_header.php';
 
 // display header banner (logo + timer)
 echo '<header class="header" role="banner">' . K_NEWLINE;
-echo '<div class="left"></div>' . K_NEWLINE;
+echo '<div class="left"><a class="site-brand" href="' . K_PATH_URL . 'public/code/" title="Вернуться на площадку тестирования">' . K_NEWLINE;
+echo '<img src="../../images/vsosh-wordmark-white.png" alt="Всероссийская олимпиада школьников" width="246" height="54" />' . K_NEWLINE;
+echo '<span class="site-brand-section"><strong>OpenVsoshCBT</strong><small>Панель администратора</small></span>' . K_NEWLINE;
+echo '</a></div>' . K_NEWLINE;
 echo '<div class="right" id="timersection">' . K_NEWLINE;
 include '../../shared/code/tce_page_timer.php';
 echo '</div>' . K_NEWLINE;

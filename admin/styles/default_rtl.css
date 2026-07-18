@@ -248,16 +248,31 @@ div.float {
 /* header logo ------------ */
 .header div.left {
     background-color: #003399;
-    background-image: url(../../images/logo_tcexam_118x25.png);
-    background-position: top;
-    background-repeat: no-repeat;
     border: 0px none;
     float: right;
-    height: 25px;
-    margin: 4px 0px 0px 4px;
-    padding: 0px 0px 0px 0px;
+    height: 40px;
+    margin: 0px;
+    padding: 4px 8px;
     text-align: right;
-    width: 118px;
+    width: auto;
+    box-sizing: border-box;
+}
+
+.header a.site-brand {
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    text-decoration: none;
+}
+
+.header a.site-brand strong {
+    font-size: 15px;
+}
+
+.header a.site-brand span {
+    font-size: 10px;
+    opacity: 0.85;
 }
 
 /* header banner ------------ */
@@ -303,6 +318,19 @@ div.minibutton span.copyright {
     font-family: Arial,FreeSans,sans-serif;
     font-size: 70%;
     text-decoration: none;
+}
+
+div.minibutton span.institution-credit {
+    font-weight: normal;
+}
+
+div.minibutton span.upstream-credit {
+    color: #666666;
+    font-size: 80%;
+}
+
+div.minibutton span.upstream-credit a {
+    color: inherit;
 }
 
 div.navlink {

@@ -84,7 +84,7 @@ echo '<li>[MS] Malay (Bahasa Melayu) : Arvind Prakash Jha</li>' . K_NEWLINE;
 echo '<li>[NL] Dutch : Chris de Boer</li>' . K_NEWLINE;
 echo '<li>[PL] Polish : Tomasz Parol</li>' . K_NEWLINE;
 echo '<li>[RO] Romanian : Ovidiu Dragomir</li>' . K_NEWLINE;
-echo '<li>[RU] Russian : Andrey, Sergey C.</li>' . K_NEWLINE;
+echo '<li>[RU] Russian : Andrey, Sergey C., Sergey Nikitin</li>' . K_NEWLINE;
 echo '<li>[TR] Turkish : Mehmet Arif Icir</li>' . K_NEWLINE;
 echo '<li>[UR] Urdu : Ghulam Abbas</li>' . K_NEWLINE;
 echo '<li>[VN] Vietnamese : Nguyen Quynh Nga</li>' . K_NEWLINE;

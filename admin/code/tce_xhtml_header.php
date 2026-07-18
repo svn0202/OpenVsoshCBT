@@ -96,7 +96,12 @@ echo
         . '" />'
         . K_NEWLINE
 ;
-echo '<link rel="stylesheet" href="' . $thispage_style . '" />' . K_NEWLINE;
+$stylesheet_url = $thispage_style;
+$stylesheet_path = realpath(__DIR__ . '/' . $thispage_style);
+if ($stylesheet_path !== false && is_file($stylesheet_path)) {
+    $stylesheet_url .= (str_contains($stylesheet_url, '?') ? '&amp;' : '?') . 'v=' . filemtime($stylesheet_path);
+}
+echo '<link rel="stylesheet" href="' . htmlspecialchars($stylesheet_url, ENT_QUOTES, $l['a_meta_charset']) . '" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;

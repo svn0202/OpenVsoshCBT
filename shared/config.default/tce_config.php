@@ -29,12 +29,12 @@ define('K_TCEXAM_VERSION', file_get_contents('../../VERSION'));
 /**
  * 2-letters code for default language.
  */
-define('K_LANGUAGE', 'en');
+define('K_LANGUAGE', 'ru');
 
 /**
  * If true, display a language selector.
  */
-define('K_LANGUAGE_SELECTOR', true);
+define('K_LANGUAGE_SELECTOR', false);
 
 /**
  * Defines a serialized array of available languages.
@@ -170,7 +170,13 @@ define('K_COOKIE_PATH', '/');
 /**
  * If true use secure cookies.
  */
-define('K_COOKIE_SECURE', true);
+// Send Secure cookies whenever the current request is HTTPS. Keeping this dynamic
+// allows local HTTP development (notably Safari on localhost) without weakening
+// cookies on the production HTTPS deployment, including behind a TLS proxy.
+$https_forwarded = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+    && strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'])[0])) === 'https';
+$https_direct = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== '' && strtolower($_SERVER['HTTPS']) !== 'off';
+define('K_COOKIE_SECURE', $https_direct || $https_forwarded);
 
 /**
  * When true the cookie will be made accessible only through the HTTP protocol.
@@ -199,7 +205,7 @@ define('K_REDIRECT_LOGIN_MODE', 4);
 /**
  * If true enable password reset feature.
  */
-define('K_PASSWORD_RESET', true);
+define('K_PASSWORD_RESET', false);
 
 /**
  * URL to be redirected at logout (leave empty for default).

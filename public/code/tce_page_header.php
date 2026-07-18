@@ -36,13 +36,17 @@ if (!$is_app_page) {
 }
 echo '<a class="site-brand" href="' . K_PATH_URL . 'public/code/">' . K_NEWLINE;
 if ($is_app_page) {
-    echo '<img class="vsosh-wordmark" src="../../images/vsosh-wordmark-header.svg?v=20260718-2" '
-        . 'alt="ВСОШ — Всероссийская олимпиада школьников" />' . K_NEWLINE;
+    echo '<span class="app-vsosh-wordmark" aria-label="ВСОШ — Всероссийская олимпиада школьников">'
+        . '<span class="app-vsosh-abbr"><b>ВС</b><i><em>{</em><em>}</em></i><b>Ш</b></span>'
+        . '<span class="app-vsosh-caption">Всероссийская<br />олимпиада<br />школьников</span>'
+        . '</span>' . K_NEWLINE;
     echo '<img class="tmf-engine-wordmark" '
         . 'src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" alt="TCExam" />' . K_NEWLINE;
 } else {
-    echo '<img class="login-vsosh-wordmark" src="../../images/vsosh-wordmark-transparent.png?v=20260718-1" '
-        . 'alt="ВСОШ — Всероссийская олимпиада школьников" />' . K_NEWLINE;
+    echo '<span class="login-vsosh-wordmark" aria-label="ВСОШ — Всероссийская олимпиада школьников">'
+        . '<span class="login-vsosh-abbr"><b>ВС</b><i><em>{</em><em>}</em></i><b>Ш</b></span>'
+        . '<span class="login-vsosh-caption">Всероссийская<br />олимпиада<br />школьников</span>'
+        . '</span>' . K_NEWLINE;
     echo '<img class="login-engine-wordmark" src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" '
         . 'alt="TCExam" />' . K_NEWLINE;
 }
@@ -50,6 +54,8 @@ echo '</a>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 echo '<div class="right" id="timersection">' . K_NEWLINE;
 if ($is_app_page) {
+    echo '<button class="tmf-theme-toggle" type="button" aria-pressed="false" title="Переключить тему">'
+        . '<i aria-hidden="true">☾</i><span>Тёмная</span></button>' . K_NEWLINE;
     if ($_SESSION['session_user_level'] >= K_ADMIN_LINK) {
         echo '<a class="tmf-admin-shortcut" href="../../admin/code/index.php"><span aria-hidden="true">⚙</span> Admin</a>' . K_NEWLINE;
     }
@@ -85,6 +91,12 @@ if (!$is_app_page) {
     echo '<a href="https://vsoshlk.irro.ru">Результаты олимпиад</a>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 }
+echo '<div class="legal-menu-links">' . K_NEWLINE;
+echo '<strong>О платформе</strong>' . K_NEWLINE;
+echo '<a href="' . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
+    . '" rel="noopener">Исходный код OpenVsoshCBT</a>' . K_NEWLINE;
+echo '<a href="' . K_PATH_URL . 'LICENSE">Лицензия AGPL-3.0-or-later</a>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 echo '</nav>' . K_NEWLINE;
 if ($is_app_page) {
     echo '<button class="app-menu-scrim" type="button" aria-label="Закрыть меню" tabindex="-1"></button>' . K_NEWLINE;
