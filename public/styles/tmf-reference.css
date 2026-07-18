@@ -1016,3 +1016,218 @@ body.app-page .tmf-user-panel dd { background: rgba(25, 49, 91, .7); color: #dce
 
 body.app-page footer.footer { background: rgba(4, 10, 24, .72); }
 body.app-page footer.footer span.copyright { color: #91a8d0; }
+
+/* The sign-in screen keeps the original TMF/Mamman composition. */
+body.login-page {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100vh;
+    background: #050608 url("../../images/fon_kosmos.jpg") center / cover fixed no-repeat;
+    color: #505050;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body.login-page .header {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 58px;
+    margin: 0;
+    padding: 0 4px;
+    background: rgba(0, 0, 0, .28);
+    box-sizing: border-box;
+}
+body.login-page .header div.left {
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 58px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+body.login-page .login-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 42px;
+    margin: 0 7px 0 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 31px;
+    line-height: 1;
+}
+body.login-page .header a.site-brand {
+    display: flex;
+    align-items: center;
+    width: 114px;
+    height: 25px;
+    color: transparent;
+    background: transparent;
+}
+body.login-page .header a.site-brand strong,
+body.login-page .header a.site-brand span { display: none; }
+body.login-page .header a.site-brand::after {
+    display: none;
+}
+body.login-page .header a.site-brand img.login-engine-wordmark {
+    display: block;
+    width: 114px;
+    height: 21px;
+    object-fit: contain;
+}
+body.login-page .header div.right { display: none; }
+body.login-page #scrollayer { display: none; }
+body.login-page main.body {
+    display: flex;
+    flex: 1 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    padding: 115px 12px 110px;
+    box-sizing: border-box;
+}
+body.login-page main.body > h1 { display: none; }
+body.login-page .login-container {
+    width: 464px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+body.login-page .login-box {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+    overflow: hidden;
+}
+body.login-page .login-brand {
+    padding: 46px 24px 20px;
+    border-bottom: 1px solid #d9dde1;
+    text-align: center;
+}
+body.login-page .login-brand img {
+    display: block;
+    width: 77px;
+    height: 77px;
+    margin: 0 auto 14px;
+    object-fit: contain;
+}
+body.login-page .login-brand p {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+    font-weight: 700;
+}
+body.login-page .login-intro {
+    margin: 0;
+    padding: 30px 48px 24px;
+    color: #555;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+}
+body.login-page .login-box form {
+    position: relative;
+    margin: 0;
+    padding: 0 18px 18px;
+}
+body.login-page .login-box form > .row {
+    display: block;
+    margin: 0 0 14px;
+    padding: 0;
+}
+body.login-page .login-box form > .row span.label,
+body.login-page .login-box form > .row span.formw {
+    display: block;
+    float: none;
+    width: 100%;
+    padding: 0;
+    text-align: left;
+}
+body.login-page .login-box form > .row span.label {
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 16px;
+    font-weight: 700;
+}
+body.login-page .login-box abbr.required { display: none; }
+body.login-page .login-box input[type="text"],
+body.login-page .login-box input[type="password"] {
+    width: 100%;
+    height: 46px;
+    margin: 0;
+    padding: 0 14px;
+    border: 0;
+    border-bottom: 2px solid #d8e0e8;
+    border-radius: 0;
+    background: #fff;
+    color: #555;
+    font-size: 17px;
+}
+body.login-page .login-box input::placeholder { color: #8594a0; opacity: 1; }
+body.login-page .login-box .password-toggle {
+    position: absolute;
+    top: 184px;
+    right: 24px;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #7e858a;
+}
+body.login-page .login-box .login-submit { margin: 8px 0 0; text-align: center; }
+body.login-page .login-box #login {
+    width: 190px;
+    height: 48px;
+    margin: 0 auto;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 999px;
+    background: #3f5f9d;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+body.login-page .login-support {
+    padding: 24px 42px 28px;
+    border-top: 1px solid #d9dde1;
+    color: #555;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+}
+body.login-page .login-support p { margin: 0 0 18px; }
+body.login-page .login-support p:last-child { margin-bottom: 0; }
+body.login-page .login-support a { color: #3f74b7; }
+body.login-page footer.footer {
+    flex: 0 0 auto;
+    min-height: 56px;
+    padding: 10px 16px;
+    background: rgba(70, 70, 70, .65);
+    text-align: center;
+}
+body.login-page footer .minibutton:not(:last-child),
+body.login-page footer .userbar { display: none; }
+body.login-page footer .minibutton:last-child { display: block; }
+body.login-page footer span.copyright { color: #222; font-size: 13px; line-height: 1.4; }
+body.login-page footer span.institution-credit { color: #222; }
+body.login-page footer span.upstream-credit { display: none; }
+@media (max-width: 560px) {
+    body.login-page main.body { padding-top: 78px; padding-bottom: 64px; }
+    body.login-page .login-brand { padding-top: 30px; }
+    body.login-page .login-intro { padding-left: 28px; padding-right: 28px; }
+}

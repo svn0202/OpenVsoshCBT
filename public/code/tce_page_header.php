@@ -41,8 +41,8 @@ if ($is_app_page) {
     echo '<img class="tmf-engine-wordmark" '
         . 'src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" alt="TCExam" />' . K_NEWLINE;
 } else {
-    echo '<strong>' . htmlspecialchars(K_SITE_TITLE, ENT_QUOTES, $l['a_meta_charset']) . '</strong>' . K_NEWLINE;
-    echo '<span>ГАОУ ДПО СО «ИРО»</span>' . K_NEWLINE;
+    echo '<img class="login-engine-wordmark" src="../../images/logo_tcexam_white_noborder_transparent_114x21.png" '
+        . 'alt="TCExam" />' . K_NEWLINE;
 }
 echo '</a>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
