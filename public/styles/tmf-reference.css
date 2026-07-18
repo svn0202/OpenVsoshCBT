@@ -927,6 +927,23 @@ body.app-page footer.footer .upstream-credit { opacity: .72; }
     body.app-page table.testlist tr { min-height: 220px; }
     body.app-page .upstream-credit { display: none; }
 }
+@media (max-height: 1050px) and (min-width: 561px) {
+    body.login-page main.body { padding-top: 72px; padding-bottom: 24px; }
+    body.login-page .login-brand { padding-top: 34px; padding-bottom: 16px; }
+    body.login-page .login-brand img { width: 64px; height: 64px; margin-bottom: 8px; }
+    body.login-page .login-brand p { font-size: 22px; }
+    body.login-page .login-intro { padding-top: 24px; padding-bottom: 28px; font-size: 20px; }
+    body.login-page .login-box form { padding-bottom: 28px; }
+    body.login-page .login-box form > .row { margin-bottom: 8px; }
+    body.login-page .login-box form > .row span.label { margin-bottom: 3px; font-size: 18px; }
+    body.login-page .login-box input[type="text"],
+    body.login-page .login-box input[type="password"] { height: 40px; font-size: 18px; }
+    body.login-page .login-box #login { width: 230px; height: 54px; font-size: 22px; }
+    body.login-page .login-support { padding: 18px 40px 20px; font-size: 18px; }
+    body.login-page .login-support p { margin-bottom: 10px; }
+    body.login-page footer.footer,
+    body.login-page #footer { min-height: 42px; padding-top: 6px; padding-bottom: 7px; }
+}
 
 /* Cosmic authenticated theme: preserve the current layout while carrying the
  * deep-space palette through every surface of the public application. */
