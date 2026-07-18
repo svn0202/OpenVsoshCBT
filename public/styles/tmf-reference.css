@@ -1086,8 +1086,8 @@ body.login-page .header a.site-brand img.login-engine-wordmark {
 }
 body.login-page .header a.site-brand img.login-vsosh-wordmark {
     display: block;
-    width: 270px;
-    height: 38px;
+    width: 400px;
+    height: auto;
     object-fit: contain;
 }
 body.login-page .header a.site-brand img.login-engine-wordmark {
