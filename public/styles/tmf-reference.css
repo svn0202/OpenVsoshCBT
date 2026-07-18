@@ -1064,10 +1064,12 @@ body.login-page .login-menu-toggle {
 }
 body.login-page .header a.site-brand {
     display: flex;
+    flex-direction: row;
     align-items: center;
     width: auto;
     height: 40px;
     gap: 20px;
+    white-space: nowrap;
     color: transparent;
     background: transparent;
 }
@@ -1084,7 +1086,7 @@ body.login-page .header a.site-brand img.login-engine-wordmark {
 }
 body.login-page .header a.site-brand img.login-vsosh-wordmark {
     display: block;
-    width: 230px;
+    width: 270px;
     height: 38px;
     object-fit: contain;
 }
