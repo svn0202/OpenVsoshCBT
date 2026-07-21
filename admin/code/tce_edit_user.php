@@ -39,6 +39,7 @@ $user_ssn = $_POST['user_ssn'] ?? '';
 // round-tripped hidden fields preserved on UPDATE (overwritten internally in the add branch)
 $user_ip = $_POST['user_ip'] ?? '';
 $user_regdate = $_POST['user_regdate'] ?? '';
+$user_searchterms = trim((string) ($_REQUEST['user_searchterms'] ?? ''));
 
 $pagelevel = K_AUTH_ADMIN_USERS;
 require_once '../../shared/code/tce_authorization.php';
@@ -582,55 +583,78 @@ if ($user_id == 0) {
 }
 
 echo '>+</option>' . K_NEWLINE;
-$sql = 'SELECT user_id, user_lastname, user_firstname, user_name FROM ' . K_TABLE_USERS . ' WHERE (user_id>1)';
-if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-    // filter for level
-    $sql .=
-        ' AND ((user_level<' . $_SESSION['session_user_level'] . ') OR (user_id=' . $_SESSION['session_user_id'] . '))';
-    // filter for groups
-    $sql .=
-        ' AND user_id IN (SELECT tb.usrgrp_user_id
-		FROM '
-        . K_TABLE_USERGROUP
-        . ' AS ta, '
-        . K_TABLE_USERGROUP
-        . ' AS tb
-		WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
-			AND ta.usrgrp_user_id='
-        . (int) $_SESSION['session_user_id']
-        . '
-			AND tb.usrgrp_user_id=user_id)';
+// Do not preload the whole users table here. The adjacent popup provides
+// server-side search and pagination; this select only needs the current user.
+if ($user_id > 0) {
+    echo
+        '<option value="'
+            . $user_id
+            . '" selected="selected">'
+            . htmlspecialchars(
+                trim($user_lastname . ' ' . $user_firstname) . ' - ' . $user_name,
+                ENT_NOQUOTES,
+                $l['a_meta_charset'],
+            )
+            . '</option>'
+            . K_NEWLINE
+    ;
 }
 
-$sql .= ' ORDER BY user_lastname, user_firstname, user_name';
-if ($r = F_db_query($sql, $db)) {
-    $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
-        echo '<option value="' . $m['user_id'] . '"';
-        if ($m['user_id'] == $user_id) {
-            echo ' selected="selected"';
-        }
-
-        echo
-            '>'
-                . $countitem
-                . '. '
-                . htmlspecialchars(
-                    $m['user_lastname'] . ' ' . $m['user_firstname'] . ' - ' . $m['user_name'] . '',
-                    ENT_NOQUOTES,
-                    $l['a_meta_charset'],
-                )
-                . '</option>'
-                . K_NEWLINE
-        ;
-        ++$countitem;
+if ($user_searchterms !== '') {
+    $sql = 'SELECT user_id, user_name, user_email, user_firstname, user_lastname, user_level FROM '
+        . K_TABLE_USERS . ' WHERE (user_id>1)';
+    foreach (preg_split('/\s+/u', $user_searchterms, -1, PREG_SPLIT_NO_EMPTY) as $word) {
+        $word = F_escape_sql($db, $word);
+        $sql .= " AND ((user_name LIKE '%" . $word . "%')"
+            . " OR (user_email LIKE '%" . $word . "%')"
+            . " OR (user_firstname LIKE '%" . $word . "%')"
+            . " OR (user_lastname LIKE '%" . $word . "%'))";
     }
-} else {
-    echo '</select></span></div>' . K_NEWLINE;
-    F_display_db_error();
+
+    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+        $sql .= ' AND ((user_level<' . (int) $_SESSION['session_user_level'] . ') OR (user_id='
+            . (int) $_SESSION['session_user_id'] . '))';
+        $sql .= ' AND user_id IN (SELECT tb.usrgrp_user_id FROM '
+            . K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb'
+            . ' WHERE ta.usrgrp_group_id=tb.usrgrp_group_id'
+            . ' AND ta.usrgrp_user_id=' . (int) $_SESSION['session_user_id']
+            . ' AND tb.usrgrp_user_id=user_id)';
+    }
+
+    $sql .= ' ORDER BY user_lastname, user_firstname, user_name';
+    if (K_DATABASE_TYPE == 'ORACLE') {
+        $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . K_MAX_ROWS_PER_PAGE;
+    } else {
+        $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
+    }
+
+    if ($r = F_db_query($sql, $db)) {
+        while ($m = F_db_fetch_array($r)) {
+            if ((int) $m['user_id'] === $user_id) {
+                continue;
+            }
+
+            $display_name = trim((string) $m['user_lastname'] . ' ' . (string) $m['user_firstname']);
+            $option_parts = array_filter([$display_name, (string) $m['user_name'], (string) $m['user_email']], 'strlen');
+            echo '<option value="' . (int) $m['user_id'] . '">'
+                . htmlspecialchars(implode(' — ', $option_parts), ENT_NOQUOTES, $l['a_meta_charset'])
+                . '</option>' . K_NEWLINE;
+        }
+    } else {
+        echo '</select></span></div>' . K_NEWLINE;
+        F_display_db_error();
+    }
 }
 
 echo '</select>' . K_NEWLINE;
+
+$search_hint = $l['w_search'] . ': ' . $l['w_username'] . ', ' . $l['w_name'] . ', ' . $l['w_email'];
+echo '<input type="search" name="user_searchterms" id="user_searchterms" value="'
+    . htmlspecialchars($user_searchterms, ENT_COMPAT, $l['a_meta_charset'])
+    . '" size="24" maxlength="255" title="'
+    . htmlspecialchars($search_hint, ENT_QUOTES, $l['a_meta_charset'])
+    . '" aria-label="' . htmlspecialchars($search_hint, ENT_QUOTES, $l['a_meta_charset']) . '" />';
+F_submit_button('search', $l['w_search'], $search_hint);
 
 // link for user selection popup
 $jsaction = "selectWindow=window.open('tce_select_users_popup.php?cid=user_id', 'selectWindow', 'dependent, height=600, width=800, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no');return false;";

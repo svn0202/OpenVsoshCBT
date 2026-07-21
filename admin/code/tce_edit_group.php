@@ -46,6 +46,7 @@ if (isset($_REQUEST['group_id'])) {
 }
 
 $group_name = $_REQUEST['group_name'] ?? '';
+$group_searchterms = trim((string) ($_REQUEST['group_searchterms'] ?? ''));
 $group_name_sl = stripslashes($group_name);
 $group_name_db = F_escape_sql($db, $group_name);
 
@@ -256,22 +257,60 @@ if ($group_id == 0) {
 }
 
 echo '>+</option>' . K_NEWLINE;
-$sql = F_user_group_select_sql();
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
-        echo '<option value="' . $m['group_id'] . '"';
-        if ($m['group_id'] == $group_id) {
-            echo ' selected="selected"';
-        }
+// Keep only the current group in the initial response. Additional groups are
+// loaded in bounded search results instead of rendering the entire table.
+if ($group_id > 0) {
+    echo
+        '<option value="'
+            . $group_id
+            . '" selected="selected">'
+            . htmlspecialchars($group_name, ENT_NOQUOTES, $l['a_meta_charset'])
+            . '</option>'
+            . K_NEWLINE
+    ;
+}
 
-        echo '>' . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset']) . '</option>' . K_NEWLINE;
+if ($group_searchterms !== '') {
+    $where = "group_name LIKE '%" . F_escape_sql($db, $group_searchterms) . "%'";
+    $sql = F_user_group_select_sql($where);
+    if (K_DATABASE_TYPE == 'ORACLE') {
+        $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . K_MAX_ROWS_PER_PAGE;
+    } else {
+        $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
     }
-} else {
-    echo '</select></span></div>' . K_NEWLINE;
-    F_display_db_error();
+
+    if ($r = F_db_query($sql, $db)) {
+        while ($m = F_db_fetch_array($r)) {
+            if ($m['group_id'] == $group_id) {
+                continue;
+            }
+
+            echo
+                '<option value="'
+                    . $m['group_id']
+                    . '">'
+                    . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset'])
+                    . '</option>'
+                    . K_NEWLINE
+            ;
+        }
+    } else {
+        echo '</select></span></div>' . K_NEWLINE;
+        F_display_db_error();
+    }
 }
 
 echo '</select>' . K_NEWLINE;
+echo
+    '<input type="text" name="group_searchterms" id="group_searchterms" value="'
+        . htmlspecialchars($group_searchterms, ENT_COMPAT, $l['a_meta_charset'])
+        . '" size="20" maxlength="255" title="'
+        . $l['w_search']
+        . '" aria-label="'
+        . $l['w_search']
+        . '" />'
+;
+F_submit_button('search', $l['w_search'], $l['w_search']);
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
