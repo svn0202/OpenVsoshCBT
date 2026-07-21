@@ -49,7 +49,13 @@ abstract class AppHttpTestCase extends TestCase
      *
      * @return array{0:int,1:string,2:array<string,string>} [status, body, cookies(sent+received)]
      */
-    protected function http(string $method, string $path, array $cookies = [], array $post = []): array
+    protected function http(
+        string $method,
+        string $path,
+        array $cookies = [],
+        array $post = [],
+        bool $followRedirects = true,
+    ): array
     {
         $header = "Accept: text/html\r\n";
         if ($cookies !== []) {
@@ -61,7 +67,14 @@ abstract class AppHttpTestCase extends TestCase
             $header .= 'Cookie: ' . implode('; ', $pairs) . "\r\n";
         }
 
-        $opts = ['method' => $method, 'header' => $header, 'ignore_errors' => true, 'timeout' => 20];
+        $opts = [
+            'method' => $method,
+            'header' => $header,
+            'ignore_errors' => true,
+            'timeout' => 20,
+            'follow_location' => $followRedirects ? 1 : 0,
+            'max_redirects' => $followRedirects ? 20 : 0,
+        ];
         if ($method === 'POST') {
             $opts['header'] .= "Content-Type: application/x-www-form-urlencoded\r\n";
             $opts['content'] = http_build_query($post);

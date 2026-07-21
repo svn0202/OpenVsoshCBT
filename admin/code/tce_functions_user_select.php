@@ -693,9 +693,20 @@ function F_show_select_user_popup(
             do {
                 ++$itemcount;
                 // on click the user ID will be returned on the calling form field
-                $jsaction =
-                    "javascript:window.opener.document.getElementById('" . $cid . "').value=" . $m['user_id'] . ';';
-                $jsaction .= "window.opener.document.getElementById('" . $cid . "').onchange();";
+                $jsaction = "javascript:var target=window.opener.document.getElementById('" . $cid . "');";
+                $jsaction .= 'target.value=' . $m['user_id'] . ';';
+                // A paginated caller may not have an option for this user loaded yet.
+                // Add a temporary one so assigning the value works before onchange submits the form.
+                $jsaction .=
+                    "if(target.tagName==='SELECT'&&target.value!='"
+                    . $m['user_id']
+                    . "'){target.add(new Option('', '"
+                    . $m['user_id']
+                    . "'));target.value='"
+                    . $m['user_id']
+                    . "';}"
+                ;
+                $jsaction .= 'target.onchange();';
                 $jsaction .= 'window.close(); return false;';
                 echo '<tr>' . K_NEWLINE;
                 echo

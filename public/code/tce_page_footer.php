@@ -27,7 +27,7 @@ echo '<footer class="footer" role="contentinfo">' . K_NEWLINE;
 include '../../shared/code/tce_page_userbar.php'; // display user bar
 echo '</footer>' . K_NEWLINE;
 include '../config/theme/picoman.php'; // public theme by Maman Sulaeman
-echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'mobile-exam.js" defer="defer"></script>' . K_NEWLINE;
+echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'mobile-exam.js?v=20260719-1" defer="defer"></script>' . K_NEWLINE;
 echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'login-page.js?v=20260718-2" defer="defer"></script>' . K_NEWLINE;
 echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'public-app-shell.js?v=20260718-6" defer="defer"></script>' . K_NEWLINE;
 

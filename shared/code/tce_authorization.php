@@ -460,6 +460,34 @@ if ($pagelevel && $_SESSION['session_user_level'] < $pagelevel) {
 }
 
 if ($logged) { //if user is just logged in: reloads page
+    $redirect_page = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+    $stored_redirect = $_SESSION['session_login_redirect'] ?? null;
+    unset($_SESSION['session_login_redirect']);
+
+    // Only operators and administrators may return to an admin page. The stored value comes
+    // from REQUEST_URI, but validate it again before using it as a Location header.
+    $operator_level = defined('K_ADMIN_LINK') ? (int) K_ADMIN_LINK : 5;
+    if (is_string($stored_redirect) && (int) $_SESSION['session_user_level'] >= $operator_level) {
+        $stored_parts = parse_url($stored_redirect);
+        $current_script = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+        $public_code_pos = strpos($current_script, '/public/code/');
+        $admin_prefix = $public_code_pos === false
+            ? ''
+            : substr($current_script, 0, $public_code_pos) . '/admin/code/';
+        if (
+            is_array($stored_parts)
+            && !isset($stored_parts['scheme'])
+            && !isset($stored_parts['host'])
+            && !isset($stored_parts['user'])
+            && !isset($stored_parts['pass'])
+            && isset($stored_parts['path'])
+            && $admin_prefix !== ''
+            && str_starts_with((string) $stored_parts['path'], $admin_prefix)
+        ) {
+            $redirect_page = $stored_redirect;
+        }
+    }
+
     // html redirect
     $htmlredir = '<!DOCTYPE html>' . K_NEWLINE;
     $htmlredir .= '<html lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
@@ -467,12 +495,14 @@ if ($logged) { //if user is just logged in: reloads page
     $htmlredir .= '<meta charset="' . $l['a_meta_charset'] . '" />' . K_NEWLINE;
     $htmlredir .=
         '<title>' . htmlspecialchars($l['w_index'], ENT_COMPAT, $l['a_meta_charset']) . '</title>' . K_NEWLINE;
-    $htmlredir .= '<meta http-equiv="refresh" content="0" />' . K_NEWLINE; //reload page
+    $htmlredir .= '<meta http-equiv="refresh" content="0;url='
+        . htmlspecialchars($redirect_page, ENT_QUOTES, $l['a_meta_charset']) . '" />' . K_NEWLINE;
     $htmlredir .= '</head>' . K_NEWLINE;
     $htmlredir .= '<body>' . K_NEWLINE;
     $htmlredir .= '<main id="maincontent">' . K_NEWLINE;
     $htmlredir .=
-        '<a href="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '">' . $l['w_index'] . '</a>' . K_NEWLINE;
+        '<a href="' . htmlspecialchars($redirect_page, ENT_QUOTES, $l['a_meta_charset']) . '">'
+        . $l['w_index'] . '</a>' . K_NEWLINE;
     $htmlredir .= '</main>' . K_NEWLINE;
     $htmlredir .= '</body>' . K_NEWLINE;
     $htmlredir .= '</html>' . K_NEWLINE;
@@ -480,13 +510,13 @@ if ($logged) { //if user is just logged in: reloads page
         case 1:
             {
                 // relative redirect
-                header('Location: ' . $_SERVER['SCRIPT_NAME']);
+                header('Location: ' . $redirect_page);
                 break;
             }
         case 2:
             {
                 // absolute redirect
-                header('Location: ' . K_PATH_HOST . $_SERVER['SCRIPT_NAME']);
+                header('Location: ' . K_PATH_HOST . $redirect_page);
                 break;
             }
         case 3:
@@ -499,7 +529,7 @@ if ($logged) { //if user is just logged in: reloads page
         default:
             {
                 // full redirect
-                header('Location: ' . K_PATH_HOST . $_SERVER['SCRIPT_NAME']);
+                header('Location: ' . K_PATH_HOST . $redirect_page);
                 echo $htmlredir;
                 break;
             }

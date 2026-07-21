@@ -3,6 +3,7 @@
 
     var form = document.getElementById('testform');
     var toolbar = document.querySelector('[data-exam-toolbar]');
+    var themeToggle = document.querySelector('.tmf-theme-toggle');
 
     if (!form || !toolbar) {
         return;
@@ -15,7 +16,6 @@
     var storagePrefix = 'tcexam:' + testId + ':' + testuserId + ':';
     var reviewKey = storagePrefix + 'reviewed';
     var fontKey = 'tcexam:exam-font-scale';
-    var themeKey = 'tcexam:exam-theme';
     var minScale = 0.85;
     var maxScale = 1.6;
     var scaleStep = 0.1;
@@ -42,12 +42,6 @@
         scale = Math.round(scale * 100) / 100;
         root.style.setProperty('--exam-font-scale', scale);
         writeJson(fontKey, scale);
-    }
-
-    function setTheme(theme) {
-        var dark = theme === 'dark';
-        root.classList.toggle('exam-dark', dark);
-        writeJson(themeKey, dark ? 'dark' : 'light');
     }
 
     function getReviewed() {
@@ -89,7 +83,9 @@
         } else if (action === 'zoom-out') {
             setScale(readJson(fontKey, 1) - scaleStep);
         } else if (action === 'theme') {
-            setTheme(root.classList.contains('exam-dark') ? 'light' : 'dark');
+            if (themeToggle) {
+                themeToggle.click();
+            }
         } else if (action === 'fullscreen') {
             if (document.fullscreenElement) {
                 document.exitFullscreen();
@@ -110,5 +106,4 @@
     }
 
     setScale(readJson(fontKey, 1));
-    setTheme(readJson(themeKey, 'light'));
 }());

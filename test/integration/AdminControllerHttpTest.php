@@ -184,6 +184,31 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('form_login', $body, 'an authenticated session should not see the login form');
     }
 
+    public function testProtectedAdminPageUsesTheRegularLoginAndReturnsAfterAuthentication(): void
+    {
+        // Stop at the first redirect so the lightweight test client can retain the
+        // session cookie set by the admin endpoint before it opens the public login.
+        [$status, , $cookies] = $this->http('GET', '/admin/code/tce_edit_user.php', [], [], false);
+
+        $this->assertSame(302, $status);
+
+        [$status, $body, $cookies] = $this->http('GET', '/public/code/index.php', $cookies);
+
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString('form_login', $body);
+        $this->assertStringNotContainsString('Панель администратора', $body);
+
+        [$status, $body] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'logaction' => 'login',
+            'xuser_name' => 'admin',
+            'xuser_password' => self::ADMIN_PW,
+        ]);
+
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString('form_usereditor', $body);
+        $this->assertStringNotContainsString('form_login', $body);
+    }
+
     /**
      * The admin controllers converted off the register-globals emulation in Stage 8.2.
      *
@@ -271,6 +296,29 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertSame(0, $this->groupIdByName($name), 'the group should have been deleted via the forcedelete POST');
     }
 
+    /** The group editor must load groups through a bounded search, not all at once. */
+    public function testGroupEditorLoadsGroupsOnlyOnSearch(): void
+    {
+        $cookies = $this->login();
+        $name = 'itest_group_selector';
+        $id = $this->ensureGroup($name);
+        $this->assertGreaterThan(0, $id);
+
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_group.php', $cookies);
+        $this->assertSame(200, $status);
+        $this->assertStringNotContainsString($name . '</option>', $body);
+
+        [$status, $body] = $this->http(
+            'GET',
+            '/admin/code/tce_edit_group.php?group_searchterms=' . urlencode($name),
+            $cookies
+        );
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString($name . '</option>', $body);
+
+        $this->deleteGroupById($id);
+    }
+
     /**
      * Regression test for the Stage 8.2 array bug fix: the `user_groups[]` multi-select was never
      * set by the old register-globals emulation (it skipped arrays via is_string), so group
@@ -312,6 +360,62 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         // Cleanup.
         $this->deleteUserByName($userName);
         $this->deleteGroupById($groupId);
+    }
+
+    /** The editor must not render every account in its user selector. */
+    public function testUserEditorOnlyLoadsTheSelectedUser(): void
+    {
+        $cookies = $this->login();
+        $name = 'itest_user_selector';
+        $this->deleteUserByName($name);
+
+        $hash = password_hash('x', PASSWORD_DEFAULT);
+        $this->dbExec(
+            "INSERT INTO tce_users (user_regdate,user_ip,user_name,user_password,user_level) "
+            . "VALUES ('2020-01-01 00:00:00','1.2.3.4','" . $name . "','" . $hash . "',1)"
+        );
+        $id = $this->userIdByName($name);
+        $this->assertGreaterThan(0, $id);
+
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_user.php', $cookies);
+        $this->assertSame(200, $status);
+        $this->assertStringNotContainsString($name . '</option>', $body);
+
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_user.php?user_id=' . $id, $cookies);
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString($name . '</option>', $body);
+
+        $this->deleteUserByName($name);
+    }
+
+    public function testUserEditorSearchesByLoginNameAndEmail(): void
+    {
+        $cookies = $this->login();
+        $login = 'itest_multi_field_search';
+        $email = 'selector-search@example.test';
+        $firstName = 'UniqueSelectorFirst';
+        $lastName = 'UniqueSelectorLast';
+        $this->deleteUserByName($login);
+
+        $hash = password_hash('x', PASSWORD_DEFAULT);
+        $this->dbExec(
+            "INSERT INTO tce_users (user_regdate,user_ip,user_name,user_email,user_password,"
+            . "user_firstname,user_lastname,user_level) VALUES "
+            . "('2020-01-01 00:00:00','1.2.3.4','" . $login . "','" . $email . "','" . $hash
+            . "','" . $firstName . "','" . $lastName . "',1)"
+        );
+
+        foreach ([$login, $firstName, $lastName, $email] as $term) {
+            [$status, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_edit_user.php?user_searchterms=' . urlencode($term),
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString($login, $body, 'the user should be found by ' . $term);
+        }
+
+        $this->deleteUserByName($login);
     }
 
     /**
