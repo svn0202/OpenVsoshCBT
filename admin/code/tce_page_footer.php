@@ -23,6 +23,7 @@
 echo K_NEWLINE;
 echo '</div>' . K_NEWLINE; //close div.content
 echo '</main>' . K_NEWLINE; //close main.body
+echo '</div>' . K_NEWLINE; //close div.admin-shell
 
 echo '<footer class="footer" role="contentinfo">' . K_NEWLINE;
 include '../../shared/code/tce_page_userbar.php'; // display user bar
