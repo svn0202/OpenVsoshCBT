@@ -1,0 +1,605 @@
+/*
+ * Responsive administration layout inspired by Maman Sulaeman's TMF/TMFCBT
+ * admin area. This file intentionally layers over the upstream TCExam theme so
+ * the application can keep receiving upstream form and accessibility fixes.
+ */
+
+:root {
+    --admin-nav-width: 272px;
+    --admin-nav-bg: #182630;
+    --admin-nav-panel: #22343f;
+    --admin-nav-text: #d9e3e8;
+    --admin-nav-muted: #9fb0b9;
+    --admin-accent: #0879c9;
+    --admin-accent-dark: #075fa0;
+    --admin-border: #dce4ef;
+    --admin-surface: #ffffff;
+    --admin-canvas: #f4f7fb;
+    --admin-text: #172033;
+    --admin-muted: #68758a;
+    --admin-shadow: 0 8px 24px rgba(31, 55, 88, 0.08);
+}
+
+body {
+    min-width: 0;
+    background: var(--admin-canvas);
+}
+
+.admin-shell {
+    display: grid;
+    grid-template-columns: var(--admin-nav-width) minmax(0, 1fr);
+    min-height: calc(100vh - 74px);
+    transition: grid-template-columns 180ms ease;
+}
+
+.admin-shell > main.body {
+    min-width: 0;
+}
+
+/* Sidebar navigation: the central usability feature of the TMF admin area. */
+.admin-shell > .scrollmenu {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    width: auto;
+    height: calc(100vh - 74px);
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 0;
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--admin-nav-bg);
+    box-shadow: 5px 0 18px rgba(20, 39, 51, 0.12);
+    color: var(--admin-nav-text);
+    transition: transform 180ms ease, visibility 180ms ease;
+    z-index: 30;
+}
+
+.admin-nav-heading {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 24px 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.admin-nav-heading img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+    border: 3px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: #fff;
+    object-fit: cover;
+}
+
+.admin-nav-heading span {
+    color: var(--admin-nav-muted);
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.admin-nav-heading strong {
+    margin-top: 4px;
+    color: #fff;
+    font-size: 17px;
+}
+
+.admin-shell .scrollmenu ul,
+.admin-shell .scrollmenu ul.menu {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 3px;
+    width: auto;
+    margin: 0;
+    padding: 14px 10px 20px;
+    list-style: none;
+}
+
+.admin-shell .scrollmenu ul li {
+    float: none;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.admin-shell .scrollmenu ul.menu > li > a,
+.admin-shell .scrollmenu ul.menu > li > span.active {
+    min-height: 42px;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 7px;
+    box-sizing: border-box;
+    color: var(--admin-nav-text);
+}
+
+.admin-shell .scrollmenu ul.menu > li > a:visited {
+    color: var(--admin-nav-text);
+}
+
+.admin-shell .scrollmenu ul.menu > li > a:hover,
+.admin-shell .scrollmenu ul.menu > li > a:focus,
+.admin-shell .scrollmenu ul.menu > li > a.active,
+.admin-shell .scrollmenu ul.menu > li > span.active {
+    background: var(--admin-accent);
+    color: #fff;
+    text-decoration: none;
+}
+
+.admin-shell .scrollmenu ul.menu li > ul {
+    position: static;
+    display: none;
+    width: auto;
+    margin: 5px 0 8px 14px;
+    padding: 6px 0 6px 9px;
+    border: 0;
+    border-inline-start: 3px solid rgba(8, 121, 201, 0.65);
+    border-radius: 0;
+    background: var(--admin-nav-panel);
+    box-shadow: none;
+    visibility: visible;
+}
+
+.admin-shell .scrollmenu ul.menu li > a.active + ul,
+.admin-shell .scrollmenu ul.menu li > span.active + ul,
+.admin-shell .scrollmenu ul.menu li:hover > ul,
+.admin-shell .scrollmenu ul.menu li:focus-within > ul {
+    display: flex;
+}
+
+.admin-shell .scrollmenu ul.menu ul li a,
+.admin-shell .scrollmenu ul.menu ul li span.active {
+    display: block;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--admin-nav-muted);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.admin-shell .scrollmenu ul.menu ul li {
+    background: transparent;
+}
+
+.admin-shell .scrollmenu ul.menu ul li a:visited {
+    color: var(--admin-nav-muted);
+}
+
+.admin-shell .scrollmenu ul.menu ul li a:hover,
+.admin-shell .scrollmenu ul.menu ul li a:focus,
+.admin-shell .scrollmenu ul.menu ul li a.active,
+.admin-shell .scrollmenu ul.menu ul li span.active {
+    background: var(--admin-accent);
+    color: #fff;
+}
+
+.admin-page-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 22px 24px 14px;
+    box-sizing: border-box;
+}
+
+.content > .admin-page-heading h1 {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    color: var(--admin-text);
+    font-size: 28px;
+    line-height: 1.2;
+}
+
+.admin-menu-toggle {
+    position: relative;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid var(--admin-border);
+    border-radius: 9px;
+    background: var(--admin-surface);
+    box-shadow: 0 3px 10px rgba(31, 55, 88, 0.06);
+    cursor: pointer;
+}
+
+.admin-menu-toggle > span[aria-hidden="true"],
+.admin-menu-toggle::before,
+.admin-menu-toggle::after {
+    position: absolute;
+    left: 11px;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--admin-accent-dark);
+    content: '';
+}
+
+.admin-menu-toggle > span[aria-hidden="true"] { top: 19px; }
+.admin-menu-toggle::before { top: 13px; }
+.admin-menu-toggle::after { top: 25px; }
+
+.admin-nav-backdrop {
+    display: none;
+}
+
+html.admin-menu-ready body.admin-nav-collapsed .admin-shell {
+    grid-template-columns: 0 minmax(0, 1fr);
+}
+
+html.admin-menu-ready body.admin-nav-collapsed .admin-shell > .scrollmenu {
+    visibility: hidden;
+    transform: translateX(-100%);
+}
+
+[dir="rtl"] html.admin-menu-ready body.admin-nav-collapsed .admin-shell > .scrollmenu,
+html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scrollmenu {
+    transform: translateX(100%);
+}
+
+/* Spacious card forms, using the existing TCExam row markup. */
+.admin-shell .content {
+    min-width: 0;
+    padding: 0 0 44px;
+}
+
+.admin-shell .content > .container,
+.admin-shell .content > form,
+.admin-shell .content > .contentbox,
+.admin-shell .content > .tceformbox {
+    width: calc(100% - 48px);
+    max-width: 1132px;
+    margin-inline: auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.admin-shell div.tceformbox,
+.admin-shell div.contentbox,
+.admin-shell fieldset.noborder {
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: var(--admin-surface);
+    box-shadow: var(--admin-shadow);
+}
+
+.admin-shell div.tceformbox {
+    padding: 8px;
+}
+
+.admin-shell div.row {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(150px, 28%) minmax(0, 1fr);
+    gap: 16px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e7edf5;
+    text-align: start;
+    box-sizing: border-box;
+}
+
+.admin-shell div.row:nth-child(even) {
+    background: #f8fafc;
+}
+
+.admin-shell div.row:last-child {
+    border-bottom: 0;
+}
+
+.admin-shell div.row > hr,
+.admin-shell div.row > br,
+.admin-shell div.row > fieldset,
+.admin-shell div.row > .spacer {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.admin-shell div.row span.label,
+.admin-shell div.row fieldset span.label {
+    float: none;
+    width: auto;
+    text-align: end;
+}
+
+.admin-shell div.row span.formw,
+.admin-shell div.row div.formw,
+.admin-shell div.row fieldset span.formw {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    float: none;
+    gap: 8px;
+    width: auto;
+    min-width: 0;
+    text-align: start;
+}
+
+.admin-shell input,
+.admin-shell select,
+.admin-shell textarea,
+.admin-shell button {
+    max-width: 100%;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font: inherit;
+}
+
+.admin-shell input[type="text"],
+.admin-shell input[type="search"],
+.admin-shell input[type="email"],
+.admin-shell input[type="password"],
+.admin-shell input[type="number"],
+.admin-shell input[type="date"],
+.admin-shell select,
+.admin-shell textarea {
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #bec9d8;
+    background: #fff;
+    color: var(--admin-text);
+}
+
+.admin-shell span.formw > input[type="text"],
+.admin-shell span.formw > input[type="search"],
+.admin-shell span.formw > input[type="email"],
+.admin-shell span.formw > input[type="password"],
+.admin-shell span.formw > input[type="number"],
+.admin-shell span.formw > input[type="date"],
+.admin-shell span.formw > select,
+.admin-shell span.formw > textarea {
+    flex: 1 1 220px;
+}
+
+.admin-shell input:focus,
+.admin-shell select:focus,
+.admin-shell textarea:focus {
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(8, 121, 201, 0.14);
+    outline: none;
+}
+
+.admin-shell input[type="submit"],
+.admin-shell input[type="button"],
+.admin-shell button.xmlbutton,
+.admin-shell a.xmlbutton {
+    width: auto;
+    min-height: 38px;
+    padding: 8px 15px;
+    border: 1px solid var(--admin-accent-dark);
+    border-radius: 7px;
+    background: var(--admin-accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.admin-shell input:is(#add, #addgroup, #upload, #install) {
+    border-color: #278342;
+    background: #2f9b4f;
+}
+
+.admin-shell input:is(#delete, #forcedelete, #delgroup),
+.admin-shell a.deletebutton {
+    border-color: #b4232c;
+    background: #d9363e;
+    color: #fff;
+}
+
+.admin-shell input:is(#cancel, #clear, #move) {
+    border-color: #b97d00;
+    background: #d9990b;
+    color: #fff;
+}
+
+.admin-shell input[type="submit"]:hover,
+.admin-shell input[type="button"]:hover,
+.admin-shell button.xmlbutton:hover,
+.admin-shell a.xmlbutton:hover {
+    filter: brightness(0.91);
+}
+
+.admin-shell div.pagehelp {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid #9ac5ec;
+    border-radius: 9px;
+    background: #eaf4fd;
+    color: #29445e;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.admin-shell .container {
+    overflow-x: auto;
+}
+
+.admin-shell table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface);
+    box-shadow: 0 4px 14px rgba(31, 55, 88, 0.05);
+}
+
+.admin-shell table th {
+    padding: 10px 12px;
+    border: 1px solid #2d4a5d;
+    background: #263c49;
+    color: #fff;
+    text-align: start;
+}
+
+.admin-shell table td {
+    padding: 9px 12px;
+    border: 1px solid var(--admin-border);
+}
+
+.admin-shell table tr:nth-child(even) td {
+    background: #f8fafc;
+}
+
+.admin-shell .container > ul:not(.menu) {
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: var(--admin-surface);
+    box-shadow: var(--admin-shadow);
+    list-style: none;
+}
+
+.admin-shell .container > ul:not(.menu) li a,
+.admin-shell .container > ul:not(.menu) li span.active {
+    display: block;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e7edf5;
+    color: #174f82;
+    text-decoration: none;
+}
+
+@media (max-width: 900px) {
+    .header .site-brand-section {
+        display: none;
+    }
+
+    .admin-shell {
+        display: block;
+        min-height: calc(100vh - 74px);
+    }
+
+    .admin-shell > .scrollmenu {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    html.admin-menu-ready .admin-shell > .scrollmenu {
+        position: fixed;
+        inset-block: 0;
+        inset-inline-start: 0;
+        width: min(84vw, 288px);
+        height: 100vh;
+        visibility: hidden;
+        transform: translateX(-100%);
+        z-index: 100;
+    }
+
+    html[dir="rtl"].admin-menu-ready .admin-shell > .scrollmenu {
+        transform: translateX(100%);
+    }
+
+    html.admin-menu-ready body.admin-nav-open .admin-shell > .scrollmenu {
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    html.admin-menu-ready body.admin-nav-open {
+        overflow: hidden;
+    }
+
+    html.admin-menu-ready body.admin-nav-open .admin-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: rgba(9, 24, 34, 0.52);
+        z-index: 90;
+    }
+
+    .admin-shell .content > .container,
+    .admin-shell .content > form,
+    .admin-shell .content > .contentbox,
+    .admin-shell .content > .tceformbox {
+        width: calc(100% - 28px);
+    }
+
+    .admin-page-heading {
+        padding: 18px 14px 12px;
+    }
+
+    .content > .admin-page-heading h1 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .header {
+        height: 62px;
+    }
+
+    .header div.left {
+        height: 62px;
+        padding: 8px 12px;
+    }
+
+    .header a.site-brand img {
+        width: min(58vw, 220px);
+        height: 46px;
+    }
+
+    .header div.right {
+        display: none;
+    }
+
+    .header label.timerlabel {
+        display: none;
+    }
+
+    .admin-shell div.row {
+        display: block;
+        padding: 12px;
+    }
+
+    .admin-shell div.row span.label,
+    .admin-shell div.row fieldset span.label {
+        display: block;
+        margin-bottom: 7px;
+        text-align: start;
+    }
+
+    .admin-shell div.row span.formw,
+    .admin-shell div.row div.formw,
+    .admin-shell div.row fieldset span.formw {
+        width: 100%;
+    }
+
+    .admin-shell span.formw > input[type="text"],
+    .admin-shell span.formw > input[type="search"],
+    .admin-shell span.formw > input[type="email"],
+    .admin-shell span.formw > input[type="password"],
+    .admin-shell span.formw > input[type="number"],
+    .admin-shell span.formw > input[type="date"],
+    .admin-shell span.formw > select,
+    .admin-shell span.formw > textarea {
+        flex-basis: 100%;
+        width: 100%;
+    }
+}
+
+@media print {
+    .admin-shell {
+        display: block;
+    }
+
+    .admin-shell > .scrollmenu,
+    .admin-menu-toggle,
+    .admin-nav-backdrop {
+        display: none !important;
+    }
+}

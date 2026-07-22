@@ -102,6 +102,22 @@ if ($stylesheet_path !== false && is_file($stylesheet_path)) {
     $stylesheet_url .= (str_contains($stylesheet_url, '?') ? '&amp;' : '?') . 'v=' . filemtime($stylesheet_path);
 }
 echo '<link rel="stylesheet" href="' . htmlspecialchars($stylesheet_url, ENT_QUOTES, $l['a_meta_charset']) . '" />' . K_NEWLINE;
+$admin_layout_url = '../styles/admin-responsive.css';
+$admin_layout_path = realpath(__DIR__ . '/' . $admin_layout_url);
+if ($admin_layout_path !== false && is_file($admin_layout_path)) {
+    $admin_layout_url .= '?v=' . filemtime($admin_layout_path);
+}
+echo '<link rel="stylesheet" href="'
+    . htmlspecialchars($admin_layout_url, ENT_QUOTES, $l['a_meta_charset'])
+    . '" />' . K_NEWLINE;
+$admin_navigation_url = '../jscripts/admin-navigation.js';
+$admin_navigation_path = realpath(__DIR__ . '/' . $admin_navigation_url);
+if ($admin_navigation_path !== false && is_file($admin_navigation_path)) {
+    $admin_navigation_url .= '?v=' . filemtime($admin_navigation_path);
+}
+echo '<script defer="defer" src="'
+    . htmlspecialchars($admin_navigation_url, ENT_QUOTES, $l['a_meta_charset'])
+    . '"></script>' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;

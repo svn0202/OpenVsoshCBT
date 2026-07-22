@@ -33,6 +33,8 @@ include '../../shared/code/tce_page_timer.php';
 echo '</div>' . K_NEWLINE;
 echo '</header>' . K_NEWLINE;
 
+echo '<div class="admin-shell">' . K_NEWLINE;
+
 // display navigation menu
 echo
     '<nav id="scrollayer" class="scrollmenu" aria-label="'
@@ -40,10 +42,20 @@ echo
         . '">'
         . K_NEWLINE
 ;
+echo '<div class="admin-nav-heading" aria-hidden="true">' . K_NEWLINE;
+echo '<img src="../../images/vsosh-logo.png" alt="" width="64" height="64" />' . K_NEWLINE;
+echo '<span>Управление олимпиадой</span>' . K_NEWLINE;
+echo '<strong>OpenVsoshCBT</strong>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 require_once __DIR__ . '/tce_page_menu.php';
 echo '</nav>' . K_NEWLINE;
+echo '<button type="button" class="admin-nav-backdrop" tabindex="-1" aria-hidden="true"></button>' . K_NEWLINE;
 
 echo '<main id="maincontent" class="body">' . K_NEWLINE;
 
 echo '<div class="content">' . K_NEWLINE;
+echo '<div class="admin-page-heading">' . K_NEWLINE;
+echo '<button type="button" class="admin-menu-toggle" aria-controls="scrollayer" aria-expanded="true">'
+    . '<span aria-hidden="true"></span><span class="sr-only">Показать или скрыть меню</span></button>' . K_NEWLINE;
 echo '<h1>' . htmlspecialchars($thispage_title, ENT_NOQUOTES, $l['a_meta_charset']) . '</h1>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
