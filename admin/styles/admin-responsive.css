@@ -143,11 +143,39 @@ body {
     visibility: visible;
 }
 
-.admin-shell .scrollmenu ul.menu li > a.active + ul,
-.admin-shell .scrollmenu ul.menu li > span.active + ul,
-.admin-shell .scrollmenu ul.menu li:hover > ul,
-.admin-shell .scrollmenu ul.menu li:focus-within > ul {
+.admin-shell .scrollmenu ul.menu li.admin-menu-group-open > ul {
     display: flex;
+}
+
+html:not(.admin-menu-ready) .admin-shell .scrollmenu ul.menu li > a.active + ul,
+html:not(.admin-menu-ready) .admin-shell .scrollmenu ul.menu li > span.active + ul {
+    display: flex;
+}
+
+.admin-shell .scrollmenu ul.menu li.admin-menu-group > a,
+.admin-shell .scrollmenu ul.menu li.admin-menu-group > span.active {
+    position: relative;
+    padding-inline-end: 38px;
+    cursor: pointer;
+}
+
+.admin-shell .scrollmenu ul.menu li.admin-menu-group > a::after,
+.admin-shell .scrollmenu ul.menu li.admin-menu-group > span.active::after {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 15px;
+    width: 8px;
+    height: 8px;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    content: '';
+    transform: translateY(-65%) rotate(45deg);
+    transition: transform 160ms ease;
+}
+
+.admin-shell .scrollmenu ul.menu li.admin-menu-group-open > a::after,
+.admin-shell .scrollmenu ul.menu li.admin-menu-group-open > span.active::after {
+    transform: translateY(-35%) rotate(225deg);
 }
 
 .admin-shell .scrollmenu ul.menu ul li a,
@@ -469,6 +497,161 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
     text-decoration: none;
 }
 
+/* Question bank cards, adapted from the clearer FreeTMF/Maman layout. */
+.admin-shell ul.question.admin-question-list {
+    display: grid;
+    gap: 16px;
+    margin: 18px 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    list-style: none;
+}
+
+.admin-shell ul.question.admin-question-list > li.question-card {
+    display: grid;
+    grid-template-columns: minmax(176px, 22%) minmax(0, 1fr);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: var(--admin-surface);
+    box-shadow: var(--admin-shadow);
+}
+
+.admin-shell .question-card__meta {
+    display: flex;
+    align-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 16px;
+    border-inline-end: 1px solid var(--admin-border);
+    background: #f8fafc;
+}
+
+.admin-shell .question-card__number {
+    flex: 1 1 calc(100% - 34px);
+    color: var(--admin-text);
+    font-size: 18px;
+}
+
+.admin-shell .question-card__meta > input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--admin-accent);
+}
+
+.admin-shell .question-card__meta abbr {
+    min-width: 27px;
+    min-height: 27px;
+    padding: 5px 7px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.admin-shell .question-card__meta abbr.onbox {
+    border-color: #9ac5ec;
+    background: #eaf4fd;
+    color: #075fa0;
+}
+
+.admin-shell .question-card__meta > a.xmlbutton {
+    flex: 1 0 100%;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.admin-shell .question-card__body {
+    min-width: 0;
+    padding: 20px;
+    overflow-x: auto;
+    color: var(--admin-text);
+    line-height: 1.55;
+}
+
+.admin-shell .question-card__description {
+    min-height: 34px;
+    padding: 0;
+    font-size: 16px;
+}
+
+.admin-shell .question-card.is-disabled {
+    border-color: #efb5b9;
+}
+
+.admin-shell .question-card.is-disabled .question-card__meta {
+    background: #fff4f4;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list > li {
+    display: grid;
+    align-items: start;
+    grid-template-columns: auto auto auto auto minmax(0, 1fr);
+    gap: 7px;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid #dce4ef;
+    border-inline-start: 4px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list > li.is-correct {
+    border-color: #a8d8b5;
+    border-inline-start-color: #2f9b4f;
+    background: #f0faf3;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list > li.is-disabled {
+    border-color: #efb5b9;
+    border-inline-start-color: #d9363e;
+    background: #fff4f4;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list .answer-content {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+    padding: 3px 5px;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list > li > .paddingleft {
+    grid-column: 1 / -1;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list a.xmlbutton {
+    grid-column: -2 / -1;
+    grid-row: 1;
+    min-height: 30px;
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.admin-shell .question-card ol.answer.admin-answer-list abbr {
+    margin-top: 3px;
+    text-decoration: none;
+}
+
 @media (max-width: 900px) {
     .header .site-brand-section {
         display: none;
@@ -536,6 +719,21 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
     .content > .admin-page-heading h1 {
         font-size: 24px;
     }
+
+    .admin-shell ul.question.admin-question-list > li.question-card {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-shell .question-card__meta {
+        border-inline-end: 0;
+        border-block-end: 1px solid var(--admin-border);
+    }
+
+    .admin-shell .question-card__meta > a.xmlbutton {
+        flex: 0 0 auto;
+        margin-inline-start: auto;
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 640px) {
@@ -590,6 +788,11 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
         flex-basis: 100%;
         width: 100%;
     }
+
+    .admin-shell .question-card ol.answer.admin-answer-list > li {
+        grid-template-columns: repeat(4, auto) minmax(0, 1fr);
+    }
+
 }
 
 @media print {
