@@ -31,8 +31,10 @@ require_once '../../shared/code/tce_authorization.php';
 require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
+require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 
 $pending_onboarding = F_getPendingOnboardingTests((int) $_SESSION['session_user_id']);
+$site_settings = openvsosh_get_site_settings();
 
 echo '<div class="container">' . K_NEWLINE;
 
@@ -48,8 +50,16 @@ if (!empty($_SESSION['session_test_completion_message'])) {
 }
 
 echo '<div class="catalog-welcome">' . K_NEWLINE;
-echo '<p>' . htmlspecialchars($l['ov_catalog_welcome_title'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
-echo '<div>' . htmlspecialchars($l['ov_catalog_welcome_text'], ENT_QUOTES, $l['a_meta_charset']) . '</div>' . K_NEWLINE;
+echo '<p>' . htmlspecialchars(
+    $site_settings['site_name'] !== '' ? $site_settings['site_name'] : $l['ov_catalog_welcome_title'],
+    ENT_QUOTES,
+    $l['a_meta_charset'],
+) . '</p>' . K_NEWLINE;
+echo '<div>' . nl2br(htmlspecialchars(
+    $site_settings['welcome'] !== '' ? $site_settings['welcome'] : $l['ov_catalog_welcome_text'],
+    ENT_QUOTES,
+    $l['a_meta_charset'],
+)) . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 if (!empty($pending_onboarding)) {

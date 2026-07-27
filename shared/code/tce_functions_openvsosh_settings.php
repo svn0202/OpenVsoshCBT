@@ -216,6 +216,63 @@ function openvsosh_save_setting(string $key, string $value): bool
 }
 
 /**
+ * @return array{site_name:string,site_description:string,site_contact:string,welcome:string,login_instruction:string}
+ */
+function openvsosh_get_site_settings(): array
+{
+    $defaults = [
+        'site_name' => 'OpenVsoshCBT',
+        'site_description' => 'Платформа олимпиадного тестирования',
+        'site_contact' => '',
+        'welcome' => '',
+        'login_instruction' => '',
+    ];
+    foreach ($defaults as $key => $default) {
+        $value = openvsosh_get_setting($key);
+        if ($value !== null) {
+            $defaults[$key] = $value;
+        }
+    }
+    return $defaults;
+}
+
+/**
+ * Validate and save plain-text instance branding.
+ *
+ * @return array{saved:bool,errors:array<int,string>}
+ */
+function openvsosh_save_site_settings(array $input): array
+{
+    $limits = [
+        'site_name' => 120,
+        'site_description' => 500,
+        'site_contact' => 250,
+        'welcome' => 1000,
+        'login_instruction' => 2000,
+    ];
+    $values = [];
+    $errors = [];
+    foreach ($limits as $key => $limit) {
+        $value = trim((string) ($input[$key] ?? ''));
+        if ($key === 'site_name' && $value === '') {
+            $errors[] = 'Название площадки обязательно.';
+        } elseif (mb_strlen($value) > $limit) {
+            $errors[] = 'Поле ' . $key . ' превышает допустимую длину.';
+        }
+        $values[$key] = $value;
+    }
+    if ($errors !== []) {
+        return ['saved' => false, 'errors' => $errors];
+    }
+    foreach ($values as $key => $value) {
+        if (!openvsosh_save_setting($key, $value)) {
+            return ['saved' => false, 'errors' => ['Не удалось сохранить настройки площадки.']];
+        }
+    }
+    return ['saved' => true, 'errors' => []];
+}
+
+/**
  * Return the instance-local key used to authenticate offline packages.
  */
 function openvsosh_get_offline_package_secret(): string

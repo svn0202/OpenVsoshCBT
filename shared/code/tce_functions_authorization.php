@@ -43,18 +43,27 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     require_once '../../shared/config/tce_user_registration.php';
     require_once '../../shared/code/tce_functions_form.php';
     require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+    require_once '../../shared/code/tce_functions_site_assets.php';
     $access_settings = openvsosh_get_access_settings();
+    $site_settings = openvsosh_get_site_settings();
     $str = '<div class="container login-container">' . K_NEWLINE;
     $str .= '<div class="tceformbox login-box">' . K_NEWLINE;
     $str .= '<div class="login-brand">' . K_NEWLINE;
-    $str .= '<img src="../../images/vsosh-logo.png" alt="'
+    $logo_url = openvsosh_site_asset_metadata('logo')
+        ? 'tce_site_asset.php?type=logo'
+        : '../../images/vsosh-logo.png';
+    $str .= '<img src="' . $logo_url . '" alt="'
         . htmlspecialchars($l['ov_rcoko_alt'], ENT_QUOTES, $l['a_meta_charset'])
         . '" width="77" height="77" />' . K_NEWLINE;
-    $str .= '<p>' . htmlspecialchars($l['ov_testing_platform'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+    $str .= '<p>' . htmlspecialchars($site_settings['site_name'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
+    $intro = $site_settings['welcome'] !== '' ? $site_settings['welcome'] : $l['ov_login_intro'];
+    $description = $site_settings['site_description'] !== ''
+        ? $site_settings['site_description']
+        : $l['ov_login_intro_organization'];
     $str .= '<p class="login-intro">'
-        . htmlspecialchars($l['ov_login_intro'], ENT_QUOTES, $l['a_meta_charset']) . '<br />'
-        . '<strong>' . htmlspecialchars($l['ov_login_intro_organization'], ENT_QUOTES, $l['a_meta_charset'])
+        . nl2br(htmlspecialchars($intro, ENT_QUOTES, $l['a_meta_charset'])) . '<br />'
+        . '<strong>' . htmlspecialchars($description, ENT_QUOTES, $l['a_meta_charset'])
         . '</strong></p>' . K_NEWLINE;
     $str .=
         '<form action="'
@@ -155,12 +164,21 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         $str .= '</nav>' . K_NEWLINE;
     }
     $str .= '<div class="login-support">' . K_NEWLINE;
+    if ($site_settings['login_instruction'] !== '') {
+        $str .= '<div class="login-site-instruction">'
+            . nl2br(htmlspecialchars($site_settings['login_instruction'], ENT_QUOTES, $l['a_meta_charset']))
+            . '</div>' . K_NEWLINE;
+    }
     if ($access_settings['access_help'] !== '') {
         $str .= '<div class="login-access-help">'
             . nl2br(htmlspecialchars($access_settings['access_help'], ENT_QUOTES, $l['a_meta_charset']))
             . '</div>' . K_NEWLINE;
     } else {
         $str .= '<p>' . htmlspecialchars($l['ov_login_support'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+    }
+    if ($site_settings['site_contact'] !== '') {
+        $str .= '<p>' . htmlspecialchars($site_settings['site_contact'], ENT_QUOTES, $l['a_meta_charset'])
+            . '</p>' . K_NEWLINE;
     }
     $str .= '<p>' . htmlspecialchars($l['ov_results_site'], ENT_QUOTES, $l['a_meta_charset']) . ': '
         . '<a href="https://vsoshlk.irro.ru">vsoshlk.irro.ru</a></p>' . K_NEWLINE;

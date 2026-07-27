@@ -8,12 +8,14 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
 require_once '../../shared/config/tce_user_registration.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+require_once '../../shared/code/tce_functions_site_assets.php';
 
 $thispage_title = $l['ov_instance_settings'];
 require_once 'tce_page_header.php';
 
 $config = F_getOnboardingConfig();
 $access_config = openvsosh_get_access_settings();
+$site_config = openvsosh_get_site_settings();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
@@ -27,6 +29,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
         F_print_error('MESSAGE', 'Настройки вводных тестов сохранены.');
     } else {
         F_print_error('ERROR', 'Не удалось сохранить настройки. Проверьте права на shared/config.', false);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
+    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+        exit();
+    }
+    $site_result = openvsosh_save_site_settings($_POST);
+    if ($site_result['saved']) {
+        $asset_errors = [];
+        foreach (['logo', 'background'] as $asset_type) {
+            if (isset($_FILES['site_' . $asset_type])) {
+                $asset_result = openvsosh_store_site_asset(
+                    $asset_type,
+                    (array) $_FILES['site_' . $asset_type],
+                );
+                if (!$asset_result['stored']) {
+                    $asset_errors[] = $asset_result['message'];
+                }
+            }
+        }
+        $site_config = openvsosh_get_site_settings();
+        if ($asset_errors === []) {
+            F_print_error('MESSAGE', 'Настройки площадки сохранены.');
+        } else {
+            F_print_error(
+                'WARNING',
+                htmlspecialchars(implode(' ', $asset_errors), ENT_QUOTES, $l['a_meta_charset']),
+            );
+        }
+    } else {
+        F_print_error(
+            'WARNING',
+            htmlspecialchars(implode(' ', $site_result['errors']), ENT_QUOTES, $l['a_meta_charset']),
+        );
     }
 }
 
@@ -84,6 +121,36 @@ echo '<style>
 .onboarding-admin-actions .button{padding:10px 24px;border:0;border-radius:7px;background:#2f6da8;color:#fff;font-weight:700;cursor:pointer}
 @media(max-width:700px){.onboarding-admin .row{grid-template-columns:1fr}.onboarding-admin .form-help{grid-column:1}}
 </style>' . K_NEWLINE;
+echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+    . '" method="post" enctype="multipart/form-data">' . K_NEWLINE;
+echo '<fieldset><legend>Оформление площадки</legend>' . K_NEWLINE;
+$site_fields = [
+    'site_name' => ['Название площадки', 120],
+    'site_description' => ['Краткое описание', 500],
+    'site_contact' => ['Контакт', 250],
+    'welcome' => ['Приветствие участника', 1000],
+    'login_instruction' => ['Дополнительная инструкция входа', 2000],
+];
+foreach ($site_fields as $key => [$label, $limit]) {
+    echo '<div class="row"><label for="' . $key . '">' . $label . '</label>';
+    if ($limit > 250) {
+        echo '<textarea name="' . $key . '" id="' . $key . '" maxlength="' . $limit . '">'
+            . htmlspecialchars($site_config[$key], ENT_QUOTES, $l['a_meta_charset']) . '</textarea>';
+    } else {
+        echo '<input type="text" name="' . $key . '" id="' . $key . '" maxlength="' . $limit
+            . '" value="' . htmlspecialchars($site_config[$key], ENT_QUOTES, $l['a_meta_charset']) . '" />';
+    }
+    echo '</div>' . K_NEWLINE;
+}
+echo '<div class="row"><label for="site_logo">Основной логотип</label>'
+    . '<input type="file" name="site_logo" id="site_logo" accept="image/jpeg,image/png" />'
+    . '<span class="form-help">JPEG/PNG, 32–8192 px, до 5 МБ.</span></div>' . K_NEWLINE;
+echo '<div class="row"><label for="site_background">Фон страницы входа</label>'
+    . '<input type="file" name="site_background" id="site_background" accept="image/jpeg,image/png" />'
+    . '<span class="form-help">JPEG/PNG, 32–8192 px, до 5 МБ.</span></div>' . K_NEWLINE;
+echo '</fieldset><div class="onboarding-admin-actions">'
+    . '<button type="submit" name="save_site" value="1" class="button">Сохранить оформление</button></div>'
+    . F_getCSRFTokenField() . K_NEWLINE . '</form>' . K_NEWLINE;
 echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset><legend>'
     . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])

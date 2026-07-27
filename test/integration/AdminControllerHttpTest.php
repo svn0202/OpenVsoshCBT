@@ -371,8 +371,84 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='access_help'")
             );
 
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+            [$status, $body] = $this->http('POST', '/admin/code/tce_onboarding_settings.php', $cookies, [
+                'save_site' => '1',
+                'site_name' => 'Тестовая олимпиадная площадка',
+                'site_description' => 'Описание <не HTML>',
+                'site_contact' => 'Координатор: +7 000 000-00-00',
+                'welcome' => 'Добро пожаловать!',
+                'login_instruction' => 'Используйте логин из карточки.',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Настройки площадки сохранены', $body);
+            $this->assertSame(
+                'Тестовая олимпиадная площадка',
+                $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='site_name'")
+            );
+
+            $image = file_get_contents(__DIR__ . '/../../images/vsosh-logo.png');
+            $this->assertNotFalse($image);
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+            [$status, $body] = $this->httpUpload(
+                '/admin/code/tce_onboarding_settings.php',
+                $cookies,
+                [
+                    'save_site' => '1',
+                    'site_name' => 'Тестовая олимпиадная площадка',
+                    'site_description' => 'Описание <не HTML>',
+                    'site_contact' => 'Координатор: +7 000 000-00-00',
+                    'welcome' => 'Добро пожаловать!',
+                    'login_instruction' => 'Используйте логин из карточки.',
+                    'csrf_token' => (string) $token,
+                ],
+                'site_logo',
+                'logo.png',
+                $image
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Настройки площадки сохранены', $body);
+            $storedLogo = (string) ($this->dbScalar(
+                "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='site_logo_stored'"
+            ) ?? '');
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $storedLogo);
+            [$directStatus] = $this->http('GET', '/cache/site-assets/' . $storedLogo);
+            $this->assertContains($directStatus, [403, 404]);
+            [$logoStatus, $logo] = $this->http('GET', '/public/code/tce_site_asset.php?type=logo');
+            $this->assertSame(200, $logoStatus);
+            $this->assertSame($image, $logo);
+
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+            [$status, $body] = $this->httpUpload(
+                '/admin/code/tce_onboarding_settings.php',
+                $cookies,
+                [
+                    'save_site' => '1',
+                    'site_name' => 'Тестовая олимпиадная площадка',
+                    'site_description' => 'Описание <не HTML>',
+                    'site_contact' => 'Координатор: +7 000 000-00-00',
+                    'welcome' => 'Добро пожаловать!',
+                    'login_instruction' => 'Используйте логин из карточки.',
+                    'csrf_token' => (string) $token,
+                ],
+                'site_background',
+                'background.png',
+                $image
+            );
+            $this->assertSame(200, $status);
+
             [$status, $body] = $this->http('GET', '/public/code/index.php');
             $this->assertSame(200, $status);
+            $this->assertStringContainsString('--login-background-image', $body);
+            $this->assertStringContainsString('tce_site_asset.php?type=logo', $body);
+            $this->assertStringContainsString('Тестовая олимпиадная площадка', $body);
+            $this->assertStringContainsString('Описание &lt;не HTML&gt;', $body);
+            $this->assertStringContainsString('Используйте логин из карточки.', $body);
+            $this->assertStringContainsString('Координатор: +7 000 000-00-00', $body);
             $this->assertStringContainsString('href="tce_user_registration.php"', $body);
             $this->assertStringNotContainsString('href="tce_password_reset.php"', $body);
             $this->assertStringContainsString(

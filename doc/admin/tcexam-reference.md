@@ -22,6 +22,7 @@
 ## Дополнительные руководства OpenVsoshCBT
 
 - [Развёртывание на РЕД ОС](deployment-redos.md)
+- [Оформление площадки](site-settings.md)
 - [Регламент проведения олимпиады](olympiad-runbook.md)
 - [Обновление](upgrade.md)
 - [Решение проблем](troubleshooting.md)
