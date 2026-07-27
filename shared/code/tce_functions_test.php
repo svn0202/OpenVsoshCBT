@@ -1686,7 +1686,14 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
         return true;
     }
 
-    $randorder = F_getBoolean($testdata['test_random_answers_order']);
+    $question_options_result = F_db_query(
+        'SELECT question_shuffle_answers FROM ' . K_TABLE_QUESTIONS
+        . ' WHERE question_id=' . (int) $question_id . ' LIMIT 1',
+        $db,
+    );
+    $question_options = $question_options_result ? F_db_fetch_array($question_options_result) : false;
+    $randorder = F_getBoolean($testdata['test_random_answers_order'])
+        || F_getBoolean($question_options['question_shuffle_answers'] ?? false);
     $ordmode = (int) $testdata['test_answers_order_mode'];
     // for each question
     if (

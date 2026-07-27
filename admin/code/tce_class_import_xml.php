@@ -175,6 +175,7 @@ class XMLQuestionImporter
                                 $this->level_data['question']['question_fullscreen'] = 'false';
                                 $this->level_data['question']['question_inline_answers'] = 'false';
                                 $this->level_data['question']['question_auto_next'] = 'false';
+                                $this->level_data['question']['question_shuffle_answers'] = 'false';
                                 break;
                             }
                         case 'answer':
@@ -522,7 +523,8 @@ class XMLQuestionImporter
 			question_timer,
 			question_fullscreen,
 			question_inline_answers,
-			question_auto_next
+			question_auto_next,
+			question_shuffle_answers
 			) VALUES (
 			'
             . $this->level_data['subject']['subject_id']
@@ -556,6 +558,9 @@ class XMLQuestionImporter
             . '\',
 			\''
             . $this->boolval[$this->level_data['question']['question_auto_next']]
+            . '\',
+			\''
+            . $this->boolval[$this->level_data['question']['question_shuffle_answers']]
             . '\'
 			)';
         if (!($r = F_db_query($sql, $db))) {

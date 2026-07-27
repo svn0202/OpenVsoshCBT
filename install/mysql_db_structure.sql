@@ -84,6 +84,7 @@ CREATE TABLE tce_questions (
 	question_fullscreen Bool NOT NULL DEFAULT '0',
 	question_inline_answers Bool NOT NULL DEFAULT '0',
 	question_auto_next Bool NOT NULL DEFAULT '0',
+	question_shuffle_answers Bool NOT NULL DEFAULT '0',
  Primary Key (question_id)
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;

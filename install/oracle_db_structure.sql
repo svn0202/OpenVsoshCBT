@@ -85,6 +85,7 @@ CREATE TABLE tce_questions (
 	question_fullscreen NUMBER(1) DEFAULT '0' NOT NULL,
 	question_inline_answers NUMBER(1) DEFAULT '0' NOT NULL,
 	question_auto_next NUMBER(1) DEFAULT '0' NOT NULL,
+	question_shuffle_answers NUMBER(1) DEFAULT '0' NOT NULL,
 constraint PK_tce_questions_question_id primary key (question_id)
 );
 CREATE SEQUENCE tce_questions_seq MINVALUE 1 START WITH 1 INCREMENT BY 1 CACHE 3;

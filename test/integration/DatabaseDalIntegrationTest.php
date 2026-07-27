@@ -218,6 +218,16 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse($res, 'fresh schemas must include versioned answer-save columns');
     }
 
+    public function testPerQuestionShuffleColumnIsAvailable(): void
+    {
+        $res = \F_db_query(
+            'SELECT question_shuffle_answers FROM tce_questions WHERE 1=0',
+            $this->db
+        );
+
+        $this->assertNotFalse($res, 'fresh schemas must include the per-question shuffle flag');
+    }
+
     public function testMonitoringSchemaIsAvailable(): void
     {
         $attempt = \F_db_query(
