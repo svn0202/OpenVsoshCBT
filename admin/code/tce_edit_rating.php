@@ -535,6 +535,23 @@ echo
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
+$fractional_scores = [
+    '3/4' => round($test_score_right * 3 / 4, 3),
+    '1/2' => round($test_score_right / 2, 3),
+    '1/4' => round($test_score_right / 4, 3),
+];
+foreach ($fractional_scores as $fraction_label => $fraction_score) {
+    echo '<div class="row">' . K_NEWLINE;
+    echo '<span class="label">&nbsp;</span>' . K_NEWLINE;
+    echo '<span class="formw">' . K_NEWLINE;
+    echo '<button type="button" class="minibutton quick-essay-score" data-fraction="'
+        . $fraction_label . '" onclick="document.getElementById(\'testlog_score\').value=\''
+        . $fraction_score . '\'" title="Установить ' . $fraction_label . ' максимального балла">'
+        . $fraction_label . ' [' . $fraction_score . ']</button>' . K_NEWLINE;
+    echo '</span>' . K_NEWLINE;
+    echo '</div>' . K_NEWLINE;
+}
+
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">&nbsp;</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;

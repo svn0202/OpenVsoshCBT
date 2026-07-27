@@ -184,6 +184,140 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('form_login', $body, 'an authenticated session should not see the login form');
     }
 
+    public function testEssayRatingOffersFractionalQuickScores(): void
+    {
+        $cookies = $this->login();
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_rating.php', $cookies);
+
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString('data-fraction="3/4"', $body);
+        $this->assertStringContainsString('data-fraction="1/2"', $body);
+        $this->assertStringContainsString('data-fraction="1/4"', $body);
+    }
+
+    public function testRegradeUpdatesObjectiveScoreAndPreservesEssayScore(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_regrade_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time,"
+            . "test_begin_time,test_end_time,test_score_right,test_score_wrong,test_score_unanswered) "
+            . "VALUES ('itest_regrade_test','d'," . $adminId
+            . ",60,'2020-01-01 00:00:00','2035-01-01 00:00:00',4,-1,0)"
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_regrade_test'"
+        ) ?? '0');
+        $this->dbExec("DELETE FROM tce_modules WHERE module_name='itest_regrade_module'");
+        $this->dbExec(
+            "INSERT INTO tce_modules (module_name,module_enabled,module_user_id) "
+            . "VALUES ('itest_regrade_module','1'," . $adminId . ')'
+        );
+        $moduleId = (int) ($this->dbScalar(
+            "SELECT module_id FROM tce_modules WHERE module_name='itest_regrade_module'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_subjects (subject_module_id,subject_name,subject_description,"
+            . "subject_enabled,subject_user_id) VALUES ("
+            . $moduleId . ",'itest_regrade_subject','d','1'," . $adminId . ')'
+        );
+        $subjectId = (int) ($this->dbScalar(
+            "SELECT subject_id FROM tce_subjects WHERE subject_name='itest_regrade_subject'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+            . "question_enabled,question_position,question_difficulty) VALUES ("
+            . $subjectId . ",'Objective',1,'1',1,1)"
+        );
+        $objectiveId = (int) ($this->dbScalar(
+            'SELECT question_id FROM tce_questions WHERE question_subject_id=' . $subjectId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+            . "question_enabled,question_position,question_difficulty) VALUES ("
+            . $subjectId . ",'Essay',3,'1',2,1)"
+        );
+        $essayId = (int) ($this->dbScalar(
+            'SELECT MAX(question_id) FROM tce_questions WHERE question_subject_id=' . $subjectId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_answers (answer_question_id,answer_description,answer_isright,"
+            . "answer_enabled,answer_position) VALUES (" . $objectiveId . ",'Right','1','1',1)"
+        );
+        $answerId = (int) ($this->dbScalar(
+            'SELECT answer_id FROM tce_answers WHERE answer_question_id=' . $objectiveId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
+            . 'testuser_creation_time,testuser_last_activity) VALUES ('
+            . $testId . ',' . $adminId . ',4,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)'
+        );
+        $attemptId = (int) ($this->dbScalar(
+            'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+            . "testlog_creation_time,testlog_order,testlog_answer_text) VALUES ("
+            . $attemptId . ',' . $objectiveId . ",99,CURRENT_TIMESTAMP,1,NULL)"
+        );
+        $objectiveLogId = (int) ($this->dbScalar(
+            'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+            . ' AND testlog_question_id=' . $objectiveId
+        ) ?? '0');
+        $this->dbExec(
+            'INSERT INTO tce_tests_logs_answers (logansw_testlog_id,logansw_answer_id,'
+            . 'logansw_selected,logansw_order) VALUES ('
+            . $objectiveLogId . ',' . $answerId . ',1,1)'
+        );
+        $this->dbExec(
+            "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+            . "testlog_creation_time,testlog_order,testlog_answer_text) VALUES ("
+            . $attemptId . ',' . $essayId . ",2.5,CURRENT_TIMESTAMP,2,'Manual essay')"
+        );
+        $essayLogId = (int) ($this->dbScalar(
+            'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+            . ' AND testlog_question_id=' . $essayId
+        ) ?? '0');
+
+        try {
+            [, $form] = $this->http(
+                'GET',
+                '/admin/code/tce_show_result_allusers.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($form);
+            $this->assertNotNull($token);
+            [$status, $body] = $this->http(
+                'POST',
+                '/admin/code/tce_show_result_allusers.php',
+                $cookies,
+                [
+                    'test_id' => (string) $testId,
+                    'regrade' => '1',
+                    'csrf_token' => (string) $token,
+                ]
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Пересчитано автоматических ответов: 1', $body);
+            $this->assertSame('4.000', $this->dbScalar(
+                'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $objectiveLogId
+            ));
+            $this->assertSame('2.500', $this->dbScalar(
+                'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $essayLogId
+            ));
+        } finally {
+            $this->dbExec('DELETE FROM tce_tests_logs_answers WHERE logansw_testlog_id=' . $objectiveLogId);
+            $this->dbExec('DELETE FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_answers WHERE answer_id=' . $answerId);
+            $this->dbExec('DELETE FROM tce_questions WHERE question_id IN (' . $objectiveId . ',' . $essayId . ')');
+            $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
+            $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+        }
+    }
+
     public function testAccessSettingsControlPublicLinksAndStoreHelpInDatabase(): void
     {
         $cookies = $this->login();
@@ -1094,8 +1228,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_attachment_test'");
         $this->dbExec(
             "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time,"
-            . "test_begin_time,test_end_time) VALUES ('itest_attachment_test','d'," . $adminId
-            . ",60,'2020-01-01 00:00:00','2035-01-01 00:00:00')"
+            . "test_begin_time,test_end_time,test_require_all_answers) VALUES "
+            . "('itest_attachment_test','d'," . $adminId
+            . ",60,'2020-01-01 00:00:00','2035-01-01 00:00:00','1')"
         );
         $testId = (int) ($this->dbScalar(
             "SELECT test_id FROM tce_tests WHERE test_name='itest_attachment_test'"
@@ -1152,6 +1287,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 $cookies
             );
             $this->assertSame(200, $status);
+            $this->assertStringContainsString('id="required-answers-notice"', $page);
+            $this->assertStringContainsString('Пропущены: 1', $page);
+            $this->assertStringNotContainsString('name="terminatetest"', $page);
             $token = self::extractCsrfToken($page);
             $this->assertNotNull($token);
             preg_match('/name="answer_version"[^>]*value="(\\d+)"/', $page, $versionMatch);
@@ -1177,6 +1315,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             );
             $this->assertSame(200, $status);
             $this->assertStringNotContainsString('не был загружен', $body);
+            $this->assertStringContainsString('name="terminatetest"', $body);
             $attachmentId = (int) ($this->dbScalar(
                 'SELECT attachment_id FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId
             ) ?? '0');

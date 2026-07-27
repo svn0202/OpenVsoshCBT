@@ -293,8 +293,21 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             // textarea field for user's comment
             echo '<span class="testcomment">' . F_testComment($test_id) . '</span>' . K_NEWLINE;
 
-            // test termination button
-            F_submit_button('terminatetest', $l['w_terminate_exam'], $l['w_terminate_exam']);
+            // Hide termination while required answers are missing and identify the exact
+            // question numbers, while keeping the server-side completion check authoritative.
+            $completion = F_tmf_test_completion_status($test_id, (int) $_SESSION['session_user_id']);
+            if (!$completion['allowed'] && $completion['reason'] === 'required_answers') {
+                $missing_questions = F_tmf_unanswered_question_numbers(
+                    $test_id,
+                    (int) $_SESSION['session_user_id'],
+                );
+                echo '<p class="warning" id="required-answers-notice" role="status">'
+                    . 'Завершение появится после ответа на обязательные вопросы. Пропущены: '
+                    . htmlspecialchars(implode(', ', $missing_questions), ENT_QUOTES, $l['a_meta_charset'])
+                    . '.</p>' . K_NEWLINE;
+            } else {
+                F_submit_button('terminatetest', $l['w_terminate_exam'], $l['w_terminate_exam']);
+            }
 
             echo K_NEWLINE;
             echo '</div>' . K_NEWLINE;
