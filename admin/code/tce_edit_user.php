@@ -36,6 +36,8 @@ $user_lastname = $_POST['user_lastname'] ?? '';
 $user_birthdate = $_POST['user_birthdate'] ?? '';
 $user_birthplace = $_POST['user_birthplace'] ?? '';
 $user_ssn = $_POST['user_ssn'] ?? '';
+$user_note = mb_substr(trim((string) ($_POST['user_note'] ?? '')), 0, 5000);
+$user_schedule = mb_substr(trim((string) ($_POST['user_schedule'] ?? '')), 0, 5000);
 // round-tripped hidden fields preserved on UPDATE (overwritten internally in the add branch)
 $user_ip = $_POST['user_ip'] ?? '';
 $user_regdate = $_POST['user_regdate'] ?? '';
@@ -50,6 +52,7 @@ require_once '../code/tce_page_header.php';
 
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_otp.php';
+require_once '../../shared/code/tce_functions_user_photo.php';
 require_once 'tce_functions_user_select.php';
 
 if (isset($_REQUEST['user_id'])) {
@@ -141,6 +144,7 @@ switch ($menu_mode) { // process submitted data
                     if (!($r = F_db_query($sql, $db))) {
                         F_display_db_error(false);
                     } else {
+                        @unlink(F_tmf_user_photo_path((int) $user_id));
                         $user_id = false;
                         F_print_error('MESSAGE', '[' . stripslashes($user_name) . '] ' . $l['m_user_deleted']);
                     }
@@ -261,6 +265,12 @@ switch ($menu_mode) { // process submitted data
                     . ',
 				user_ssn='
                     . F_empty_to_null($user_ssn)
+                    . ',
+				user_note='
+                    . F_empty_to_null($user_note)
+                    . ',
+				user_schedule='
+                    . F_empty_to_null($user_schedule)
                     . ',
 				user_level=\''
                     . $user_level
@@ -400,6 +410,8 @@ switch ($menu_mode) { // process submitted data
 				user_birthdate,
 				user_birthplace,
 				user_ssn,
+				user_note,
+				user_schedule,
 				user_level,
 				user_otpkey
 				) VALUES (
@@ -435,6 +447,12 @@ switch ($menu_mode) { // process submitted data
                     . ',
 				'
                     . F_empty_to_null($user_ssn)
+                    . ',
+				'
+                    . F_empty_to_null($user_note)
+                    . ',
+				'
+                    . F_empty_to_null($user_schedule)
                     . ',
 				\''
                     . $user_level
@@ -492,6 +510,8 @@ switch ($menu_mode) { // process submitted data
             $user_birthdate = '';
             $user_birthplace = '';
             $user_ssn = '';
+            $user_note = '';
+            $user_schedule = '';
             $user_level = '';
             $user_otpkey = '';
             break;
@@ -518,6 +538,8 @@ if ($formstatus && $menu_mode != 'clear') {
         $user_birthdate = '';
         $user_birthplace = '';
         $user_ssn = '';
+        $user_note = '';
+        $user_schedule = '';
         $user_level = '';
         $user_otpkey = '';
     } else {
@@ -536,6 +558,8 @@ if ($formstatus && $menu_mode != 'clear') {
                 $user_birthdate = substr($m['user_birthdate'] ?? '', 0, 10);
                 $user_birthplace = $m['user_birthplace'] ?? '';
                 $user_ssn = $m['user_ssn'] ?? '';
+                $user_note = $m['user_note'] ?? '';
+                $user_schedule = $m['user_schedule'] ?? '';
                 $user_level = $m['user_level'] ?? '';
                 $user_otpkey = $m['user_otpkey'] ?? '';
             } else {
@@ -550,6 +574,8 @@ if ($formstatus && $menu_mode != 'clear') {
                 $user_birthdate = '';
                 $user_birthplace = '';
                 $user_ssn = '';
+                $user_note = '';
+                $user_schedule = '';
                 $user_level = '';
                 $user_otpkey = '';
             }
@@ -557,6 +583,16 @@ if ($formstatus && $menu_mode != 'clear') {
             F_display_db_error();
         }
     }
+}
+
+if (
+    in_array($menu_mode, ['add', 'update'], true)
+    && !empty($user_id)
+    && isset($_FILES['user_photo'])
+    && (int) ($_FILES['user_photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE
+) {
+    $photo_result = F_tmf_user_photo_store($_FILES['user_photo'], (int) $user_id);
+    F_print_error($photo_result['status'] === 'stored' ? 'MESSAGE' : 'WARNING', $photo_result['message']);
 }
 
 echo '<div class="container">' . K_NEWLINE;
@@ -834,6 +870,20 @@ echo
         false,
     )
 ;
+echo '<div class="row"><span class="label"><label for="user_photo">Фотография</label></span>'
+    . '<span class="formw">';
+if ($user_id > 0 && is_file(F_tmf_user_photo_path((int) $user_id))) {
+    echo '<img class="participant-photo-preview" src="../../public/code/tce_user_photo.php?id='
+        . (int) $user_id . '" alt="Фотография участника" />';
+}
+echo '<input type="file" name="user_photo" id="user_photo" accept="image/jpeg,image/png" />'
+    . '<small>JPEG или PNG, до 5 МБ. Файл будет безопасно перекодирован.</small></span></div>';
+echo '<div class="row"><span class="label"><label for="user_note">Заметка</label></span>'
+    . '<span class="formw"><textarea name="user_note" id="user_note" rows="4" maxlength="5000">'
+    . htmlspecialchars((string) $user_note, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
+echo '<div class="row"><span class="label"><label for="user_schedule">Расписание</label></span>'
+    . '<span class="formw"><textarea name="user_schedule" id="user_schedule" rows="4" maxlength="5000">'
+    . htmlspecialchars((string) $user_schedule, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
