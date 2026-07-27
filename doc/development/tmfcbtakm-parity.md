@@ -16,9 +16,9 @@
 | Условия доступа и завершения | реализовано | prerequisites, минимум времени, обязательные ответы и порог |
 | Наблюдение | реализовано | статусы, блокировка, разблокировка, продление, безопасный сброс и аудит |
 | Роли 1–10 | реализовано без уровня «родитель» | уровень 4 не добавляется без отдельной модели согласий и видимости данных |
-| LiveScore и мобильный UI | реализовано | Chromium, Firefox и WebKit 390 × 844, Safari, iPhone 16e Simulator и iPad (A16) Simulator приняты; физические устройства и Android WebView остаются обязательными |
-| Арабский текст | реализовано | встроен Noto Sans Arabic WOFF2, точный DOCX round-trip и RTL в Chromium, Firefox, WebKit и симуляторах iPhone/iPad приняты; нужны целевые Linux/Android |
-| Аудио | реализовано | лимит принят с reload в Chromium, Firefox, WebKit, Safari и iPhone Simulator; нужны Android WebView и аппаратный звук |
+| LiveScore и мобильный UI | реализовано | Chromium, Firefox и WebKit 390 × 844, Safari, iPhone/iPad Simulator и физический iPhone 15 Pro Max приняты; Android-устройства и Android WebView остаются обязательными |
+| Арабский текст | реализовано | встроен Noto Sans Arabic WOFF2, точный DOCX round-trip и RTL в Chromium, Firefox, WebKit, симуляторах iPhone/iPad и на физическом iPhone 15 Pro Max приняты; нужны целевые Linux/Android |
+| Аудио | реализовано | лимит принят с reload в Chromium, Firefox, WebKit, Safari, iPhone Simulator и на физическом iPhone 15 Pro Max; нужны Android WebView и аппаратный звук |
 | Чат | не включён | отдельный продукт с модерацией, хранением, приватностью и нагрузочным профилем |
 | Anti-tab и User-Agent/Exambro | намеренно не включены | дают ложные блокировки и не являются границей безопасности |
 | Предварительная генерация | реализовано, локальная приёмка пройдена | сравнительный профиль партии из 25 участников пройден; нужна нагрузка фактической площадки |
