@@ -119,6 +119,10 @@ if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php
 }
 
 $body_attributes = ' class="' . implode(' ', $body_classes) . '"';
+require_once '../../shared/code/tce_functions_site_assets.php';
+if ($is_login_page && openvsosh_site_asset_metadata('background')) {
+    $body_attributes .= ' style="--login-background-image:url(&quot;tce_site_asset.php?type=background&quot;)"';
+}
 $shell_translations = [
     'open-menu' => $l['ov_open_menu'],
     'close-menu' => $l['ov_close_menu'],

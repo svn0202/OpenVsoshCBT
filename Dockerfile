@@ -36,14 +36,6 @@ RUN install-php-extensions \
         zip \
         opcache
 
-# Production-leaning php.ini defaults (expose_php Off, error logging, upload/memory headroom).
-COPY docker/tcexam-php.ini /usr/local/etc/php/conf.d/tcexam.ini
-
-# --- Apache -----------------------------------------------------------------------------------
-RUN a2enmod rewrite headers
-COPY docker/tcexam-apache.conf /etc/apache2/conf-available/tcexam.conf
-RUN a2enconf tcexam
-
 # --- Composer ---------------------------------------------------------------------------------
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
@@ -59,6 +51,16 @@ RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction --pr
     && cd vendor/tecnickcom/tc-lib-pdf-font \
     && make fonts \
     && composer clear-cache
+
+# Runtime configuration is deliberately copied after the dependency/font layer. Routine Apache or
+# PHP configuration changes should not force the expensive PDF-font download and rebuild.
+# Production-leaning php.ini defaults (expose_php Off, error logging, upload/memory headroom).
+COPY docker/tcexam-php.ini /usr/local/etc/php/conf.d/tcexam.ini
+
+# --- Apache -----------------------------------------------------------------------------------
+RUN a2enmod rewrite headers
+COPY docker/tcexam-apache.conf /etc/apache2/conf-available/tcexam.conf
+RUN a2enconf tcexam
 
 # --- Application --------------------------------------------------------------------------------
 COPY . .
