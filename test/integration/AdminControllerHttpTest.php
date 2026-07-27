@@ -184,6 +184,23 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('form_login', $body, 'an authenticated session should not see the login form');
     }
 
+    public function testPublicPwaManifestAndWorkerExcludePrivateResponses(): void
+    {
+        [$manifestStatus, $manifest] = $this->http('GET', '/public/manifest.webmanifest');
+        $this->assertSame(200, $manifestStatus);
+        $decoded = json_decode($manifest, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame('standalone', $decoded['display']);
+        $this->assertSame('./code/', $decoded['start_url']);
+
+        [$workerStatus, $worker] = $this->http('GET', '/public/sw.js');
+        $this->assertSame(200, $workerStatus);
+        $this->assertStringContainsString("PUBLIC_SCOPE + 'code/'", $worker);
+        $this->assertStringContainsString("APP_ROOT + 'admin/'", $worker);
+        $this->assertStringContainsString("APP_ROOT + 'cache/'", $worker);
+        $this->assertStringContainsString("url.search !== ''", $worker);
+        $this->assertStringContainsString("fetch(request, {cache: 'no-store'})", $worker);
+    }
+
     public function testEssayRatingOffersFractionalQuickScores(): void
     {
         $cookies = $this->login();
