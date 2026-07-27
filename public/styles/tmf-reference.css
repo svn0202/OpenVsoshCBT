@@ -2103,6 +2103,18 @@ body.app-page .monitor-summary a {
     text-decoration: none;
 }
 
+body.app-page .monitor-summary > span {
+    display: grid;
+    gap: .2rem;
+    padding: .85rem;
+    border: 1px solid var(--tmf-border, #d5dbe3);
+    border-radius: .6rem;
+}
+
+body.app-page .monitor-summary > span strong {
+    font-size: 1.45rem;
+}
+
 body.app-page .monitor-summary strong {
     font-size: 1.45rem;
 }

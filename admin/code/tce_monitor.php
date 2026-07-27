@@ -93,7 +93,8 @@ if ($test_id > 0) {
     }
 
     $attempt_sql = 'SELECT testuser_id, testuser_user_id, testuser_status,
-            testuser_creation_time, testuser_last_activity, testuser_close_reason
+            testuser_creation_time, testuser_last_activity, testuser_close_reason,
+            testuser_pregenerated
         FROM ' . K_TABLE_TEST_USER . '
         WHERE testuser_test_id=' . $test_id . '
         ORDER BY testuser_user_id, testuser_status, testuser_id DESC';
@@ -135,16 +136,18 @@ if ($test_id > 0) {
             $participant['questions_answered'] = (int) $log['questions_answered'];
             $participant['answer_saved_at'] = $log['answer_saved_at'];
         }
-        $participant['status'] = F_tmf_monitor_status(
-            $attempt === null ? null : (int) $attempt['testuser_status'],
-            $attempt === null || $attempt['testuser_close_reason'] === null
-                ? null
-                : (string) $attempt['testuser_close_reason'],
-            $attempt === null || $attempt['testuser_last_activity'] === null
-                ? null
-                : (string) $attempt['testuser_last_activity'],
-            time(),
-        );
+        $participant['status'] = $attempt !== null && F_getBoolean($attempt['testuser_pregenerated'])
+            ? 'not_started'
+            : F_tmf_monitor_status(
+                $attempt === null ? null : (int) $attempt['testuser_status'],
+                $attempt === null || $attempt['testuser_close_reason'] === null
+                    ? null
+                    : (string) $attempt['testuser_close_reason'],
+                $attempt === null || $attempt['testuser_last_activity'] === null
+                    ? null
+                    : (string) $attempt['testuser_last_activity'],
+                time(),
+            );
         $participant['remaining_seconds'] = null;
         if (
             $attempt !== null

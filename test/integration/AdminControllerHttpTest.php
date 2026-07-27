@@ -272,6 +272,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_edit_backup.php', 'tce_edit_user.php', 'tce_edit_test.php', 'tce_edit_rating.php',
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
+            'tce_pregenerate.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -759,6 +760,96 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             );
         } finally {
             $this->dbExec('DELETE FROM tce_monitor_audit WHERE monitor_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_testgroups WHERE tstgrp_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+            $this->dbExec(
+                'DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+                . ' AND usrgrp_group_id=' . $groupId
+            );
+            $this->deleteGroupById($groupId);
+        }
+    }
+
+    public function testPregenerationCreatesAndInvalidatesUnopenedVariant(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $groupId = $this->ensureGroup('itest_pregen_group');
+        if (!$this->userInGroup($adminId, $groupId)) {
+            $this->dbExec(
+                'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                . $adminId . ',' . $groupId . ')'
+            );
+        }
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_pregen_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time) "
+            . "VALUES ('itest_pregen_test','before'," . $adminId . ',60)'
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_pregen_test'"
+        ) ?? '0');
+        $this->dbExec(
+            'INSERT INTO tce_testgroups (tstgrp_test_id,tstgrp_group_id) VALUES ('
+            . $testId . ',' . $groupId . ')'
+        );
+
+        try {
+            [, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_pregenerate.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+            [$status] = $this->http('POST', '/admin/code/tce_pregenerate.php', $cookies, [
+                'test_id' => (string) $testId,
+                'pregenerate' => '1',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $firstId = (int) ($this->dbScalar(
+                'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+                . " AND testuser_pregenerated='1'"
+            ) ?? '0');
+            $firstHash = $this->dbScalar(
+                'SELECT testuser_generation_hash FROM tce_tests_users WHERE testuser_id=' . $firstId
+            );
+            $this->assertGreaterThan(0, $firstId);
+            $this->assertSame(64, strlen((string) $firstHash));
+
+            $this->dbExec(
+                "UPDATE tce_tests SET test_description='after' WHERE test_id=" . $testId
+            );
+            [, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_pregenerate.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($body) ?? '';
+            [$status] = $this->http('POST', '/admin/code/tce_pregenerate.php', $cookies, [
+                'test_id' => (string) $testId,
+                'pregenerate' => '1',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $secondId = (int) ($this->dbScalar(
+                'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+                . " AND testuser_pregenerated='1'"
+            ) ?? '0');
+            $secondHash = $this->dbScalar(
+                'SELECT testuser_generation_hash FROM tce_tests_users WHERE testuser_id=' . $secondId
+            );
+            $this->assertNotSame($firstId, $secondId);
+            $this->assertNotSame($firstHash, $secondHash);
+            $this->assertSame(
+                '0',
+                $this->dbScalar(
+                    'SELECT COUNT(*) FROM tce_tests_users WHERE testuser_id=' . $firstId
+                )
+            );
+        } finally {
             $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_test_id=' . $testId);
             $this->dbExec('DELETE FROM tce_testgroups WHERE tstgrp_test_id=' . $testId);
             $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);

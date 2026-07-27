@@ -70,6 +70,17 @@
 попытки и отдельный журнал действий наблюдателя. Подробности:
 [Наблюдение за тестированием](monitoring.md).
 
+### Миграция предварительной генерации
+
+Для пакетной подготовки вариантов примените:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_pregeneration.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_pregeneration.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_pregeneration.sql`.
+
+Миграция добавляет признак предварительной генерации и отпечаток исходных
+данных. Подробности: [Предварительная генерация вариантов](pregeneration.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh

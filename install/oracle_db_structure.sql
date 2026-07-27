@@ -155,11 +155,14 @@ CREATE TABLE tce_tests_users (
 	testuser_creation_time DATE NOT NULL,
 	testuser_last_activity DATE,
 	testuser_close_reason VARCHAR2(16),
+	testuser_generation_hash CHAR(64),
+	testuser_pregenerated NUMBER(1) DEFAULT '0' NOT NULL,
 	testuser_comment NCLOB,
 constraint pk_tce_tests_users primary key (testuser_id)
 );
 CREATE SEQUENCE tce_tests_users_seq MINVALUE 1 START WITH 1 INCREMENT BY 1 CACHE 3;
 CREATE OR REPLACE TRIGGER tce_tests_users_trigger BEFORE INSERT ON tce_tests_users FOR EACH ROW BEGIN SELECT tce_tests_users_seq.nextval INTO :new.testuser_id FROM DUAL; END;;
+CREATE INDEX idx_testuser_pregenerated ON tce_tests_users (testuser_test_id,testuser_pregenerated,testuser_status);
 
 CREATE TABLE tce_monitor_audit (
 	monitor_audit_id NUMBER(19,0) NOT NULL,

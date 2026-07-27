@@ -79,6 +79,9 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 Для панели наблюдения, heartbeat и журнала операторских действий дополнительно
 примените `install/upgrade/<СУБД>/openvsosh_monitoring.sql`.
 
+Для предварительной пакетной генерации вариантов дополнительно примените
+`install/upgrade/<СУБД>/openvsosh_pregeneration.sql`.
+
 Миграции применяются по порядку и только один раз. Перед ними создайте дамп,
 а после проверьте вход администратора, сохранение настроек и страницу входа.
 Полный безопасный порядок обновления описан в
@@ -94,6 +97,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Импорт вопросов из Microsoft Word](doc/admin/word-import.md)
 - [Надёжное сохранение ответов](doc/admin/answer-saving.md)
 - [Наблюдение за тестированием](doc/admin/monitoring.md)
+- [Предварительная генерация вариантов](doc/admin/pregeneration.md)
 - [Безопасное обновление](doc/admin/upgrade.md)
 - [Решение известных проблем](doc/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)

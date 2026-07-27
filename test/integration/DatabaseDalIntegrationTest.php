@@ -221,7 +221,8 @@ final class DatabaseDalIntegrationTest extends TestCase
     public function testMonitoringSchemaIsAvailable(): void
     {
         $attempt = \F_db_query(
-            'SELECT testuser_last_activity, testuser_close_reason FROM tce_tests_users WHERE 1=0',
+            'SELECT testuser_last_activity, testuser_close_reason, testuser_generation_hash, '
+            . 'testuser_pregenerated FROM tce_tests_users WHERE 1=0',
             $this->db
         );
         $answer = \F_db_query(

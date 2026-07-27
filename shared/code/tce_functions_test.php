@@ -28,6 +28,7 @@
 require_once __DIR__ . '/tce_functions_tmf_question.php';
 require_once __DIR__ . '/tce_functions_answer_save.php';
 require_once __DIR__ . '/tce_functions_monitoring.php';
+require_once __DIR__ . '/tce_functions_pregeneration.php';
 
 function F_getUserTests()
 {
@@ -884,6 +885,13 @@ function F_executeTest($test_id)
             ($m = F_db_fetch_array($r))
             && F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
         ) {
+            $pregeneration = F_tmf_pregeneration_activate(
+                $test_id,
+                (int) $_SESSION['session_user_id'],
+            );
+            if ($pregeneration === 'invalidated') {
+                return F_createTest($test_id, (int) $_SESSION['session_user_id']);
+            }
             // the user's IP is valid, check test status
             [$test_status, $testuser_id] = F_checkTestStatus(
                 $_SESSION['session_user_id'],
