@@ -33,6 +33,7 @@ require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once '../../shared/code/tce_functions_statistics.php';
+require_once '../../shared/code/tce_functions_regrade.php';
 require_once 'tce_functions_user_select.php';
 
 // comma separated list of required fields
@@ -118,6 +119,13 @@ if (isset($_POST['lock'])) {
     $menu_mode = 'unlock';
 } elseif (isset($_POST['extendtime'])) {
     $menu_mode = 'extendtime';
+} elseif (isset($_POST['regrade']) && $test_id > 0) {
+    try {
+        $regraded = F_tmf_regrade_test($test_id);
+        F_print_error('MESSAGE', 'Пересчитано автоматических ответов: ' . $regraded . '. Оценки эссе сохранены.');
+    } catch (Throwable $exception) {
+        F_print_error('ERROR', htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']));
+    }
 }
 
 if (
@@ -470,6 +478,10 @@ echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">&nbsp;</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<input type="submit" name="selectcategory" id="selectcategory" value="' . $l['w_select'] . '" />' . K_NEWLINE;
+if ($test_id > 0) {
+    echo '<input type="submit" name="regrade" id="regrade" value="Пересчитать автоматические ответы" '
+        . 'title="Повторно вычислить баллы по текущим ключам, не изменяя оценки эссе" />' . K_NEWLINE;
+}
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

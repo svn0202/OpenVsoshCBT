@@ -189,3 +189,29 @@ function F_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
     }
     return ['allowed' => true, 'reason' => 'allowed', 'details' => null];
 }
+
+/**
+ * Return one-based question numbers that still have no submitted answer.
+ *
+ * @return array<int,int>
+ */
+function F_tmf_unanswered_question_numbers(int $test_id, int $user_id): array
+{
+    global $db;
+    $result = F_db_query(
+        'SELECT tl.testlog_change_time FROM ' . K_TABLE_TESTS_LOGS . ' tl'
+        . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
+        . ' WHERE tu.testuser_test_id=' . $test_id . ' AND tu.testuser_user_id=' . $user_id
+        . ' AND tu.testuser_status<4 ORDER BY tl.testlog_id',
+        $db,
+    );
+    $missing = [];
+    $number = 0;
+    while ($result && ($row = F_db_fetch_array($result))) {
+        ++$number;
+        if ($row['testlog_change_time'] === null || $row['testlog_change_time'] === '') {
+            $missing[] = $number;
+        }
+    }
+    return $missing;
+}
