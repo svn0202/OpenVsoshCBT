@@ -241,6 +241,14 @@ $menu['tce_menu_modules.php']['sub'] = [
 ];
 
 $menu['tce_menu_tests.php']['sub'] = [
+    'tce_test_access_rules.php' => [
+        'link' => 'tce_test_access_rules.php',
+        'title' => 'Условия доступа и завершения теста',
+        'name' => 'Условия доступа',
+        'level' => K_AUTH_ADMIN_TESTS,
+        'key' => '',
+        'enabled' => true,
+    ],
     'tce_monitor.php' => [
         'link' => 'tce_monitor.php',
         'title' => 'Наблюдение за тестированием',

@@ -36,6 +36,17 @@ $pending_onboarding = F_getPendingOnboardingTests((int) $_SESSION['session_user_
 
 echo '<div class="container">' . K_NEWLINE;
 
+if (!empty($_SESSION['session_test_completion_message'])) {
+    echo '<div class="tcecontentbox" role="status">'
+        . nl2br(htmlspecialchars(
+            (string) $_SESSION['session_test_completion_message'],
+            ENT_QUOTES,
+            $l['a_meta_charset'],
+        ))
+        . '</div>' . K_NEWLINE;
+    unset($_SESSION['session_test_completion_message']);
+}
+
 echo '<div class="catalog-welcome">' . K_NEWLINE;
 echo '<p>' . htmlspecialchars($l['ov_catalog_welcome_title'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
 echo '<div>' . htmlspecialchars($l['ov_catalog_welcome_text'], ENT_QUOTES, $l['a_meta_charset']) . '</div>' . K_NEWLINE;

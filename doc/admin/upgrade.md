@@ -93,6 +93,17 @@
 поэтому резервная копия должна включать всю БД. Подробности:
 [Автономное электронное проведение](offline-exams.md).
 
+### Условия доступа и завершения
+
+Для prerequisites, минимального времени, обязательных ответов, управления
+навигацией и сообщения после завершения примените:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_test_access.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_test_access.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_test_access.sql`.
+
+Подробности: [Условия доступа и безопасного завершения](test-access.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh

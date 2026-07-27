@@ -125,6 +125,15 @@ CREATE TABLE "tce_tests" (
 	"test_mcma_partial_score" Boolean NOT NULL Default '1',
 	"test_logout_on_timeout" Boolean NOT NULL Default '0',
 	"test_password" Varchar(255),
+	"test_required_finished_id" Bigint,
+	"test_required_passed_id" Bigint,
+	"test_minimum_duration_time" Smallint NOT NULL Default 0,
+	"test_require_all_answers" Boolean NOT NULL Default '0',
+	"test_block_finish_below_threshold" Boolean NOT NULL Default '0',
+	"test_disable_previous" Boolean NOT NULL Default '0',
+	"test_disable_next" Boolean NOT NULL Default '0',
+	"test_hide_editor" Boolean NOT NULL Default '0',
+	"test_completion_message" Text,
 constraint "PK_tce_tests_test_id" primary key ("test_id")
 ) Without Oids;
 

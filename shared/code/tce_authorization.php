@@ -561,6 +561,7 @@ if (
         $_SESSION['session_test_login'] = getPasswordHash(
             $tph . $_POST['testid'] . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],
         );
+        F_tmf_test_session_unlock((int) $_POST['testid']);
     } else {
         F_print_error('WARNING', $l['m_wrong_test_password']);
     }

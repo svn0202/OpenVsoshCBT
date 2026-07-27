@@ -49,6 +49,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     $tph = F_getTestPassword($test_id);
     if (
         !empty($tph)
+        && !F_tmf_test_session_is_unlocked($test_id)
         && !checkPassword(
             $tph . $test_id . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],
             $_SESSION['session_test_login'],
@@ -67,6 +68,13 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     }
 
     if (F_executeTest($test_id)) {
+        $execution_rules = F_getTestData($test_id);
+        if (F_getBoolean($execution_rules['test_disable_previous'] ?? false)) {
+            unset($_REQUEST['prevquestion'], $_POST['prevquestion']);
+        }
+        if (F_getBoolean($execution_rules['test_disable_next'] ?? false)) {
+            unset($_REQUEST['nextquestion'], $_POST['nextquestion']);
+        }
         if (!empty($_REQUEST['testlogid'])) {
             $testlog_id = (int) $_REQUEST['testlogid'];
         }
@@ -105,24 +113,43 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 }
             }
 
-            // terminate the test (lock the test to status=4)
-            F_terminateUserTest($test_id);
-            // redirect the user to the index page
-            header('Location: index.php');
-            echo '<!DOCTYPE html>' . K_NEWLINE;
-            echo '<html lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
-            echo '<head>' . K_NEWLINE;
-            echo '<meta charset="' . $l['a_meta_charset'] . '" />' . K_NEWLINE;
-            echo '<title>' . htmlspecialchars($l['w_index'], ENT_COMPAT, $l['a_meta_charset']) . '</title>' . K_NEWLINE;
-            echo '<meta http-equiv="refresh" content="0;url=index.php" />' . K_NEWLINE; //reload page
-            echo '</head>' . K_NEWLINE;
-            echo '<body>' . K_NEWLINE;
-            echo '<main id="maincontent">' . K_NEWLINE;
-            echo '<a href="index.php">' . $l['w_index'] . '...</a>' . K_NEWLINE;
-            echo '</main>' . K_NEWLINE;
-            echo '</body>' . K_NEWLINE;
-            echo '</html>' . K_NEWLINE;
-            exit();
+            $completion = $_REQUEST['forceterminate'] === 'lasttimedquestion'
+                ? ['allowed' => true, 'reason' => 'timeout', 'details' => null]
+                : F_tmf_test_completion_status($test_id, (int) $_SESSION['session_user_id']);
+            if (!$completion['allowed']) {
+                $labels = [
+                    'minimum_duration' => 'Завершение пока недоступно. Осталось секунд: ',
+                    'required_answers' => 'Ответьте на все обязательные вопросы. Пропущено: ',
+                    'score_threshold' => 'Для завершения требуется проходной балл: ',
+                ];
+                $answer_save_error = ($labels[$completion['reason']] ?? 'Завершение пока недоступно.')
+                    . ($completion['details'] ?? '');
+                $_REQUEST['forceterminate'] = '';
+            } else {
+                // terminate the test (lock the test to status=4)
+                $completion_message = trim((string) ($execution_rules['test_completion_message'] ?? ''));
+                if ($completion_message !== '') {
+                    $_SESSION['session_test_completion_message'] = $completion_message;
+                }
+                F_terminateUserTest($test_id);
+                // redirect the user to the index page
+                header('Location: index.php');
+                echo '<!DOCTYPE html>' . K_NEWLINE;
+                echo '<html lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
+                echo '<head>' . K_NEWLINE;
+                echo '<meta charset="' . $l['a_meta_charset'] . '" />' . K_NEWLINE;
+                echo '<title>' . htmlspecialchars($l['w_index'], ENT_COMPAT, $l['a_meta_charset']) . '</title>'
+                    . K_NEWLINE;
+                echo '<meta http-equiv="refresh" content="0;url=index.php" />' . K_NEWLINE; //reload page
+                echo '</head>' . K_NEWLINE;
+                echo '<body>' . K_NEWLINE;
+                echo '<main id="maincontent">' . K_NEWLINE;
+                echo '<a href="index.php">' . $l['w_index'] . '...</a>' . K_NEWLINE;
+                echo '</main>' . K_NEWLINE;
+                echo '</body>' . K_NEWLINE;
+                echo '</html>' . K_NEWLINE;
+                exit();
+            }
         }
 
         // the user is authorized to execute the selected test
