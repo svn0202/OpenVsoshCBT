@@ -28,6 +28,14 @@ CREATE TABLE tce_openvsosh_settings (
 constraint PK_tce_openvsosh_settings_key primary key (setting_key)
 );
 
+CREATE TABLE tce_schema_migrations (
+	migration_name VARCHAR2(191) NOT NULL,
+	migration_sha256 CHAR(64) NOT NULL,
+	migration_applied_at DATE NOT NULL,
+	migration_mode VARCHAR2(16) NOT NULL,
+constraint PK_tce_schema_migrations_name primary key (migration_name)
+);
+
 CREATE TABLE tce_users (
 	user_id NUMBER(19,0) NOT NULL,
 	user_name VARCHAR2(255) NOT NULL,

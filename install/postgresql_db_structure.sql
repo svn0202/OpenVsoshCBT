@@ -28,6 +28,14 @@ CREATE TABLE "tce_openvsosh_settings" (
 constraint "PK_tce_openvsosh_settings_key" primary key ("setting_key")
 ) Without Oids;
 
+CREATE TABLE "tce_schema_migrations" (
+	"migration_name" Varchar(191) NOT NULL,
+	"migration_sha256" Char(64) NOT NULL,
+	"migration_applied_at" Timestamp NOT NULL,
+	"migration_mode" Varchar(16) NOT NULL,
+constraint "PK_tce_schema_migrations_name" primary key ("migration_name")
+) Without Oids;
+
 CREATE TABLE "tce_users" (
 	"user_id" BigSerial NOT NULL,
 	"user_name" Varchar(255) NOT NULL,
