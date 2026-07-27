@@ -29,8 +29,16 @@ if (!isset($_REQUEST['examtime'])) {
     $enable_countdown = 'true';
     $timeout_logout = isset($_REQUEST['timeout_logout']) && $_REQUEST['timeout_logout'] ? 'true' : 'false';
 }
+require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
+$timer_settings = openvsosh_get_runtime_settings();
+$timer_warning_text = openvsosh_contrast_text((string) $timer_settings['timer_warning_color']);
+$timer_critical_text = openvsosh_contrast_text((string) $timer_settings['timer_critical_color']);
 
-echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" id="timerform">' . K_NEWLINE;
+echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" id="timerform" style="'
+    . '--timer-warning-bg:' . $timer_settings['timer_warning_color'] . ';'
+    . '--timer-warning-text:' . $timer_warning_text . ';'
+    . '--timer-critical-bg:' . $timer_settings['timer_critical_color'] . ';'
+    . '--timer-critical-text:' . $timer_critical_text . '">' . K_NEWLINE;
 // role="timer" identifies the region to assistive technologies; aria-live stays "off"
 // (the default for the timer role) on purpose, so the per-second updates are not announced.
 echo '<div role="timer" aria-live="off">' . K_NEWLINE;
@@ -41,11 +49,18 @@ echo
         . '" readonly="readonly"/>'
         . K_NEWLINE
 ;
+echo '<span id="timer-status" class="timer-status" aria-live="polite"></span>' . K_NEWLINE;
 echo '&nbsp;</div>' . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'timer.js" type="text/javascript"></script>' . K_NEWLINE;
 echo '<script type="text/javascript">' . K_NEWLINE;
 echo '//<![CDATA[' . K_NEWLINE;
+echo 'FJ_configure_timer('
+    . (int) $timer_settings['timer_warning_seconds'] . ','
+    . (int) $timer_settings['timer_critical_seconds'] . ','
+    . json_encode('Внимание: времени осталось мало', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) . ','
+    . json_encode('Критически мало времени', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT)
+    . ');' . K_NEWLINE;
 echo
     'FJ_start_timer('
         . $enable_countdown

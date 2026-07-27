@@ -604,6 +604,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'site_contact' => 'Координатор: +7 000 000-00-00',
                 'welcome' => 'Добро пожаловать!',
                 'login_instruction' => 'Используйте логин из карточки.',
+                'default_language' => 'ru',
+                'default_timezone' => 'UTC',
+                'timer_warning_seconds' => '600',
+                'timer_critical_seconds' => '180',
+                'timer_warning_color' => '#9a4f00',
+                'timer_critical_color' => '#a40000',
                 'csrf_token' => $token,
             ]);
             $this->assertSame(200, $status);
@@ -612,6 +618,14 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'Тестовая олимпиадная площадка',
                 $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='site_name'")
             );
+            $this->assertSame(
+                'UTC',
+                $this->dbScalar(
+                    "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='default_timezone'"
+                )
+            );
+            [$bootstrapStatus] = $this->http('GET', '/shared/config/openvsosh-bootstrap.json');
+            $this->assertContains($bootstrapStatus, [403, 404]);
 
             $image = file_get_contents(__DIR__ . '/../../images/vsosh-logo.png');
             $this->assertNotFalse($image);
@@ -627,6 +641,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'site_contact' => 'Координатор: +7 000 000-00-00',
                     'welcome' => 'Добро пожаловать!',
                     'login_instruction' => 'Используйте логин из карточки.',
+                    'default_language' => 'ru',
+                    'default_timezone' => 'UTC',
+                    'timer_warning_seconds' => '600',
+                    'timer_critical_seconds' => '180',
+                    'timer_warning_color' => '#9a4f00',
+                    'timer_critical_color' => '#a40000',
                     'csrf_token' => (string) $token,
                 ],
                 'site_logo',
@@ -657,6 +677,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'site_contact' => 'Координатор: +7 000 000-00-00',
                     'welcome' => 'Добро пожаловать!',
                     'login_instruction' => 'Используйте логин из карточки.',
+                    'default_language' => 'ru',
+                    'default_timezone' => 'UTC',
+                    'timer_warning_seconds' => '600',
+                    'timer_critical_seconds' => '180',
+                    'timer_warning_color' => '#9a4f00',
+                    'timer_critical_color' => '#a40000',
                     'csrf_token' => (string) $token,
                 ],
                 'site_background',
@@ -673,6 +699,8 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertStringContainsString('Описание &lt;не HTML&gt;', $body);
             $this->assertStringContainsString('Используйте логин из карточки.', $body);
             $this->assertStringContainsString('Координатор: +7 000 000-00-00', $body);
+            $this->assertStringContainsString('FJ_configure_timer(600,180', $body);
+            $this->assertStringContainsString('--timer-critical-bg:#a40000', $body);
             $this->assertStringContainsString('href="tce_user_registration.php"', $body);
             $this->assertStringNotContainsString('href="tce_password_reset.php"', $body);
             $this->assertStringContainsString(

@@ -29,7 +29,29 @@ define('K_TCEXAM_VERSION', file_get_contents('../../VERSION'));
 /**
  * 2-letters code for default language.
  */
-define('K_LANGUAGE', 'ru');
+$openvsosh_bootstrap_language = 'ru';
+$openvsosh_bootstrap_timezone = 'UTC';
+$openvsosh_bootstrap_file = __DIR__ . '/openvsosh-bootstrap.json';
+if (is_file($openvsosh_bootstrap_file)) {
+    $openvsosh_bootstrap = json_decode((string) file_get_contents($openvsosh_bootstrap_file), true);
+    $openvsosh_languages = [
+        'ar', 'az', 'bg', 'br', 'cn', 'de', 'el', 'en', 'es', 'fa', 'fr', 'he', 'hi',
+        'hu', 'id', 'it', 'jp', 'mr', 'ms', 'nl', 'pl', 'ro', 'ru', 'tr', 'ur', 'vn',
+    ];
+    if (
+        is_array($openvsosh_bootstrap)
+        && in_array((string) ($openvsosh_bootstrap['language'] ?? ''), $openvsosh_languages, true)
+    ) {
+        $openvsosh_bootstrap_language = (string) $openvsosh_bootstrap['language'];
+    }
+    if (
+        is_array($openvsosh_bootstrap)
+        && in_array((string) ($openvsosh_bootstrap['timezone'] ?? ''), timezone_identifiers_list(), true)
+    ) {
+        $openvsosh_bootstrap_timezone = (string) $openvsosh_bootstrap['timezone'];
+    }
+}
+define('K_LANGUAGE', $openvsosh_bootstrap_language);
 
 /**
  * If true, display a language selector.
@@ -235,7 +257,15 @@ define('K_ENABLE_JSERRORS', false);
  * Possible values are listed on:
  * http://php.net/manual/en/timezones.php
  */
-define('K_TIMEZONE', 'UTC');
+define('K_TIMEZONE', $openvsosh_bootstrap_timezone);
+date_default_timezone_set(K_TIMEZONE);
+unset(
+    $openvsosh_bootstrap,
+    $openvsosh_bootstrap_file,
+    $openvsosh_bootstrap_language,
+    $openvsosh_bootstrap_timezone,
+    $openvsosh_languages,
+);
 
 /**
  * Default minutes used to extend test duration.

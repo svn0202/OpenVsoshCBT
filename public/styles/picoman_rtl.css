@@ -76,6 +76,11 @@ div#scrollayer{top:0;position: fixed;height:100%;background:var(--background);z-
 @keyframes slide-out{from{right:0;opacity:1}to{right:-400px;opacity:0}}
 
 #timer{width: auto;display: initial;padding: 0.25rem 0 1rem 0;margin: 0 0 0 0.25rem;}
+#timerform #timer[data-state="warning"]{background:var(--timer-warning-bg);color:var(--timer-warning-text);font-weight:700}
+#timerform #timer[data-state="critical"]{background:var(--timer-critical-bg);color:var(--timer-critical-text);font-weight:800}
+.timer-status{display:block;min-height:1.25em;font-size:.78rem;font-weight:700}
+.timer-status[data-state="warning"]{background:var(--timer-warning-bg);color:var(--timer-warning-text);padding:0 .35rem}
+.timer-status[data-state="critical"]{background:var(--timer-critical-bg);color:var(--timer-critical-text);padding:0 .35rem}
 #timerform, #timer, .timerlabel {text-align: left;background: transparent;border: none;color: var(--contrast-inverse)}
 #timer{padding-right:calc(var(--spacing-gutter)/2)}
 

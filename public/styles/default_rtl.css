@@ -519,6 +519,34 @@ label.timerlabel {
 	color: #003399;
 }
 
+#timerform #timer[data-state="warning"] {
+	background: var(--timer-warning-bg);
+	color: var(--timer-warning-text);
+	font-weight: bold;
+}
+
+#timerform #timer[data-state="critical"] {
+	background: var(--timer-critical-bg);
+	color: var(--timer-critical-text);
+	font-weight: bold;
+}
+
+.timer-status {
+	display: block;
+	min-height: 1.25em;
+	font-weight: bold;
+}
+
+.timer-status[data-state="warning"] {
+	background: var(--timer-warning-bg);
+	color: var(--timer-warning-text);
+}
+
+.timer-status[data-state="critical"] {
+	background: var(--timer-critical-bg);
+	color: var(--timer-critical-text);
+}
+
 li.tcecode{
 }
 

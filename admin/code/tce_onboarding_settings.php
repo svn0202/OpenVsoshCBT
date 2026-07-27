@@ -16,6 +16,7 @@ require_once 'tce_page_header.php';
 $config = F_getOnboardingConfig();
 $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
+$runtime_config = openvsosh_get_runtime_settings();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
@@ -37,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
         exit();
     }
     $site_result = openvsosh_save_site_settings($_POST);
-    if ($site_result['saved']) {
+    $runtime_result = openvsosh_save_runtime_settings($_POST);
+    if ($site_result['saved'] && $runtime_result['saved']) {
         $asset_errors = [];
         foreach (['logo', 'background'] as $asset_type) {
             if (isset($_FILES['site_' . $asset_type])) {
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
             }
         }
         $site_config = openvsosh_get_site_settings();
+        $runtime_config = openvsosh_get_runtime_settings();
         if ($asset_errors === []) {
             F_print_error('MESSAGE', 'Настройки площадки сохранены.');
         } else {
@@ -62,7 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
     } else {
         F_print_error(
             'WARNING',
-            htmlspecialchars(implode(' ', $site_result['errors']), ENT_QUOTES, $l['a_meta_charset']),
+            htmlspecialchars(
+                implode(' ', array_merge($site_result['errors'], $runtime_result['errors'])),
+                ENT_QUOTES,
+                $l['a_meta_charset'],
+            ),
         );
     }
 }
@@ -148,6 +155,35 @@ echo '<div class="row"><label for="site_logo">Основной логотип</l
 echo '<div class="row"><label for="site_background">Фон страницы входа</label>'
     . '<input type="file" name="site_background" id="site_background" accept="image/jpeg,image/png" />'
     . '<span class="form-help">JPEG/PNG, 32–8192 px, до 5 МБ.</span></div>' . K_NEWLINE;
+echo '</fieldset><fieldset><legend>Язык, время и предупреждения</legend>' . K_NEWLINE;
+echo '<div class="row"><label for="default_language">Язык по умолчанию</label>'
+    . '<select name="default_language" id="default_language">';
+foreach ((array) unserialize(K_AVAILABLE_LANGUAGES, ['allowed_classes' => false]) as $code => $name) {
+    echo '<option value="' . htmlspecialchars((string) $code, ENT_QUOTES) . '"'
+        . ((string) $runtime_config['default_language'] === (string) $code ? ' selected="selected"' : '')
+        . '>' . htmlspecialchars((string) $name, ENT_QUOTES, $l['a_meta_charset']) . '</option>';
+}
+echo '</select></div>' . K_NEWLINE;
+echo '<div class="row"><label for="default_timezone">Часовой пояс</label>'
+    . '<input type="text" name="default_timezone" id="default_timezone" list="timezone-list" maxlength="64" value="'
+    . htmlspecialchars((string) $runtime_config['default_timezone'], ENT_QUOTES, $l['a_meta_charset']) . '" />'
+    . '<datalist id="timezone-list">';
+foreach (timezone_identifiers_list() as $timezone) {
+    echo '<option value="' . htmlspecialchars($timezone, ENT_QUOTES) . '"></option>';
+}
+echo '</datalist></div>' . K_NEWLINE;
+echo '<div class="row"><label for="timer_warning_seconds">Предупреждение таймера, сек.</label>'
+    . '<input type="number" name="timer_warning_seconds" id="timer_warning_seconds" min="0" max="86400" value="'
+    . (int) $runtime_config['timer_warning_seconds'] . '" /></div>' . K_NEWLINE;
+echo '<div class="row"><label for="timer_critical_seconds">Критический порог, сек.</label>'
+    . '<input type="number" name="timer_critical_seconds" id="timer_critical_seconds" min="0" max="86400" value="'
+    . (int) $runtime_config['timer_critical_seconds'] . '" /></div>' . K_NEWLINE;
+echo '<div class="row"><label for="timer_warning_color">Цвет предупреждения</label>'
+    . '<input type="color" name="timer_warning_color" id="timer_warning_color" value="'
+    . htmlspecialchars((string) $runtime_config['timer_warning_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
+echo '<div class="row"><label for="timer_critical_color">Критический цвет</label>'
+    . '<input type="color" name="timer_critical_color" id="timer_critical_color" value="'
+    . htmlspecialchars((string) $runtime_config['timer_critical_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
 echo '</fieldset><div class="onboarding-admin-actions">'
     . '<button type="submit" name="save_site" value="1" class="button">Сохранить оформление</button></div>'
     . F_getCSRFTokenField() . K_NEWLINE . '</form>' . K_NEWLINE;
