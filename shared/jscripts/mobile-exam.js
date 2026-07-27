@@ -297,6 +297,57 @@
         resizeAnswer();
     }
 
+    function bindImagePreviews() {
+        var toolbar = form.querySelector('[data-exam-toolbar]');
+        var label = toolbar ? toolbar.dataset.imagePreviewLabel : 'Image';
+        var closeLabel = toolbar ? toolbar.dataset.imagePreviewClose : 'Close';
+        var dialog = document.getElementById('exam-image-preview');
+
+        if (!dialog) {
+            dialog = document.createElement('dialog');
+            dialog.id = 'exam-image-preview';
+            dialog.className = 'exam-image-preview';
+            dialog.setAttribute('aria-label', label);
+            dialog.innerHTML = '<button type="button" class="exam-image-preview-close"></button>'
+                + '<img alt="" />';
+            dialog.querySelector('button').textContent = closeLabel;
+            document.body.appendChild(dialog);
+            dialog.querySelector('button').addEventListener('click', function () {
+                dialog.close();
+            });
+            dialog.addEventListener('click', function (event) {
+                if (event.target === dialog) {
+                    dialog.close();
+                }
+            });
+        }
+
+        form.querySelectorAll('.tcecontentbox img, ol.answer img').forEach(function (source) {
+            if (source.dataset.examPreviewBound === '1') {
+                return;
+            }
+            source.dataset.examPreviewBound = '1';
+            source.classList.add('exam-previewable-image');
+            source.tabIndex = 0;
+            source.setAttribute('role', 'button');
+            source.setAttribute('aria-label', label + (source.alt ? ': ' + source.alt : ''));
+
+            var openPreview = function () {
+                var preview = dialog.querySelector('img');
+                preview.src = source.currentSrc || source.src;
+                preview.alt = source.alt || '';
+                dialog.showModal();
+            };
+            source.addEventListener('click', openPreview);
+            source.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openPreview();
+                }
+            });
+        });
+    }
+
     function refreshQuestionState() {
         testId = (form.querySelector('#testid') || {}).value || '0';
         testlogId = (form.querySelector('#testlogid') || {}).value || '0';
@@ -305,6 +356,7 @@
         bindToolbar();
         bindAnswerControls();
         resizeAnswerText();
+        bindImagePreviews();
         setScale(readJson(fontKey, 1));
 
         var displayTime = form.querySelector('#display_time');

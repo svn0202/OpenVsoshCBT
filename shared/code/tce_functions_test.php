@@ -2314,6 +2314,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 if (in_array((int) $m['question_type'], [4, 5], true)) {
                     // get max positions for ordering and matching questions
                     $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id=' . $testlog_id . '');
+                    if ((int) $m['question_type'] === 5 && $tmf_options['matching_positions'] > 0) {
+                        $max_position = (int) $tmf_options['matching_positions'];
+                    }
                 }
 
                 // display answer options
@@ -2764,7 +2767,12 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         'review' => $l['ov_mark_for_review'],
     ];
 
-    $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar>' . K_NEWLINE;
+    $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
+        . ' data-image-preview-label="'
+        . htmlspecialchars($l['w_image'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" data-image-preview-close="'
+        . htmlspecialchars($l['w_close'], ENT_QUOTES, $l['a_meta_charset'])
+        . '">' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'
         . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])
         . ' <span>' . $qsel . '</span> / ' . $i . '</strong>' . K_NEWLINE;

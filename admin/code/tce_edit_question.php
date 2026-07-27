@@ -128,6 +128,9 @@ if (!isset($_REQUEST['question_shuffle_answers']) || empty($_REQUEST['question_s
 $question_similarity_threshold = isset($_REQUEST['question_similarity_threshold'])
     ? max(0, min(99, (int) $_REQUEST['question_similarity_threshold']))
     : 0;
+$question_matching_positions = isset($_REQUEST['question_matching_positions'])
+    ? max(0, min(100, (int) $_REQUEST['question_matching_positions']))
+    : 0;
 if (isset($_REQUEST['question_description'])) {
     $question_description = utrim($_REQUEST['question_description']);
     if (function_exists('normalizer_normalize')) {
@@ -137,6 +140,10 @@ if (isset($_REQUEST['question_description'])) {
     $question_description = F_tmf_set_similarity_threshold(
         $question_description,
         $question_similarity_threshold,
+    );
+    $question_description = F_tmf_set_matching_positions(
+        $question_description,
+        $question_matching_positions,
     );
 }
 
@@ -660,6 +667,7 @@ switch ($menu_mode) {
             $question_auto_next = false;
             $question_shuffle_answers = false;
             $question_similarity_threshold = 0;
+            $question_matching_positions = 0;
             break;
         }
 
@@ -705,6 +713,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $question_auto_next = false;
         $question_shuffle_answers = false;
         $question_similarity_threshold = 0;
+        $question_matching_positions = 0;
     } else {
         $sql = 'SELECT *
 				FROM ' . K_TABLE_QUESTIONS . '
@@ -728,6 +737,9 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_similarity_threshold = F_tmf_question_options(
                     (string) $question_description,
                 )['similarity_threshold'];
+                $question_matching_positions = F_tmf_question_options(
+                    (string) $question_description,
+                )['matching_positions'];
             } else {
                 $question_description = '';
                 $question_explanation = '';
@@ -741,6 +753,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_auto_next = false;
                 $question_shuffle_answers = false;
                 $question_similarity_threshold = 0;
+                $question_matching_positions = 0;
             }
         } else {
             F_display_db_error();
@@ -1171,6 +1184,22 @@ echo
         '[%]',
         $question_similarity_threshold,
         '^([0-9]{1,2})$',
+        3,
+        false,
+        false,
+        false,
+        '',
+    )
+;
+
+echo
+    getFormRowTextInput(
+        'question_matching_positions',
+        'Количество условий matching',
+        'Число позиций в левой колонке; 0 — столько же, сколько вариантов ответа.',
+        '[0–100]',
+        $question_matching_positions,
+        '^([0-9]{1,3})$',
         3,
         false,
         false,

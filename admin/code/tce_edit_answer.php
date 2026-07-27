@@ -29,6 +29,7 @@ $thispage_title = $l['t_answers_editor'];
 require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
+require_once '../../shared/code/tce_functions_tmf_question.php';
 require_once '../code/tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 
@@ -1065,6 +1066,7 @@ echo '<label for="answer_position">' . $l['w_position'] . '</label>' . K_NEWLINE
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="answer_position" id="answer_position" title="' . $l['h_position'] . '">' . K_NEWLINE;
+$matching_position_limit = 0;
 if (isset($answer_id) && $answer_id > 0) {
     $max_position =
         1
@@ -1079,6 +1081,19 @@ if (isset($answer_id) && $answer_id > 0) {
 } else {
     $max_position = 0;
 }
+$matching_question_sql = 'SELECT question_type,question_description FROM ' . K_TABLE_QUESTIONS
+    . ' WHERE question_id=' . (int) $answer_question_id . ' LIMIT 1';
+if ($matching_question_result = F_db_query($matching_question_sql, $db)) {
+    if ($matching_question = F_db_fetch_array($matching_question_result)) {
+        $configured_positions = F_tmf_question_options(
+            (string) $matching_question['question_description'],
+        )['matching_positions'];
+        if ((int) $matching_question['question_type'] === 5 && $configured_positions > 0) {
+            $matching_position_limit = (int) $configured_positions;
+            $max_position = max($max_position, $matching_position_limit);
+        }
+    }
+}
 
 echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
 for ($pos = 1; $pos <= $max_position; ++$pos) {
@@ -1090,9 +1105,14 @@ for ($pos = 1; $pos <= $max_position; ++$pos) {
     echo '>' . $pos . '</option>' . K_NEWLINE;
 }
 
-echo
-    '<option value="' . ($max_position + 1) . '" style="color:#ff0000">' . ($max_position + 1) . '</option>' . K_NEWLINE
-;
+if ($matching_position_limit === 0) {
+    echo
+        '<option value="' . ($max_position + 1) . '" style="color:#ff0000">'
+        . ($max_position + 1)
+        . '</option>'
+        . K_NEWLINE
+    ;
+}
 echo '</select>' . K_NEWLINE;
 echo '<input type="hidden" name="max_position" id="max_position" value="' . $max_position . '" />' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;

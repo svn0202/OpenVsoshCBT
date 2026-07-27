@@ -9,7 +9,7 @@
 /**
  * Read optional behavior markers embedded by the DOCX importer.
  *
- * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int}
+ * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int}
  */
 function F_tmf_question_options(string $description): array
 {
@@ -18,6 +18,7 @@ function F_tmf_question_options(string $description): array
         'headers' => ['Утверждение', 'Верно', 'Неверно', 'Без ответа'],
         'max_selections' => 0,
         'similarity_threshold' => 0,
+        'matching_positions' => 0,
     ];
 
     if (preg_match('/<!--TMF_MAX_SEL:(\d+)-->/', (string) $description, $match)) {
@@ -38,8 +39,24 @@ function F_tmf_question_options(string $description): array
     if (preg_match('/<!--TMF_SIMILARITY:(\d{1,3})-->/', $description, $match)) {
         $options['similarity_threshold'] = max(0, min(100, (int) $match[1]));
     }
+    if (preg_match('/<!--TMF_MATCH_POSITIONS:(\d{1,3})-->/', $description, $match)) {
+        $options['matching_positions'] = max(0, min(100, (int) $match[1]));
+    }
 
     return $options;
+}
+
+/**
+ * Replace the optional number of left-side matching positions.
+ */
+function F_tmf_set_matching_positions(string $description, int $positions): string
+{
+    $description = (string) preg_replace('/\s*<!--TMF_MATCH_POSITIONS:\d{1,3}-->/', '', $description);
+    $positions = max(0, min(100, $positions));
+    if ($positions > 0) {
+        $description = rtrim($description) . '<!--TMF_MATCH_POSITIONS:' . $positions . '-->';
+    }
+    return $description;
 }
 
 /**
