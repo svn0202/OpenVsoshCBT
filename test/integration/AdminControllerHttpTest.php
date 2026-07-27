@@ -584,6 +584,56 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertSame('4.000', $this->dbScalar(
                 'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $matchingLogId
             ));
+            $startedAt = (string) $this->dbScalar(
+                'SELECT testuser_creation_time FROM tce_tests_users WHERE testuser_id=' . $attemptId
+            );
+            foreach (['XML' => 'xml', 'JSON' => 'json'] as $format => $extension) {
+                [$exportStatus, $exportBody] = $this->http(
+                    'GET',
+                    '/admin/code/tce_xml_results.php?test_id=' . $testId . '&format=' . $format,
+                    $cookies,
+                );
+                $this->assertSame(200, $exportStatus, $extension);
+                $this->assertStringContainsString('14.500', $exportBody);
+                $this->assertStringContainsString((string) $attemptId, $exportBody);
+                $this->assertStringContainsString($startedAt, $exportBody);
+            }
+            [$tsvStatus, $tsvBody] = $this->http(
+                'GET',
+                '/admin/code/tce_tsv_result_allusers.php?test_id=' . $testId,
+                $cookies,
+            );
+            $this->assertSame(200, $tsvStatus);
+            $this->assertStringContainsString('14.500', $tsvBody);
+
+            require_once __DIR__ . '/../../shared/code/tce_functions_xlsx.php';
+            [$xlsxStatus, $xlsxBody] = $this->http(
+                'GET',
+                '/admin/code/tce_xlsx_result_allusers.php?test_id=' . $testId,
+                $cookies,
+            );
+            $this->assertSame(200, $xlsxStatus);
+            $xlsxFile = tempnam(sys_get_temp_dir(), 'openvsosh-result-contract-');
+            $this->assertNotFalse($xlsxFile);
+            file_put_contents($xlsxFile, $xlsxBody);
+            try {
+                $xlsxRows = \F_tmf_xlsx_read($xlsxFile);
+            } finally {
+                if (is_file($xlsxFile)) {
+                    unlink($xlsxFile);
+                }
+            }
+            $this->assertSame((string) $attemptId, $xlsxRows[1][0]);
+            $this->assertSame($startedAt, $xlsxRows[1][5]);
+            $this->assertSame('14.500', $xlsxRows[1][8]);
+
+            [$pdfStatus, $pdfBody] = $this->http(
+                'GET',
+                '/admin/code/tce_pdf_results.php?mode=1&test_id=' . $testId,
+                $cookies,
+            );
+            $this->assertSame(200, $pdfStatus);
+            $this->assertStringStartsWith('%PDF-', $pdfBody);
         } finally {
             $this->dbExec(
                 'DELETE FROM tce_tests_logs_answers WHERE logansw_testlog_id IN ('
