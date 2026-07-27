@@ -229,6 +229,7 @@ CREATE TABLE "tce_tests_logs" (
 	"testlog_answer_version" Bigint NOT NULL Default 0,
 	"testlog_answer_operation" Varchar(32),
 	"testlog_answer_saved_at" Timestamp,
+	"testlog_reviewed" Boolean NOT NULL Default FALSE,
 	"testlog_comment" Text,
 constraint "PK_tce_tests_logs_testlog_id" primary key ("testlog_id")
 ) Without Oids;

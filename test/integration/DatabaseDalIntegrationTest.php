@@ -228,6 +228,16 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse($res, 'fresh schemas must include the per-question shuffle flag');
     }
 
+    public function testServerReviewFlagIsAvailable(): void
+    {
+        $res = \F_db_query(
+            'SELECT testlog_reviewed FROM tce_tests_logs WHERE 1=0',
+            $this->db
+        );
+
+        $this->assertNotFalse($res, 'fresh schemas must include the server-side review flag');
+    }
+
     public function testMigrationCliBaselinesAndVerifiesFreshSchema(): void
     {
         $command = [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--baseline'];
@@ -243,7 +253,7 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
         $row = \F_db_fetch_assoc($result);
-        $this->assertSame(9, (int) $row['n']);
+        $this->assertSame(10, (int) $row['n']);
 
         $verify = proc_open(
             [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
@@ -257,7 +267,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         fclose($verifyPipes[1]);
         fclose($verifyPipes[2]);
         $this->assertSame(0, proc_close($verify), $verifyErr);
-        $this->assertStringContainsString('already applied openvsosh_question_shuffle.sql', $verifyOut);
+        $this->assertStringContainsString('already applied openvsosh_review_flag.sql', $verifyOut);
         $this->assertStringContainsString('pending handled: 0', $verifyOut);
     }
 
