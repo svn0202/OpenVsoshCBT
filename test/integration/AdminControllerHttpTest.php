@@ -184,6 +184,56 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('form_login', $body, 'an authenticated session should not see the login form');
     }
 
+    public function testAccessSettingsControlPublicLinksAndStoreHelpInDatabase(): void
+    {
+        $cookies = $this->login();
+        $this->dbExec('DELETE FROM tce_openvsosh_settings');
+
+        try {
+            [$status, $body] = $this->http('GET', '/admin/code/tce_onboarding_settings.php', $cookies);
+            $this->assertSame(200, $status);
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token, 'the instance settings form should expose a CSRF token');
+
+            [$status, $body] = $this->http('POST', '/admin/code/tce_onboarding_settings.php', $cookies, [
+                'save_access' => '1',
+                'disable_password_reset' => '1',
+                'access_help' => 'Для доступа напишите координатору <access@example.test>.',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Настройки доступа сохранены', $body);
+            $this->assertSame(
+                '1',
+                $this->dbScalar(
+                    "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='registration_enabled'"
+                )
+            );
+            $this->assertSame(
+                '0',
+                $this->dbScalar(
+                    "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='password_reset_enabled'"
+                )
+            );
+            $this->assertSame(
+                'Для доступа напишите координатору <access@example.test>.',
+                $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='access_help'")
+            );
+
+            [$status, $body] = $this->http('GET', '/public/code/index.php');
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('href="tce_user_registration.php"', $body);
+            $this->assertStringNotContainsString('href="tce_password_reset.php"', $body);
+            $this->assertStringContainsString(
+                'Для доступа напишите координатору &lt;access@example.test&gt;.',
+                $body,
+                'administrator-entered help must be rendered as safe plain text'
+            );
+        } finally {
+            $this->dbExec('DELETE FROM tce_openvsosh_settings');
+        }
+    }
+
     public function testProtectedAdminPageUsesTheRegularLoginAndReturnsAfterAuthentication(): void
     {
         // Stop at the first redirect so the lightweight test client can retain the

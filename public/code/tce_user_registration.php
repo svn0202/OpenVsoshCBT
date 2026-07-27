@@ -37,7 +37,9 @@ $user_ssn = $_REQUEST['user_ssn'] ?? '';
 $user_groups = $_REQUEST['user_groups'] ?? [];
 
 require_once '../../shared/config/tce_user_registration.php';
-if (!K_USRREG_ENABLED) {
+require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+$access_settings = openvsosh_get_access_settings();
+if (!$access_settings['registration_enabled']) {
     // user registration is disabled, redirect to main page
     header('Location: ' . K_PATH_HOST . K_PATH_TCEXAM);
     exit();

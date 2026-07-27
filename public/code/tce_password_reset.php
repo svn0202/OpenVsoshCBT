@@ -21,8 +21,10 @@
  */
 
 require_once '../config/tce_config.php';
+require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 
-if (!defined('K_PASSWORD_RESET') || !K_PASSWORD_RESET) {
+$access_settings = openvsosh_get_access_settings();
+if (!$access_settings['password_reset_enabled']) {
     // password reset is disabled, redirect to main page
     header('Location: ' . K_PATH_HOST . K_PATH_TCEXAM);
     exit();

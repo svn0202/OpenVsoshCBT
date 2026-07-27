@@ -23,11 +23,6 @@
 require_once '../config/tce_config.php';
 
 require_once '../../shared/config/tce_user_registration.php';
-if (!K_USRREG_ENABLED) {
-    // user registration is disabled, redirect to main page
-    header('Location: ' . K_PATH_HOST . K_PATH_TCEXAM);
-    exit();
-}
 
 $email = preg_replace('/[^a-zA-Z0-9_\.\-\@]/', '', $_REQUEST['a']);
 $verifycode = preg_replace('/[^A-Fa-f0-9\@]/', '', $_REQUEST['b']);

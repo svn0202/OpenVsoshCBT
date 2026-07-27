@@ -22,6 +22,12 @@ CREATE TABLE tce_sessions (
 constraint PK_tce_sessions_cpsession_id primary key (cpsession_id)
 );
 
+CREATE TABLE tce_openvsosh_settings (
+	setting_key VARCHAR2(64) NOT NULL,
+	setting_value NCLOB NOT NULL,
+constraint PK_tce_openvsosh_settings_key primary key (setting_key)
+);
+
 CREATE TABLE tce_users (
 	user_id NUMBER(19,0) NOT NULL,
 	user_name VARCHAR2(255) NOT NULL,

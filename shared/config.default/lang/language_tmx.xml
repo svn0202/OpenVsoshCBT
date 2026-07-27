@@ -50453,6 +50453,94 @@ YYYYMMDDhhmmss_tcexam_backup.sql.gz، جہاں YYYYMMDDhhmmss سال (Y)، ما�
             <seg>The position was reassigned; the previous match was cleared.</seg>
          </tuv>
       </tu>
+      <tu tuid="ov_access_control" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Access to the platform</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Доступ к платформе</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_access_help" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Instructions for obtaining access</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Помощь и инструкция по получению доступа</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_access_help_hint" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Plain text shown below the login form. You may include contacts and the procedure for receiving credentials.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Текст будет показан под формой входа. Можно указать контакты и порядок получения учётных данных.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_access_settings_saved" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Access settings have been saved.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Настройки доступа сохранены.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_disable_password_reset" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Disable the password-reset form</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Отключить форму сброса пароля</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_disable_password_reset_hint" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Hides the link and blocks direct access to the password-reset page.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Скрывает ссылку и запрещает прямой доступ к странице сброса пароля.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_disable_registration" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Disable the registration form</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Отключить форму регистрации</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_disable_registration_hint" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Hides the link and blocks direct access to self-registration.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Скрывает ссылку и запрещает прямой доступ к самостоятельной регистрации.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_instance_settings" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Instance settings</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Настройки системы</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_settings_save_failed" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>The settings could not be saved. Check database permissions.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Не удалось сохранить настройки. Проверьте права доступа к базе данных.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_save" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Save</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Сохранить</seg>
+         </tuv>
+      </tu>
       <tu tuid="ov_about_platform" datatype="plaintext">
          <tuv xml:lang="EN">
             <seg>About the platform</seg>

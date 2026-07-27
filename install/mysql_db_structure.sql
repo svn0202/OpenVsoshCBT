@@ -23,6 +23,13 @@ CREATE TABLE tce_sessions (
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+CREATE TABLE tce_openvsosh_settings (
+	setting_key Varchar(64) NOT NULL,
+	setting_value Text NOT NULL,
+ Primary Key (setting_key)
+) ENGINE = InnoDB
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE TABLE tce_users (
 	user_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
 	user_name Varchar(255) NOT NULL,
@@ -289,4 +296,3 @@ ALTER TABLE tce_testgroups ADD Foreign Key (tstgrp_group_id) references tce_user
 ALTER TABLE tce_test_subjects ADD Foreign Key (subjset_tsubset_id) references tce_test_subject_set (tsubset_id) ON DELETE cascade ON UPDATE no action;
 ALTER TABLE tce_testsslcerts ADD Foreign Key (tstssl_test_id) references tce_tests (test_id) ON DELETE cascade ON UPDATE no action;
 ALTER TABLE tce_testsslcerts ADD Foreign Key (tstssl_ssl_id) references tce_sslcerts (ssl_id) ON DELETE cascade ON UPDATE no action;
-

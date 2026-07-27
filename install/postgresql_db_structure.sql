@@ -22,6 +22,12 @@ CREATE TABLE "tce_sessions" (
 constraint "PK_tce_sessions_cpsession_id" primary key ("cpsession_id")
 ) Without Oids;
 
+CREATE TABLE "tce_openvsosh_settings" (
+	"setting_key" Varchar(64) NOT NULL,
+	"setting_value" Text NOT NULL,
+constraint "PK_tce_openvsosh_settings_key" primary key ("setting_key")
+) Without Oids;
+
 CREATE TABLE "tce_users" (
 	"user_id" BigSerial NOT NULL,
 	"user_name" Varchar(255) NOT NULL,

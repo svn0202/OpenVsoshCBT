@@ -17,6 +17,18 @@
 Не распаковывайте обновление поверх рабочего каталога и не удаляйте рабочие
 конфиги. Не обновляйтесь в день мероприятия.
 
+### Миграция настроек доступа OpenVsoshCBT
+
+Для версии с управлением регистрацией, сбросом пароля и инструкцией на странице
+входа примените один файл:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_access_settings.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_access_settings.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_access_settings.sql`.
+
+Если у таблиц нестандартный префикс, замените `tce_` в выбранном файле.
+Подробности: [Настройка получения доступа](access-settings.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh
