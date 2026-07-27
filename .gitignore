@@ -17,7 +17,6 @@
 **/test.php
 admin/config/
 cache/lang/*.php
-composer.lock
 ecs.php
 phpstan.neon
 phpunit.xml
