@@ -678,6 +678,8 @@ function F_show_select_questions(
                 . $subject_id
                 . '&amp;question_id='
                 . $m['question_id']
+                . '&amp;firstrow='
+                . $firstrow
                 . '" title="'
                 . $l['t_questions_editor']
                 . ' [ID = '

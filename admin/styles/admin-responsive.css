@@ -883,7 +883,7 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
     }
 
     .admin-shell .question-card ol.answer.admin-answer-list > li {
-        grid-template-columns: repeat(4, auto) minmax(0, 1fr);
+        grid-template-columns: 34px minmax(0, 1fr) 38px;
     }
 
 }

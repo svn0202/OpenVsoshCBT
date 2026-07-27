@@ -46,6 +46,8 @@ $subject_module_id = isset($_REQUEST['subject_module_id']) ? (int) $_REQUEST['su
 
 $question_id = isset($_REQUEST['question_id']) ? (int) $_REQUEST['question_id'] : 0;
 
+$question_list_firstrow = isset($_REQUEST['firstrow']) ? max(0, (int) $_REQUEST['firstrow']) : 0;
+
 if (!isset($_REQUEST['question_type']) || empty($_REQUEST['question_type'])) {
     $question_type = 1;
 } else {
@@ -196,6 +198,12 @@ switch ($menu_mode) {
                 echo
                     '<input type="hidden" name="question_subject_id" id="question_subject_id" value="'
                         . $question_subject_id
+                        . '" />'
+                        . K_NEWLINE
+                ;
+                echo
+                    '<input type="hidden" name="firstrow" value="'
+                        . $question_list_firstrow
                         . '" />'
                         . K_NEWLINE
                 ;
@@ -736,6 +744,12 @@ echo
         . '" method="post" enctype="multipart/form-data" id="form_questioneditor">'
         . K_NEWLINE
 ;
+echo
+    '<input type="hidden" name="firstrow" value="'
+        . $question_list_firstrow
+        . '" />'
+        . K_NEWLINE
+;
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -1207,7 +1221,8 @@ if (isset($question_subject_id) && $question_subject_id > 0) {
         . $subject_module_id
         . '&amp;subject_id='
         . $question_subject_id
-        . '&amp;submitted=1&amp;firstrow=0';
+        . '&amp;submitted=1&amp;firstrow='
+        . $question_list_firstrow;
     if (isset($question_id) && $question_id > 0) {
         $question_list_url .= '#qid_' . $question_id;
     }
