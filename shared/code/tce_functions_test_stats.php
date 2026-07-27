@@ -2122,9 +2122,11 @@ function F_lockUserTest($test_id, $user_id)
     $sql =
         'UPDATE '
         . K_TABLE_TEST_USER
-        . '
-			SET testuser_status=4
-			WHERE testuser_test_id='
+        . "
+			SET testuser_status=4,
+				testuser_close_reason='completed',
+				testuser_last_activity='" . date(K_TIMESTAMP_FORMAT) . "'
+			WHERE testuser_test_id="
         . $test_id
         . '
 				AND testuser_user_id='

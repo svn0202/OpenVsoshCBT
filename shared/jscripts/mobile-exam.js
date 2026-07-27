@@ -15,6 +15,7 @@
     var maximumSaveRetries = 5;
     var retryBaseDelay = 1000;
     var saveRequestTimeout = 15000;
+    var heartbeatInterval = 60000;
     var saveButton = null;
     var saveStatus = null;
     var answerVersion = null;
@@ -27,6 +28,27 @@
     var testlogId = '0';
     var testuserId = '0';
     var reviewKey = '';
+    var heartbeatTimer = null;
+
+    function sendHeartbeat() {
+        var csrf = form.querySelector('[name="csrf_token"]');
+        if (!window.fetch || !csrf || testId === '0' || testlogId === '0') {
+            return;
+        }
+        var data = new FormData();
+        data.set('csrf_token', csrf.value);
+        data.set('testid', testId);
+        data.set('testlogid', testlogId);
+        window.fetch('tce_test_heartbeat.php', {
+            method: 'POST',
+            body: data,
+            credentials: 'same-origin',
+            headers: {'Accept': 'application/json'}
+        }).catch(function () {
+            // Monitoring tolerates temporary network failures and derives a
+            // lost-connection state after the configured grace period.
+        });
+    }
 
     function readJson(key, fallback) {
         try {
@@ -439,4 +461,11 @@
     });
 
     refreshQuestionState();
+    sendHeartbeat();
+    heartbeatTimer = window.setInterval(sendHeartbeat, heartbeatInterval);
+    window.addEventListener('pagehide', function () {
+        if (heartbeatTimer !== null) {
+            window.clearInterval(heartbeatTimer);
+        }
+    });
 }());

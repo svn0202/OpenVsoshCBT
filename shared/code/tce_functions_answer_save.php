@@ -57,7 +57,7 @@ function F_tmf_save_question_answer(
     }
 
     try {
-        $sql = 'SELECT testlog_answer_version, testlog_answer_operation
+        $sql = 'SELECT testlog_testuser_id, testlog_answer_version, testlog_answer_operation
 			FROM ' . K_TABLE_TESTS_LOGS . '
 			WHERE testlog_id=' . $testlog_id . '
 			FOR UPDATE';
@@ -93,12 +93,22 @@ function F_tmf_save_question_answer(
         }
 
         $new_version = $current_version + 1;
+        $saved_at = date(K_TIMESTAMP_FORMAT);
         $sql = 'UPDATE ' . K_TABLE_TESTS_LOGS . '
 			SET testlog_answer_version=' . $new_version . ",
-				testlog_answer_operation='" . $operation_id . "'
+				testlog_answer_operation='" . $operation_id . "',
+				testlog_answer_saved_at='" . $saved_at . "'
 			WHERE testlog_id=" . $testlog_id . '
 				AND testlog_answer_version=' . $current_version;
-        if (!F_db_query($sql, $db) || !F_db_query('COMMIT', $db)) {
+        $activity_sql = 'UPDATE ' . K_TABLE_TEST_USER . "
+			SET testuser_last_activity='" . $saved_at . "'
+			WHERE testuser_id=" . (int) $row['testlog_testuser_id'] . '
+				AND testuser_status<4';
+        if (
+            !F_db_query($sql, $db)
+            || !F_db_query($activity_sql, $db)
+            || !F_db_query('COMMIT', $db)
+        ) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'version' => $current_version];
         }

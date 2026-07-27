@@ -217,4 +217,24 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $this->assertNotFalse($res, 'fresh schemas must include versioned answer-save columns');
     }
+
+    public function testMonitoringSchemaIsAvailable(): void
+    {
+        $attempt = \F_db_query(
+            'SELECT testuser_last_activity, testuser_close_reason FROM tce_tests_users WHERE 1=0',
+            $this->db
+        );
+        $answer = \F_db_query(
+            'SELECT testlog_answer_saved_at FROM tce_tests_logs WHERE 1=0',
+            $this->db
+        );
+        $audit = \F_db_query(
+            'SELECT monitor_audit_time, monitor_action, monitor_details FROM tce_monitor_audit WHERE 1=0',
+            $this->db
+        );
+
+        $this->assertNotFalse($attempt, 'fresh schemas must include attempt monitoring columns');
+        $this->assertNotFalse($answer, 'fresh schemas must include answer activity timestamps');
+        $this->assertNotFalse($audit, 'fresh schemas must include the immutable monitoring audit');
+    }
 }
