@@ -47,14 +47,23 @@ if ($rs = F_db_query($sqls, $db)) {
         // decode session data
         session_decode($ms['cpsession_data']);
         // check for possible session hijacking
+        $legacy_fingerprint = getLegacyClientFingerprint();
+        $fingerprint_matches = isset($_SESSION['session_hash'])
+            && (
+                hash_equals((string) $_SESSION['session_hash'], $fingerprintkey)
+                || hash_equals((string) $_SESSION['session_hash'], $legacy_fingerprint)
+            );
         if (
             K_CHECK_SESSION_FINGERPRINT
-            && (!isset($_SESSION['session_hash']) || $fingerprintkey != $_SESSION['session_hash'])
+            && !$fingerprint_matches
         ) {
             // display login form
             session_regenerate_id(true);
             F_login_form();
             exit();
+        }
+        if ($fingerprint_matches && !hash_equals((string) $_SESSION['session_hash'], $fingerprintkey)) {
+            $_SESSION['session_hash'] = $fingerprintkey;
         }
 
         // update session expiration time

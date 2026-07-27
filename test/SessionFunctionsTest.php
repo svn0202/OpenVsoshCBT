@@ -49,4 +49,36 @@ final class SessionFunctionsTest extends TestCase
         // the no-argument form reads the configured K_RANDOM_SECURITY from the test bootstrap
         $this->assertTrue(\F_isRandomSecurityConfigured());
     }
+
+    public function testClientFingerprintIsStableAcrossDocumentAndFetchHeaders(): void
+    {
+        $original = $_SERVER;
+        try {
+            $_SERVER['HTTP_USER_AGENT'] = 'Browser/1.0';
+            $_SERVER['HTTP_ACCEPT_ENCODING'] = 'gzip, br';
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru-RU';
+            $_SERVER['HTTP_DNT'] = '1';
+            $_SERVER['HTTP_ACCEPT'] = 'text/html';
+            $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'] = '1';
+            $documentFingerprint = \getClientFingerprint();
+            $legacyDocumentFingerprint = \getLegacyClientFingerprint();
+
+            $_SERVER['HTTP_ACCEPT'] = 'application/json';
+            unset($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']);
+
+            $this->assertSame($documentFingerprint, \getClientFingerprint());
+            $this->assertNotSame($legacyDocumentFingerprint, \getLegacyClientFingerprint());
+        } finally {
+            $_SERVER = $original;
+        }
+    }
+
+    public function testScriptScopedCsrfTokenCanBeCheckedByWorkflowEndpoint(): void
+    {
+        $script = '/srv/tcexam/public/code/tce_test_execute.php';
+        $token = \getPasswordHash(\getPlainCSRFTokenForScript($script));
+
+        $this->assertTrue(\checkCSRFTokenForScript($token, $script));
+        $this->assertFalse(\checkCSRFTokenForScript($token, '/srv/tcexam/public/code/other.php'));
+    }
 }
