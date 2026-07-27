@@ -131,7 +131,7 @@ final class WordImportTest extends TestCase
         $zip->close();
 
         $this->expectException(TmfWordImportException::class);
-        new TmfWordImporter($filename)->parse();
+        (new TmfWordImporter($filename))->parse();
     }
 
     public function testQuestionMetadataAndScoringHelpers(): void
