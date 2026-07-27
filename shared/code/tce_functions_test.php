@@ -2774,6 +2774,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         . htmlspecialchars($l['w_image'], ENT_QUOTES, $l['a_meta_charset'])
         . '" data-image-preview-close="'
         . htmlspecialchars($l['w_close'], ENT_QUOTES, $l['a_meta_charset'])
+        . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
         . '">' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'
         . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])

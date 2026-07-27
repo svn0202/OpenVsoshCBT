@@ -754,6 +754,7 @@ class TmfWordImporter
                     'mcma_header' => array(),
                     'max_sel' => 0,
                     'similarity_threshold' => 0,
+                    'audio_play_limit' => 0,
                     'short_answer' => false,
                 );
                 $active_answer = null;
@@ -829,6 +830,10 @@ class TmfWordImporter
             $question['similarity_threshold'] = max(0, min(99, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
+        if (preg_match('/\[\[AUDIO_PLAYS=(\d{1,2})\]\]/iu', $plain, $match)) {
+            $question['audio_play_limit'] = max(0, min(99, (int) $match[1]));
+            $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
+        }
         if (preg_match('/\[\[DIFFICULTY=(\d+)\]\]/iu', $plain, $match)) {
             $question['difficulty'] = max(1, min(5, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
@@ -890,6 +895,9 @@ class TmfWordImporter
         }
         if ($question['similarity_threshold'] > 0) {
             $metadata .= '<!--TMF_SIMILARITY:' . $question['similarity_threshold'] . '-->';
+        }
+        if ($question['audio_play_limit'] > 0) {
+            $metadata .= '<!--TMF_AUDIO_PLAYS:' . $question['audio_play_limit'] . '-->';
         }
         $question['description'] = $metadata . trim($question['description']);
         $question['answers'] = array_values($question['answers']);

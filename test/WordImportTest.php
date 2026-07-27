@@ -140,6 +140,7 @@ final class WordImportTest extends TestCase
             '<!--TMF_CHECKBOX--><!--TMF_MAX_SEL:2-->'
             . '<!--TMF_SIMILARITY:85-->'
             . '<!--TMF_MATCH_POSITIONS:5-->'
+            . '<!--TMF_AUDIO_PLAYS:2-->'
             . '<!--TMF_MCMA_HEADER:[&quot;Факт&quot;,&quot;Да&quot;,&quot;Нет&quot;,&quot;Пропуск&quot;]-->',
         );
 
@@ -147,6 +148,7 @@ final class WordImportTest extends TestCase
         self::assertSame(2, $options['max_selections']);
         self::assertSame(85, $options['similarity_threshold']);
         self::assertSame(5, $options['matching_positions']);
+        self::assertSame(2, $options['audio_play_limit']);
         self::assertSame(['Факт', 'Да', 'Нет', 'Пропуск'], $options['headers']);
         self::assertTrue(\F_tmf_selection_limit_is_valid([1, 0, 1], 2));
         self::assertFalse(\F_tmf_selection_limit_is_valid([1, 1, 1], 2));
@@ -157,6 +159,10 @@ final class WordImportTest extends TestCase
         self::assertSame(
             7,
             \F_tmf_question_options(\F_tmf_set_matching_positions('Question', 7))['matching_positions'],
+        );
+        self::assertSame(
+            3,
+            \F_tmf_question_options(\F_tmf_set_audio_play_limit('Question', 3))['audio_play_limit'],
         );
     }
 

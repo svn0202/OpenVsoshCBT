@@ -131,6 +131,9 @@ $question_similarity_threshold = isset($_REQUEST['question_similarity_threshold'
 $question_matching_positions = isset($_REQUEST['question_matching_positions'])
     ? max(0, min(100, (int) $_REQUEST['question_matching_positions']))
     : 0;
+$question_audio_play_limit = isset($_REQUEST['question_audio_play_limit'])
+    ? max(0, min(99, (int) $_REQUEST['question_audio_play_limit']))
+    : 0;
 if (isset($_REQUEST['question_description'])) {
     $question_description = utrim($_REQUEST['question_description']);
     if (function_exists('normalizer_normalize')) {
@@ -144,6 +147,10 @@ if (isset($_REQUEST['question_description'])) {
     $question_description = F_tmf_set_matching_positions(
         $question_description,
         $question_matching_positions,
+    );
+    $question_description = F_tmf_set_audio_play_limit(
+        $question_description,
+        $question_audio_play_limit,
     );
 }
 
@@ -668,6 +675,7 @@ switch ($menu_mode) {
             $question_shuffle_answers = false;
             $question_similarity_threshold = 0;
             $question_matching_positions = 0;
+            $question_audio_play_limit = 0;
             break;
         }
 
@@ -714,6 +722,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $question_shuffle_answers = false;
         $question_similarity_threshold = 0;
         $question_matching_positions = 0;
+        $question_audio_play_limit = 0;
     } else {
         $sql = 'SELECT *
 				FROM ' . K_TABLE_QUESTIONS . '
@@ -740,6 +749,9 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_matching_positions = F_tmf_question_options(
                     (string) $question_description,
                 )['matching_positions'];
+                $question_audio_play_limit = F_tmf_question_options(
+                    (string) $question_description,
+                )['audio_play_limit'];
             } else {
                 $question_description = '';
                 $question_explanation = '';
@@ -754,6 +766,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_shuffle_answers = false;
                 $question_similarity_threshold = 0;
                 $question_matching_positions = 0;
+                $question_audio_play_limit = 0;
             }
         } else {
             F_display_db_error();
@@ -1201,6 +1214,22 @@ echo
         $question_matching_positions,
         '^([0-9]{1,3})$',
         3,
+        false,
+        false,
+        false,
+        '',
+    )
+;
+
+echo
+    getFormRowTextInput(
+        'question_audio_play_limit',
+        'Лимит запусков аудио',
+        'Максимальное число запусков каждого аудиофайла в вопросе; 0 — без ограничения.',
+        '[0–99]',
+        $question_audio_play_limit,
+        '^([0-9]{1,2})$',
+        2,
         false,
         false,
         false,
