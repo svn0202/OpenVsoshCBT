@@ -41,6 +41,7 @@ $answpos = [];
 $answer_text = '';
 $test_comment = '';
 $reaction_time = 0;
+$answer_save_error = '';
 
 if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     $test_id = (int) $_REQUEST['testid'];
@@ -89,7 +90,19 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         if (!empty($_REQUEST['forceterminate']) && F_isRightTestlogUser($test_id, $testlog_id)) {
             if ($_REQUEST['forceterminate'] == 'lasttimedquestion') {
                 // update last question
-                F_updateQuestionLog($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
+                if (isset($_REQUEST['answer_version'])) {
+                    F_tmf_save_question_answer(
+                        $test_id,
+                        $testlog_id,
+                        $answpos,
+                        $answer_text,
+                        $reaction_time,
+                        (int) $_REQUEST['answer_version'],
+                        bin2hex(random_bytes(16)),
+                    );
+                } else {
+                    F_updateQuestionLog($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
+                }
             }
 
             // terminate the test (lock the test to status=4)
@@ -122,7 +135,32 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
         if (!isset($_REQUEST['terminationform']) && F_isRightTestlogUser($test_id, $testlog_id)) {
             // the form has been submitted, update testlogid data
-            F_updateQuestionLog($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
+            $answer_saved = true;
+            if (isset($_REQUEST['answer_version'])) {
+                $save_result = F_tmf_save_question_answer(
+                    $test_id,
+                    $testlog_id,
+                    $answpos,
+                    $answer_text,
+                    $reaction_time,
+                    (int) $_REQUEST['answer_version'],
+                    bin2hex(random_bytes(16)),
+                );
+                $answer_saved = $save_result['status'] === 'saved';
+                if (!$answer_saved) {
+                    $answer_save_error = $save_result['status'] === 'conflict'
+                        ? $l['ov_answer_save_conflict']
+                        : $l['ov_answer_not_saved'];
+                }
+            } else {
+                $answer_saved = F_updateQuestionLog(
+                    $test_id,
+                    $testlog_id,
+                    $answpos,
+                    $answer_text,
+                    $reaction_time,
+                );
+            }
             // update user's test comment
             if (isset($_REQUEST['testcomment']) && !empty($_REQUEST['testcomment'])) {
                 $test_comment = $_REQUEST['testcomment'];
@@ -130,15 +168,17 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             }
 
             if (
+                $answer_saved
+                &&
                 (isset($_REQUEST['nextquestion']) || isset($_REQUEST['autonext']) && $_REQUEST['autonext'] == 1)
                 && $_REQUEST['nextquestionid'] > 0
             ) {
                 // go to next question
                 $testlog_id = 0 + (int) $_REQUEST['nextquestionid'];
-            } elseif (isset($_REQUEST['prevquestion']) && $_REQUEST['prevquestionid'] > 0) {
+            } elseif ($answer_saved && isset($_REQUEST['prevquestion']) && $_REQUEST['prevquestionid'] > 0) {
                 // go to previous question
                 $testlog_id = (int) $_REQUEST['prevquestionid'];
-            } else {
+            } elseif ($answer_saved) {
                 // go to selected question
                 foreach (array_keys($_POST) as $key) {
                     if (preg_match('/jumpquestion_(\d+)/', $key, $matches) > 0) {
@@ -147,6 +187,10 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                     }
                 }
             }
+        }
+
+        if ($answer_save_error !== '') {
+            F_print_error('ERROR', htmlspecialchars($answer_save_error, ENT_QUOTES, $l['a_meta_charset']));
         }
 
         // confirmation form to terminate the test

@@ -85,8 +85,24 @@ function F_db_error($link_identifier = null)
  */
 function F_db_query($query, $link_identifier)
 {
+    static $transactions = [];
+    $connection_id = is_object($link_identifier)
+        ? spl_object_id($link_identifier)
+        : (int) $link_identifier;
+
     if ($query == 'START TRANSACTION') {
+        $transactions[$connection_id] = true;
         return true;
+    }
+    if ($query == 'COMMIT') {
+        $committed = @oci_commit($link_identifier);
+        unset($transactions[$connection_id]);
+        return $committed;
+    }
+    if ($query == 'ROLLBACK') {
+        $rolled_back = @oci_rollback($link_identifier);
+        unset($transactions[$connection_id]);
+        return $rolled_back;
     }
 
     // convert MySQL RAND() function to Oracle dbms_random.random
@@ -99,7 +115,8 @@ function F_db_query($query, $link_identifier)
         return false;
     }
 
-    if (@oci_execute($stid)) {
+    $mode = isset($transactions[$connection_id]) ? OCI_NO_AUTO_COMMIT : OCI_COMMIT_ON_SUCCESS;
+    if (@oci_execute($stid, $mode)) {
         return $stid;
     }
 

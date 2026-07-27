@@ -26,6 +26,7 @@
  * @return string containing an XHTML table of user's tests.
  */
 require_once __DIR__ . '/tce_functions_tmf_question.php';
+require_once __DIR__ . '/tce_functions_answer_save.php';
 
 function F_getUserTests()
 {
@@ -2169,6 +2170,11 @@ function F_questionForm($test_id, $testlog_id, $formname)
             $str .= '<input type="hidden" name="testid" id="testid" value="' . $test_id . '" />' . K_NEWLINE;
             $str .= '<input type="hidden" name="testlogid" id="testlogid" value="' . $testlog_id . '" />' . K_NEWLINE;
             $str .=
+                '<input type="hidden" name="answer_version" id="answer_version" value="'
+                . (int) $m['testlog_answer_version']
+                . '" />'
+                . K_NEWLINE;
+            $str .=
                 '<input type="hidden" name="testuser_id" id="testuser_id" value="'
                 . $m['testlog_testuser_id']
                 . '" />'
@@ -2208,7 +2214,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     . K_ANSWER_TEXTAREA_COLS
                     . '" rows="'
                     . K_ANSWER_TEXTAREA_ROWS
-                    . '" name="answertext" id="answertext" onchange="saveAnswer()"';
+                    . '" name="answertext" id="answertext"';
                 $str .= '>';
                 $str .= $m['testlog_answer_text'];
                 $str .= '</textarea>' . K_NEWLINE;
@@ -2504,26 +2510,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
             $str .= '}}' . K_NEWLINE;
             $str .= 'document.onkeypress=actionByChar;' . K_NEWLINE;
-            // script for autosaving text answers
-            if ($m['question_type'] == 3) {
-                // check if local storage is enabled (HTML5)
-                $str .= 'var enable_storage=(typeof(Storage)!=="undefined");' . K_NEWLINE;
-                // function to save the text answer locally
-                $str .=
-                    'function saveAnswer(){if(enable_storage){localStorage.answertext'
-                    . $testlog_id
-                    . '=document.getElementById("answertext").value;}}'
-                    . K_NEWLINE;
-                // initialize the text answer with the saved value
-                $str .=
-                    'if(enable_storage && localStorage.answertext'
-                    . $testlog_id
-                    . '){document.getElementById("answertext").value=localStorage.answertext'
-                    . $testlog_id
-                    . ';}'
-                    . K_NEWLINE;
-            }
-
             if ((int) $m['question_type'] === 5) {
                 $str .=
                     'document.querySelectorAll("select.matching-position").forEach(function(select){'
@@ -2542,7 +2528,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
             if ($m['question_timer'] > 0) {
                 // automatic submit form after specified amount of time
                 $str .=
-                    "setTimeout('document.getElementById(\'autonext\').value=1;document.getElementById(\'"
+                    "window.tmfQuestionTimerId=setTimeout('document.getElementById(\'autonext\').value=1;document.getElementById(\'"
                     . $formname
                     . "\').submit();', "
                     . ($m['question_timer'] * 1000)
@@ -2756,6 +2742,26 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             . ') '
             . $l['w_confirm']
             . '" />';
+    }
+    if (!$disable) {
+        $navlink .=
+            '<button type="button" id="saveanswer" data-answer-save="tce_test_answer_save.php" data-answer-saving="'
+            . htmlspecialchars($l['ov_answer_saving'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" data-answer-saved="'
+            . htmlspecialchars($l['ov_answer_saved'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" data-answer-error="'
+            . htmlspecialchars($l['ov_answer_not_saved'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" data-answer-conflict="'
+            . htmlspecialchars($l['ov_answer_save_conflict'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" data-answer-unsaved="'
+            . htmlspecialchars($l['ov_answer_unsaved'], ENT_QUOTES, $l['a_meta_charset'])
+            . '" data-answer-retrying="'
+            . htmlspecialchars($l['ov_answer_retrying'], ENT_QUOTES, $l['a_meta_charset'])
+            . '">'
+            . htmlspecialchars($l['ov_save'], ENT_QUOTES, $l['a_meta_charset'])
+            . '</button>';
+        $navlink .=
+            '<span id="answer-save-status" class="answer-save-status" role="status" aria-live="polite"></span>';
     }
 
     // button for next question

@@ -50541,6 +50541,54 @@ YYYYMMDDhhmmss_tcexam_backup.sql.gz، جہاں YYYYMMDDhhmmss سال (Y)، ما�
             <seg>Сохранить</seg>
          </tuv>
       </tu>
+      <tu tuid="ov_answer_saving" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Saving…</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Сохраняется…</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_answer_saved" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Saved</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Сохранено</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_answer_not_saved" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Not saved</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Не сохранено</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_answer_save_conflict" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>A newer answer was already saved. Review the current answer and try again.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Более новый ответ уже сохранён. Проверьте текущий ответ и повторите попытку.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_answer_unsaved" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Unsaved changes</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Есть несохранённые изменения</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_answer_retrying" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Connection lost. Retry {attempt} of {maximum} in {seconds} s…</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Связь потеряна. Повтор {attempt} из {maximum} через {seconds} с…</seg>
+         </tuv>
+      </tu>
       <tu tuid="ov_about_platform" datatype="plaintext">
          <tuv xml:lang="EN">
             <seg>About the platform</seg>

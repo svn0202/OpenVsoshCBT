@@ -207,4 +207,14 @@ final class DatabaseDalIntegrationTest extends TestCase
         $row = \F_db_fetch_assoc($res);
         $this->assertSame(60, (int) $row['d']);
     }
+
+    public function testAnswerVersionColumnsAreAvailable(): void
+    {
+        $res = \F_db_query(
+            'SELECT testlog_answer_version, testlog_answer_operation FROM tce_tests_logs WHERE 1=0',
+            $this->db
+        );
+
+        $this->assertNotFalse($res, 'fresh schemas must include versioned answer-save columns');
+    }
 }

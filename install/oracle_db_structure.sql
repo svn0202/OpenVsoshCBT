@@ -172,6 +172,8 @@ CREATE TABLE tce_tests_logs (
 	testlog_reaction_time NUMBER(19,0) DEFAULT 0 NOT NULL,
 	testlog_order NUMBER(5,0) DEFAULT 1 NOT NULL,
 	testlog_num_answers NUMBER(5,0) DEFAULT 0 NOT NULL,
+	testlog_answer_version NUMBER(19,0) DEFAULT 0 NOT NULL,
+	testlog_answer_operation VARCHAR2(32),
 	testlog_comment NCLOB,
 constraint PK_tce_tests_logs_testlog_id primary key (testlog_id)
 );

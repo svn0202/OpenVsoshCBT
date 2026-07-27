@@ -73,6 +73,9 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 Для импорта Word дополнительно примените
 `install/upgrade/<СУБД>/openvsosh_word_import.sql`.
 
+Для подтверждаемого сохранения ответов и защиты версий дополнительно примените
+`install/upgrade/<СУБД>/openvsosh_answer_save.sql`.
+
 Миграции применяются по порядку и только один раз. Перед ними создайте дамп,
 а после проверьте вход администратора, сохранение настроек и страницу входа.
 Полный безопасный порядок обновления описан в
@@ -86,6 +89,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Регламент проведения олимпиады](doc/admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](doc/admin/matching-questions.md)
 - [Импорт вопросов из Microsoft Word](doc/admin/word-import.md)
+- [Надёжное сохранение ответов](doc/admin/answer-saving.md)
 - [Безопасное обновление](doc/admin/upgrade.md)
 - [Решение известных проблем](doc/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)
