@@ -68,6 +68,15 @@ final class XlsxTest extends TestCase
         }
     }
 
+    public function testWriterPreservesCanonicalDecimalTextInNumericCell(): void
+    {
+        $xml = \F_tmf_xlsx_sheet_xml([
+            [['value' => '0.100', 'type' => 'number']],
+        ], []);
+        self::assertStringContainsString('<v>0.100</v>', $xml);
+        self::assertStringNotContainsString('<v>0.1</v>', $xml);
+    }
+
     public function testUserPreviewReportsDuplicatesUnknownGroupsAndInvalidRows(): void
     {
         $rows = [

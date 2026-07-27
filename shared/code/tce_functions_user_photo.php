@@ -21,13 +21,18 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     ) {
         return ['status' => 'invalid', 'message' => 'Фотография не загружена или превышает 5 МБ.'];
     }
-    $info = @getimagesize($source);
-    $mime = is_array($info) ? (string) ($info['mime'] ?? '') : '';
-    $image = match ($mime) {
-        'image/jpeg' => @imagecreatefromjpeg($source),
-        'image/png' => @imagecreatefrompng($source),
-        default => false,
-    };
+    set_error_handler(static fn (): bool => true);
+    try {
+        $info = getimagesize($source);
+        $mime = is_array($info) ? (string) ($info['mime'] ?? '') : '';
+        $image = match ($mime) {
+            'image/jpeg' => imagecreatefromjpeg($source),
+            'image/png' => imagecreatefrompng($source),
+            default => false,
+        };
+    } finally {
+        restore_error_handler();
+    }
     if (!$image instanceof GdImage) {
         return ['status' => 'invalid', 'message' => 'Разрешены только корректные JPEG и PNG.'];
     }
@@ -51,7 +56,9 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     $stored = imagejpeg($target, $temporary, 88);
     imagedestroy($target);
     if (!$stored || !rename($temporary, F_tmf_user_photo_path($user_id))) {
-        @unlink($temporary);
+        if (is_file($temporary)) {
+            unlink($temporary);
+        }
         return ['status' => 'error', 'message' => 'Не удалось сохранить фотографию.'];
     }
     chmod(F_tmf_user_photo_path($user_id), 0o600);

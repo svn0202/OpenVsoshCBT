@@ -144,7 +144,10 @@ switch ($menu_mode) { // process submitted data
                     if (!($r = F_db_query($sql, $db))) {
                         F_display_db_error(false);
                     } else {
-                        @unlink(F_tmf_user_photo_path((int) $user_id));
+                        $photo_path = F_tmf_user_photo_path((int) $user_id);
+                        if (is_file($photo_path)) {
+                            unlink($photo_path);
+                        }
                         $user_id = false;
                         F_print_error('MESSAGE', '[' . stripslashes($user_name) . '] ' . $l['m_user_deleted']);
                     }

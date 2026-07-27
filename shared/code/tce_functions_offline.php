@@ -20,12 +20,16 @@ function F_tmf_offline_payload_encode(array $payload): string
     );
 }
 
-function F_tmf_offline_sign(string $payload_base64, string $secret): string
+function F_tmf_offline_sign(string $payload_base64, #[\SensitiveParameter] string $secret): string
 {
     return hash_hmac('sha256', $payload_base64, $secret);
 }
 
-function F_tmf_offline_signature_is_valid(string $payload_base64, string $signature, string $secret): bool
+function F_tmf_offline_signature_is_valid(
+    string $payload_base64,
+    string $signature,
+    #[\SensitiveParameter] string $secret,
+): bool
 {
     return preg_match('/^[a-f0-9]{64}$/', $signature) === 1
         && hash_equals(F_tmf_offline_sign($payload_base64, $secret), $signature);
