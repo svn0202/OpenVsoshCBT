@@ -175,6 +175,18 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         return self::$authCookies;
     }
 
+    /** Start a fresh authenticated session for a specific integration-test account. */
+    private function loginCredentials(string $username, #[\SensitiveParameter] string $password): array
+    {
+        [, , $cookies] = $this->http('GET', '/admin/code/index.php');
+        [, , $cookies] = $this->http('POST', '/admin/code/index.php', $cookies, [
+            'logaction' => 'login',
+            'xuser_name' => $username,
+            'xuser_password' => $password,
+        ]);
+        return $cookies;
+    }
+
     public function testAdminLoginSucceeds(): void
     {
         $cookies = $this->login();
@@ -182,6 +194,186 @@ final class AdminControllerHttpTest extends AppHttpTestCase
 
         $this->assertSame(200, $status);
         $this->assertStringNotContainsString('form_login', $body, 'an authenticated session should not see the login form');
+    }
+
+    public function testCumulativeRoleLevelsProtectAdministrativeAreas(): void
+    {
+        $credential = self::ADMIN_PW . '-role';
+        $hash = password_hash($credential, PASSWORD_DEFAULT);
+        $accounts = [];
+        try {
+            foreach ([5, 6, 7, 8, 9] as $level) {
+                $name = 'itest_role_' . $level;
+                $this->dbExec(
+                    "INSERT INTO tce_users (user_regdate,user_ip,user_name,user_password,user_level) VALUES "
+                    . "('2026-01-01 00:00:00','127.0.0.1','{$name}','{$hash}',{$level})"
+                );
+                $accounts[$level] = [
+                    'id' => (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='{$name}'"),
+                    'cookies' => $this->loginCredentials($name, $credential),
+                ];
+            }
+
+            $matrix = [
+                5 => ['/admin/code/tce_monitor.php', '/admin/code/tce_self_profile.php'],
+                6 => ['/admin/code/tce_show_result_allusers.php'],
+                7 => ['/admin/code/tce_edit_question.php'],
+                8 => ['/admin/code/tce_edit_test.php'],
+                9 => ['/admin/code/tce_import_omr_bulk.php'],
+            ];
+            foreach ($matrix as $minimumLevel => $paths) {
+                foreach ($paths as $path) {
+                    foreach ($accounts as $level => $account) {
+                        [, $body] = $this->http('GET', $path, $account['cookies']);
+                        if ($level >= $minimumLevel) {
+                            $this->assertStringNotContainsString(
+                                'form_login',
+                                $body,
+                                "level {$level} should be allowed to open {$path}"
+                            );
+                        } else {
+                            $this->assertStringContainsString(
+                                'form_login',
+                                $body,
+                                "level {$level} should be denied access to {$path}"
+                            );
+                        }
+                    }
+                }
+            }
+            foreach ($accounts as $level => $account) {
+                [, $body] = $this->http('GET', '/admin/code/tce_onboarding_settings.php', $account['cookies']);
+                $this->assertStringContainsString(
+                    'form_login',
+                    $body,
+                    "level {$level} must not change instance-wide settings"
+                );
+            }
+
+            [, $body] = $this->http(
+                'GET',
+                '/public/code/tce_user_change_email.php',
+                $accounts[5]['cookies']
+            );
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+            [$status] = $this->http(
+                'POST',
+                '/public/code/tce_user_change_email.php',
+                $accounts[5]['cookies'],
+                [
+                    'update' => '1',
+                    'currentpassword' => $credential,
+                    'user_email' => 'role5@example.test',
+                    'user_email_repeat' => 'role5@example.test',
+                    'csrf_token' => $token,
+                ]
+            );
+            $this->assertSame(200, $status);
+            $this->assertSame(
+                '5',
+                $this->dbScalar('SELECT user_level FROM tce_users WHERE user_id=' . $accounts[5]['id']),
+                'changing a privileged profile email must preserve the assigned role'
+            );
+        } finally {
+            foreach ($accounts as $account) {
+                $this->dbExec('DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $account['id']);
+                $this->dbExec('DELETE FROM tce_users WHERE user_id=' . $account['id']);
+            }
+        }
+    }
+
+    public function testDefaultGroupCannotBeDeletedAndAdminMembershipIsRepairedAtLogin(): void
+    {
+        $cookies = $this->login();
+        $defaultId = $this->groupIdByName('default');
+        $adminId = (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'");
+        $this->assertGreaterThan(0, $defaultId);
+        $this->assertGreaterThan(0, $adminId);
+
+        [$status, $body] = $this->http(
+            'GET',
+            '/admin/code/tce_edit_group.php?group_id=' . $defaultId,
+            $cookies
+        );
+        $this->assertSame(200, $status);
+        $token = self::extractCsrfToken($body);
+        $this->assertNotNull($token);
+        [, $body] = $this->http('POST', '/admin/code/tce_edit_group.php', $cookies, [
+            'delete' => '1',
+            'group_id' => (string) $defaultId,
+            'csrf_token' => $token,
+        ]);
+        $this->assertStringNotContainsString('name="forcedelete"', $body);
+        $this->assertSame($defaultId, $this->groupIdByName('default'));
+
+        $this->dbExec(
+            'DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+            . ' AND usrgrp_group_id=' . $defaultId
+        );
+        $this->loginCredentials('admin', self::ADMIN_PW);
+        $membership = $this->dbScalar(
+            'SELECT COUNT(*) FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+            . ' AND usrgrp_group_id=' . $defaultId
+        );
+        $this->assertSame('1', $membership);
+    }
+
+    public function testTeacherQuestionBanksAreIsolatedAndSharedOnlyThroughGroups(): void
+    {
+        $credential = self::ADMIN_PW . '-bank';
+        $hash = password_hash($credential, PASSWORD_DEFAULT);
+        $suffix = bin2hex(random_bytes(4));
+        $sharedGroup = $this->ensureGroup('itest_shared_' . $suffix);
+        $otherGroup = $this->ensureGroup('itest_other_' . $suffix);
+        $userIds = [];
+        $moduleNames = [
+            'shared' => 'itest_shared_module_' . $suffix,
+            'private' => 'itest_private_module_' . $suffix,
+        ];
+        try {
+            foreach (['owner', 'colleague', 'outsider'] as $name) {
+                $username = 'itest_' . $name . '_' . $suffix;
+                $this->dbExec(
+                    "INSERT INTO tce_users (user_regdate,user_ip,user_name,user_password,user_level) VALUES "
+                    . "('2026-01-01 00:00:00','127.0.0.1','{$username}','{$hash}',7)"
+                );
+                $userIds[$name] = (int) $this->dbScalar(
+                    "SELECT user_id FROM tce_users WHERE user_name='{$username}'"
+                );
+            }
+            foreach (['owner', 'colleague'] as $name) {
+                $this->dbExec(
+                    'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                    . $userIds[$name] . ',' . $sharedGroup . ')'
+                );
+            }
+            $this->dbExec(
+                'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                . $userIds['outsider'] . ',' . $otherGroup . ')'
+            );
+            $this->dbExec(
+                "INSERT INTO tce_modules (module_name,module_enabled,module_user_id) VALUES "
+                . "('{$moduleNames['shared']}',TRUE,{$userIds['owner']}),"
+                . "('{$moduleNames['private']}',TRUE,{$userIds['outsider']})"
+            );
+
+            $cookies = $this->loginCredentials('itest_colleague_' . $suffix, $credential);
+            [$status, $body] = $this->http('GET', '/admin/code/tce_edit_module.php', $cookies);
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString($moduleNames['shared'], $body);
+            $this->assertStringNotContainsString($moduleNames['private'], $body);
+        } finally {
+            foreach ($moduleNames as $moduleName) {
+                $this->dbExec("DELETE FROM tce_modules WHERE module_name='{$moduleName}'");
+            }
+            foreach ($userIds as $userId) {
+                $this->dbExec('DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $userId);
+                $this->dbExec('DELETE FROM tce_users WHERE user_id=' . $userId);
+            }
+            $this->deleteGroupById($sharedGroup);
+            $this->deleteGroupById($otherGroup);
+        }
     }
 
     public function testPublicPwaManifestAndWorkerExcludePrivateResponses(): void

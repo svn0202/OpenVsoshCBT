@@ -2,7 +2,7 @@
 
 require_once '../config/tce_config.php';
 
-$pagelevel = K_AUTH_ADMIN_TESTS;
+$pagelevel = K_AUTH_ADMINISTRATOR;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
