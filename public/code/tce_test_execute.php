@@ -188,6 +188,16 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                     $reaction_time,
                 );
             }
+            if ($answer_saved && isset($_FILES['answer_attachments'])) {
+                $attachment_result = F_tmf_attachment_store_uploads(
+                    $test_id,
+                    $testlog_id,
+                    (array) $_FILES['answer_attachments'],
+                );
+                if (!in_array($attachment_result['status'], ['stored', 'empty'], true)) {
+                    $answer_save_error = $attachment_result['message'];
+                }
+            }
             // update user's test comment
             if (isset($_REQUEST['testcomment']) && !empty($_REQUEST['testcomment'])) {
                 $test_comment = $_REQUEST['testcomment'];

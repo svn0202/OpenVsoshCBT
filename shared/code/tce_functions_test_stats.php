@@ -1702,6 +1702,8 @@ function F_printUserTestStat($testuser_id)
                 // TEXT
                 $ret .= '<ul class="answer"><li>' . K_NEWLINE;
                 $ret .= F_decode_tcecode($m['testlog_answer_text']);
+                require_once __DIR__ . '/tce_functions_attachments.php';
+                $ret .= F_tmf_attachment_html((int) $m['testlog_id']);
                 $ret .= '&nbsp;</li></ul>' . K_NEWLINE;
             } else {
                 $ret .= '<ol class="answer">' . K_NEWLINE;

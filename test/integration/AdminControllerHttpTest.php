@@ -273,6 +273,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
             'tce_pregenerate.php', 'tce_offline.php', 'tce_users_xlsx.php', 'tce_test_access_rules.php',
+            'tce_attachment.php', 'tce_attempt_archive.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -1076,6 +1077,154 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->dbExec('DELETE FROM tce_questions WHERE question_id=' . $questionId);
             $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
             $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+        }
+    }
+
+    public function testEssayAttachmentUploadDownloadAndArchiveFlow(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $groupId = $this->ensureGroup('itest_attachment_group');
+        if (!$this->userInGroup($adminId, $groupId)) {
+            $this->dbExec(
+                'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                . $adminId . ',' . $groupId . ')'
+            );
+        }
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_attachment_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time,"
+            . "test_begin_time,test_end_time) VALUES ('itest_attachment_test','d'," . $adminId
+            . ",60,'2020-01-01 00:00:00','2035-01-01 00:00:00')"
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_attachment_test'"
+        ) ?? '0');
+        $this->dbExec(
+            'INSERT INTO tce_testgroups (tstgrp_test_id,tstgrp_group_id) VALUES ('
+            . $testId . ',' . $groupId . ')'
+        );
+        $this->dbExec("DELETE FROM tce_modules WHERE module_name='itest_attachment_module'");
+        $this->dbExec(
+            "INSERT INTO tce_modules (module_name,module_enabled,module_user_id) "
+            . "VALUES ('itest_attachment_module','1'," . $adminId . ')'
+        );
+        $moduleId = (int) ($this->dbScalar(
+            "SELECT module_id FROM tce_modules WHERE module_name='itest_attachment_module'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_subjects (subject_module_id,subject_name,subject_description,"
+            . "subject_enabled,subject_user_id) VALUES ("
+            . $moduleId . ",'itest_attachment_subject','d','1'," . $adminId . ')'
+        );
+        $subjectId = (int) ($this->dbScalar(
+            "SELECT subject_id FROM tce_subjects WHERE subject_name='itest_attachment_subject'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+            . "question_enabled,question_position) VALUES ("
+            . $subjectId . ",'Essay with evidence',3,'1',1)"
+        );
+        $questionId = (int) ($this->dbScalar(
+            'SELECT question_id FROM tce_questions WHERE question_subject_id=' . $subjectId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
+            . 'testuser_creation_time,testuser_last_activity) VALUES ('
+            . $testId . ',' . $adminId . ',1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)'
+        );
+        $attemptId = (int) ($this->dbScalar(
+            'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+            . "testlog_creation_time,testlog_order) VALUES ("
+            . $attemptId . ',' . $questionId . ',0,CURRENT_TIMESTAMP,1)'
+        );
+        $testlogId = (int) ($this->dbScalar(
+            'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+        ) ?? '0');
+
+        try {
+            [$status, $page] = $this->http(
+                'GET',
+                '/public/code/tce_test_execute.php?testid=' . $testId . '&testlogid=' . $testlogId,
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $token = self::extractCsrfToken($page);
+            $this->assertNotNull($token);
+            preg_match('/name="answer_version"[^>]*value="(\\d+)"/', $page, $versionMatch);
+            $this->assertNotEmpty($versionMatch);
+            $png = base64_decode(
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+                true
+            );
+            [$status, $body] = $this->httpUpload(
+                '/public/code/tce_test_execute.php',
+                $cookies,
+                [
+                    'testid' => (string) $testId,
+                    'testlogid' => (string) $testlogId,
+                    'answertext' => 'Evidence attached',
+                    'answer_version' => $versionMatch[1],
+                    'confirmanswer' => '1',
+                    'csrf_token' => (string) $token,
+                ],
+                'answer_attachments[]',
+                'evidence.png',
+                (string) $png
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringNotContainsString('не был загружен', $body);
+            $attachmentId = (int) ($this->dbScalar(
+                'SELECT attachment_id FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId
+            ) ?? '0');
+            $this->assertGreaterThan(0, $attachmentId);
+            $storedName = (string) ($this->dbScalar(
+                'SELECT attachment_stored_name FROM tce_testlog_attachments WHERE attachment_id=' . $attachmentId
+            ) ?? '');
+            [$directStatus] = $this->http('GET', '/cache/attachments/' . $storedName, $cookies);
+            $this->assertContains($directStatus, [403, 404]);
+
+            [$status, $download] = $this->http(
+                'GET',
+                '/admin/code/tce_attachment.php?id=' . $attachmentId,
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $this->assertSame($png, $download);
+
+            [$status, $archive] = $this->http(
+                'GET',
+                '/admin/code/tce_attempt_archive.php?testuser_id=' . $attemptId,
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringStartsWith("PK\x03\x04", $archive);
+
+            [$status, $pdf] = $this->http(
+                'GET',
+                '/admin/code/tce_pdf_results.php?mode=3&test_id=' . $testId
+                . '&user_id=' . $adminId . '&testuser_id=' . $attemptId,
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringStartsWith('%PDF-', $pdf);
+        } finally {
+            $this->dbExec('DELETE FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId);
+            $this->dbExec('DELETE FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_testgroups WHERE tstgrp_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_questions WHERE question_id=' . $questionId);
+            $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
+            $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+            $this->dbExec(
+                'DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+                . ' AND usrgrp_group_id=' . $groupId
+            );
+            $this->deleteGroupById($groupId);
         }
     }
 

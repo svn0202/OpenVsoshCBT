@@ -1,0 +1,3 @@
+Require all denied
+RemoveHandler .php .phtml .phar .cgi .pl .py .sh
+Options -ExecCGI

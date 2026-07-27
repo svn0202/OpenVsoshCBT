@@ -3,9 +3,9 @@
 # Build:  docker build -t tecnickcom/tcexam .   (or: make docker)
 # Run:    docker compose up --build             (or: make up)
 #
-# The image bundles the application and its Composer dependencies. The bundled-at-install
-# artifacts (PDF fonts and translation caches) are generated on first container start by the
-# entrypoint and cached in volumes — see docker/entrypoint.sh and docker-compose.yml.
+# The image bundles the application, Composer dependencies and the default PDF fonts. Translation
+# caches are generated on first container start and cached in volumes — see docker/entrypoint.sh
+# and docker-compose.yml.
 
 # PHP 8.4 = the newest version in the project's CI matrix (composer requires >=8.2; CI tests
 # 8.2/8.3/8.4). PHP 8.5 is intentionally not used yet — it is outside the tested matrix. Apache +
@@ -49,20 +49,23 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /var/www/html
 
-# Install PHP dependencies first (better layer caching). Skip Composer scripts here: the PDF-font
-# generation hook downloads large external sources and is deferred to the entrypoint (volume-cached).
+# Install PHP dependencies first (better layer caching). Skip Composer scripts here and invoke the
+# PDF-font build explicitly below, so a failed font download fails the image build instead of
+# surfacing later as an HTTP 500 from a report endpoint.
 # composer.lock is gitignored: the `*` makes it optional, and `composer install` generates it when
 # absent (resolving from composer.json) so the build works with or without a committed lock file.
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction --prefer-dist \
+    && cd vendor/tecnickcom/tc-lib-pdf-font \
+    && make fonts \
     && composer clear-cache
 
 # --- Application --------------------------------------------------------------------------------
 COPY . .
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
-# Entrypoint generates fonts + language caches on first run, fixes runtime permissions, then
-# hands off to Apache.
+# Entrypoint repairs an empty legacy font volume, generates language caches, fixes runtime
+# permissions, then hands off to Apache.
 COPY docker/entrypoint.sh /usr/local/bin/tcexam-entrypoint
 RUN chmod +x /usr/local/bin/tcexam-entrypoint \
     && chown -R www-data:www-data /var/www/html

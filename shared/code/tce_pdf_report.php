@@ -929,6 +929,27 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                         '<div style="font-size:8pt;border:0.5px solid #000000;">'
                         . F_decode_tcecode($m['testlog_answer_text'])
                         . '</div>';
+                    require_once __DIR__ . '/tce_functions_attachments.php';
+                    $attachments = F_tmf_attachment_list((int) $m['testlog_id']);
+                    if ($attachments !== []) {
+                        $html .= '<div style="font-size:8pt;"><b>Вложения:</b><ul>';
+                        foreach ($attachments as $attachment) {
+                            $html .= '<li>' . htmlspecialchars((string) $attachment['attachment_original_name'])
+                                . ' — ' . htmlspecialchars((string) $attachment['attachment_mime'])
+                                . ', ' . number_format((int) $attachment['attachment_size'] / 1024, 1, '.', ' ')
+                                . ' КБ</li>';
+                            $path = F_tmf_attachment_path($attachment);
+                            if (
+                                str_starts_with((string) $attachment['attachment_mime'], 'image/')
+                                && $path !== ''
+                                && is_file($path)
+                            ) {
+                                $html .= '<img src="' . htmlspecialchars($path, ENT_QUOTES)
+                                    . '" style="max-width:120mm;max-height:80mm;" alt="" />';
+                            }
+                        }
+                        $html .= '</ul></div>';
+                    }
                 } else {
                     $sqla =
                         'SELECT * FROM '

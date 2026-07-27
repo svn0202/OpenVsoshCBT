@@ -104,6 +104,18 @@
 
 Подробности: [Условия доступа и безопасного завершения](test-access.md).
 
+### Вложения к развёрнутым ответам
+
+Для защищённых фото/PDF-вложений примените:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_essay_attachments.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_essay_attachments.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_essay_attachments.sql`.
+
+Сделайте каталог `cache/attachments` доступным на запись PHP и закройте к нему
+прямой HTTP-доступ. Подробности:
+[Вложения к развёрнутым ответам](essay-attachments.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh
