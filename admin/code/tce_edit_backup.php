@@ -31,7 +31,9 @@ require_once '../../shared/code/tce_authorization.php';
 $thispage_title = $l['t_backup_editor'];
 
 require_once '../../shared/code/tce_functions_form.php';
+require_once '../../shared/code/tce_functions_backup.php';
 
+$menu_mode = '';
 if (isset($_POST['backup'])) {
     $menu_mode = 'backup';
 } elseif (isset($_POST['restore'])) {
@@ -42,21 +44,16 @@ if (isset($_POST['backup'])) {
     $menu_mode = 'download';
 }
 
-function F_isValidbackupFile($file)
+function F_isValidbackupFile(mixed $file): bool
 {
-    return (
-        strlen($file) === 35
-        && str_ends_with($file, '.gz')
-        && preg_match('|\.\./|i', $file) === 0
-        && preg_match('/[^a-zA-Z0-9\_\-\.]+/i', $file) === 0
-    );
+    return is_string($file) && F_tmf_backup_file_is_valid($file);
 }
 
 // explicitly read submitted form input (selected backup filename)
 $backup_file = $_REQUEST['backup_file'] ?? '';
 
 // check backup filename
-if (!empty($backup_file) && !F_isValidbackupFile($backup_file)) {
+if (!is_string($backup_file) || ($backup_file !== '' && !F_isValidbackupFile($backup_file))) {
     F_print_error('ERROR', 'SECURITY ERROR', true);
 }
 
@@ -92,105 +89,20 @@ switch ($menu_mode) { // process submitted data
 
     case 'forcerestore':
         {
-            // Delete specified record
-            //check if delete button has been pushed (redundant check)
-            if (($_POST['forcerestore'] ?? '') == $l['w_restore'] && (isset($backup_file) && !empty($backup_file))) {
-                // create a backup of the current database data
-                switch (K_DATABASE_TYPE) {
-                    case 'POSTGRESQL':
-                        {
-                            $filename = K_PATH_BACKUP . date('YmdHis') . '_tcexam_backup.tar';
-                            $command =
-                                'export PGUSER="'
-                                . addslashes(K_DATABASE_USER_NAME)
-                                . '"; export PGPASSWORD="'
-                                . addslashes(K_DATABASE_USER_PASSWORD)
-                                . '"; pg_dump -h'
-                                . K_DATABASE_HOST
-                                . ' -p'
-                                . K_DATABASE_PORT
-                                . '  -U'
-                                . K_DATABASE_USER_NAME
-                                . ' -Ft '
-                                . K_DATABASE_NAME
-                                . ' | gzip > '
-                                . $filename
-                                . '.gz';
-                            break;
-                        }
-                    case 'MYSQL':
-                    default:
-                        {
-                            $filename = K_PATH_BACKUP . date('YmdHis') . '_tcexam_backup.sql';
-                            $command =
-                                'mysqldump --opt -h'
-                                . K_DATABASE_HOST
-                                . ' -P'
-                                . K_DATABASE_PORT
-                                . ' -u'
-                                . K_DATABASE_USER_NAME
-                                . ' -p'
-                                . K_DATABASE_USER_PASSWORD
-                                . ' '
-                                . K_DATABASE_NAME
-                                . ' | gzip > '
-                                . $filename
-                                . '.gz';
-                            break;
-                        }
+            if (($_POST['forcerestore'] ?? '') === $l['w_restore'] && $backup_file !== '') {
+                try {
+                    $config = F_tmf_backup_config_from_constants();
+                    // Always take a checked safety backup immediately before restore.
+                    F_tmf_backup_create($config, K_PATH_BACKUP);
+                    $restore_path = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
+                    F_tmf_backup_restore($config, $restore_path);
+                    F_print_error('MESSAGE', $l['m_restore_completed'] . ': ' . $backup_file);
+                } catch (TmfBackupException $exception) {
+                    F_print_error(
+                        'ERROR',
+                        htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
+                    );
                 }
-
-                exec($command);
-                // subtring file name for security reason
-                $backup_file = substr($backup_file, 0, 35);
-                // uncompressed filename (remove .gz extension)
-                $sql_backup_file = substr($backup_file, 0, -3);
-                $sql_backup_file_esc = escapeshellarg($sql_backup_file);
-                // get current dir
-                $current_dir = getcwd();
-                // change dir
-                chdir(K_PATH_BACKUP);
-                // uncompress backup archive
-                $command = 'gunzip -c ' . escapeshellarg($backup_file) . ' > ' . $sql_backup_file_esc . '';
-                exec($command);
-                // restore SQL file
-                $command = match (K_DATABASE_TYPE) {
-                    'POSTGRESQL' => 'export PGUSER="'
-                        . addslashes(K_DATABASE_USER_NAME)
-                        . '"; export PGPASSWORD="'
-                        . addslashes(K_DATABASE_USER_PASSWORD)
-                        . '"; pg_restore -c -h'
-                        . K_DATABASE_HOST
-                        . ' -p'
-                        . K_DATABASE_PORT
-                        . ' -U'
-                        . K_DATABASE_USER_NAME
-                        . ' -d'
-                        . K_DATABASE_NAME
-                        . ' -Ft '
-                        . $sql_backup_file_esc
-                        . '',
-                    default => 'mysql -h'
-                        . K_DATABASE_HOST
-                        . ' -P'
-                        . K_DATABASE_PORT
-                        . ' -u'
-                        . K_DATABASE_USER_NAME
-                        . ' -p'
-                        . K_DATABASE_USER_PASSWORD
-                        . ' '
-                        . K_DATABASE_NAME
-                        . ' < '
-                        . $sql_backup_file_esc
-                        . '',
-                };
-
-                exec($command);
-                // delete uncompressed backup
-                unlink($sql_backup_file);
-                // restore current dir
-                chdir($current_dir);
-                F_print_error('MESSAGE', $l['m_restore_completed'] . ': ' . $backup_file);
             }
 
             break;
@@ -198,59 +110,31 @@ switch ($menu_mode) { // process submitted data
 
     case 'backup':
         { // backup
-            switch (K_DATABASE_TYPE) {
-                case 'POSTGRESQL':
-                    {
-                        $filename = K_PATH_BACKUP . date('YmdHis') . '_tcexam_backup.tar';
-                        $command =
-                            'export PGUSER="'
-                            . addslashes(K_DATABASE_USER_NAME)
-                            . '"; export PGPASSWORD="'
-                            . addslashes(K_DATABASE_USER_PASSWORD)
-                            . '"; pg_dump -h'
-                            . K_DATABASE_HOST
-                            . ' -p'
-                            . K_DATABASE_PORT
-                            . ' -U'
-                            . K_DATABASE_USER_NAME
-                            . ' -Ft '
-                            . K_DATABASE_NAME
-                            . ' | gzip > '
-                            . $filename
-                            . '.gz';
-                        break;
-                    }
-                case 'MYSQL':
-                default:
-                    {
-                        $filename = K_PATH_BACKUP . date('YmdHis') . '_tcexam_backup.sql';
-                        $command =
-                            'mysqldump --opt -h'
-                            . K_DATABASE_HOST
-                            . ' -P'
-                            . K_DATABASE_PORT
-                            . ' -u'
-                            . K_DATABASE_USER_NAME
-                            . ' -p'
-                            . K_DATABASE_USER_PASSWORD
-                            . ' '
-                            . K_DATABASE_NAME
-                            . ' | gzip > '
-                            . $filename
-                            . '.gz';
-                        break;
-                    }
+            try {
+                F_tmf_backup_create(F_tmf_backup_config_from_constants(), K_PATH_BACKUP);
+                F_print_error('MESSAGE', $l['m_backup_completed']);
+            } catch (TmfBackupException $exception) {
+                F_print_error(
+                    'ERROR',
+                    htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
+                );
             }
-
-            exec($command);
-            F_print_error('MESSAGE', $l['m_backup_completed']);
             break;
         }
 
     case 'download':
         {
-            if (K_DOWNLOAD_BACKUPS && isset($backup_file) && !empty($backup_file)) {
-                $file_to_download = K_PATH_BACKUP . $backup_file;
+            if (K_DOWNLOAD_BACKUPS && $backup_file !== '') {
+                $file_to_download = '';
+                try {
+                    $file_to_download = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
+                } catch (TmfBackupException $exception) {
+                    F_print_error(
+                        'ERROR',
+                        htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
+                        true,
+                    );
+                }
                 // send headers
                 header('Content-Description: File Transfer');
                 header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1

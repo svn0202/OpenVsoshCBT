@@ -101,6 +101,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Надёжное сохранение ответов](doc/admin/answer-saving.md)
 - [Наблюдение за тестированием](doc/admin/monitoring.md)
 - [Предварительная генерация вариантов](doc/admin/pregeneration.md)
+- [Резервное копирование и восстановление](doc/admin/backup-restore.md)
 - [Автономное электронное проведение](doc/admin/offline-exams.md)
 - [XLSX: пользователи, мониторинг и результаты](doc/admin/xlsx.md)
 - [Условия доступа и безопасного завершения](doc/admin/test-access.md)

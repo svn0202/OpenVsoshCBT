@@ -17,7 +17,8 @@ FROM php:8.4-apache
 # make + git/unzip/curl are needed by the entrypoint's `make fonts` / `make lang` steps
 # (tc-lib-pdf-font downloads and builds the default font set; Composer prefers dist zips).
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends make git unzip curl ca-certificates \
+    && apt-get install -y --no-install-recommends \
+        make git unzip curl ca-certificates default-mysql-client postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # --- PHP extensions ---------------------------------------------------------------------------
