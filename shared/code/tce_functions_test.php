@@ -2055,19 +2055,23 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
 					AND answer_enabled=\'1\'
 					AND answer_isright=\'1\'';
             if ($r = F_db_query($sql, $db)) {
+                $short_answer_keys = [];
                 while ($m = F_db_fetch_array($r)) {
-                    if (
-                        K_SHORT_ANSWERS_BINARY && strcmp(trim($answer_text), $m['answer_description']) == 0
-                        || !K_SHORT_ANSWERS_BINARY && strcasecmp(trim($answer_text), $m['answer_description']) == 0
-                    ) {
-                        $answer_score = F_tmf_answer_score(
-                            $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
-                            true,
-                            (float) $question_right_score,
-                            (float) $question_wrong_score,
-                        );
-                        break;
-                    }
+                    $short_answer_keys[] = [
+                        'answer_description' => (string) $m['answer_description'],
+                        'answer_weight' => $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
+                    ];
+                }
+                $short_score = F_tmf_short_answer_score(
+                    $answer_text,
+                    $short_answer_keys,
+                    K_SHORT_ANSWERS_BINARY,
+                    (int) $tmf_options['similarity_threshold'],
+                    (float) $question_right_score,
+                    (float) $question_wrong_score,
+                );
+                if ($short_score !== null) {
+                    $answer_score = $short_score;
                 }
             } else {
                 F_display_db_error();

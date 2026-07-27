@@ -29,6 +29,7 @@ $thispage_title = $l['t_questions_editor'];
 require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
+require_once '../../shared/code/tce_functions_tmf_question.php';
 require_once '../code/tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 
@@ -124,12 +125,19 @@ if (!isset($_REQUEST['question_shuffle_answers']) || empty($_REQUEST['question_s
     $question_shuffle_answers = F_getBoolean($_REQUEST['question_shuffle_answers']);
 }
 
+$question_similarity_threshold = isset($_REQUEST['question_similarity_threshold'])
+    ? max(0, min(99, (int) $_REQUEST['question_similarity_threshold']))
+    : 0;
 if (isset($_REQUEST['question_description'])) {
     $question_description = utrim($_REQUEST['question_description']);
     if (function_exists('normalizer_normalize')) {
         // normalize UTF-8 string based on settings
         $question_description = F_utf8_normalizer($question_description, K_UTF8_NORMALIZATION_MODE);
     }
+    $question_description = F_tmf_set_similarity_threshold(
+        $question_description,
+        $question_similarity_threshold,
+    );
 }
 
 $question_explanation = isset($_REQUEST['question_explanation']) ? utrim($_REQUEST['question_explanation']) : '';
@@ -651,6 +659,7 @@ switch ($menu_mode) {
             $question_inline_answers = false;
             $question_auto_next = false;
             $question_shuffle_answers = false;
+            $question_similarity_threshold = 0;
             break;
         }
 
@@ -695,6 +704,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $question_inline_answers = false;
         $question_auto_next = false;
         $question_shuffle_answers = false;
+        $question_similarity_threshold = 0;
     } else {
         $sql = 'SELECT *
 				FROM ' . K_TABLE_QUESTIONS . '
@@ -715,6 +725,9 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_inline_answers = F_getBoolean($m['question_inline_answers']);
                 $question_auto_next = F_getBoolean($m['question_auto_next']);
                 $question_shuffle_answers = F_getBoolean($m['question_shuffle_answers']);
+                $question_similarity_threshold = F_tmf_question_options(
+                    (string) $question_description,
+                )['similarity_threshold'];
             } else {
                 $question_description = '';
                 $question_explanation = '';
@@ -727,6 +740,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_inline_answers = false;
                 $question_auto_next = false;
                 $question_shuffle_answers = false;
+                $question_similarity_threshold = 0;
             }
         } else {
             F_display_db_error();
@@ -1142,6 +1156,22 @@ echo
         $question_timer,
         '^([0-9]*)$',
         20,
+        false,
+        false,
+        false,
+        '',
+    )
+;
+
+echo
+    getFormRowTextInput(
+        'question_similarity_threshold',
+        'Сходство краткого ответа',
+        'Минимальный процент текстового сходства с одним из правильных ключей; 0 — только точное совпадение.',
+        '[%]',
+        $question_similarity_threshold,
+        '^([0-9]{1,2})$',
+        3,
         false,
         false,
         false,

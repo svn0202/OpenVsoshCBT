@@ -753,6 +753,7 @@ class TmfWordImporter
                     'mcma_checkbox' => false,
                     'mcma_header' => array(),
                     'max_sel' => 0,
+                    'similarity_threshold' => 0,
                     'short_answer' => false,
                 );
                 $active_answer = null;
@@ -824,6 +825,10 @@ class TmfWordImporter
             }
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
+        if (preg_match('/\[\[SIMILARITY=(\d{1,3})\]\]/iu', $plain, $match)) {
+            $question['similarity_threshold'] = max(0, min(99, (int) $match[1]));
+            $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
+        }
         if (preg_match('/\[\[DIFFICULTY=(\d+)\]\]/iu', $plain, $match)) {
             $question['difficulty'] = max(1, min(5, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
@@ -882,6 +887,9 @@ class TmfWordImporter
         }
         if ($question['max_sel'] > 0) {
             $metadata .= '<!--TMF_MAX_SEL:' . $question['max_sel'] . '-->';
+        }
+        if ($question['similarity_threshold'] > 0) {
+            $metadata .= '<!--TMF_SIMILARITY:' . $question['similarity_threshold'] . '-->';
         }
         $question['description'] = $metadata . trim($question['description']);
         $question['answers'] = array_values($question['answers']);

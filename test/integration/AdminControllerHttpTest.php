@@ -451,11 +451,27 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'SELECT MAX(question_id) FROM tce_questions WHERE question_subject_id=' . $subjectId
         ) ?? '0');
         $this->dbExec(
+            "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+            . "question_enabled,question_position,question_difficulty) VALUES ("
+            . $subjectId . ",'Short<!--TMF_SIMILARITY:85-->',3,'1',3,1)"
+        );
+        $shortId = (int) ($this->dbScalar(
+            'SELECT MAX(question_id) FROM tce_questions WHERE question_subject_id=' . $subjectId
+        ) ?? '0');
+        $this->dbExec(
             "INSERT INTO tce_answers (answer_question_id,answer_description,answer_isright,"
             . "answer_enabled,answer_position) VALUES (" . $objectiveId . ",'Right','1','1',1)"
         );
         $answerId = (int) ($this->dbScalar(
             'SELECT answer_id FROM tce_answers WHERE answer_question_id=' . $objectiveId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_answers (answer_question_id,answer_description,answer_isright,"
+            . "answer_enabled,answer_position,answer_weight) VALUES ("
+            . $shortId . ",'Свердловск','1','1',1,100)"
+        );
+        $shortAnswerId = (int) ($this->dbScalar(
+            'SELECT answer_id FROM tce_answers WHERE answer_question_id=' . $shortId
         ) ?? '0');
         $this->dbExec(
             "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
@@ -488,6 +504,16 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
             . ' AND testlog_question_id=' . $essayId
         ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+            . "testlog_creation_time,testlog_change_time,testlog_order,testlog_answer_text) VALUES ("
+            . $attemptId . ',' . $shortId
+            . ",99,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,3,'Свердловскк')"
+        );
+        $shortLogId = (int) ($this->dbScalar(
+            'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+            . ' AND testlog_question_id=' . $shortId
+        ) ?? '0');
 
         try {
             [, $form] = $this->http(
@@ -508,19 +534,25 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 ]
             );
             $this->assertSame(200, $status);
-            $this->assertStringContainsString('Пересчитано автоматических ответов: 1', $body);
+            $this->assertStringContainsString('Пересчитано автоматических ответов: 2', $body);
             $this->assertSame('4.000', $this->dbScalar(
                 'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $objectiveLogId
             ));
             $this->assertSame('2.500', $this->dbScalar(
                 'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $essayLogId
             ));
+            $this->assertSame('4.000', $this->dbScalar(
+                'SELECT testlog_score FROM tce_tests_logs WHERE testlog_id=' . $shortLogId
+            ));
         } finally {
             $this->dbExec('DELETE FROM tce_tests_logs_answers WHERE logansw_testlog_id=' . $objectiveLogId);
             $this->dbExec('DELETE FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId);
             $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_id=' . $attemptId);
-            $this->dbExec('DELETE FROM tce_answers WHERE answer_id=' . $answerId);
-            $this->dbExec('DELETE FROM tce_questions WHERE question_id IN (' . $objectiveId . ',' . $essayId . ')');
+            $this->dbExec('DELETE FROM tce_answers WHERE answer_id IN (' . $answerId . ',' . $shortAnswerId . ')');
+            $this->dbExec(
+                'DELETE FROM tce_questions WHERE question_id IN ('
+                . $objectiveId . ',' . $essayId . ',' . $shortId . ')'
+            );
             $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
             $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
             $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
