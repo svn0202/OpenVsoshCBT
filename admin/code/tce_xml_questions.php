@@ -256,6 +256,10 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                                     $xml .= $ma['answer_keyboard_key'];
                                     $xml .= '</keyboard_key>' . K_NEWLINE;
 
+                                    $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<weight>';
+                                    $xml .= (string) $ma['answer_weight'];
+                                    $xml .= '</weight>' . K_NEWLINE;
+
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
                                     $xml .= F_text_to_xml($ma['answer_description']);
                                     $xml .= '</description>' . K_NEWLINE;

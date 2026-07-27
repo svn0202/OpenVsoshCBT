@@ -21,6 +21,7 @@ OpenVsoshCBT — открытая система компьютерного те
 - безопасная конфигурация экземпляра вне Git;
 - HTML5, улучшенная доступность и актуальный PDF-движок;
 - Docker-окружение и неинтерактивная установка;
+- безопасный импорт вопросов из DOCX с предварительным просмотром;
 - сохранённая совместимость с официальным upstream;
 - начата документация для РЕД ОС и олимпиадного сценария;
 - перенос функций TMFCBT ещё не завершён: текущий релиз нельзя считать
@@ -69,6 +70,9 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 `install/upgrade/oracle/openvsosh_access_settings.sql`. Если у таблиц задан
 префикс, отличный от `tce_`, сначала замените префикс в SQL-файле.
 
+Для импорта Word дополнительно примените
+`install/upgrade/<СУБД>/openvsosh_word_import.sql`.
+
 Миграции применяются по порядку и только один раз. Перед ними создайте дамп,
 а после проверьте вход администратора, сохранение настроек и страницу входа.
 Полный безопасный порядок обновления описан в
@@ -81,6 +85,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Настройка регистрации, сброса пароля и помощи](doc/admin/access-settings.md)
 - [Регламент проведения олимпиады](doc/admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](doc/admin/matching-questions.md)
+- [Импорт вопросов из Microsoft Word](doc/admin/word-import.md)
 - [Безопасное обновление](doc/admin/upgrade.md)
 - [Решение известных проблем](doc/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)

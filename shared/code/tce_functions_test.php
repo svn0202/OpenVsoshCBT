@@ -25,6 +25,8 @@
  * Returns an XHTML table of user's tests.
  * @return string containing an XHTML table of user's tests.
  */
+require_once __DIR__ . '/tce_functions_tmf_question.php';
+
 function F_getUserTests()
 {
     require_once '../config/tce_config.php';
@@ -1760,6 +1762,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $question_id = 0; // question ID
     $question_type = 3; // question type
     $question_difficulty = 1; // question difficulty
+    $question_description = '';
     $oldtext = ''; // old text answer
     $answer_changed = false; // true when answer change
     $answer_score = 0; // answer total score
@@ -1783,6 +1786,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
             $question_id = $m['question_id'];
             $question_type = $m['question_type'];
             $question_difficulty = $m['question_difficulty'];
+            $question_description = $m['question_description'];
         }
     } else {
         F_display_db_error();
@@ -1791,6 +1795,14 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
 
     if ((int) $question_type === 5) {
         $answpos = F_normalizeMatchingPositions((array) $answpos);
+    }
+
+    $tmf_options = F_tmf_question_options((string) $question_description);
+    if (
+        (int) $question_type === 2
+        && !F_tmf_selection_limit_is_valid((array) $answpos, (int) $tmf_options['max_selections'])
+    ) {
+        return false;
     }
 
     $answer_id = F_getAnswerIdFromPosition($testlog_id, $answpos);
@@ -1832,9 +1844,12 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             } elseif (!empty($answer_id[$m['logansw_answer_id']])) {
                                 $unanswered = false;
                                 // selected
-                                $answer_score = F_getBoolean($m['answer_isright'])
-                                    ? $question_right_score
-                                    : $question_wrong_score;
+                                $answer_score = F_tmf_answer_score(
+                                    $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
+                                    F_getBoolean($m['answer_isright']),
+                                    (float) $question_right_score,
+                                    (float) $question_wrong_score,
+                                );
 
                                 if ($m['logansw_selected'] != 1) {
                                     $answer_changed = true;
@@ -1997,7 +2012,12 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                         K_SHORT_ANSWERS_BINARY && strcmp(trim($answer_text), $m['answer_description']) == 0
                         || !K_SHORT_ANSWERS_BINARY && strcasecmp(trim($answer_text), $m['answer_description']) == 0
                     ) {
-                        $answer_score = $question_right_score;
+                        $answer_score = F_tmf_answer_score(
+                            $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
+                            true,
+                            (float) $question_right_score,
+                            (float) $question_wrong_score,
+                        );
                         break;
                     }
                 }
@@ -2166,6 +2186,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
             $str .= '<span id="questionsection"></span>' . K_NEWLINE;
             $str .= '<div class="tcecontentbox">' . K_NEWLINE;
+            $tmf_options = F_tmf_question_options((string) $m['question_description']);
             // display question description
             if ($m['question_type'] == 3) {
                 $str .= '<label for="answertext">';
@@ -2200,6 +2221,17 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 if ((int) $m['question_type'] === 5) {
                     $str .= '<p class="matching-instructions">' . $l['h_matching_test'] . '</p>' . K_NEWLINE;
                     $str .= '<p id="matching-status" class="sr-only" aria-live="polite"></p>' . K_NEWLINE;
+                }
+                if (
+                    (int) $m['question_type'] === 2
+                    && F_getBoolean($testdata['test_mcma_radio'])
+                    && !$tmf_options['checkbox']
+                ) {
+                    $str .=
+                        '<p class="mcma-heading">'
+                        . htmlspecialchars((string) $tmf_options['headers'][0], ENT_QUOTES, 'UTF-8')
+                        . '</p>'
+                        . K_NEWLINE;
                 }
 
                 if (F_getBoolean($m['question_inline_answers'])) {
@@ -2266,7 +2298,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                             case 2:
                                 {
                                     // MCMA - multiple-answer question
-                                    if (F_getBoolean($testdata['test_mcma_radio'])) {
+                                    if (F_getBoolean($testdata['test_mcma_radio']) && !$tmf_options['checkbox']) {
                                         // radiobuttons
 
                                         // no-answer option
@@ -2276,9 +2308,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             '<label for="answpos_'
                                             . $anspos
                                             . 'u" title="'
-                                            . $l['m_unanswered']
+                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . $l['w_unanswered_acronym']
+                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio"'
@@ -2288,7 +2320,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             . ']" id="answpos_'
                                             . $anspos
                                             . 'u" value="-1" title="'
-                                            . $l['m_unanswered']
+                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '"';
                                         if ((int) $ma['logansw_selected'] == -1) {
                                             $str .= ' checked="checked"';
@@ -2303,9 +2335,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             '<label for="answpos_'
                                             . $anspos
                                             . 'f" title="'
-                                            . $l['w_false']
+                                            . htmlspecialchars((string) $tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . $l['w_false_acronym']
+                                            . htmlspecialchars((string) $tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio" name="answpos['
@@ -2326,9 +2358,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             '<label for="answpos_'
                                             . $anspos
                                             . 't" title="'
-                                            . $l['w_true']
+                                            . htmlspecialchars((string) $tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . $l['w_true_acronym']
+                                            . htmlspecialchars((string) $tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio" name="answpos['
@@ -2357,6 +2389,20 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             . ']" id="answpos_'
                                             . $anspos
                                             . '" value="1"';
+                                        if ($tmf_options['max_selections'] > 0) {
+                                            $maximum = (int) $tmf_options['max_selections'];
+                                            $str .=
+                                                ' data-tmf-question="'
+                                                . $testlog_id
+                                                . '" data-tmf-max-selections="'
+                                                . $maximum
+                                                . '" onclick="if(this.checked &amp;&amp; document.querySelectorAll('
+                                                . '\'input[type=&quot;checkbox&quot;][data-tmf-question=&quot;'
+                                                . $testlog_id
+                                                . '&quot;]:checked\').length &gt; '
+                                                . $maximum
+                                                . '){this.checked=false;return false;}"';
+                                        }
                                         if ((int) $ma['logansw_selected'] == 1) {
                                             $str .= ' checked="checked"';
                                             $checked = true;

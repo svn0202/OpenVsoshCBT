@@ -121,6 +121,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
     $tsv .= K_TAB . 'answer_isright';
     $tsv .= K_TAB . 'answer_position';
     $tsv .= K_TAB . 'answer_keyboard_key';
+    $tsv .= K_TAB . 'answer_weight';
     $tsv .= K_NEWLINE;
 
     $tsv .= K_NEWLINE;
@@ -195,6 +196,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
                                     $tsv .= K_TAB . (int) F_getBoolean($ma['answer_isright']);
                                     $tsv .= K_TAB . $ma['answer_position'];
                                     $tsv .= K_TAB . $ma['answer_keyboard_key'];
+                                    $tsv .= K_TAB . (string) $ma['answer_weight'];
                                     $tsv .= K_NEWLINE;
                                 }
                             } else {

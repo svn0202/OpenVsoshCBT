@@ -109,6 +109,10 @@ $answer_keyboard_key = !isset($_REQUEST['answer_keyboard_key']) || empty($_REQUE
     ? ''
     : (int) $_REQUEST['answer_keyboard_key'];
 
+$answer_weight = isset($_REQUEST['answer_weight']) && $_REQUEST['answer_weight'] !== ''
+    ? max(0, min(100, (int) $_REQUEST['answer_weight']))
+    : null;
+
 if (isset($_REQUEST['answer_description'])) {
     $answer_description = utrim($_REQUEST['answer_description']);
     if (function_exists('normalizer_normalize')) {
@@ -456,10 +460,13 @@ switch ($menu_mode) {
 				answer_position='
                     . F_zero_to_null($answer_position)
                     . ',
-				answer_keyboard_key='
+					answer_keyboard_key='
                     . F_empty_to_null($answer_keyboard_key)
+                    . ',
+					answer_weight='
+                    . ($answer_weight === null ? 'NULL' : (string) $answer_weight)
                     . '
-				WHERE answer_id='
+					WHERE answer_id='
                     . $answer_id
                     . '';
                 if (!($r = F_db_query($sql, $db))) {
@@ -540,10 +547,11 @@ switch ($menu_mode) {
 				answer_description,
 				answer_explanation,
 				answer_isright,
-				answer_enabled,
-				answer_position,
-				answer_keyboard_key
-				) VALUES (
+					answer_enabled,
+					answer_position,
+					answer_keyboard_key,
+					answer_weight
+					) VALUES (
 				'
                     . $answer_question_id
                     . ',
@@ -564,8 +572,11 @@ switch ($menu_mode) {
                     . ',
 				'
                     . F_empty_to_null($answer_keyboard_key)
+                    . ',
+					'
+                    . ($answer_weight === null ? 'NULL' : (string) $answer_weight)
                     . '
-				)';
+					)';
                 if (!($r = F_db_query($sql, $db))) {
                     F_display_db_error(false);
                     F_db_query('ROLLBACK', $db); // rollback transaction
@@ -591,6 +602,7 @@ switch ($menu_mode) {
             $answer_enabled = true;
             $answer_position = 0;
             $answer_keyboard_key = '';
+            $answer_weight = null;
             break;
         }
 
@@ -649,6 +661,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $answer_enabled = true;
         $answer_position = 0;
         $answer_keyboard_key = '';
+        $answer_weight = null;
     } else {
         $sql = 'SELECT *
 				FROM ' . K_TABLE_ANSWERS . '
@@ -664,6 +677,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $answer_enabled = F_getBoolean($m['answer_enabled']);
                 $answer_position = $m['answer_position'];
                 $answer_keyboard_key = $m['answer_keyboard_key'];
+                $answer_weight = $m['answer_weight'] === null ? null : (int) $m['answer_weight'];
             } else {
                 $answer_description = '';
                 $answer_explanation = '';
@@ -671,6 +685,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $answer_enabled = true;
                 $answer_position = 0;
                 $answer_keyboard_key = '';
+                $answer_weight = null;
             }
         } else {
             F_display_db_error();
@@ -1026,6 +1041,22 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
 }
 
 echo getFormRowCheckBox('answer_isright', $l['w_right'], $l['h_answer_isright'], '', 1, $answer_isright, false, '');
+echo getFormRowTextInput(
+    'answer_weight',
+    'Вес ответа (%)',
+    'Доля максимального балла за выбор или точное совпадение; пусто — стандартное оценивание',
+    '0–100',
+    $answer_weight,
+    '^([0-9]{1,3})?$',
+    3,
+    false,
+    false,
+    false,
+    '',
+    false,
+    '',
+    'number',
+);
 echo getFormRowCheckBox('answer_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $answer_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;

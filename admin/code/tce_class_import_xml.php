@@ -187,6 +187,7 @@ class XMLQuestionImporter
                                 $this->level_data['answer']['answer_enabled'] = 'false';
                                 $this->level_data['answer']['answer_position'] = '0';
                                 $this->level_data['answer']['answer_keyboard_key'] = '';
+                                $this->level_data['answer']['answer_weight'] = '';
                                 break;
                             }
                     }
@@ -633,9 +634,10 @@ class XMLQuestionImporter
 					answer_description,
 					answer_explanation,
 					answer_isright,
-					answer_enabled,
-					answer_position,
-					answer_keyboard_key
+						answer_enabled,
+						answer_position,
+						answer_keyboard_key,
+						answer_weight
 					) VALUES (
 					'
                     . $this->level_data['question']['question_id']
@@ -657,8 +659,11 @@ class XMLQuestionImporter
                     . ',
 					'
                     . F_empty_to_null($this->level_data['answer']['answer_keyboard_key'])
+                    . ',
+						'
+                    . F_empty_to_null($this->level_data['answer']['answer_weight'])
                     . '
-					)';
+						)';
                 if (!($r = F_db_query($sql, $db))) {
                     F_display_db_error(false);
                     F_db_query('ROLLBACK', $db);
