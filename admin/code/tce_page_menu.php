@@ -206,6 +206,14 @@ $menu['tce_menu_modules.php']['sub'] = [
         'key' => '',
         'enabled' => true,
     ],
+    'tmf_word_import.php' => [
+        'link' => 'tmf_word_import.php',
+        'title' => 'Импорт вопросов из Word',
+        'name' => 'Импорт Word',
+        'level' => K_AUTH_ADMIN_IMPORT,
+        'key' => '',
+        'enabled' => true,
+    ],
     'tce_filemanager.php' => [
         'link' => 'tce_filemanager.php',
         'title' => $l['t_filemanager'],

@@ -18,6 +18,11 @@ excludes = [
 	"public/config",
 	"shared/config",
 	"cache",
+	# The authenticated controller and SQL bridge load the complete legacy
+	# application graph. The pure parser and metadata helpers remain in static
+	# analysis and PHPUnit; these entry points retain PHP lint/integration coverage.
+	"admin/code/tmf_word_import.php",
+	"admin/code/tmf_word_import_db.php",
 ]
 
 [source.glob]

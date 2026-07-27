@@ -90,6 +90,8 @@ CREATE TABLE "tce_answers" (
 	"answer_enabled" Boolean NOT NULL Default '0',
 	"answer_position" Bigint NULL,
 	"answer_keyboard_key" Smallint NULL,
+	"answer_weight" Smallint NULL,
+constraint "CHK_tce_answers_weight" check ("answer_weight" IS NULL OR ("answer_weight" >= 0 AND "answer_weight" <= 100)),
 constraint "PK_tce_answers_answer_id" primary key ("answer_id")
 ) Without Oids;
 

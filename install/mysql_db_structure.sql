@@ -97,6 +97,8 @@ CREATE TABLE tce_answers (
 	answer_enabled Bool NOT NULL DEFAULT '0',
 	answer_position Bigint UNSIGNED NULL,
 	answer_keyboard_key Smallint(10) UNSIGNED NULL,
+	answer_weight Smallint NULL,
+ Constraint chk_tce_answers_weight Check (answer_weight IS NULL OR (answer_weight >= 0 AND answer_weight <= 100)),
  Primary Key (answer_id)
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;

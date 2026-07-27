@@ -486,6 +486,9 @@ function F_TSVQuestionImporter($tsvfile)
                     $answer_keyboard_key = isset($qdata[6])
                         ? F_empty_to_null(F_tsv_to_text($qdata[6]))
                         : F_empty_to_null('');
+                    $answer_weight = isset($qdata[7]) && $qdata[7] !== ''
+                        ? (string) max(0, min(100, (int) $qdata[7]))
+                        : 'NULL';
 
                     // check if this answer already exist
                     $sql = 'SELECT answer_id
@@ -522,9 +525,10 @@ function F_TSVQuestionImporter($tsvfile)
 							answer_description,
 							answer_explanation,
 							answer_isright,
-							answer_enabled,
-							answer_position,
-							answer_keyboard_key
+								answer_enabled,
+								answer_position,
+								answer_keyboard_key,
+								answer_weight
 							) VALUES (
 							'
                                 . $current_question_id
@@ -546,8 +550,11 @@ function F_TSVQuestionImporter($tsvfile)
                                 . ',
 							'
                                 . $answer_keyboard_key
+                                . ',
+								'
+                                . $answer_weight
                                 . '
-							)';
+								)';
                             if (!($r = F_db_query($sql, $db))) {
                                 F_display_db_error(false);
                                 F_db_query('ROLLBACK', $db);

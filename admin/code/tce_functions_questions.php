@@ -299,9 +299,10 @@ function F_question_copy($question_id, $new_subject_id)
 						answer_description,
 						answer_explanation,
 						answer_isright,
-						answer_enabled,
-						answer_position,
-						answer_keyboard_key
+							answer_enabled,
+							answer_position,
+							answer_keyboard_key,
+							answer_weight
 						) VALUES (
 						'
                         . $new_question_id
@@ -323,8 +324,11 @@ function F_question_copy($question_id, $new_subject_id)
                         . ',
 						'
                         . F_empty_to_null($m['answer_keyboard_key'])
+                        . ',
+							'
+                        . ($m['answer_weight'] === null ? 'NULL' : (string) (int) $m['answer_weight'])
                         . '
-						)';
+							)';
                     if (!($ri = F_db_query($sqli, $db))) {
                         F_display_db_error(false);
                         F_db_query('ROLLBACK', $db); // rollback transaction

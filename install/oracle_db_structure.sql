@@ -99,6 +99,8 @@ CREATE TABLE tce_answers (
 	answer_enabled NUMBER(1) DEFAULT '0' NOT NULL,
 	answer_position NUMBER(19,0) NULL,
 	answer_keyboard_key NUMBER(5,0) NULL,
+	answer_weight NUMBER(5,0) NULL,
+constraint CHK_tce_answers_weight check (answer_weight IS NULL OR (answer_weight >= 0 AND answer_weight <= 100)),
 constraint PK_tce_answers_answer_id primary key (answer_id)
 );
 CREATE SEQUENCE tce_answers_seq MINVALUE 1 START WITH 1 INCREMENT BY 1 CACHE 3;

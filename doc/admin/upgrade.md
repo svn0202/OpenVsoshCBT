@@ -29,6 +29,18 @@
 Если у таблиц нестандартный префикс, замените `tce_` в выбранном файле.
 Подробности: [Настройка получения доступа](access-settings.md).
 
+### Миграция импорта Word и веса ответов
+
+Перед первым использованием импорта Word в существующей базе примените:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_word_import.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_word_import.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_word_import.sql`.
+
+Миграция добавляет допускающий `NULL` столбец `answer_weight` с диапазоном
+0–100. Пустое значение сохраняет стандартное оценивание TCExam. Подробности:
+[Импорт вопросов из Microsoft Word](word-import.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh

@@ -8,6 +8,7 @@
 - [Настройка регистрации, сброса пароля и помощи](admin/access-settings.md)
 - [Регламент проведения олимпиады](admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](admin/matching-questions.md)
+- [Импорт вопросов из Microsoft Word](admin/word-import.md)
 - [Обновление без потери рабочего экземпляра](admin/upgrade.md)
 - [Решение известных проблем](admin/troubleshooting.md)
 - [Карта официальной документации TCExam](admin/tcexam-reference.md)
