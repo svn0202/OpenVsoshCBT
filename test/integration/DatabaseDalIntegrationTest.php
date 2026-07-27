@@ -228,6 +228,39 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse($res, 'fresh schemas must include the per-question shuffle flag');
     }
 
+    public function testMigrationCliBaselinesAndVerifiesFreshSchema(): void
+    {
+        $command = [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--baseline'];
+        $pipes = [];
+        $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname(__DIR__, 2));
+        $this->assertIsResource($process);
+        $stdout = stream_get_contents($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $this->assertSame(0, proc_close($process), $stderr);
+        $this->assertStringContainsString('complete; pending handled:', $stdout);
+
+        $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
+        $row = \F_db_fetch_assoc($result);
+        $this->assertSame(9, (int) $row['n']);
+
+        $verify = proc_open(
+            [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
+            [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $verifyPipes,
+            dirname(__DIR__, 2)
+        );
+        $this->assertIsResource($verify);
+        $verifyOut = stream_get_contents($verifyPipes[1]);
+        $verifyErr = stream_get_contents($verifyPipes[2]);
+        fclose($verifyPipes[1]);
+        fclose($verifyPipes[2]);
+        $this->assertSame(0, proc_close($verify), $verifyErr);
+        $this->assertStringContainsString('already applied openvsosh_question_shuffle.sql', $verifyOut);
+        $this->assertStringContainsString('pending handled: 0', $verifyOut);
+    }
+
     public function testMonitoringSchemaIsAvailable(): void
     {
         $attempt = \F_db_query(

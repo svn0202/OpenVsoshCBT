@@ -51,6 +51,15 @@ CREATE TABLE tce_users (
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+CREATE TABLE tce_schema_migrations (
+	migration_name Varchar(191) NOT NULL,
+	migration_sha256 Char(64) NOT NULL,
+	migration_applied_at Datetime NOT NULL,
+	migration_mode Varchar(16) NOT NULL,
+ Primary Key (migration_name)
+) ENGINE = InnoDB
+CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
 CREATE TABLE tce_modules (
 	module_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
 	module_name Varchar(255) NOT NULL,
