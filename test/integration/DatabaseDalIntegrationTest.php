@@ -363,27 +363,40 @@ final class DatabaseDalIntegrationTest extends TestCase
         $adminId = (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'");
         $GLOBALS['db'] = $this->db;
         $_SESSION['session_user_id'] = $adminId;
-        $question = [
-            'source_number' => 1,
-            'description' => 'Integration question',
-            'type' => 1,
-            'difficulty' => 2,
-            'timer' => 0,
-            'fullscreen' => 0,
-            'inline_answers' => 0,
-            'auto_next' => 0,
-            'right_keys' => ['A'],
-            'answers' => [
-                ['key' => 'A', 'description' => 'Right', 'weight' => 100],
-                ['key' => 'B', 'description' => 'Wrong', 'weight' => null],
-            ],
+        $docx = tempnam(sys_get_temp_dir(), 'openvsosh-word-db-');
+        $this->assertNotFalse($docx);
+        $zip = new \ZipArchive();
+        $this->assertTrue($zip->open($docx, \ZipArchive::OVERWRITE) === true);
+        $paragraphs = [
+            'MODULE:=' . $moduleName,
+            'TOPIC:=' . $rollbackTopic,
+            'Q:1) [[DIFFICULTY=2]] Integration question',
+            'A:) Right [[WEIGHT=100]]',
+            'B:) Wrong',
+            'RIGHT:A',
         ];
+        $body = '';
+        foreach ($paragraphs as $paragraph) {
+            $body .= '<w:p><w:r><w:t>'
+                . htmlspecialchars($paragraph, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+                . '</w:t></w:r></w:p>';
+        }
+        $this->assertTrue($zip->addFromString(
+            'word/document.xml',
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:body>' . $body . '</w:body></w:document>',
+        ));
+        $zip->close();
+        try {
+            $parsed = (new \TmfWordImporter($docx))->parse();
+        } finally {
+            unlink($docx);
+        }
+        $this->assertSame($moduleName, $parsed['module']);
+        $this->assertSame($rollbackTopic, $parsed['topic']);
+        $this->assertSame(['A'], $parsed['questions'][0]['right_keys']);
 
-        $rolledBack = \F_tmf_import_word_questions([
-            'module' => $moduleName,
-            'topic' => $rollbackTopic,
-            'questions' => [$question],
-        ], false);
+        $rolledBack = \F_tmf_import_word_questions($parsed, false);
         $this->assertFalse($rolledBack['committed']);
         $this->assertSame(
             '0',
@@ -393,11 +406,8 @@ final class DatabaseDalIntegrationTest extends TestCase
         );
 
         try {
-            $committed = \F_tmf_import_word_questions([
-                'module' => $moduleName,
-                'topic' => $commitTopic,
-                'questions' => [$question],
-            ]);
+            $parsed['topic'] = $commitTopic;
+            $committed = \F_tmf_import_word_questions($parsed);
             $this->assertTrue($committed['committed']);
             $this->assertSame(1, $committed['questions']);
             $this->assertSame(2, $committed['answers']);

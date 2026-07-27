@@ -160,7 +160,11 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
         echo '<span class="infolink">' . F_testInfoLink($test_id, $l['w_info']) . '<br /><br /></span>' . K_NEWLINE;
 
-        if (!isset($_REQUEST['terminationform']) && F_isRightTestlogUser($test_id, $testlog_id)) {
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST'
+            && !isset($_REQUEST['terminationform'])
+            && F_isRightTestlogUser($test_id, $testlog_id)
+        ) {
             // the form has been submitted, update testlogid data
             $answer_saved = true;
             if (isset($_REQUEST['answer_version'])) {

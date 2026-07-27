@@ -848,7 +848,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
             'tce_pregenerate.php', 'tce_offline.php', 'tce_users_xlsx.php', 'tce_test_access_rules.php',
-            'tce_attachment.php', 'tce_attempt_archive.php',
+            'tce_attachment.php', 'tce_attempt_archive.php', 'tmf_word_import.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -864,6 +864,20 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         [$status, $body] = $this->http(
             'GET',
             '/admin/code/tce_users_xlsx.php?download=template',
+            $cookies,
+        );
+
+        $this->assertSame(200, $status);
+        $this->assertStringStartsWith("PK\x03\x04", $body);
+        $this->assertGreaterThan(1000, strlen($body));
+    }
+
+    public function testWordImportTemplateIsARealDocx(): void
+    {
+        $cookies = $this->login();
+        [$status, $body] = $this->http(
+            'GET',
+            '/admin/code/tmf_word_import.php?download=template',
             $cookies,
         );
 
@@ -1680,6 +1694,262 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
+    public function testEveryQuestionTypePersistsThroughAnswerSaveAndReload(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $groupId = $this->ensureGroup('itest_answer_types_group');
+        if (!$this->userInGroup($adminId, $groupId)) {
+            $this->dbExec(
+                'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                . $adminId . ',' . $groupId . ')'
+            );
+        }
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_answer_types_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time,"
+            . "test_begin_time,test_end_time,test_mcma_radio) VALUES "
+            . "('itest_answer_types_test','d'," . $adminId
+            . ",60,'2020-01-01 00:00:00','2035-01-01 00:00:00','0')"
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_answer_types_test'"
+        ) ?? '0');
+        $this->dbExec(
+            'INSERT INTO tce_testgroups (tstgrp_test_id,tstgrp_group_id) VALUES ('
+            . $testId . ',' . $groupId . ')'
+        );
+        $this->dbExec("DELETE FROM tce_modules WHERE module_name='itest_answer_types_module'");
+        $this->dbExec(
+            "INSERT INTO tce_modules (module_name,module_enabled,module_user_id) "
+            . "VALUES ('itest_answer_types_module','1'," . $adminId . ')'
+        );
+        $moduleId = (int) ($this->dbScalar(
+            "SELECT module_id FROM tce_modules WHERE module_name='itest_answer_types_module'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_subjects (subject_module_id,subject_name,subject_description,"
+            . "subject_enabled,subject_user_id) VALUES ("
+            . $moduleId . ",'itest_answer_types_subject','d','1'," . $adminId . ')'
+        );
+        $subjectId = (int) ($this->dbScalar(
+            "SELECT subject_id FROM tce_subjects WHERE subject_name='itest_answer_types_subject'"
+        ) ?? '0');
+
+        $questions = [
+            1 => 'Persist single choice',
+            2 => 'Persist multiple choice<!--TMF_CHECKBOX-->',
+            3 => 'Persist text',
+            4 => 'Persist ordering',
+            5 => 'Persist matching<!--TMF_MATCH_POSITIONS:2-->',
+        ];
+        $questionIds = [];
+        $answerIds = [];
+        foreach ($questions as $type => $description) {
+            $this->dbExec(
+                "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+                . "question_enabled,question_position,question_difficulty) VALUES ("
+                . $subjectId . ",'" . $description . "'," . $type . ",'1'," . $type . ',1)'
+            );
+            $questionId = (int) ($this->dbScalar(
+                'SELECT MAX(question_id) FROM tce_questions WHERE question_subject_id=' . $subjectId
+            ) ?? '0');
+            $questionIds[$type] = $questionId;
+            if ($type === 3) {
+                continue;
+            }
+            $answerIds[$type] = [];
+            foreach ([1, 2] as $position) {
+                $isRight = $position === 1 ? 1 : 0;
+                $this->dbExec(
+                    "INSERT INTO tce_answers (answer_question_id,answer_description,answer_isright,"
+                    . "answer_enabled,answer_position) VALUES ("
+                    . $questionId . ",'Type " . $type . ' answer ' . $position . "',"
+                    . "'" . $isRight . "','1'," . $position . ')'
+                );
+                $answerIds[$type][$position] = (int) ($this->dbScalar(
+                    'SELECT MAX(answer_id) FROM tce_answers WHERE answer_question_id=' . $questionId
+                ) ?? '0');
+            }
+        }
+
+        $this->dbExec(
+            "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
+            . 'testuser_creation_time,testuser_last_activity) VALUES ('
+            . $testId . ',' . $adminId . ',1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)'
+        );
+        $attemptId = (int) ($this->dbScalar(
+            'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+        ) ?? '0');
+        $logIds = [];
+        foreach ($questionIds as $type => $questionId) {
+            $this->dbExec(
+                "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+                . "testlog_creation_time,testlog_order) VALUES ("
+                . $attemptId . ',' . $questionId . ',0,CURRENT_TIMESTAMP,' . $type . ')'
+            );
+            $logId = (int) ($this->dbScalar(
+                'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+                . ' AND testlog_question_id=' . $questionId
+            ) ?? '0');
+            $logIds[$type] = $logId;
+            if ($type === 3) {
+                continue;
+            }
+            foreach ([1, 2] as $order) {
+                $this->dbExec(
+                    'INSERT INTO tce_tests_logs_answers (logansw_testlog_id,logansw_answer_id,'
+                    . 'logansw_selected,logansw_order,logansw_position) VALUES ('
+                    . $logId . ',' . $answerIds[$type][$order] . ',-1,' . $order . ',0)'
+                );
+            }
+        }
+
+        try {
+            $payloads = [
+                1 => ['answpos' => '1'],
+                2 => ['answpos' => ['1' => '1', '2' => '1']],
+                3 => ['answertext' => 'Text survives navigation and reload'],
+                4 => ['answpos' => ['1' => '2', '2' => '1']],
+                5 => ['answpos' => ['1' => '2', '2' => '1']],
+            ];
+            foreach ($payloads as $type => $answerPayload) {
+                [$pageStatus, $page] = $this->http(
+                    'GET',
+                    '/public/code/tce_test_execute.php?testid=' . $testId
+                    . '&testlogid=' . $logIds[$type],
+                    $cookies,
+                );
+                $this->assertSame(200, $pageStatus, 'initial page for type ' . $type);
+                $token = self::extractCsrfToken($page);
+                $this->assertNotNull($token);
+                [$saveStatus, $saveBody] = $this->http(
+                    'POST',
+                    '/public/code/tce_test_answer_save.php',
+                    $cookies,
+                    array_merge(
+                        [
+                            'testid' => (string) $testId,
+                            'testlogid' => (string) $logIds[$type],
+                            'answer_version' => '0',
+                            'answer_operation' => bin2hex(random_bytes(16)),
+                            'csrf_token' => (string) $token,
+                        ],
+                        $answerPayload,
+                    ),
+                );
+                $this->assertSame(200, $saveStatus, 'save for type ' . $type . ': ' . $saveBody);
+                $this->assertSame(
+                    ['status' => 'saved', 'version' => 1],
+                    json_decode($saveBody, true, 8, JSON_THROW_ON_ERROR),
+                );
+
+                // Navigate to another question before loading the saved one again.
+                $nextType = $type === 5 ? 1 : $type + 1;
+                [$nextStatus] = $this->http(
+                    'GET',
+                    '/public/code/tce_test_execute.php?testid=' . $testId
+                    . '&testlogid=' . $logIds[$nextType],
+                    $cookies,
+                );
+                $this->assertSame(200, $nextStatus);
+                [$reloadStatus, $reloadPage] = $this->http(
+                    'GET',
+                    '/public/code/tce_test_execute.php?testid=' . $testId
+                    . '&testlogid=' . $logIds[$type],
+                    $cookies,
+                );
+                $this->assertSame(200, $reloadStatus, 'reload for type ' . $type);
+                $visibleDescription = explode('<!--', $questions[$type], 2)[0];
+                $this->assertStringContainsString($visibleDescription, $reloadPage);
+                $this->assertMatchesRegularExpression(
+                    '/name="answer_version"[^>]*value="1"/',
+                    $reloadPage,
+                );
+                if ($type === 1) {
+                    $this->assertMatchesRegularExpression(
+                        '/id="answpos_1" value="1" checked="checked"/',
+                        $reloadPage,
+                    );
+                } elseif ($type === 2) {
+                    $this->assertMatchesRegularExpression(
+                        '/id="answpos_1" value="1"[^>]*checked="checked"/',
+                        $reloadPage,
+                    );
+                    $this->assertMatchesRegularExpression(
+                        '/id="answpos_2" value="1"[^>]*checked="checked"/',
+                        $reloadPage,
+                    );
+                } elseif ($type === 3) {
+                    $this->assertStringContainsString(
+                        'Text survives navigation and reload',
+                        $reloadPage,
+                    );
+                } else {
+                    $this->assertMatchesRegularExpression(
+                        '/id="answpos_1">.*?value="2" selected="selected"/s',
+                        $reloadPage,
+                    );
+                    $this->assertMatchesRegularExpression(
+                        '/id="answpos_2">.*?value="1" selected="selected"/s',
+                        $reloadPage,
+                    );
+                }
+            }
+
+            $this->assertSame(
+                'Text survives navigation and reload',
+                $this->dbScalar(
+                    'SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $logIds[3]
+                ),
+            );
+            foreach ([1 => [1, 0], 2 => [1, 1]] as $type => $selectedValues) {
+                foreach ($selectedValues as $offset => $selected) {
+                    $order = $offset + 1;
+                    $this->assertSame(
+                        (string) $selected,
+                        $this->dbScalar(
+                            'SELECT logansw_selected FROM tce_tests_logs_answers WHERE '
+                            . 'logansw_testlog_id=' . $logIds[$type] . ' AND logansw_order=' . $order
+                        ),
+                    );
+                }
+            }
+            foreach ([4, 5] as $type) {
+                foreach ([1 => 2, 2 => 1] as $order => $position) {
+                    $this->assertSame(
+                        (string) $position,
+                        $this->dbScalar(
+                            'SELECT logansw_position FROM tce_tests_logs_answers WHERE '
+                            . 'logansw_testlog_id=' . $logIds[$type] . ' AND logansw_order=' . $order
+                        ),
+                    );
+                }
+            }
+        } finally {
+            $this->dbExec(
+                'DELETE FROM tce_tests_logs_answers WHERE logansw_testlog_id IN ('
+                . implode(',', $logIds) . ')'
+            );
+            $this->dbExec('DELETE FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_id=' . $attemptId);
+            $this->dbExec('DELETE FROM tce_testgroups WHERE tstgrp_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+            $this->dbExec(
+                'DELETE FROM tce_answers WHERE answer_question_id IN ('
+                . implode(',', $questionIds) . ')'
+            );
+            $this->dbExec('DELETE FROM tce_questions WHERE question_subject_id=' . $subjectId);
+            $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
+            $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+            $this->dbExec(
+                'DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+                . ' AND usrgrp_group_id=' . $groupId
+            );
+            $this->deleteGroupById($groupId);
+        }
+    }
+
     public function testEssayAttachmentUploadDownloadAndArchiveFlow(): void
     {
         $cookies = $this->login();
@@ -1760,6 +2030,81 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertNotNull($token);
             preg_match('/name="answer_version"[^>]*value="(\\d+)"/', $page, $versionMatch);
             $this->assertNotEmpty($versionMatch);
+            $operation = bin2hex(random_bytes(16));
+            [$saveStatus, $saveBody] = $this->http(
+                'POST',
+                '/public/code/tce_test_answer_save.php',
+                $cookies,
+                [
+                    'testid' => (string) $testId,
+                    'testlogid' => (string) $testlogId,
+                    'answertext' => 'Confirmed before lost response',
+                    'answer_version' => $versionMatch[1],
+                    'answer_operation' => $operation,
+                    'csrf_token' => (string) $token,
+                ],
+            );
+            $this->assertSame(200, $saveStatus);
+            $this->assertSame(
+                ['status' => 'saved', 'version' => 1],
+                json_decode($saveBody, true, 8, JSON_THROW_ON_ERROR),
+            );
+
+            // Repeating the same operation models a response lost after the
+            // server commit: it must be acknowledged without a second write.
+            [$duplicateStatus, $duplicateBody] = $this->http(
+                'POST',
+                '/public/code/tce_test_answer_save.php',
+                $cookies,
+                [
+                    'testid' => (string) $testId,
+                    'testlogid' => (string) $testlogId,
+                    'answertext' => 'Confirmed before lost response',
+                    'answer_version' => $versionMatch[1],
+                    'answer_operation' => $operation,
+                    'csrf_token' => (string) $token,
+                ],
+            );
+            $this->assertSame(200, $duplicateStatus);
+            $this->assertSame(
+                ['status' => 'saved', 'version' => 1],
+                json_decode($duplicateBody, true, 8, JSON_THROW_ON_ERROR),
+            );
+
+            [$staleStatus, $staleBody] = $this->http(
+                'POST',
+                '/public/code/tce_test_answer_save.php',
+                $cookies,
+                [
+                    'testid' => (string) $testId,
+                    'testlogid' => (string) $testlogId,
+                    'answertext' => 'Must not overwrite',
+                    'answer_version' => $versionMatch[1],
+                    'answer_operation' => bin2hex(random_bytes(16)),
+                    'csrf_token' => (string) $token,
+                ],
+            );
+            $this->assertSame(409, $staleStatus);
+            $this->assertSame(
+                ['status' => 'conflict', 'version' => 1],
+                json_decode($staleBody, true, 8, JSON_THROW_ON_ERROR),
+            );
+            $this->assertSame(
+                'Confirmed before lost response',
+                $this->dbScalar('SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $testlogId),
+            );
+
+            [$reloadStatus, $reloadPage] = $this->http(
+                'GET',
+                '/public/code/tce_test_execute.php?testid=' . $testId . '&testlogid=' . $testlogId,
+                $cookies,
+            );
+            $this->assertSame(200, $reloadStatus);
+            $this->assertStringContainsString('Confirmed before lost response', $reloadPage);
+            $this->assertMatchesRegularExpression(
+                '/name="answer_version"[^>]*value="1"/',
+                $reloadPage,
+            );
             $png = base64_decode(
                 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
                 true
@@ -1771,7 +2116,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'testid' => (string) $testId,
                     'testlogid' => (string) $testlogId,
                     'answertext' => 'Evidence attached',
-                    'answer_version' => $versionMatch[1],
+                    'answer_version' => '1',
                     'confirmanswer' => '1',
                     'csrf_token' => (string) $token,
                 ],

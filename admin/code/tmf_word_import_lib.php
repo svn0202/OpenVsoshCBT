@@ -11,6 +11,94 @@ class TmfWordImportException extends Exception {}
 
 const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
 
+/**
+ * Build the canonical Word-import template offered by the admin interface.
+ */
+function F_tmf_word_import_template(): string
+{
+    if (!class_exists(ZipArchive::class)) {
+        throw new TmfWordImportException('Для создания шаблона требуется расширение ZIP.');
+    }
+    $temporary = tempnam(sys_get_temp_dir(), 'openvsosh-word-template-');
+    if ($temporary === false) {
+        throw new TmfWordImportException('Не удалось создать временный файл шаблона.');
+    }
+
+    $paragraphs = [
+        'MODULE:=Тестовый модуль',
+        'TOPIC:=Тестовая тема',
+        'Q:1) Одиночный выбор [[DIFFICULTY=2]]',
+        'A:) Правильный вариант',
+        'B:) Неправильный вариант',
+        'RIGHT:A',
+        'Q:2) Множественный выбор [[TMF_CHECKBOX]] [[MAX_SEL=2]]',
+        'A:) Первый правильный вариант',
+        'B:) Неправильный вариант',
+        'C:) Второй правильный вариант',
+        'RIGHT:A,C',
+        'Q:3) [[SHORT_ANSWER]] [[SIMILARITY=85]] Краткий ответ',
+        'A:) Екатеринбург',
+        'B:) Свердловск [[WEIGHT=50]]',
+        'RIGHT:A,B',
+        'Q:4) Расставьте по порядку',
+        'A:) Первый',
+        'B:) Второй',
+        'C:) Третий',
+        'Q:5) [[MATCHING]] Установите соответствие',
+        'A:) Первая строка',
+        'B:) Вторая строка',
+        'C:) Третья строка',
+        'Q:6) Развёрнутый ответ [[TIMER=300]]',
+    ];
+    $body = '';
+    foreach ($paragraphs as $paragraph) {
+        $body .= '<w:p><w:r><w:t xml:space="preserve">'
+            . htmlspecialchars($paragraph, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+            . '</w:t></w:r></w:p>';
+    }
+
+    $zip = new ZipArchive();
+    try {
+        if ($zip->open($temporary, ZipArchive::OVERWRITE) !== true) {
+            throw new TmfWordImportException('Не удалось открыть архив шаблона.');
+        }
+        $zip->addFromString(
+            '[Content_Types].xml',
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            . '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+            . '<Default Extension="xml" ContentType="application/xml"/>'
+            . '<Override PartName="/word/document.xml" '
+            . 'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+            . '</Types>',
+        );
+        $zip->addFromString(
+            '_rels/.rels',
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            . '<Relationship Id="rId1" '
+            . 'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
+            . 'Target="word/document.xml"/></Relationships>',
+        );
+        $zip->addFromString(
+            'word/document.xml',
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:body>' . $body . '<w:sectPr/></w:body></w:document>',
+        );
+        $zip->close();
+        $bytes = file_get_contents($temporary);
+        if ($bytes === false) {
+            throw new TmfWordImportException('Не удалось прочитать созданный шаблон.');
+        }
+        return $bytes;
+    } finally {
+        if (is_file($temporary)) {
+            unlink($temporary);
+        }
+    }
+}
+
 function F_tmf_word_import_is_batch_id(string $batch_id): bool
 {
     return preg_match('/^[a-f0-9]{32}$/', $batch_id) === 1;
@@ -756,6 +844,7 @@ class TmfWordImporter
                     'similarity_threshold' => 0,
                     'audio_play_limit' => 0,
                     'short_answer' => false,
+                    'matching' => false,
                 );
                 $active_answer = null;
                 continue;
@@ -815,6 +904,10 @@ class TmfWordImporter
             $question['short_answer'] = true;
             $question['description'] = $this->removeHtmlMarker($question['description'], '[[SHORT_ANSWER]]');
         }
+        if (preg_match('/\[\[MATCHING\]\]/iu', $plain)) {
+            $question['matching'] = true;
+            $question['description'] = $this->removeHtmlMarker($question['description'], '[[MATCHING]]');
+        }
         if (preg_match('/\[\[MCMA_HEADER:=([^\]]+)\]\]/iu', $plain, $match)) {
             $question['mcma_header'] = array_map('trim', explode(',', $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
@@ -859,7 +952,9 @@ class TmfWordImporter
 
         $answer_count = count($question['answers']);
         $right_count = count($question['right_keys']);
-        if ($answer_count === 0) {
+        if ($question['matching'] && $answer_count > 1) {
+            $question['type'] = 5;
+        } elseif ($answer_count === 0) {
             $question['type'] = 3;
         } elseif ($question['short_answer'] || $answer_count === 1) {
             $question['type'] = 3;
@@ -898,6 +993,9 @@ class TmfWordImporter
         }
         if ($question['audio_play_limit'] > 0) {
             $metadata .= '<!--TMF_AUDIO_PLAYS:' . $question['audio_play_limit'] . '-->';
+        }
+        if ($question['type'] === 5) {
+            $metadata .= '<!--TMF_MATCH_POSITIONS:' . $answer_count . '-->';
         }
         $question['description'] = $metadata . trim($question['description']);
         $question['answers'] = array_values($question['answers']);

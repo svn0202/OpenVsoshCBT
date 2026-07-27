@@ -9,6 +9,17 @@ require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once '../code/tmf_word_import_lib.php';
 require_once '../code/tmf_word_import_db.php';
 
+if (isset($_GET['download']) && $_GET['download'] === 'template') {
+    $template = F_tmf_word_import_template();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    header('Content-Disposition: attachment; filename="OpenVsoshCBT-Word-template.docx"');
+    header('Content-Length: ' . strlen($template));
+    header('Cache-Control: private, no-store, max-age=0');
+    header('X-Content-Type-Options: nosniff');
+    echo $template;
+    exit();
+}
+
 // "confirm" is specific to this two-step importer and is not one of the
 // standard actions recognized by tce_functions_form_admin.php.
 if (isset($_POST['confirm'])) {
@@ -184,6 +195,7 @@ if (is_array($preview)) {
     F_submit_button('cancelpreview', 'Отменить', 'Удалить предварительный просмотр и временные файлы');
     echo '</form>' . K_NEWLINE;
 } else {
+    echo '<p><a class="xmlbutton" href="?download=template">Скачать шаблон DOCX</a></p>' . K_NEWLINE;
     echo
         '<p>Загрузите копию файла <code>.docx</code>. Сначала будет показан предварительный разбор; база данных изменится только после подтверждения.</p>'
             . K_NEWLINE
