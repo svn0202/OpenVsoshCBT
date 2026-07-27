@@ -31,6 +31,7 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
+require_once '../../shared/code/tce_functions_result_publication.php';
 
 $user_id = (int) $_SESSION['session_user_id'];
 
@@ -78,7 +79,7 @@ $teststat = F_getTestStat($test_id, 0, $user_id, 0, 0, $testuser_id, true);
 $teststat['testinfo'] = F_getUserTestStat($test_id, $user_id, $testuser_id, true);
 $test_id = $teststat['testinfo']['test_id'];
 
-if (!F_getBoolean($teststat['testinfo']['test_results_to_users'])) {
+if (!F_tmf_results_are_published($teststat['testinfo'])) {
     header('Location: index.php'); //redirect browser to public main page
     exit();
 }
@@ -91,7 +92,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 
 $usr_all = htmlspecialchars(
-    $userdata['user_lastname'] . ' ' . $userdata['user_firstname'] . ' - ' . $userdata['user_name'] . '',
+    F_tmf_result_identity($userdata, F_getBoolean($teststat['testinfo']['test_results_anonymized'] ?? false)),
     ENT_NOQUOTES,
     $l['a_meta_charset'],
 );

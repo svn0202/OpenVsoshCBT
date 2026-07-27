@@ -19,6 +19,20 @@ if ($test_id > 0 && !isset($tests[$test_id])) {
 }
 
 $message = '';
+$parse_publication_time = static function (mixed $value): string|false|null {
+    $value = trim((string) $value);
+    if ($value === '') {
+        return null;
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $value)) {
+        return false;
+    }
+    $date = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value);
+    if (!$date || $date->format('Y-m-d\TH:i') !== $value) {
+        return false;
+    }
+    return $date->format(K_TIMESTAMP_FORMAT);
+};
 if (isset($_POST['save_rules'])) {
     if (
         empty($_POST['csrf_token'])
@@ -31,6 +45,8 @@ if (isset($_POST['save_rules'])) {
     }
     $required_finished = isset($_POST['required_finished']) ? (int) $_POST['required_finished'] : 0;
     $required_passed = isset($_POST['required_passed']) ? (int) $_POST['required_passed'] : 0;
+    $results_publish_at = $parse_publication_time($_POST['results_publish_at'] ?? '');
+    $results_unpublish_at = $parse_publication_time($_POST['results_unpublish_at'] ?? '');
     if (
         $required_finished === $test_id
         || $required_passed === $test_id
@@ -39,6 +55,14 @@ if (isset($_POST['save_rules'])) {
         || F_tmf_test_prerequisite_would_cycle($test_id, [$required_finished, $required_passed])
     ) {
         $message = 'Нельзя выбрать сам тест, недоступный тест или создать цикл условий.';
+    } elseif ($results_publish_at === false || $results_unpublish_at === false) {
+        $message = 'Укажите корректные дату и время публикации результатов.';
+    } elseif (
+        $results_publish_at !== null
+        && $results_unpublish_at !== null
+        && strtotime($results_unpublish_at) <= strtotime($results_publish_at)
+    ) {
+        $message = 'Дата отзыва должна быть позже даты публикации.';
     } else {
         $minimum_duration = max(0, min(1440, (int) ($_POST['minimum_duration'] ?? 0)));
         $completion_message = trim((string) ($_POST['completion_message'] ?? ''));
@@ -54,6 +78,14 @@ if (isset($_POST['save_rules'])) {
             . "test_live_score='" . (isset($_POST['live_score']) ? 1 : 0) . "',"
             . "test_auto_fullscreen='" . (isset($_POST['auto_fullscreen']) ? 1 : 0) . "',"
             . "test_hide_exam_info='" . (isset($_POST['hide_exam_info']) ? 1 : 0) . "',"
+            . "test_results_to_users='" . (isset($_POST['results_to_users']) ? 1 : 0) . "',"
+            . "test_results_anonymized='" . (isset($_POST['results_anonymized']) ? 1 : 0) . "',"
+            . 'test_results_publish_at=' . ($results_publish_at === null
+                ? 'NULL'
+                : "'" . F_escape_sql($db, $results_publish_at) . "'") . ','
+            . 'test_results_unpublish_at=' . ($results_unpublish_at === null
+                ? 'NULL'
+                : "'" . F_escape_sql($db, $results_unpublish_at) . "'") . ','
             . "test_disable_previous='" . (isset($_POST['disable_previous']) ? 1 : 0) . "',"
             . "test_disable_next='" . (isset($_POST['disable_next']) ? 1 : 0) . "',"
             . "test_hide_editor='" . (isset($_POST['hide_editor']) ? 1 : 0) . "',"
@@ -74,6 +106,10 @@ $rules = [
     'test_live_score' => 0,
     'test_auto_fullscreen' => 0,
     'test_hide_exam_info' => 0,
+    'test_results_to_users' => 0,
+    'test_results_publish_at' => '',
+    'test_results_unpublish_at' => '',
+    'test_results_anonymized' => 0,
     'test_disable_previous' => 0,
     'test_disable_next' => 0,
     'test_hide_editor' => 0,
@@ -138,6 +174,8 @@ if ($test_id > 0) {
         'live_score' => ['test_live_score', 'Показывать текущий балл во время экзамена'],
         'auto_fullscreen' => ['test_auto_fullscreen', 'Открывать fullscreen после первого действия'],
         'hide_exam_info' => ['test_hide_exam_info', 'Скрывать служебную информацию во время экзамена'],
+        'results_to_users' => ['test_results_to_users', 'Публиковать результаты участникам'],
+        'results_anonymized' => ['test_results_anonymized', 'Обезличивать участника в опубликованном результате'],
         'disable_previous' => ['test_disable_previous', 'Отключить кнопку «Назад»'],
         'disable_next' => ['test_disable_next', 'Отключить кнопку «Далее»'],
         'hide_editor' => ['test_hide_editor', 'Не загружать редактор для эссе'],
@@ -147,6 +185,18 @@ if ($test_id > 0) {
             . '" id="' . $name . '" value="1"' . (F_getBoolean($rules[$field]) ? ' checked="checked"' : '')
             . ' /></span></div>';
     }
+    $datetime_value = static function (mixed $value): string {
+        $timestamp = strtotime((string) $value);
+        return $timestamp === false ? '' : date('Y-m-d\TH:i', $timestamp);
+    };
+    echo '<div class="row"><span class="label"><label for="results_publish_at">Опубликовать не раньше</label>'
+        . '</span><span class="formw"><input type="datetime-local" name="results_publish_at" '
+        . 'id="results_publish_at" value="' . $html($datetime_value($rules['test_results_publish_at'])) . '" />'
+        . '</span></div>'
+        . '<div class="row"><span class="label"><label for="results_unpublish_at">Отозвать публикацию</label>'
+        . '</span><span class="formw"><input type="datetime-local" name="results_unpublish_at" '
+        . 'id="results_unpublish_at" value="' . $html($datetime_value($rules['test_results_unpublish_at'])) . '" />'
+        . '</span></div>';
     echo '<div class="row"><span class="label"><label for="completion_message">Сообщение после завершения</label>'
         . '</span><span class="formw"><textarea name="completion_message" id="completion_message" '
         . 'rows="5" cols="60">' . $html($rules['test_completion_message']) . '</textarea></span></div>'
