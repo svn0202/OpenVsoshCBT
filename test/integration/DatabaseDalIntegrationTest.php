@@ -96,6 +96,17 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse(\F_db_query($sql, $this->db), $sql);
     }
 
+    private static function executablePath(string $binary): ?string
+    {
+        foreach (explode(PATH_SEPARATOR, (string) getenv('PATH')) as $directory) {
+            $path = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $binary;
+            if (is_file($path) && is_executable($path)) {
+                return $path;
+            }
+        }
+        return null;
+    }
+
     /** Load the DAL implementation matching the configured database type. */
     private static function loadDal(string $type): void
     {
@@ -435,6 +446,144 @@ final class DatabaseDalIntegrationTest extends TestCase
                 );
                 $this->dbExec('DELETE FROM tce_subjects WHERE subject_module_id=' . $moduleId);
                 $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+            }
+        }
+    }
+
+    public function testDatabaseBackupCanActuallyRestoreDisposableDatabase(): void
+    {
+        require_once __DIR__ . '/../../shared/code/tce_functions_backup.php';
+
+        $type = (string) getenv('TCEXAM_DB_TYPE');
+        $dumpBinary = self::executablePath($type === 'POSTGRESQL' ? 'pg_dump' : 'mysqldump');
+        $restoreBinary = self::executablePath($type === 'POSTGRESQL' ? 'pg_restore' : 'mysql');
+        if ($dumpBinary === null || $restoreBinary === null) {
+            self::markTestSkipped('Database backup clients are not installed.');
+        }
+
+        $databaseName = 'itest_backup_' . bin2hex(random_bytes(5));
+        $quotedDatabase = $type === 'POSTGRESQL'
+            ? '"' . $databaseName . '"'
+            : '`' . $databaseName . '`';
+        $backupDirectory = sys_get_temp_dir() . '/openvsosh-backup-integration-' . bin2hex(random_bytes(6));
+        $this->assertTrue(mkdir($backupDirectory, 0700));
+        $archive = null;
+        $targetDb = null;
+        $controlDb = $this->db;
+        $separateControlDb = false;
+        $config = [
+            'type' => $type,
+            'host' => (string) getenv('TCEXAM_DB_HOST'),
+            'port' => (string) getenv('TCEXAM_DB_PORT'),
+            'name' => $databaseName,
+            'user' => (string) getenv('TCEXAM_DB_USER'),
+            'password' => (string) getenv('TCEXAM_DB_PASSWORD'),
+        ];
+        if ($type === 'POSTGRESQL') {
+            $config['pg_dump_binary'] = $dumpBinary;
+            $config['pg_restore_binary'] = $restoreBinary;
+        } else {
+            $config['mysqldump_binary'] = $dumpBinary;
+            $config['mysql_binary'] = $restoreBinary;
+            $adminUser = (string) getenv('TCEXAM_DB_ADMIN_USER');
+            if ($adminUser !== '') {
+                $controlDb = \F_db_connect(
+                    $config['host'],
+                    $config['port'],
+                    $adminUser,
+                    (string) getenv('TCEXAM_DB_ADMIN_PASSWORD'),
+                    (string) getenv('TCEXAM_DB_NAME'),
+                );
+                $this->assertNotFalse($controlDb);
+                $separateControlDb = true;
+            }
+        }
+
+        try {
+            $this->assertNotFalse(\F_db_query('CREATE DATABASE ' . $quotedDatabase, $controlDb));
+            if ($type !== 'POSTGRESQL' && $separateControlDb) {
+                $applicationUser = \F_escape_sql(
+                    $controlDb,
+                    (string) getenv('TCEXAM_DB_USER'),
+                );
+                $this->assertNotFalse(\F_db_query(
+                    'GRANT ALL PRIVILEGES ON ' . $quotedDatabase . ".* TO '" . $applicationUser . "'@'%'",
+                    $controlDb,
+                ));
+            }
+            $targetDb = \F_db_connect(
+                $config['host'],
+                $config['port'],
+                $config['user'],
+                $config['password'],
+                $config['name'],
+            );
+            $this->assertNotFalse($targetDb);
+            $this->assertNotFalse(\F_db_query(
+                'CREATE TABLE backup_probe (probe_value VARCHAR(32) NOT NULL)',
+                $targetDb,
+            ));
+            $this->assertNotFalse(\F_db_query(
+                "INSERT INTO backup_probe (probe_value) VALUES ('before')",
+                $targetDb,
+            ));
+            \F_db_close($targetDb);
+            $targetDb = null;
+
+            $archive = \F_tmf_backup_create($config, $backupDirectory, '20260727120000');
+            $this->assertFileExists($archive);
+            $this->assertGreaterThan(0, filesize($archive));
+
+            $targetDb = \F_db_connect(
+                $config['host'],
+                $config['port'],
+                $config['user'],
+                $config['password'],
+                $config['name'],
+            );
+            $this->assertNotFalse($targetDb);
+            $this->assertNotFalse(\F_db_query(
+                "UPDATE backup_probe SET probe_value='after'",
+                $targetDb,
+            ));
+            \F_db_close($targetDb);
+            $targetDb = null;
+
+            \F_tmf_backup_restore($config, $archive);
+            $targetDb = \F_db_connect(
+                $config['host'],
+                $config['port'],
+                $config['user'],
+                $config['password'],
+                $config['name'],
+            );
+            $this->assertNotFalse($targetDb);
+            $result = \F_db_query('SELECT probe_value FROM backup_probe', $targetDb);
+            $this->assertNotFalse($result);
+            $row = \F_db_fetch_array($result);
+            $this->assertSame('before', $row[0] ?? null);
+        } finally {
+            if ($targetDb !== null) {
+                \F_db_close($targetDb);
+            }
+            if ($type === 'POSTGRESQL') {
+                $this->dbExec(
+                    "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='"
+                    . $databaseName . "' AND pid <> pg_backend_pid()"
+                );
+            }
+            $this->assertNotFalse(\F_db_query(
+                'DROP DATABASE IF EXISTS ' . $quotedDatabase,
+                $controlDb,
+            ));
+            if ($separateControlDb) {
+                \F_db_close($controlDb);
+            }
+            if (is_string($archive) && is_file($archive)) {
+                unlink($archive);
+            }
+            if (is_dir($backupDirectory)) {
+                rmdir($backupDirectory);
             }
         }
     }

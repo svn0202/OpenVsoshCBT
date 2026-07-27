@@ -35,6 +35,9 @@ services:
       TCEXAM_DB_TYPE: MYSQL
       TCEXAM_DB_HOST: tcexam_db
       TCEXAM_DB_PORT: "3306"
+      # Used only to create/drop the disposable database in the restore test.
+      TCEXAM_DB_ADMIN_USER: root
+      TCEXAM_DB_ADMIN_PASSWORD: root
     depends_on:
       tcexam_db:
         condition: service_healthy

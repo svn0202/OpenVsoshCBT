@@ -8,9 +8,9 @@
 # PHP 8.4 matches the top of the project's CI matrix (composer requires >=8.2).
 FROM php:8.4-cli
 
-# git/unzip let Composer fetch and extract packages; everything else is provided by extensions.
+# Database clients exercise the same checked backup/restore path as the runtime image.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip \
+    && apt-get install -y --no-install-recommends git unzip default-mysql-client postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Database drivers (mysqli + pgsql) and the extensions the shared code loads at include time;
@@ -24,6 +24,7 @@ RUN install-php-extensions \
         bcmath \
         mbstring \
         zip \
+        curl \
         pcov
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
