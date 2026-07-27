@@ -214,6 +214,18 @@ audio[aria-disabled="true"] {
 	overflow-wrap: anywhere;
 }
 
+[lang="ar"],
+[dir="rtl"] {
+	font-family: "Noto Sans Arabic", "Noto Naskh Arabic", "DejaVu Sans", Tahoma, Arial, sans-serif;
+}
+
+[lang="ar"] .tcecontentbox,
+[dir="rtl"] .tcecontentbox,
+[lang="ar"] input,
+[lang="ar"] textarea {
+	unicode-bidi: plaintext;
+}
+
 .exam-image-preview {
 	box-sizing: border-box;
 	width: min(94vw, 1200px);

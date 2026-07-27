@@ -32,6 +32,8 @@ final class ExamUiAssetsTest extends TestCase
             self::assertStringContainsString('@media (max-width: 575px)', $css);
             self::assertStringContainsString('overflow-wrap: anywhere', $css);
             self::assertStringContainsString('.exam-image-preview::backdrop', $css);
+            self::assertStringContainsString('"Noto Sans Arabic"', $css);
+            self::assertStringContainsString('unicode-bidi: plaintext', $css);
         }
     }
 

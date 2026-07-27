@@ -1148,3 +1148,8 @@ fieldset.answergroup > legend {
 	border-radius: 50%;
 	object-fit: cover;
 }
+
+[lang="ar"],
+[dir="rtl"] {
+	font-family: "Noto Sans Arabic", "Noto Naskh Arabic", "DejaVu Sans", Tahoma, Arial, sans-serif;
+}
