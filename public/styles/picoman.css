@@ -191,6 +191,28 @@ audio[aria-disabled="true"] {
 	cursor: zoom-in;
 }
 
+.participant-photo,
+.participant-photo-preview {
+	display: block;
+	width: 112px;
+	height: 112px;
+	margin: .5rem auto 1rem;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.participant-schedule {
+	margin: 1rem 0;
+	padding: .75rem;
+	border-radius: var(--block-round);
+	background: var(--muted-background);
+}
+
+.participant-schedule p {
+	margin: .35rem 0 0;
+	overflow-wrap: anywhere;
+}
+
 .exam-image-preview {
 	box-sizing: border-box;
 	width: min(94vw, 1200px);

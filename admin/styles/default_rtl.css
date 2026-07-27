@@ -1139,3 +1139,12 @@ fieldset.answergroup > legend {
 	text-decoration: underline;
 	width: auto;
 }
+
+.participant-photo-preview {
+	display: block;
+	width: 112px;
+	height: 112px;
+	margin: .5rem 0;
+	border-radius: 50%;
+	object-fit: cover;
+}

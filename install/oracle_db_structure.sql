@@ -49,6 +49,8 @@ CREATE TABLE tce_users (
 	user_birthplace VARCHAR2(255),
 	user_regnumber VARCHAR2(255),
 	user_ssn VARCHAR2(255),
+	user_note NCLOB,
+	user_schedule NCLOB,
 	user_level NUMBER(5,0) DEFAULT 1 NOT NULL,
 	user_verifycode VARCHAR2(32) UNIQUE,
 	user_otpkey VARCHAR2(255),

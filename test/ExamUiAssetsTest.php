@@ -34,4 +34,24 @@ final class ExamUiAssetsTest extends TestCase
             self::assertStringContainsString('.exam-image-preview::backdrop', $css);
         }
     }
+
+    public function testTestEditorOffersBulkSubjectSelection(): void
+    {
+        $editor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_edit_test.php');
+
+        self::assertStringContainsString('id="select_all_subjects"', $editor);
+        self::assertStringContainsString('id="clear_all_subjects"', $editor);
+        self::assertStringContainsString('option.value.charAt(0)!=="#"', $editor);
+    }
+
+    public function testParticipantPhotosAreServedThroughAnAuthorizedController(): void
+    {
+        $controller = (string) file_get_contents(__DIR__ . '/../public/code/tce_user_photo.php');
+        $editor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_edit_user.php');
+
+        self::assertStringContainsString('K_AUTH_ADMIN_USERS', $controller);
+        self::assertStringContainsString("header('Content-Type: image/jpeg')", $controller);
+        self::assertStringContainsString('accept="image/jpeg,image/png"', $editor);
+        self::assertStringContainsString('F_tmf_user_photo_store', $editor);
+    }
 }

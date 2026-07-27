@@ -43,6 +43,8 @@ CREATE TABLE tce_users (
 	user_birthplace Varchar(255),
 	user_regnumber Varchar(255),
 	user_ssn Varchar(255),
+	user_note Text,
+	user_schedule Text,
 	user_level Smallint(3) UNSIGNED NOT NULL DEFAULT 1,
 	user_verifycode Varchar(32),
 	user_otpkey Varchar(255),

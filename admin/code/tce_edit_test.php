@@ -1753,6 +1753,18 @@ if (isset($test_id) && $test_id > 0) {
     }
 
     echo '</select>' . K_NEWLINE;
+    echo '<div class="subject-bulk-actions">'
+        . '<button type="button" class="minibutton" id="select_all_subjects">Выбрать все темы</button>'
+        . '<button type="button" class="minibutton" id="clear_all_subjects">Снять выбор</button>'
+        . '</div>' . K_NEWLINE;
+    echo '<script type="text/javascript">'
+        . '(function(){var list=document.getElementById("subject_id");'
+        . 'function setAll(selected){Array.prototype.forEach.call(list.options,function(option){'
+        . 'option.selected=selected&&option.value.charAt(0)!=="#";});}'
+        . 'document.getElementById("select_all_subjects").addEventListener("click",function(){setAll(true);});'
+        . 'document.getElementById("clear_all_subjects").addEventListener("click",function(){setAll(false);});'
+        . '}());'
+        . '</script>' . K_NEWLINE;
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 

@@ -123,11 +123,27 @@ if ($is_app_page) {
     echo '<div class="tmf-user-panel-title"><strong>' . $esc($l['w_user']) . '</strong>'
         . '<button class="tmf-user-close" type="button" aria-label="' . $esc($l['ov_close'])
         . '">×</button></div>' . K_NEWLINE;
+    $profile_result = F_db_query(
+        'SELECT user_schedule FROM ' . K_TABLE_USERS
+        . ' WHERE user_id=' . (int) $_SESSION['session_user_id'] . ' LIMIT 1',
+        $db,
+    );
+    $profile = $profile_result ? F_db_fetch_array($profile_result) : [];
+    require_once '../../shared/code/tce_functions_user_photo.php';
+    if (is_file(F_tmf_user_photo_path((int) $_SESSION['session_user_id']))) {
+        echo '<img class="participant-photo" src="tce_user_photo.php" alt="Фотография участника" />' . K_NEWLINE;
+    }
     echo '<dl>' . K_NEWLINE;
     echo '<dt>' . $esc($l['w_level']) . '</dt><dd>' . (int) $_SESSION['session_user_level'] . '</dd>' . K_NEWLINE;
     echo '<dt>' . $esc($l['w_username']) . '</dt><dd>' . $esc($_SESSION['session_user_name']) . '</dd>' . K_NEWLINE;
     echo '<dt>' . $esc($l['w_name']) . '</dt><dd>' . $esc(urldecode((string) $_SESSION['session_user_firstname'])) . '</dd>' . K_NEWLINE;
     echo '</dl>' . K_NEWLINE;
+    if (trim((string) ($profile['user_schedule'] ?? '')) !== '') {
+        echo '<section class="participant-schedule"><strong>Расписание</strong><p>'
+            . nl2br($esc($profile['user_schedule']))
+            . '</p></section>'
+            . K_NEWLINE;
+    }
     echo '<a class="tmf-panel-logout" href="tce_logout.php" onclick="return confirm(\'' . $l['w_logout'] . ' ?\')">'
         . '<span aria-hidden="true">⏻</span> ' . $esc($l['ov_logout_question']) . '</a>' . K_NEWLINE;
     echo '</aside>' . K_NEWLINE;
