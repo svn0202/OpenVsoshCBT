@@ -16,6 +16,8 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString("event.key === 'Enter' || event.key === ' '", $script);
         self::assertStringContainsString("dialog.showModal()", $script);
         self::assertStringContainsString('bindImagePreviews();', $script);
+        self::assertStringContainsString('bindAudioLimits();', $script);
+        self::assertStringContainsString("audio.addEventListener('play'", $script);
     }
 
     public function testBothDirectionsKeepMatchingAndMediaResponsive(): void

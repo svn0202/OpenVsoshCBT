@@ -372,6 +372,49 @@
         });
     }
 
+    function bindAudioLimits() {
+        var toolbar = form.querySelector('[data-exam-toolbar]');
+        var limit = Number(toolbar ? toolbar.dataset.audioPlayLimit : 0);
+        if (!limit || limit < 1) {
+            return;
+        }
+
+        form.querySelectorAll('.tcecontentbox audio, ol.answer audio').forEach(function (audio, index) {
+            if (audio.dataset.examAudioBound === '1') {
+                return;
+            }
+            audio.dataset.examAudioBound = '1';
+            var key = 'tcexam:' + testId + ':' + testuserId + ':audio:' + testlogId + ':' + index;
+            var status = document.createElement('span');
+            status.className = 'audio-play-status';
+            status.setAttribute('aria-live', 'polite');
+            audio.insertAdjacentElement('afterend', status);
+
+            var updateStatus = function () {
+                var used = Math.max(0, Number(readJson(key, 0)) || 0);
+                status.textContent = used >= limit
+                    ? 'Лимит воспроизведений исчерпан'
+                    : 'Осталось воспроизведений: ' + (limit - used);
+                audio.setAttribute('aria-disabled', used >= limit ? 'true' : 'false');
+            };
+            audio.addEventListener('play', function () {
+                if (audio.currentTime > 0.5) {
+                    return;
+                }
+                var used = Math.max(0, Number(readJson(key, 0)) || 0);
+                if (used >= limit) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    updateStatus();
+                    return;
+                }
+                writeJson(key, used + 1);
+                updateStatus();
+            });
+            updateStatus();
+        });
+    }
+
     function refreshQuestionState() {
         testId = (form.querySelector('#testid') || {}).value || '0';
         testlogId = (form.querySelector('#testlogid') || {}).value || '0';
@@ -381,6 +424,7 @@
         bindAnswerControls();
         resizeAnswerText();
         bindImagePreviews();
+        bindAudioLimits();
         setScale(readJson(fontKey, 1));
 
         var displayTime = form.querySelector('#display_time');

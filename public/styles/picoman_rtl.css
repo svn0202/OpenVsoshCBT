@@ -161,6 +161,17 @@ ol.answer li span > label {margin: var(--block-round)}
 	height: auto;
 }
 
+.audio-play-status {
+	display: block;
+	margin-top: .35rem;
+	color: var(--muted-text);
+	font-size: .875rem;
+}
+
+audio[aria-disabled="true"] {
+	opacity: .55;
+}
+
 .exam-previewable-image {
 	cursor: zoom-in;
 }

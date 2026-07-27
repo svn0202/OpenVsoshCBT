@@ -9,7 +9,7 @@
 /**
  * Read optional behavior markers embedded by the DOCX importer.
  *
- * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int}
+ * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int, audio_play_limit: int}
  */
 function F_tmf_question_options(string $description): array
 {
@@ -19,6 +19,7 @@ function F_tmf_question_options(string $description): array
         'max_selections' => 0,
         'similarity_threshold' => 0,
         'matching_positions' => 0,
+        'audio_play_limit' => 0,
     ];
 
     if (preg_match('/<!--TMF_MAX_SEL:(\d+)-->/', (string) $description, $match)) {
@@ -42,8 +43,24 @@ function F_tmf_question_options(string $description): array
     if (preg_match('/<!--TMF_MATCH_POSITIONS:(\d{1,3})-->/', $description, $match)) {
         $options['matching_positions'] = max(0, min(100, (int) $match[1]));
     }
+    if (preg_match('/<!--TMF_AUDIO_PLAYS:(\d{1,2})-->/', $description, $match)) {
+        $options['audio_play_limit'] = max(0, min(99, (int) $match[1]));
+    }
 
     return $options;
+}
+
+/**
+ * Replace the optional number of permitted audio starts.
+ */
+function F_tmf_set_audio_play_limit(string $description, int $limit): string
+{
+    $description = (string) preg_replace('/\s*<!--TMF_AUDIO_PLAYS:\d{1,2}-->/', '', $description);
+    $limit = max(0, min(99, $limit));
+    if ($limit > 0) {
+        $description = rtrim($description) . '<!--TMF_AUDIO_PLAYS:' . $limit . '-->';
+    }
+    return $description;
 }
 
 /**
