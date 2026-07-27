@@ -2152,6 +2152,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
     $user_id = (int) $_SESSION['session_user_id'];
     $aswkeys = [];
     $str = '';
+    $question_reviewed = false;
     if (!isset($test_id) || $test_id == 0) {
         return;
     }
@@ -2203,6 +2204,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
+            $question_reviewed = F_getBoolean($m['testlog_reviewed'] ?? false);
             if (F_getBoolean($m['question_fullscreen'])) {
                 // hide some section for fullscreen mode
                 $str .= '<style>' . K_NEWLINE;
@@ -2794,7 +2796,10 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
         . '">⛶</button>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;
-    $toolbar .= '<label class="exam-review-toggle"><input type="checkbox" data-exam-review /> '
+    $toolbar .= '<label class="exam-review-toggle"><input type="checkbox" data-exam-review'
+        . ' data-review-save="tce_test_review.php" data-reviewed="'
+        . ($question_reviewed ? '1' : '0')
+        . '" /> '
         . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $l['a_meta_charset'])
         . '</label>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;

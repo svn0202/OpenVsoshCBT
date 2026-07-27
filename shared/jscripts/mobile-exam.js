@@ -215,6 +215,14 @@
         var review = toolbar.querySelector('[data-exam-review]');
         var reviewed = getReviewed();
         if (review) {
+            var serverReviewed = review.dataset.reviewed === '1';
+            reviewed = reviewed.filter(function (id) {
+                return id !== String(testlogId);
+            });
+            if (serverReviewed) {
+                reviewed.push(String(testlogId));
+            }
+            writeJson(reviewKey, reviewed);
             review.checked = reviewed.indexOf(String(testlogId)) !== -1;
             paintReviewed(reviewed);
             review.addEventListener('change', function () {
@@ -226,6 +234,22 @@
                 }
                 writeJson(reviewKey, reviewed);
                 paintReviewed(reviewed);
+                var csrf = form.querySelector('[name="csrf_token"]');
+                if (window.fetch && csrf && review.dataset.reviewSave) {
+                    var data = new FormData();
+                    data.set('csrf_token', csrf.value);
+                    data.set('testid', testId);
+                    data.set('testlogid', testlogId);
+                    data.set('reviewed', review.checked ? '1' : '0');
+                    window.fetch(review.dataset.reviewSave, {
+                        method: 'POST',
+                        body: data,
+                        credentials: 'same-origin',
+                        headers: {'Accept': 'application/json'}
+                    }).catch(function () {
+                        // The local copy remains available until the server can be reached.
+                    });
+                }
             });
         }
 

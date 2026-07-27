@@ -243,6 +243,7 @@ CREATE TABLE tce_tests_logs (
 	testlog_answer_version Bigint UNSIGNED NOT NULL DEFAULT 0,
 	testlog_answer_operation Varchar(32),
 	testlog_answer_saved_at Datetime,
+	testlog_reviewed Bool NOT NULL DEFAULT '0',
 	testlog_comment Text,
  Primary Key (testlog_id)
 ) ENGINE = InnoDB
