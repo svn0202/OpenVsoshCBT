@@ -141,6 +141,8 @@ switch ($menu_mode) {
         {
             // Delete
             if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+                require_once '../../shared/code/tce_functions_attachments.php';
+                F_tmf_attachment_delete_attempt((int) $testuser_id);
                 $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 					WHERE testuser_id=' . $testuser_id . '';
                 if (!($r = F_db_query($sql, $db))) {
@@ -565,6 +567,8 @@ if (isset($teststat) && !empty($teststat)) {
                     . $l['w_pdf']
                     . '</a> '
             ;
+            echo '<a href="tce_attempt_archive.php?testuser_id=' . (int) $testuser_id
+                . '" class="xmlbutton" title="Скачать архив работы с вложениями">ZIP</a> ';
             echo
                 '<a href="tce_email_results.php?mode=1&amp;menu_mode=startlongprocess'
                     . $filter

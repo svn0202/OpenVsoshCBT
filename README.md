@@ -104,6 +104,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Автономное электронное проведение](doc/admin/offline-exams.md)
 - [XLSX: пользователи, мониторинг и результаты](doc/admin/xlsx.md)
 - [Условия доступа и безопасного завершения](doc/admin/test-access.md)
+- [Вложения к развёрнутым ответам](doc/admin/essay-attachments.md)
 - [Безопасное обновление](doc/admin/upgrade.md)
 - [Решение известных проблем](doc/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)

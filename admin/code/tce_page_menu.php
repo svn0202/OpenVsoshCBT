@@ -329,6 +329,22 @@ $menu['tce_menu_tests.php']['sub'] = [
         'key' => '',
         'enabled' => false,
     ],
+    'tce_attachment.php' => [
+        'link' => 'tce_show_result_allusers.php',
+        'title' => 'Защищённое вложение ответа',
+        'name' => 'Вложение',
+        'level' => K_AUTH_ADMIN_RESULTS,
+        'key' => '',
+        'enabled' => false,
+    ],
+    'tce_attempt_archive.php' => [
+        'link' => 'tce_show_result_allusers.php',
+        'title' => 'Архив работы с вложениями',
+        'name' => 'Архив',
+        'level' => K_AUTH_ADMIN_RESULTS,
+        'key' => '',
+        'enabled' => false,
+    ],
     'tce_show_result_user.php' => [
         'link' => 'tce_show_result_user.php',
         'title' => $l['t_result_user'],

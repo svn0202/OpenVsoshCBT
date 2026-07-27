@@ -174,6 +174,21 @@ constraint "pk_tce_monitor_audit" primary key ("monitor_audit_id")
 CREATE INDEX "idx_monitor_audit_test_time" ON "tce_monitor_audit" ("monitor_test_id","monitor_audit_time");
 CREATE INDEX "idx_monitor_audit_attempt" ON "tce_monitor_audit" ("monitor_testuser_id");
 
+CREATE TABLE "tce_testlog_attachments" (
+	"attachment_id" BigSerial NOT NULL,
+	"attachment_testlog_id" Bigint NOT NULL,
+	"attachment_user_id" Bigint NOT NULL,
+	"attachment_stored_name" Char(64) NOT NULL,
+	"attachment_original_name" Varchar(255) NOT NULL,
+	"attachment_mime" Varchar(64) NOT NULL,
+	"attachment_size" Bigint NOT NULL,
+	"attachment_sha256" Char(64) NOT NULL,
+	"attachment_created_at" Timestamp NOT NULL,
+constraint "pk_tce_testlog_attachments" primary key ("attachment_id"),
+constraint "ak_tce_testlog_attachment_name" unique ("attachment_stored_name")
+) Without Oids;
+CREATE INDEX "idx_attachment_testlog" ON "tce_testlog_attachments" ("attachment_testlog_id");
+
 CREATE TABLE "tce_offline_packages" (
 	"offline_package_id" Char(32) NOT NULL,
 	"offline_testuser_id" Bigint NOT NULL,

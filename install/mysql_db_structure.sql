@@ -185,6 +185,22 @@ CREATE TABLE tce_monitor_audit (
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+CREATE TABLE tce_testlog_attachments (
+	attachment_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+	attachment_testlog_id Bigint UNSIGNED NOT NULL,
+	attachment_user_id Bigint UNSIGNED NOT NULL,
+	attachment_stored_name Char(64) NOT NULL,
+	attachment_original_name Varchar(255) NOT NULL,
+	attachment_mime Varchar(64) NOT NULL,
+	attachment_size Bigint UNSIGNED NOT NULL,
+	attachment_sha256 Char(64) NOT NULL,
+	attachment_created_at Datetime NOT NULL,
+	UNIQUE (attachment_stored_name),
+	Index idx_attachment_testlog (attachment_testlog_id),
+ Primary Key (attachment_id)
+) ENGINE = InnoDB
+CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
 CREATE TABLE tce_offline_packages (
 	offline_package_id Char(32) NOT NULL,
 	offline_testuser_id Bigint UNSIGNED NOT NULL,

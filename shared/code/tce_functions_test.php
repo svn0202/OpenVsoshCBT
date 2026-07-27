@@ -30,6 +30,7 @@ require_once __DIR__ . '/tce_functions_answer_save.php';
 require_once __DIR__ . '/tce_functions_monitoring.php';
 require_once __DIR__ . '/tce_functions_pregeneration.php';
 require_once __DIR__ . '/tce_functions_test_access.php';
+require_once __DIR__ . '/tce_functions_attachments.php';
 
 function F_getUserTests()
 {
@@ -2257,6 +2258,19 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 $str .= '>';
                 $str .= $m['testlog_answer_text'];
                 $str .= '</textarea>' . K_NEWLINE;
+                $attachment_count = count(F_tmf_attachment_list((int) $testlog_id));
+                if ($attachment_count < TMF_ATTACHMENT_MAX_FILES) {
+                    $str .= '<div class="essay-attachment-upload"><label for="answer_attachments">'
+                        . 'Приложить фото или PDF (до 3 файлов, каждый до 5 МБ)</label>'
+                        . '<input type="file" name="answer_attachments[]" id="answer_attachments" multiple="multiple" '
+                        . 'accept="image/jpeg,image/png,application/pdf" />'
+                        . '<label for="answer_camera">Снять фото камерой</label>'
+                        . '<input type="file" name="answer_attachments[]" id="answer_camera" '
+                        . 'accept="image/jpeg,image/png" capture="environment" />'
+                        . '<small>Вложения сохраняются при обычной отправке формы; уже сохранено: '
+                        . $attachment_count . '.</small></div>' . K_NEWLINE;
+                }
+                $str .= F_tmf_attachment_html((int) $testlog_id);
             } else {
                 // multiple-choice question
                 $checked = false;
