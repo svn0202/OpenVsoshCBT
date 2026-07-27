@@ -1978,7 +1978,10 @@ function F_getAllUsersTestStat(
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['user_email'] = $mr['user_email'];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['user_lastname'] = $mr['user_lastname'];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['user_firstname'] = $mr['user_firstname'];
-            $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score'] = $mr['total_score'];
+            // Keep one canonical decimal representation across HTML, PDF and
+            // machine-readable exporters. Do not route stored DECIMAL through
+            // a binary float before it reaches XML/JSON/XLSX.
+            $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score'] = F_formatFloat($mr['total_score']);
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score_perc'] = $total_score_perc;
             if ($stats > 0) {
                 $data['testuser']["'" . $mr['testuser_id'] . "'"]['recurrence'] = $teststat['qstats']['recurrence'];
