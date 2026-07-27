@@ -31,6 +31,7 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
+require_once '../../shared/code/tce_functions_result_publication.php';
 
 $user_id = (int) $_SESSION['session_user_id'];
 
@@ -45,7 +46,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 $test_basic_score = 1;
 
 $testdata = F_getTestData($test_id);
-if (!F_getBoolean($testdata['test_results_to_users'])) {
+if (!F_tmf_results_are_published($testdata)) {
     exit();
 }
 
@@ -61,7 +62,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 
 $usr_all = htmlspecialchars(
-    $userdata['user_lastname'] . ' ' . $userdata['user_firstname'] . ' - ' . $userdata['user_name'] . '',
+    F_tmf_result_identity($userdata, F_getBoolean($testdata['test_results_anonymized'] ?? false)),
     ENT_NOQUOTES,
     $l['a_meta_charset'],
 );

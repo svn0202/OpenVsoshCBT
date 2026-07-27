@@ -31,6 +31,7 @@ require_once __DIR__ . '/tce_functions_monitoring.php';
 require_once __DIR__ . '/tce_functions_pregeneration.php';
 require_once __DIR__ . '/tce_functions_test_access.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
+require_once __DIR__ . '/tce_functions_result_publication.php';
 
 function F_getUserTests()
 {
@@ -83,7 +84,7 @@ function F_getUserTests()
                 $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
                 $str .= '<td';
-                if ($test_status >= 4 && F_getBoolean($m['test_results_to_users'])) {
+                if ($test_status >= 4 && F_tmf_results_are_published($m)) {
                     $usrtestdata = F_getUserTestStat($m['test_id'], $user_id, $testuser_id);
                     $passmsg = '';
                     if (
@@ -301,6 +302,11 @@ function F_isValidIP($user_ip, $test_ips)
 {
     if (empty($user_ip) || empty($test_ips)) {
         return false;
+    }
+    // A single wildcard explicitly disables the network restriction for both
+    // IPv4 and IPv6 clients. The legacy *.*.*.* form remains an IPv4-only mask.
+    if (trim((string) $test_ips) === '*') {
+        return true;
     }
 
     // Convert the user IP to its packed 16-byte binary form so addresses can be compared

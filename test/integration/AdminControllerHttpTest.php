@@ -815,6 +815,10 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'live_score' => '1',
                     'auto_fullscreen' => '1',
                     'hide_exam_info' => '1',
+                    'results_to_users' => '1',
+                    'results_anonymized' => '1',
+                    'results_publish_at' => '2026-07-27T10:00',
+                    'results_unpublish_at' => '2026-07-28T10:00',
                     'disable_previous' => '1',
                     'completion_message' => 'Готово безопасно',
                     'csrf_token' => $token,
@@ -835,6 +839,19 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     $this->dbScalar('SELECT ' . $field . ' FROM tce_tests WHERE test_id=' . $testId),
                 ));
             }
+            foreach (['test_results_to_users', 'test_results_anonymized'] as $field) {
+                $this->assertTrue(\F_getBoolean(
+                    $this->dbScalar('SELECT ' . $field . ' FROM tce_tests WHERE test_id=' . $testId),
+                ));
+            }
+            $this->assertSame(
+                '2026-07-27 10:00:00',
+                $this->dbScalar('SELECT test_results_publish_at FROM tce_tests WHERE test_id=' . $testId),
+            );
+            $this->assertSame(
+                '2026-07-28 10:00:00',
+                $this->dbScalar('SELECT test_results_unpublish_at FROM tce_tests WHERE test_id=' . $testId),
+            );
         } finally {
             $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
         }

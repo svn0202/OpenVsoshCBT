@@ -83,6 +83,19 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->db = null;
     }
 
+    private function dbScalar(string $sql): mixed
+    {
+        $result = \F_db_query($sql, $this->db);
+        $this->assertNotFalse($result, $sql);
+        $row = \F_db_fetch_array($result);
+        return $row === false ? null : $row[0];
+    }
+
+    private function dbExec(string $sql): void
+    {
+        $this->assertNotFalse(\F_db_query($sql, $this->db), $sql);
+    }
+
     /** Load the DAL implementation matching the configured database type. */
     private static function loadDal(string $type): void
     {
@@ -117,6 +130,16 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         if (! \defined('K_TABLE_GROUPS')) {
             \define('K_TABLE_GROUPS', \K_TABLE_PREFIX . 'user_groups');
+        }
+        foreach ([
+            'K_TABLE_MODULES' => 'modules',
+            'K_TABLE_SUBJECTS' => 'subjects',
+            'K_TABLE_QUESTIONS' => 'questions',
+            'K_TABLE_ANSWERS' => 'answers',
+        ] as $constant => $suffix) {
+            if (! \defined($constant)) {
+                \define($constant, \K_TABLE_PREFIX . $suffix);
+            }
         }
     }
 
@@ -273,7 +296,7 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
         $row = \F_db_fetch_assoc($result);
-        $this->assertSame(12, (int) $row['n']);
+        $this->assertSame(13, (int) $row['n']);
 
         $verify = proc_open(
             [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
@@ -287,7 +310,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         fclose($verifyPipes[1]);
         fclose($verifyPipes[2]);
         $this->assertSame(0, proc_close($verify), $verifyErr);
-        $this->assertStringContainsString('already applied openvsosh_user_card.sql', $verifyOut);
+        $this->assertStringContainsString('already applied openvsosh_result_publication.sql', $verifyOut);
         $this->assertStringContainsString('pending handled: 0', $verifyOut);
     }
 
@@ -316,5 +339,93 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse($answer, 'fresh schemas must include answer activity timestamps');
         $this->assertNotFalse($audit, 'fresh schemas must include the immutable monitoring audit');
         $this->assertNotFalse($offline, 'fresh schemas must include signed offline package records');
+    }
+
+    public function testResultPublicationSchemaIsAvailable(): void
+    {
+        $result = \F_db_query(
+            'SELECT test_results_publish_at, test_results_unpublish_at, test_results_anonymized '
+            . 'FROM tce_tests WHERE 1=0',
+            $this->db,
+        );
+        $this->assertNotFalse($result);
+    }
+
+    public function testWordImportCanCommitAndRollBackRealDatabaseWrites(): void
+    {
+        require_once __DIR__ . '/../../admin/code/tmf_word_import_lib.php';
+        require_once __DIR__ . '/../../admin/code/tmf_word_import_db.php';
+
+        $suffix = bin2hex(random_bytes(6));
+        $moduleName = self::ROW_PREFIX . 'word_module_' . $suffix;
+        $rollbackTopic = self::ROW_PREFIX . 'word_rollback_' . $suffix;
+        $commitTopic = self::ROW_PREFIX . 'word_commit_' . $suffix;
+        $adminId = (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'");
+        $GLOBALS['db'] = $this->db;
+        $_SESSION['session_user_id'] = $adminId;
+        $question = [
+            'source_number' => 1,
+            'description' => 'Integration question',
+            'type' => 1,
+            'difficulty' => 2,
+            'timer' => 0,
+            'fullscreen' => 0,
+            'inline_answers' => 0,
+            'auto_next' => 0,
+            'right_keys' => ['A'],
+            'answers' => [
+                ['key' => 'A', 'description' => 'Right', 'weight' => 100],
+                ['key' => 'B', 'description' => 'Wrong', 'weight' => null],
+            ],
+        ];
+
+        $rolledBack = \F_tmf_import_word_questions([
+            'module' => $moduleName,
+            'topic' => $rollbackTopic,
+            'questions' => [$question],
+        ], false);
+        $this->assertFalse($rolledBack['committed']);
+        $this->assertSame(
+            '0',
+            $this->dbScalar(
+                "SELECT COUNT(*) FROM tce_modules WHERE module_name='" . $moduleName . "'",
+            ),
+        );
+
+        try {
+            $committed = \F_tmf_import_word_questions([
+                'module' => $moduleName,
+                'topic' => $commitTopic,
+                'questions' => [$question],
+            ]);
+            $this->assertTrue($committed['committed']);
+            $this->assertSame(1, $committed['questions']);
+            $this->assertSame(2, $committed['answers']);
+            $this->assertSame(
+                '2',
+                $this->dbScalar(
+                    "SELECT COUNT(*) FROM tce_answers a JOIN tce_questions q "
+                    . 'ON q.question_id=a.answer_question_id JOIN tce_subjects s '
+                    . 'ON s.subject_id=q.question_subject_id WHERE s.subject_name=\'' . $commitTopic . "'",
+                ),
+            );
+        } finally {
+            $moduleId = (int) ($this->dbScalar(
+                "SELECT module_id FROM tce_modules WHERE module_name='" . $moduleName . "'",
+            ) ?? '0');
+            if ($moduleId > 0) {
+                $this->dbExec(
+                    'DELETE FROM tce_answers WHERE answer_question_id IN (SELECT question_id FROM tce_questions '
+                    . 'WHERE question_subject_id IN (SELECT subject_id FROM tce_subjects '
+                    . 'WHERE subject_module_id=' . $moduleId . '))',
+                );
+                $this->dbExec(
+                    'DELETE FROM tce_questions WHERE question_subject_id IN (SELECT subject_id FROM tce_subjects '
+                    . 'WHERE subject_module_id=' . $moduleId . ')',
+                );
+                $this->dbExec('DELETE FROM tce_subjects WHERE subject_module_id=' . $moduleId);
+                $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
+            }
+        }
     }
 }

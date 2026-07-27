@@ -1,0 +1,22 @@
+<?php
+
+namespace Test;
+
+use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/../shared/code/tce_functions_test.php';
+
+final class IpAccessTest extends TestCase
+{
+    public function testSingleWildcardDisablesRestrictionForIpv4AndIpv6(): void
+    {
+        self::assertTrue(\F_isValidIP('192.0.2.10', '*'));
+        self::assertTrue(\F_isValidIP('2001:db8::10', '*'));
+    }
+
+    public function testLegacyIpv4WildcardDoesNotAccidentallyAllowIpv6(): void
+    {
+        self::assertTrue(\F_isValidIP('192.0.2.10', '*.*.*.*'));
+        self::assertFalse(\F_isValidIP('2001:db8::10', '*.*.*.*'));
+    }
+}
