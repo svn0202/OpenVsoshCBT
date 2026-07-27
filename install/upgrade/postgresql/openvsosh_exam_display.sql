@@ -1,0 +1,4 @@
+ALTER TABLE tce_tests
+    ADD COLUMN test_live_score BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN test_auto_fullscreen BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN test_hide_exam_info BOOLEAN NOT NULL DEFAULT FALSE;

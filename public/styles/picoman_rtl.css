@@ -168,6 +168,22 @@ ol.answer li span > label {margin: var(--block-round)}
 	font-size: .875rem;
 }
 
+.exam-live-score {
+	display: inline-block;
+	margin: .5rem 0;
+	padding: .4rem .7rem;
+	border-radius: var(--block-round);
+	background: var(--primary-focus);
+	font-weight: 700;
+}
+
+body.exam-hide-info > .header,
+body.exam-hide-info .pagehelp,
+body.exam-hide-info .userbar,
+body.exam-hide-info .infolink {
+	display: none !important;
+}
+
 audio[aria-disabled="true"] {
 	opacity: .55;
 }
