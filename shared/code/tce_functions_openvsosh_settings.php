@@ -173,3 +173,64 @@ function openvsosh_save_access_settings($registration_enabled, $password_reset_e
 
     return true;
 }
+
+/**
+ * Read one OpenVsoshCBT setting without exposing migration-time warnings.
+ */
+function openvsosh_get_setting(string $key): ?string
+{
+    global $db;
+    if (!openvsosh_ensure_settings_table()) {
+        return null;
+    }
+    $escaped_key = F_escape_sql($db, $key);
+    $result = openvsosh_silent_query(
+        "SELECT setting_value FROM " . K_TABLE_OPENVSOSH_SETTINGS
+        . " WHERE setting_key='" . $escaped_key . "'",
+    );
+    $row = $result ? F_db_fetch_array($result) : false;
+    return is_array($row) ? (string) $row['setting_value'] : null;
+}
+
+/**
+ * Store one OpenVsoshCBT setting using portable UPDATE/INSERT statements.
+ */
+function openvsosh_save_setting(string $key, string $value): bool
+{
+    global $db;
+    if (!openvsosh_ensure_settings_table()) {
+        return false;
+    }
+    $escaped_key = F_escape_sql($db, $key);
+    $escaped_value = F_escape_sql($db, $value);
+    $exists = openvsosh_silent_query(
+        "SELECT setting_key FROM " . K_TABLE_OPENVSOSH_SETTINGS
+        . " WHERE setting_key='" . $escaped_key . "'",
+    );
+    $sql = $exists && F_db_fetch_array($exists)
+        ? "UPDATE " . K_TABLE_OPENVSOSH_SETTINGS . " SET setting_value='" . $escaped_value
+            . "' WHERE setting_key='" . $escaped_key . "'"
+        : "INSERT INTO " . K_TABLE_OPENVSOSH_SETTINGS . " (setting_key,setting_value) VALUES ('"
+            . $escaped_key . "','" . $escaped_value . "')";
+    return openvsosh_silent_query($sql) !== false;
+}
+
+/**
+ * Return the instance-local key used to authenticate offline packages.
+ */
+function openvsosh_get_offline_package_secret(): string
+{
+    $secret = openvsosh_get_setting('offline_package_secret');
+    if (is_string($secret) && preg_match('/^[a-f0-9]{64}$/', $secret) === 1) {
+        return $secret;
+    }
+    $secret = bin2hex(random_bytes(32));
+    if (!openvsosh_save_setting('offline_package_secret', $secret)) {
+        throw new RuntimeException('Unable to persist the offline package secret.');
+    }
+    $persisted = openvsosh_get_setting('offline_package_secret');
+    if (!is_string($persisted) || preg_match('/^[a-f0-9]{64}$/', $persisted) !== 1) {
+        throw new RuntimeException('Unable to read the offline package secret.');
+    }
+    return $persisted;
+}

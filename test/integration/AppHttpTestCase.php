@@ -86,6 +86,56 @@ abstract class AppHttpTestCase extends TestCase
         return [self::statusFrom($headers), (string) $body, $cookies + self::cookiesFrom($headers)];
     }
 
+    /**
+     * Submit one multipart form with an in-memory file.
+     *
+     * @param array<string,string> $cookies
+     * @param array<string,string> $fields
+     * @return array{0:int,1:string,2:array<string,string>}
+     */
+    protected function httpUpload(
+        string $path,
+        array $cookies,
+        array $fields,
+        string $fieldName,
+        string $filename,
+        string $contents,
+    ): array {
+        $boundary = '----OpenVsoshCBT' . bin2hex(random_bytes(12));
+        $body = '';
+        foreach ($fields as $name => $value) {
+            $body .= '--' . $boundary . "\r\n"
+                . 'Content-Disposition: form-data; name="' . $name . '"' . "\r\n\r\n"
+                . $value . "\r\n";
+        }
+        $body .= '--' . $boundary . "\r\n"
+            . 'Content-Disposition: form-data; name="' . $fieldName . '"; filename="' . $filename . '"' . "\r\n"
+            . "Content-Type: application/json\r\n\r\n"
+            . $contents . "\r\n"
+            . '--' . $boundary . "--\r\n";
+        $cookieHeader = '';
+        if ($cookies !== []) {
+            $pairs = [];
+            foreach ($cookies as $name => $value) {
+                $pairs[] = $name . '=' . $value;
+            }
+            $cookieHeader = 'Cookie: ' . implode('; ', $pairs) . "\r\n";
+        }
+        $context = stream_context_create(['http' => [
+            'method' => 'POST',
+            'header' => "Accept: text/html\r\n" . $cookieHeader
+                . 'Content-Type: multipart/form-data; boundary=' . $boundary . "\r\n",
+            'content' => $body,
+            'ignore_errors' => true,
+            'timeout' => 20,
+            'follow_location' => 1,
+            'max_redirects' => 20,
+        ]]);
+        $response = file_get_contents($this->base . $path, false, $context);
+        $headers = $http_response_header ?? [];
+        return [self::statusFrom($headers), (string) $response, $cookies + self::cookiesFrom($headers)];
+    }
+
     /** Extract the CSRF token embedded in a form, or null when absent. */
     protected static function extractCsrfToken(string $body): ?string
     {

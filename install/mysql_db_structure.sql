@@ -176,6 +176,22 @@ CREATE TABLE tce_monitor_audit (
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+CREATE TABLE tce_offline_packages (
+	offline_package_id Char(32) NOT NULL,
+	offline_testuser_id Bigint UNSIGNED NOT NULL,
+	offline_test_id Bigint UNSIGNED NOT NULL,
+	offline_user_id Bigint UNSIGNED NOT NULL,
+	offline_issued_at Datetime NOT NULL,
+	offline_expires_at Datetime NOT NULL,
+	offline_payload_hash Char(64) NOT NULL,
+	offline_status Varchar(16) NOT NULL DEFAULT 'issued',
+	offline_imported_at Datetime,
+	offline_result_hash Char(64),
+	Index idx_offline_test_status (offline_test_id,offline_status),
+ Primary Key (offline_package_id)
+) ENGINE = InnoDB
+CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
 CREATE TABLE tce_tests_logs (
 	testlog_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
 	testlog_testuser_id Bigint UNSIGNED NOT NULL,

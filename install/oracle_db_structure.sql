@@ -181,6 +181,21 @@ CREATE OR REPLACE TRIGGER tce_monitor_audit_trigger BEFORE INSERT ON tce_monitor
 CREATE INDEX idx_monitor_audit_test_time ON tce_monitor_audit (monitor_test_id,monitor_audit_time);
 CREATE INDEX idx_monitor_audit_attempt ON tce_monitor_audit (monitor_testuser_id);
 
+CREATE TABLE tce_offline_packages (
+	offline_package_id CHAR(32) NOT NULL,
+	offline_testuser_id NUMBER(19,0) NOT NULL,
+	offline_test_id NUMBER(19,0) NOT NULL,
+	offline_user_id NUMBER(19,0) NOT NULL,
+	offline_issued_at DATE NOT NULL,
+	offline_expires_at DATE NOT NULL,
+	offline_payload_hash CHAR(64) NOT NULL,
+	offline_status VARCHAR2(16) DEFAULT 'issued' NOT NULL,
+	offline_imported_at DATE,
+	offline_result_hash CHAR(64),
+constraint pk_tce_offline_packages primary key (offline_package_id)
+);
+CREATE INDEX idx_offline_test_status ON tce_offline_packages (offline_test_id,offline_status);
+
 CREATE TABLE tce_tests_logs (
 	testlog_id NUMBER(19,0) NOT NULL,
 	testlog_testuser_id NUMBER(19,0) NOT NULL,
