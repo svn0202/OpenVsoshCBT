@@ -155,6 +155,14 @@ $menu['tce_menu_users.php']['sub'] = [
         'key' => '',
         'enabled' => true,
     ],
+    'tce_users_xlsx.php' => [
+        'link' => 'tce_users_xlsx.php',
+        'title' => 'Импорт и экспорт пользователей XLSX',
+        'name' => 'XLSX',
+        'level' => K_AUTH_IMPORT_USERS,
+        'key' => '',
+        'enabled' => true,
+    ],
 ];
 
 $menu['tce_menu_modules.php']['sub'] = [
@@ -304,6 +312,14 @@ $menu['tce_menu_tests.php']['sub'] = [
         'level' => K_AUTH_ADMIN_RESULTS,
         'key' => '',
         'enabled' => true,
+    ],
+    'tce_xlsx_result_allusers.php' => [
+        'link' => 'tce_show_result_allusers.php',
+        'title' => 'Экспорт результатов XLSX',
+        'name' => 'XLSX',
+        'level' => K_AUTH_ADMIN_RESULTS,
+        'key' => '',
+        'enabled' => false,
     ],
     'tce_show_result_user.php' => [
         'link' => 'tce_show_result_user.php',

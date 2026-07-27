@@ -272,7 +272,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_edit_backup.php', 'tce_edit_user.php', 'tce_edit_test.php', 'tce_edit_rating.php',
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
-            'tce_pregenerate.php', 'tce_offline.php',
+            'tce_pregenerate.php', 'tce_offline.php', 'tce_users_xlsx.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -280,6 +280,20 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
 
         return $cases;
+    }
+
+    public function testUsersXlsxTemplateIsARealWorkbook(): void
+    {
+        $cookies = $this->login();
+        [$status, $body] = $this->http(
+            'GET',
+            '/admin/code/tce_users_xlsx.php?download=template',
+            $cookies,
+        );
+
+        $this->assertSame(200, $status);
+        $this->assertStringStartsWith("PK\x03\x04", $body);
+        $this->assertGreaterThan(1000, strlen($body));
     }
 
     #[DataProvider('convertedAdminControllers')]
