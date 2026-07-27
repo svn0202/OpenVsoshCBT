@@ -208,6 +208,53 @@ final class WordImportTest extends TestCase
         );
     }
 
+    public function testArabicTextRoundTripsWithoutNormalizationOrReordering(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            self::markTestSkipped('ZipArchive is not installed.');
+        }
+        $filename = $this->temporaryDirectory . '/arabic.docx';
+        $zip = new ZipArchive();
+        self::assertTrue($zip->open($filename, ZipArchive::CREATE));
+        $paragraphs = [
+            'MODULE:=الرياضيات',
+            'TOPIC:=اختبار الأعداد',
+            'Q:1) ما ناتج ٢ + ٣؟',
+            'A:) أربعة',
+            'B:) خمسة',
+            'RIGHT:B',
+        ];
+        $body = '';
+        foreach ($paragraphs as $paragraph) {
+            $body .= '<w:p><w:r><w:t>'
+                . htmlspecialchars($paragraph, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+                . '</w:t></w:r></w:p>';
+        }
+        self::assertTrue($zip->addFromString(
+            'word/document.xml',
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:body>' . $body . '</w:body></w:document>',
+        ));
+        $zip->close();
+
+        $data = (new TmfWordImporter($filename))->parse();
+        self::assertSame('الرياضيات', $data['module']);
+        self::assertSame('اختبار الأعداد', $data['topic']);
+        self::assertCount(1, $data['questions']);
+        self::assertSame(
+            'ما ناتج ٢ + ٣؟',
+            trim(strip_tags($data['questions'][0]['description'])),
+        );
+        self::assertSame(
+            ['أربعة', 'خمسة'],
+            array_map(
+                static fn (array $answer): string => trim(strip_tags($answer['description'])),
+                $data['questions'][0]['answers'],
+            ),
+        );
+        self::assertSame(['B'], $data['questions'][0]['right_keys']);
+    }
+
     public function testQuestionMetadataAndScoringHelpers(): void
     {
         $options = \F_tmf_question_options(

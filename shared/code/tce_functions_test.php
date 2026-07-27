@@ -2776,6 +2776,20 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         'theme' => $l['ov_switch_theme'],
         'review' => $l['ov_mark_for_review'],
     ];
+    $audio_labels = match (strtolower((string) ($l['a_meta_language'] ?? 'en'))) {
+        'ar' => [
+            'plays_left' => 'مرات التشغيل المتبقية: {count}',
+            'limit_exhausted' => 'تم استنفاد حد تشغيل الصوت',
+        ],
+        'ru' => [
+            'plays_left' => 'Осталось воспроизведений: {count}',
+            'limit_exhausted' => 'Лимит воспроизведений исчерпан',
+        ],
+        default => [
+            'plays_left' => 'Plays remaining: {count}',
+            'limit_exhausted' => 'Audio play limit reached',
+        ],
+    };
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
         . ' data-image-preview-label="'
@@ -2783,6 +2797,18 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         . '" data-image-preview-close="'
         . htmlspecialchars($l['w_close'], ENT_QUOTES, $l['a_meta_charset'])
         . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
+        . '" data-audio-plays-left="'
+        . htmlspecialchars(
+            $l['ov_audio_plays_left'] ?? $audio_labels['plays_left'],
+            ENT_QUOTES,
+            $l['a_meta_charset'],
+        )
+        . '" data-audio-limit-exhausted="'
+        . htmlspecialchars(
+            $l['ov_audio_limit_exhausted'] ?? $audio_labels['limit_exhausted'],
+            ENT_QUOTES,
+            $l['a_meta_charset'],
+        )
         . '" data-auto-fullscreen="' . (F_getBoolean($testdata['test_auto_fullscreen'] ?? false) ? '1' : '0')
         . '" data-hide-exam-info="' . (F_getBoolean($testdata['test_hide_exam_info'] ?? false) ? '1' : '0')
         . '">' . K_NEWLINE;

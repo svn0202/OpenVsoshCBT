@@ -98,6 +98,8 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Регламент проведения олимпиады](doc/admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](doc/admin/matching-questions.md)
 - [Импорт вопросов из Microsoft Word](doc/admin/word-import.md)
+- [Арабский текст и шрифты](doc/admin/fonts.md)
+- [Listening-тесты и лимит аудио](doc/admin/listening-tests.md)
 - [Надёжное сохранение ответов](doc/admin/answer-saving.md)
 - [Наблюдение за тестированием](doc/admin/monitoring.md)
 - [Предварительная генерация вариантов](doc/admin/pregeneration.md)
