@@ -403,6 +403,8 @@ function F_getRawTestStat(
                 $sqlw
                 . ' AND testlog_question_id='
                 . $m['question_id']
+                . ' AND testlog_change_time IS NOT NULL'
+                . ' AND testlog_score IS NOT NULL'
                 . ' AND testlog_score<='
                 . $question_half_score
                 . '',
@@ -1085,7 +1087,9 @@ function F_printTestStat(
                             $ret .=
                                 '<td rowspan="2" valign="middle"><strong>Q'
                                 . $num_question
-                                . '</strong></td>'
+                                . '</strong><br /><small>сложность: '
+                                . F_formatFloat($question['difficulty'])
+                                . '</small></td>'
                                 . K_NEWLINE;
                         } else {
                             $ret .=
@@ -1095,7 +1099,9 @@ function F_printTestStat(
                                 . $l['t_questions_editor']
                                 . '"><strong>Q'
                                 . $num_question
-                                . '</strong></a></td>'
+                                . '</strong></a><br /><small>сложность: '
+                                . F_formatFloat($question['difficulty'])
+                                . '</small></td>'
                                 . K_NEWLINE;
                         }
 

@@ -71,8 +71,8 @@ function F_tmf_recorded_answer_score(array $test, array $question, array $answer
 }
 
 /**
- * Regrade all objective answers of a test. Free-text answers are deliberately excluded so
- * manually assigned essay scores and comments remain untouched.
+ * Regrade objective and keyed short answers. Essays without enabled correct keys are deliberately
+ * excluded so manually assigned essay scores and comments remain untouched.
  */
 function F_tmf_regrade_test(int $test_id): int
 {
@@ -86,11 +86,12 @@ function F_tmf_regrade_test(int $test_id): int
         throw new RuntimeException('Тест не найден.');
     }
     $logs_result = F_db_query(
-        'SELECT tl.testlog_id,q.question_type,q.question_difficulty'
+        'SELECT tl.testlog_id,tl.testlog_answer_text,tl.testlog_change_time,'
+        . 'q.question_id,q.question_type,q.question_difficulty,q.question_description'
         . ' FROM ' . K_TABLE_TESTS_LOGS . ' tl'
         . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
         . ' INNER JOIN ' . K_TABLE_QUESTIONS . ' q ON q.question_id=tl.testlog_question_id'
-        . ' WHERE tu.testuser_test_id=' . $test_id . ' AND q.question_type<>3',
+        . ' WHERE tu.testuser_test_id=' . $test_id,
         $db,
     );
     if (!$logs_result || !F_db_query('START TRANSACTION', $db)) {
@@ -99,6 +100,51 @@ function F_tmf_regrade_test(int $test_id): int
     $updated = 0;
     try {
         while ($log = F_db_fetch_array($logs_result)) {
+            if ((int) $log['question_type'] === 3) {
+                $keys_result = F_db_query(
+                    'SELECT answer_description,answer_weight FROM ' . K_TABLE_ANSWERS
+                    . ' WHERE answer_question_id=' . (int) $log['question_id']
+                    . " AND answer_enabled='1' AND answer_isright='1' ORDER BY answer_position",
+                    $db,
+                );
+                if (!$keys_result) {
+                    throw new RuntimeException('Не удалось прочитать ключи краткого ответа.');
+                }
+                $keys = [];
+                while ($key = F_db_fetch_array($keys_result)) {
+                    $keys[] = $key;
+                }
+                if ($keys === []) {
+                    continue;
+                }
+                $right = (float) $test['test_score_right'] * (float) $log['question_difficulty'];
+                $wrong = (float) $test['test_score_wrong'] * (float) $log['question_difficulty'];
+                $unanswered = (float) $test['test_score_unanswered'] * (float) $log['question_difficulty'];
+                $text = (string) ($log['testlog_answer_text'] ?? '');
+                if ($log['testlog_change_time'] === null || $text === '') {
+                    $score = $unanswered;
+                } else {
+                    $options = F_tmf_question_options((string) $log['question_description']);
+                    $score = F_tmf_short_answer_score(
+                        $text,
+                        $keys,
+                        K_SHORT_ANSWERS_BINARY,
+                        (int) $options['similarity_threshold'],
+                        $right,
+                        $wrong,
+                    );
+                }
+                $score_sql = $score === null ? 'NULL' : number_format($score, 3, '.', '');
+                if (!F_db_query(
+                    'UPDATE ' . K_TABLE_TESTS_LOGS . ' SET testlog_score=' . $score_sql
+                    . ' WHERE testlog_id=' . (int) $log['testlog_id'],
+                    $db,
+                )) {
+                    throw new RuntimeException('Не удалось записать пересчитанный балл.');
+                }
+                ++$updated;
+                continue;
+            }
             $answers_result = F_db_query(
                 'SELECT la.logansw_selected,la.logansw_position,a.answer_position,'
                 . 'a.answer_isright,a.answer_weight FROM ' . K_TABLE_LOG_ANSWER . ' la'

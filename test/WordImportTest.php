@@ -138,11 +138,13 @@ final class WordImportTest extends TestCase
     {
         $options = \F_tmf_question_options(
             '<!--TMF_CHECKBOX--><!--TMF_MAX_SEL:2-->'
+            . '<!--TMF_SIMILARITY:85-->'
             . '<!--TMF_MCMA_HEADER:[&quot;Факт&quot;,&quot;Да&quot;,&quot;Нет&quot;,&quot;Пропуск&quot;]-->',
         );
 
         self::assertTrue($options['checkbox']);
         self::assertSame(2, $options['max_selections']);
+        self::assertSame(85, $options['similarity_threshold']);
         self::assertSame(['Факт', 'Да', 'Нет', 'Пропуск'], $options['headers']);
         self::assertTrue(\F_tmf_selection_limit_is_valid([1, 0, 1], 2));
         self::assertFalse(\F_tmf_selection_limit_is_valid([1, 1, 1], 2));
