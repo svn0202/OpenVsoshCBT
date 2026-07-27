@@ -22,6 +22,7 @@
 
 require_once '../config/tce_auth.php';
 require_once '../../shared/code/tce_functions_menu.php';
+require_once '../../shared/code/tce_functions_roles.php';
 
 $menu = [
     'index.php' => [
@@ -52,7 +53,7 @@ $menu = [
         'link' => 'tce_menu_tests.php',
         'title' => $l['w_tests'],
         'name' => $l['w_tests'],
-        'level' => K_AUTH_ADMIN_TESTS,
+        'level' => K_AUTH_OPERATOR,
         'key' => '',
         'enabled' => true,
     ],
@@ -60,7 +61,7 @@ $menu = [
         'link' => 'tce_onboarding_settings.php',
         'title' => $l['ov_instance_settings'],
         'name' => $l['ov_instance_settings'],
-        'level' => K_AUTH_ADMIN_TESTS,
+        'level' => K_AUTH_ADMINISTRATOR,
         'key' => '',
         'enabled' => true,
     ],
@@ -79,6 +80,14 @@ $menu = [
         'level' => 0,
         'key' => '',
         'enabled' => true,
+    ],
+    'tce_self_profile.php' => [
+        'link' => 'tce_self_profile.php',
+        'title' => 'Мой профиль',
+        'name' => 'Мой профиль',
+        'level' => K_AUTH_OPERATOR,
+        'key' => '',
+        'enabled' => $_SESSION['session_user_level'] >= K_AUTH_OPERATOR,
     ],
     'tce_page_help.php' => [
         'link' => 'tce_page_help.php',
@@ -253,7 +262,7 @@ $menu['tce_menu_tests.php']['sub'] = [
         'link' => 'tce_monitor.php',
         'title' => 'Наблюдение за тестированием',
         'name' => 'Наблюдение',
-        'level' => K_AUTH_ADMIN_RESULTS,
+        'level' => K_AUTH_OPERATOR,
         'key' => '',
         'enabled' => true,
     ],
@@ -354,6 +363,21 @@ $menu['tce_menu_tests.php']['sub'] = [
         'enabled' => true,
     ],
 ];
+
+$apply_role_levels = static function (array &$items) use (&$apply_role_levels): void {
+    foreach ($items as &$item) {
+        $item['level'] = openvsosh_admin_required_level(
+            basename((string) $item['link']),
+            (int) $item['level'],
+        );
+        if (isset($item['sub']) && is_array($item['sub'])) {
+            $apply_role_levels($item['sub']);
+        }
+    }
+    unset($item);
+};
+$apply_role_levels($menu);
+unset($apply_role_levels);
 
 echo '<span id="menusection"></span>' . K_NEWLINE;
 

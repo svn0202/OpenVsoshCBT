@@ -23,6 +23,7 @@
 
 - [Развёртывание на РЕД ОС](deployment-redos.md)
 - [Оформление площадки](site-settings.md)
+- [Роли и уровни доступа](roles.md)
 - [Регламент проведения олимпиады](olympiad-runbook.md)
 - [Обновление](upgrade.md)
 - [Решение проблем](troubleshooting.md)

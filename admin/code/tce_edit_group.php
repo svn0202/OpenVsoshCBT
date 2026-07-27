@@ -29,6 +29,7 @@ $thispage_title = $l['t_group_editor'];
 require_once '../code/tce_page_header.php';
 
 require_once '../../shared/code/tce_functions_form.php';
+require_once '../../shared/code/tce_functions_roles.php';
 require_once '../code/tce_functions_user_select.php';
 
 $user_id = (int) $_SESSION['session_user_id'];
@@ -62,6 +63,10 @@ switch ($menu_mode) { // process submitted data
                 F_print_error('ERROR', $l['m_authorization_denied']);
                 break;
             }
+            if (openvsosh_is_default_group($group_id)) {
+                F_print_error('ERROR', 'Группа default является системной и не может быть удалена.');
+                break;
+            }
 
             F_print_error('WARNING', $l['m_delete_confirm']);
             echo '<div class="confirmbox">' . K_NEWLINE;
@@ -93,6 +98,10 @@ switch ($menu_mode) { // process submitted data
             // Delete specified user
             if ($_SESSION['session_user_level'] < K_AUTH_DELETE_GROUPS) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
+                break;
+            }
+            if (openvsosh_is_default_group($group_id)) {
+                F_print_error('ERROR', 'Группа default является системной и не может быть удалена.');
                 break;
             }
 

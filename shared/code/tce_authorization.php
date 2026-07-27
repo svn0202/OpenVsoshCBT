@@ -33,6 +33,7 @@
 
 require_once '../config/tce_config.php';
 require_once '../../shared/code/tce_functions_authorization.php';
+require_once '../../shared/code/tce_functions_roles.php';
 require_once '../../shared/code/tce_functions_session.php';
 require_once '../../shared/code/tce_functions_otp.php';
 
@@ -437,6 +438,10 @@ if (!isset($pagelevel)) {
     // set default page level
     $pagelevel = 0;
 }
+$requested_script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+if (str_contains($requested_script, '/admin/code/')) {
+    $pagelevel = openvsosh_admin_required_level(basename($requested_script), (int) $pagelevel);
+}
 
 // check client SSL certificate if required
 if (K_AUTH_SSL_LEVEL && K_AUTH_SSL_LEVEL <= $pagelevel) {
@@ -466,6 +471,15 @@ if ($pagelevel && $_SESSION['session_user_level'] < $pagelevel) {
     F_login_form();
 
     //display login form
+}
+
+if (
+    $logged
+    && defined('K_AUTH_ADMINISTRATOR')
+    && (int) $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR
+) {
+    require_once __DIR__ . '/tce_functions_roles.php';
+    openvsosh_ensure_admin_default_group((int) $_SESSION['session_user_id']);
 }
 
 if ($logged) { //if user is just logged in: reloads page

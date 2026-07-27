@@ -40,6 +40,18 @@ define('K_AUTH_ADMINISTRATOR', 10);
 define('K_AUTH_OPERATOR', 5);
 
 /**
+ * OpenVsoshCBT cumulative role thresholds.
+ *
+ * 5 = exam observer; 6 = results observer; 7 = question-bank teacher;
+ * 8 = test author; 9 = extended teacher/document operator; 10 = administrator.
+ */
+define('K_AUTH_OBSERVER', 5);
+define('K_AUTH_RESULTS_OBSERVER', 6);
+define('K_AUTH_QUESTION_TEACHER', 7);
+define('K_AUTH_TEST_TEACHER', 8);
+define('K_AUTH_DOCUMENT_TEACHER', 9);
+
+/**
  * Required user's level to access index page.
  */
 define('K_AUTH_INDEX', K_AUTH_OPERATOR);
@@ -82,32 +94,32 @@ define('K_AUTH_MOVE_GROUPS', K_AUTH_ADMINISTRATOR);
 /**
  * Required user's level to access "tcecode editor".
  */
-define('K_AUTH_ADMIN_TCECODE', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_TCECODE', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to access "module editor".
  */
-define('K_AUTH_ADMIN_MODULES', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_MODULES', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to access "subject editor".
  */
-define('K_AUTH_ADMIN_SUBJECTS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_SUBJECTS', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to access "question editor".
  */
-define('K_AUTH_ADMIN_QUESTIONS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_QUESTIONS', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to access "answer editor".
  */
-define('K_AUTH_ADMIN_ANSWERS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_ANSWERS', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to access "test editor".
  */
-define('K_AUTH_ADMIN_TESTS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_TESTS', K_AUTH_TEST_TEACHER);
 
 /**
  * Required user's level to access "TCExam information".
@@ -117,32 +129,32 @@ define('K_AUTH_ADMIN_INFO', 0);
 /**
  * Required user's level to display online users.
  */
-define('K_AUTH_ADMIN_ONLINE_USERS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_ONLINE_USERS', K_AUTH_OBSERVER);
 
 /**
  * Required user's level to upload images.
  */
-define('K_AUTH_ADMIN_UPLOAD_IMAGES', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_UPLOAD_IMAGES', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to manually rate free text answers.
  */
-define('K_AUTH_ADMIN_RATING', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_RATING', K_AUTH_RESULTS_OBSERVER);
 
 /**
  * Required user's level to display results.
  */
-define('K_AUTH_ADMIN_RESULTS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_RESULTS', K_AUTH_RESULTS_OBSERVER);
 
 /**
  * Required user's level to import questions.
  */
-define('K_AUTH_ADMIN_IMPORT', K_AUTH_ADMINISTRATOR);
+define('K_AUTH_ADMIN_IMPORT', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to import OMR answers.
  */
-define('K_AUTH_ADMIN_OMR_IMPORT', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_OMR_IMPORT', K_AUTH_DOCUMENT_TEACHER);
 
 /**
  * Required user's level to import questions.
@@ -152,27 +164,27 @@ define('K_AUTH_BACKUP', K_AUTH_ADMINISTRATOR);
 /**
  * Required user's level to access file manager for multimedia files.
  */
-define('K_AUTH_ADMIN_FILEMANAGER', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_FILEMANAGER', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to create and delete directories.
  */
-define('K_AUTH_ADMIN_DIRS', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_DIRS', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to delete multimedia files.
  */
-define('K_AUTH_DELETE_MEDIAFILE', K_AUTH_OPERATOR);
+define('K_AUTH_DELETE_MEDIAFILE', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to rename multimedia files.
  */
-define('K_AUTH_RENAME_MEDIAFILE', K_AUTH_OPERATOR);
+define('K_AUTH_RENAME_MEDIAFILE', K_AUTH_QUESTION_TEACHER);
 
 /**
  * Required user's level to edit SSL certificates.
  */
-define('K_AUTH_ADMIN_SSLCERT', K_AUTH_OPERATOR);
+define('K_AUTH_ADMIN_SSLCERT', K_AUTH_ADMINISTRATOR);
 
 /**
  * Minimum page level for which a valid client SSL certificate is required.

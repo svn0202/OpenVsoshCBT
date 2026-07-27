@@ -48,7 +48,7 @@ switch ($menu_mode) {
         { // Update user
             if ($formstatus = F_check_form_fields()) {
                 // check password
-                if (empty($user_email) || empty($user_email_repeat) || $user_email != $user_email_repeat) {
+                if (empty($user_email) || empty($user_email_repeat) || $user_email !== $user_email_repeat) {
                     //print message and exit
                     F_print_error('WARNING', $l['m_different_emails']);
                     $formstatus = false;
@@ -69,28 +69,31 @@ switch ($menu_mode) {
                     break;
                 }
 
+                $current_level = (int) $_SESSION['session_user_level'];
                 $user_verifycode = getNewSessionID(); // verification code
+                $requires_verification = $current_level < 5;
                 $sql =
                     'UPDATE '
                     . K_TABLE_USERS
                     . ' SET
 				user_email=\''
                     . F_escape_sql($db, $user_email)
-                    . '\',
-				user_level=\'0\',
-				user_verifycode=\''
-                    . $user_verifycode
-                    . '\'
+                    . '\', user_verifycode='
+                    . ($requires_verification ? "'" . $user_verifycode . "'" : 'NULL')
+                    . ($requires_verification ? ", user_level='0'" : '')
+                    . '
 				WHERE user_id='
                     . $user_id;
                 if (!($r = F_db_query($sql, $db))) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', $l['m_email_updated']);
-                    // require email confirmation
-                    require_once '../../shared/code/tce_functions_user_registration.php';
-                    F_send_user_reg_email($user_id, $user_email, $user_verifycode);
-                    F_print_error('MESSAGE', $user_email . ': ' . $l['m_user_verification_sent']);
+                    if ($requires_verification) {
+                        // Basic participant accounts retain the existing email-verification flow.
+                        require_once '../../shared/code/tce_functions_user_registration.php';
+                        F_send_user_reg_email($user_id, $user_email, $user_verifycode);
+                        F_print_error('MESSAGE', $user_email . ': ' . $l['m_user_verification_sent']);
+                    }
                     echo '<div class="container">' . K_NEWLINE;
                     echo
                         '<strong><a href="index.php" title="'
