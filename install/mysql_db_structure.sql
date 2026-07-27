@@ -133,6 +133,15 @@ CREATE TABLE tce_tests (
 	test_mcma_partial_score Bool NOT NULL Default '1',
 	test_logout_on_timeout Bool NOT NULL Default '0',
 	test_password Varchar(255),
+	test_required_finished_id Bigint UNSIGNED NULL,
+	test_required_passed_id Bigint UNSIGNED NULL,
+	test_minimum_duration_time Smallint(10) UNSIGNED NOT NULL DEFAULT 0,
+	test_require_all_answers Bool NOT NULL DEFAULT '0',
+	test_block_finish_below_threshold Bool NOT NULL DEFAULT '0',
+	test_disable_previous Bool NOT NULL DEFAULT '0',
+	test_disable_next Bool NOT NULL DEFAULT '0',
+	test_hide_editor Bool NOT NULL DEFAULT '0',
+	test_completion_message Text NULL,
  Primary Key (test_id)
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;

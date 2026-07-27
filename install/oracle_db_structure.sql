@@ -134,8 +134,17 @@ CREATE TABLE tce_tests (
 	test_mcma_radio NUMBER(1) DEFAULT '1' NOT NULL,
 	test_repeatable NUMBER(3) DEFAULT 0 NOT NULL,
 	test_mcma_partial_score NUMBER(1) DEFAULT '1' NOT NULL,
-	test_logout_on_timeout Boolean NUMBER(1) DEFAULT '0' NOT NULL,
+	test_logout_on_timeout NUMBER(1) DEFAULT '0' NOT NULL,
 	test_password VARCHAR2(255),
+	test_required_finished_id NUMBER(19,0) NULL,
+	test_required_passed_id NUMBER(19,0) NULL,
+	test_minimum_duration_time NUMBER(5,0) DEFAULT 0 NOT NULL,
+	test_require_all_answers NUMBER(1) DEFAULT '0' NOT NULL,
+	test_block_finish_below_threshold NUMBER(1) DEFAULT '0' NOT NULL,
+	test_disable_previous NUMBER(1) DEFAULT '0' NOT NULL,
+	test_disable_next NUMBER(1) DEFAULT '0' NOT NULL,
+	test_hide_editor NUMBER(1) DEFAULT '0' NOT NULL,
+	test_completion_message NCLOB NULL,
 constraint PK_tce_tests_test_id primary key (test_id)
 );
 CREATE SEQUENCE tce_tests_seq MINVALUE 1 START WITH 1 INCREMENT BY 1 CACHE 3;

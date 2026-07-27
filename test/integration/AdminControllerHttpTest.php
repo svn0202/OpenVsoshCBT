@@ -272,7 +272,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_edit_backup.php', 'tce_edit_user.php', 'tce_edit_test.php', 'tce_edit_rating.php',
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
-            'tce_pregenerate.php', 'tce_offline.php', 'tce_users_xlsx.php',
+            'tce_pregenerate.php', 'tce_offline.php', 'tce_users_xlsx.php', 'tce_test_access_rules.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -294,6 +294,62 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertSame(200, $status);
         $this->assertStringStartsWith("PK\x03\x04", $body);
         $this->assertGreaterThan(1000, strlen($body));
+    }
+
+    public function testAdvancedTestAccessRulesPersistThroughController(): void
+    {
+        $testName = 'itest_access_rules';
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='" . $testName . "'");
+        $adminId = (int) ($this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'") ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id) VALUES ('"
+            . $testName . "','integration test'," . $adminId . ')',
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='" . $testName . "'",
+        ) ?? '0');
+        $this->assertGreaterThan(0, $testId);
+        $cookies = $this->login();
+        [$status, $body] = $this->http(
+            'GET',
+            '/admin/code/tce_test_access_rules.php?test_id=' . $testId,
+            $cookies,
+        );
+        $this->assertSame(200, $status);
+        $token = self::extractCsrfToken($body);
+        $this->assertNotNull($token);
+
+        try {
+            [$status, $body] = $this->http(
+                'POST',
+                '/admin/code/tce_test_access_rules.php',
+                $cookies,
+                [
+                    'save_rules' => '1',
+                    'test_id' => (string) $testId,
+                    'required_finished' => '0',
+                    'required_passed' => '0',
+                    'minimum_duration' => '7',
+                    'require_all_answers' => '1',
+                    'block_below_threshold' => '1',
+                    'disable_previous' => '1',
+                    'completion_message' => 'Готово безопасно',
+                    'csrf_token' => $token,
+                ],
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Настройки сохранены', $body);
+            $this->assertSame(
+                '7',
+                $this->dbScalar('SELECT test_minimum_duration_time FROM tce_tests WHERE test_id=' . $testId),
+            );
+            $this->assertSame(
+                'Готово безопасно',
+                $this->dbScalar('SELECT test_completion_message FROM tce_tests WHERE test_id=' . $testId),
+            );
+        } finally {
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+        }
     }
 
     #[DataProvider('convertedAdminControllers')]

@@ -29,6 +29,7 @@ require_once __DIR__ . '/tce_functions_tmf_question.php';
 require_once __DIR__ . '/tce_functions_answer_save.php';
 require_once __DIR__ . '/tce_functions_monitoring.php';
 require_once __DIR__ . '/tce_functions_pregeneration.php';
+require_once __DIR__ . '/tce_functions_test_access.php';
 
 function F_getUserTests()
 {
@@ -54,6 +55,7 @@ function F_getUserTests()
             $upcoming = strtotime($current_time) < strtotime($m['test_begin_time']);
             // check user's authorization
             if (F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+                $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id] = F_checkTestStatus($user_id, $m['test_id'], $m['test_duration_time']);
                 if (strtotime($current_time) >= strtotime($m['test_end_time'])) {
@@ -139,7 +141,13 @@ function F_getUserTests()
                 $str .= '</td>' . K_NEWLINE;
                 // display various action links by status case
                 $str .= '<td style="text-align:center;">';
-                if (!$expired && !$upcoming) {
+                if (!$access_status['allowed']) {
+                    $reason = $access_status['reason'] === 'required_test_not_passed'
+                        ? 'Сначала пройдите обязательный тест'
+                        : 'Сначала завершите обязательный тест';
+                    $str .= '<span class="offbox">' . htmlspecialchars($reason, ENT_QUOTES, $l['a_meta_charset'])
+                        . '</span>';
+                } elseif (!$expired && !$upcoming) {
                     switch ($test_status) {
                         case 0:
                             { // 0 = the test generation process is started but not completed
@@ -419,7 +427,7 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
     }
 
     // check user's group
-    return (
+    $in_group = (
         F_count_rows(K_TABLE_USERGROUP . ', ' . K_TABLE_TEST_GROUPS, 'WHERE usrgrp_group_id=tstgrp_group_id
 			AND tstgrp_test_id='
         . $test_id
@@ -429,6 +437,7 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
         . '
 			LIMIT 1') > 0
     );
+    return $in_group;
 }
 
 /**
@@ -884,6 +893,7 @@ function F_executeTest($test_id)
         if (
             ($m = F_db_fetch_array($r))
             && F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
+            && F_tmf_test_access_status($test_id, (int) $_SESSION['session_user_id'])['allowed']
         ) {
             $pregeneration = F_tmf_pregeneration_activate(
                 $test_id,
@@ -1389,7 +1399,9 @@ function F_createTest($test_id, $user_id)
 			ORDER BY tsubset_type, tsubset_difficulty, tsubset_answers DESC';
         if ($r = F_db_query($sql, $db)) {
             $questions_data = [];
+            $expected_questions = 0;
             while ($m = F_db_fetch_array($r)) {
+                $expected_questions += max(0, (int) $m['tsubset_quantity']);
                 // 3. select the subjects IDs
                 $selected_subjects = '0';
                 $sqlt =
@@ -1559,6 +1571,13 @@ function F_createTest($test_id, $user_id)
                     return false;
                 } // --- end 3
             } // end while for each set of subjects
+            if (count($questions_data) < $expected_questions) {
+                F_db_query(
+                    'DELETE FROM ' . K_TABLE_TEST_USER . ' WHERE testuser_id=' . (int) $testuser_id,
+                    $db,
+                );
+                return false;
+            }
             // 5. STORE QUESTIONS AND ANSWERS
             // ------------------------------
             if ($random_questions) {
@@ -2750,7 +2769,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $navlink = '';
 
     // button for previous question
-    if (!$question_timer) {
+    if (!$question_timer && !F_getBoolean($testdata['test_disable_previous'] ?? false)) {
         $navlink .=
             '<input type="submit" name="prevquestion" id="prevquestion" title="'
             . $l['w_previous']
@@ -2798,18 +2817,19 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         $qnext = '(' . ($qsel + 1) . ') ';
     }
 
-    $navlink .=
-        '<input type="submit" name="nextquestion" id="nextquestion" title="'
-        . $l['w_next']
-        . '" value="'
-        . $qnext
-        . $l['w_next']
-        . ' &gt;"';
-    if ($testlog_id_next <= 0) {
-        $navlink .= ' disabled="disabled"';
+    if (!F_getBoolean($testdata['test_disable_next'] ?? false)) {
+        $navlink .=
+            '<input type="submit" name="nextquestion" id="nextquestion" title="'
+            . $l['w_next']
+            . '" value="'
+            . $qnext
+            . $l['w_next']
+            . ' &gt;"';
+        if ($testlog_id_next <= 0) {
+            $navlink .= ' disabled="disabled"';
+        }
+        $navlink .= ' />' . K_NEWLINE;
     }
-
-    $navlink .= ' />' . K_NEWLINE;
 
     if (($question_timer || $disable) && $testlog_id_next <= 0) {
         // force test termination
