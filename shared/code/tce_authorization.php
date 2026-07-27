@@ -142,6 +142,33 @@ if ($rs = F_db_query($sqls, $db)) {
     F_display_db_error();
 }
 
+// Apply database-backed defaults after the connection is available. The language cookie +
+// one safe GET reload also upgrades installations whose preserved local tce_config.php predates
+// the bootstrap JSON reader; timezone changes take effect for the remainder of this request.
+require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
+$openvsosh_runtime = openvsosh_get_runtime_settings();
+date_default_timezone_set((string) $openvsosh_runtime['default_timezone']);
+if (
+    $_SERVER['REQUEST_METHOD'] === 'GET'
+    && !isset($_GET['lang'], $_COOKIE['SessionUserLang'])
+    && (string) $openvsosh_runtime['default_language'] !== K_USER_LANG
+) {
+    setcookie('SessionUserLang', (string) $openvsosh_runtime['default_language'], [
+        'expires' => time() + K_COOKIE_EXPIRE,
+        'path' => K_COOKIE_PATH,
+        'domain' => K_COOKIE_DOMAIN,
+        'secure' => K_COOKIE_SECURE,
+        'httponly' => K_COOKIE_HTTPONLY,
+        'samesite' => K_COOKIE_SAMESITE,
+    ]);
+    $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+    if (str_starts_with($request_uri, '/') && !str_contains($request_uri, "\r") && !str_contains($request_uri, "\n")) {
+        header('Location: ' . $request_uri);
+        exit();
+    }
+}
+unset($openvsosh_runtime, $request_uri);
+
 // try other login systems
 // (HTTP-BASIC, CAS, SHIBBOLETH, RADIUS, LDAP)
 require_once '../../shared/code/tce_altauth.php';

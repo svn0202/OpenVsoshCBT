@@ -34,6 +34,10 @@
 	let timeoutLogout = false;   // log the user out (true) or go to the index page (false) at the end
 	let timeDiff = 0;            // server/client clock offset (ms), used by the wall clock only
 	let intervalId = null;       // handle of the active periodic timer
+	let warningSeconds = 600;
+	let criticalSeconds = 300;
+	let warningLabel = 'Time is running low';
+	let criticalLabel = 'Critical time remaining';
 
 	// Left-pad a number to (at least) two digits.
 	function pad2(value) {
@@ -45,6 +49,34 @@
 		if (intervalId !== null) {
 			global.clearInterval(intervalId);
 			intervalId = null;
+		}
+	}
+
+	function configureTimer(warning, critical, warningText, criticalText) {
+		warningSeconds = Math.max(0, Number(warning) || 0);
+		criticalSeconds = Math.max(0, Math.min(warningSeconds, Number(critical) || 0));
+		warningLabel = String(warningText || warningLabel);
+		criticalLabel = String(criticalText || criticalLabel);
+	}
+
+	function updateCountdownState(timerField, secondsLeft) {
+		const status = global.document.getElementById('timer-status');
+		let state = 'normal';
+		let label = '';
+		if (criticalSeconds > 0 && secondsLeft <= criticalSeconds) {
+			state = 'critical';
+			label = criticalLabel;
+		} else if (warningSeconds > 0 && secondsLeft <= warningSeconds) {
+			state = 'warning';
+			label = warningLabel;
+		}
+		if (timerField) {
+			timerField.dataset.state = state;
+			timerField.title = label || timerField.dataset.defaultTitle || timerField.title;
+		}
+		if (status) {
+			status.dataset.state = state;
+			status.textContent = label;
 		}
 	}
 
@@ -92,10 +124,12 @@
 			const seconds = Math.floor(absSeconds % 60);
 			if (timerField) {
 				timerField.value = `${sign}${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} `;
+				updateCountdownState(timerField, Math.max(0, -diffSeconds));
 			}
 		} else { // --- CLOCK MODE ---
 			const now = new Date(Date.now() + timeDiff);
 			if (timerField) {
+				timerField.dataset.state = 'normal';
 				timerField.value = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`
 					+ ` ${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
 			}
@@ -135,6 +169,7 @@
 
 	// --- public API -----------------------------------------------------------
 	global.enable_countdown = enableCountdown;
+	global.FJ_configure_timer = configureTimer;
 	global.FJ_start_timer = startTimer;
 	global.FJ_timer = updateTimer; // kept for backward compatibility
 })(window);

@@ -273,6 +273,115 @@ function openvsosh_save_site_settings(array $input): array
 }
 
 /**
+ * @return array{default_language:string,default_timezone:string,timer_warning_seconds:int,
+ *     timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string}
+ */
+function openvsosh_get_runtime_settings(): array
+{
+    $defaults = [
+        'default_language' => defined('K_LANGUAGE') ? K_LANGUAGE : 'ru',
+        'default_timezone' => defined('K_TIMEZONE') ? K_TIMEZONE : 'UTC',
+        'timer_warning_seconds' => 600,
+        'timer_critical_seconds' => 300,
+        'timer_warning_color' => '#b45309',
+        'timer_critical_color' => '#b91c1c',
+    ];
+    foreach ($defaults as $key => $default) {
+        $value = openvsosh_get_setting($key);
+        if ($value !== null) {
+            $defaults[$key] = is_int($default) ? (int) $value : $value;
+        }
+    }
+    return $defaults;
+}
+
+function openvsosh_bootstrap_settings_path(): string
+{
+    return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'openvsosh-bootstrap.json';
+}
+
+/**
+ * @return array{saved:bool,errors:array<int,string>}
+ */
+function openvsosh_save_runtime_settings(array $input): array
+{
+    $languages = array_keys((array) unserialize(K_AVAILABLE_LANGUAGES, ['allowed_classes' => false]));
+    $language = (string) ($input['default_language'] ?? '');
+    $timezone = (string) ($input['default_timezone'] ?? '');
+    $warning = (int) ($input['timer_warning_seconds'] ?? -1);
+    $critical = (int) ($input['timer_critical_seconds'] ?? -1);
+    $warning_color = strtolower((string) ($input['timer_warning_color'] ?? ''));
+    $critical_color = strtolower((string) ($input['timer_critical_color'] ?? ''));
+    $errors = [];
+    if (!in_array($language, $languages, true)) {
+        $errors[] = 'Выбран неподдерживаемый язык.';
+    }
+    if (!in_array($timezone, timezone_identifiers_list(), true)) {
+        $errors[] = 'Выбран неподдерживаемый часовой пояс.';
+    }
+    if ($warning < 0 || $warning > 86_400 || $critical < 0 || $critical > $warning) {
+        $errors[] = 'Пороги таймера должны быть от 0 до 86400 секунд, критический — не больше предупреждения.';
+    }
+    foreach ([$warning_color, $critical_color] as $color) {
+        if (preg_match('/^#[0-9a-f]{6}$/', $color) !== 1) {
+            $errors[] = 'Цвета таймера должны быть в формате #RRGGBB.';
+            break;
+        }
+    }
+    if ($errors !== []) {
+        return ['saved' => false, 'errors' => $errors];
+    }
+    $values = [
+        'default_language' => $language,
+        'default_timezone' => $timezone,
+        'timer_warning_seconds' => (string) $warning,
+        'timer_critical_seconds' => (string) $critical,
+        'timer_warning_color' => $warning_color,
+        'timer_critical_color' => $critical_color,
+    ];
+    foreach ($values as $key => $value) {
+        if (!openvsosh_save_setting($key, $value)) {
+            return ['saved' => false, 'errors' => ['Не удалось сохранить параметры среды.']];
+        }
+    }
+    $path = openvsosh_bootstrap_settings_path();
+    $temporary = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
+    $json = json_encode(
+        ['language' => $language, 'timezone' => $timezone],
+        JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
+    );
+    if (
+        file_put_contents($temporary, $json . "\n", LOCK_EX) === false
+        || !chmod($temporary, 0o640)
+        || !rename($temporary, $path)
+    ) {
+        if (is_file($temporary)) {
+            unlink($temporary);
+        }
+        return ['saved' => false, 'errors' => ['Не удалось обновить загрузочные настройки языка и времени.']];
+    }
+    return ['saved' => true, 'errors' => []];
+}
+
+/**
+ * Choose black or white timer text with WCAG contrast of at least 4.5:1.
+ */
+function openvsosh_contrast_text(string $background): string
+{
+    $rgb = sscanf(ltrim($background, '#'), '%02x%02x%02x');
+    if (!is_array($rgb) || count($rgb) !== 3) {
+        return '#000000';
+    }
+    $channels = array_map(static function (int $channel): float {
+        $value = $channel / 255;
+        return $value <= 0.04045 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
+    }, $rgb);
+    $luminance = (0.2126 * $channels[0]) + (0.7152 * $channels[1]) + (0.0722 * $channels[2]);
+    $white_contrast = 1.05 / ($luminance + 0.05);
+    return $white_contrast >= 4.5 ? '#ffffff' : '#000000';
+}
+
+/**
  * Return the instance-local key used to authenticate offline packages.
  */
 function openvsosh_get_offline_package_secret(): string
