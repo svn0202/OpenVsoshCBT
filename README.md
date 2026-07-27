@@ -52,6 +52,7 @@ make lang
 
 - [Оглавление](doc/README.md)
 - [Развёртывание на РЕД ОС](doc/admin/deployment-redos.md)
+- [Настройка регистрации, сброса пароля и помощи](doc/admin/access-settings.md)
 - [Регламент проведения олимпиады](doc/admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](doc/admin/matching-questions.md)
 - [Безопасное обновление](doc/admin/upgrade.md)

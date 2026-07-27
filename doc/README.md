@@ -5,6 +5,7 @@
 ## Администратору
 
 - [Развёртывание на РЕД ОС](admin/deployment-redos.md)
+- [Настройка регистрации, сброса пароля и помощи](admin/access-settings.md)
 - [Регламент проведения олимпиады](admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](admin/matching-questions.md)
 - [Обновление без потери рабочего экземпляра](admin/upgrade.md)

@@ -1,0 +1,175 @@
+<?php
+
+//============================================================+
+// File name   : tce_functions_openvsosh_settings.php
+// Description : Database-backed OpenVsoshCBT instance settings.
+// License     : AGPL-3.0-or-later (see LICENSE).
+//============================================================+
+
+if (!defined('K_TABLE_OPENVSOSH_SETTINGS')) {
+    define('K_TABLE_OPENVSOSH_SETTINGS', K_TABLE_PREFIX . 'openvsosh_settings');
+}
+
+/**
+ * Return access settings inherited from the current file configuration.
+ *
+ * These values are used when upgrading an existing installation before the
+ * OpenVsoshCBT settings table has been created.
+ *
+ * @return array{registration_enabled: bool, password_reset_enabled: bool, access_help: string}
+ */
+function openvsosh_access_setting_defaults()
+{
+    return [
+        'registration_enabled' => defined('K_USRREG_ENABLED') && K_USRREG_ENABLED,
+        'password_reset_enabled' => defined('K_PASSWORD_RESET') && K_PASSWORD_RESET,
+        'access_help' => '',
+    ];
+}
+
+/**
+ * Run a database query without exposing an expected migration-time warning.
+ *
+ * @param string $sql database statement
+ * @return mixed database result or false
+ */
+function openvsosh_silent_query($sql)
+{
+    global $db;
+
+    set_error_handler(static fn(): bool => true);
+    try {
+        return F_db_query($sql, $db);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
+ * Create the small settings table for existing installations.
+ *
+ * Fresh installations receive this table from install/*_db_structure.sql.
+ * The runtime check makes the upgrade backwards-compatible without requiring
+ * public requests to fail while an administrator is applying the SQL upgrade.
+ *
+ * @return bool true when the table is available
+ */
+function openvsosh_ensure_settings_table()
+{
+    if (openvsosh_silent_query('SELECT setting_key FROM ' . K_TABLE_OPENVSOSH_SETTINGS . ' LIMIT 1')) {
+        return true;
+    }
+
+    switch (K_DATABASE_TYPE) {
+        case 'MYSQL':
+        case 'MYSQLI':
+            $sql =
+                'CREATE TABLE IF NOT EXISTS '
+                . K_TABLE_OPENVSOSH_SETTINGS
+                . ' (setting_key VARCHAR(64) NOT NULL, setting_value TEXT NOT NULL, PRIMARY KEY (setting_key))'
+                . ' ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+            break;
+        case 'POSTGRESQL':
+            $sql =
+                'CREATE TABLE IF NOT EXISTS '
+                . K_TABLE_OPENVSOSH_SETTINGS
+                . ' (setting_key VARCHAR(64) NOT NULL PRIMARY KEY, setting_value TEXT NOT NULL)';
+            break;
+        case 'ORACLE':
+            $sql =
+                'CREATE TABLE '
+                . K_TABLE_OPENVSOSH_SETTINGS
+                . ' (setting_key VARCHAR2(64) NOT NULL, setting_value NCLOB NOT NULL,'
+                . ' CONSTRAINT pk_openvsosh_settings PRIMARY KEY (setting_key))';
+            break;
+        default:
+            return false;
+    }
+
+    return openvsosh_silent_query($sql) !== false;
+}
+
+/**
+ * Read the access settings.
+ *
+ * @return array{registration_enabled: bool, password_reset_enabled: bool, access_help: string}
+ */
+function openvsosh_get_access_settings()
+{
+    global $db;
+    $settings = openvsosh_access_setting_defaults();
+    if (!openvsosh_ensure_settings_table()) {
+        return $settings;
+    }
+
+    $keys = array_keys($settings);
+    $quoted_keys = array_map(
+        static fn($key): string => "'" . F_escape_sql($db, $key) . "'",
+        $keys,
+    );
+    $sql =
+        'SELECT setting_key, setting_value FROM '
+        . K_TABLE_OPENVSOSH_SETTINGS
+        . ' WHERE setting_key IN ('
+        . implode(',', $quoted_keys)
+        . ')';
+    if (!($result = openvsosh_silent_query($sql))) {
+        return $settings;
+    }
+
+    while ($row = F_db_fetch_array($result)) {
+        $key = (string) $row['setting_key'];
+        if ($key === 'registration_enabled' || $key === 'password_reset_enabled') {
+            $settings[$key] = (string) $row['setting_value'] === '1';
+        } elseif ($key === 'access_help') {
+            $settings[$key] = (string) $row['setting_value'];
+        }
+    }
+
+    return $settings;
+}
+
+/**
+ * Store all access settings using portable UPDATE/INSERT statements.
+ *
+ * @param bool $registration_enabled enable the public self-registration form
+ * @param bool $password_reset_enabled enable the public password-reset form
+ * @param string $access_help plain-text access instructions shown on the login page
+ * @return bool true when every value was stored
+ */
+function openvsosh_save_access_settings($registration_enabled, $password_reset_enabled, $access_help)
+{
+    global $db;
+    if (!openvsosh_ensure_settings_table()) {
+        return false;
+    }
+
+    $values = [
+        'registration_enabled' => $registration_enabled ? '1' : '0',
+        'password_reset_enabled' => $password_reset_enabled ? '1' : '0',
+        'access_help' => trim((string) $access_help),
+    ];
+
+    foreach ($values as $key => $value) {
+        $escaped_key = F_escape_sql($db, $key);
+        $escaped_value = F_escape_sql($db, $value);
+        $exists = false;
+        $select = openvsosh_silent_query(
+            "SELECT setting_key FROM " . K_TABLE_OPENVSOSH_SETTINGS . " WHERE setting_key='" . $escaped_key . "'",
+        );
+        if ($select && F_db_fetch_array($select)) {
+            $exists = true;
+        }
+
+        $sql = $exists
+            ? "UPDATE " . K_TABLE_OPENVSOSH_SETTINGS . " SET setting_value='" . $escaped_value
+                . "' WHERE setting_key='" . $escaped_key . "'"
+            : "INSERT INTO " . K_TABLE_OPENVSOSH_SETTINGS . " (setting_key, setting_value) VALUES ('"
+                . $escaped_key . "','" . $escaped_value . "')";
+        if (!openvsosh_silent_query($sql)) {
+            return false;
+        }
+    }
+
+    return true;
+}

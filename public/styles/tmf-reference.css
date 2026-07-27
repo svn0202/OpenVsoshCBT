@@ -1276,6 +1276,32 @@ body.login-page .login-support {
     line-height: 1.35;
     text-align: center;
 }
+
+body.login-page .login-access-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    padding: 0 32px 18px;
+}
+body.login-page .login-access-actions a {
+    color: #2f6da8;
+    font-weight: 700;
+    text-decoration: none;
+}
+body.login-page .login-access-actions a:hover,
+body.login-page .login-access-actions a:focus-visible {
+    text-decoration: underline;
+}
+body.login-page .login-access-help {
+    margin: 0 0 16px;
+    padding: 13px 15px;
+    border: 1px solid #d5e1ec;
+    border-radius: 8px;
+    background: #f7fafc;
+    color: #384f63;
+    line-height: 1.45;
+}
 body.login-page .login-support p { margin: 0 0 18px; }
 body.login-page .login-support p:last-child { margin-bottom: 0; }
 body.login-page .login-support a { color: #3f74b7; }

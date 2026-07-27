@@ -6,11 +6,14 @@ $pagelevel = K_AUTH_ADMIN_TESTS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
+require_once '../../shared/config/tce_user_registration.php';
+require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 
-$thispage_title = 'Настройки интерфейса';
+$thispage_title = $l['ov_instance_settings'];
 require_once 'tce_page_header.php';
 
 $config = F_getOnboardingConfig();
+$access_config = openvsosh_get_access_settings();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
@@ -24,6 +27,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
         F_print_error('MESSAGE', 'Настройки вводных тестов сохранены.');
     } else {
         F_print_error('ERROR', 'Не удалось сохранить настройки. Проверьте права на shared/config.', false);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_access'])) {
+    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+        exit();
+    }
+
+    $registration_enabled = !isset($_POST['disable_registration']);
+    $password_reset_enabled = !isset($_POST['disable_password_reset']);
+    $access_help = trim((string) ($_POST['access_help'] ?? ''));
+    if (mb_strlen($access_help) > 5000) {
+        $access_help = mb_substr($access_help, 0, 5000);
+    }
+
+    if (openvsosh_save_access_settings($registration_enabled, $password_reset_enabled, $access_help)) {
+        $access_config = openvsosh_get_access_settings();
+        F_print_error('MESSAGE', $l['ov_access_settings_saved']);
+    } else {
+        F_print_error('ERROR', $l['ov_settings_save_failed'], false);
     }
 }
 
@@ -55,11 +78,43 @@ echo '<style>
 .onboarding-admin h1{margin:0 0 8px;color:#183b64}.onboarding-admin>p{margin:0 0 26px;color:#52677d}
 .onboarding-admin fieldset{padding:22px;border:1px solid #d5dee8;border-radius:10px}.onboarding-admin legend{padding:0 8px;font-weight:700;color:#274f7c}
 .onboarding-admin .row{display:grid;grid-template-columns:190px minmax(260px,1fr);gap:8px 18px;align-items:center;margin:16px 0}
-.onboarding-admin label{font-weight:700}.onboarding-admin select{width:100%;min-height:44px;padding:8px 12px;border:1px solid #aebdcb;border-radius:7px;background:#fff}
+.onboarding-admin label{font-weight:700}.onboarding-admin select,.onboarding-admin textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid #aebdcb;border-radius:7px;background:#fff;box-sizing:border-box}
+.onboarding-admin textarea{min-height:150px;resize:vertical}.onboarding-admin .check-row{grid-template-columns:32px minmax(0,1fr)}.onboarding-admin .check-row input{width:22px;height:22px;margin:0;accent-color:#2f6da8}.onboarding-admin .check-row label{display:block}.onboarding-admin .check-row .form-help{grid-column:2}
 .onboarding-admin .form-help{grid-column:2;color:#65798d;font-size:13px}.onboarding-admin-actions{display:flex;justify-content:flex-end;margin-top:20px}
 .onboarding-admin-actions .button{padding:10px 24px;border:0;border-radius:7px;background:#2f6da8;color:#fff;font-weight:700;cursor:pointer}
 @media(max-width:700px){.onboarding-admin .row{grid-template-columns:1fr}.onboarding-admin .form-help{grid-column:1}}
 </style>' . K_NEWLINE;
+echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<fieldset><legend>'
+    . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</legend>' . K_NEWLINE;
+echo '<div class="row check-row"><input type="checkbox" name="disable_registration" id="disable_registration" value="1"'
+    . (!$access_config['registration_enabled'] ? ' checked="checked"' : '') . ' />' . K_NEWLINE;
+echo '<div><label for="disable_registration">'
+    . htmlspecialchars($l['ov_disable_registration'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</label><span class="form-help">'
+    . htmlspecialchars($l['ov_disable_registration_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</span></div></div>' . K_NEWLINE;
+echo '<div class="row check-row"><input type="checkbox" name="disable_password_reset" id="disable_password_reset" value="1"'
+    . (!$access_config['password_reset_enabled'] ? ' checked="checked"' : '') . ' />' . K_NEWLINE;
+echo '<div><label for="disable_password_reset">'
+    . htmlspecialchars($l['ov_disable_password_reset'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</label><span class="form-help">'
+    . htmlspecialchars($l['ov_disable_password_reset_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</span></div></div>' . K_NEWLINE;
+echo '<div class="row"><label for="access_help">'
+    . htmlspecialchars($l['ov_access_help'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</label><textarea name="access_help" id="access_help" maxlength="5000">'
+    . htmlspecialchars($access_config['access_help'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</textarea><span class="form-help">'
+    . htmlspecialchars($l['ov_access_help_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</span></div>' . K_NEWLINE;
+echo '</fieldset>' . K_NEWLINE;
+echo '<div class="onboarding-admin-actions"><button type="submit" name="save_access" value="1" class="button">'
+    . htmlspecialchars($l['ov_save'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</button></div>' . K_NEWLINE;
+echo F_getCSRFTokenField() . K_NEWLINE;
+echo '</form>' . K_NEWLINE;
 echo '<p>Укажите, какие тесты считать инструкцией и демо. Они будут показаны участнику над основным каталогом, пока он их не завершит.</p>' . K_NEWLINE;
 echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset><legend>Последовательность знакомства</legend>' . K_NEWLINE;

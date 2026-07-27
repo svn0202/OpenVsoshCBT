@@ -69,6 +69,11 @@ define('K_TABLE_PREFIX', 'tce_');
 define('K_TABLE_SESSIONS', K_TABLE_PREFIX . 'sessions');
 
 /**
+ * OpenVsoshCBT instance settings managed from the administration area.
+ */
+define('K_TABLE_OPENVSOSH_SETTINGS', K_TABLE_PREFIX . 'openvsosh_settings');
+
+/**
  * This table contains all registered users' data, including system administrators and a special 'anonymous' user.
  */
 define('K_TABLE_USERS', K_TABLE_PREFIX . 'users');

@@ -42,6 +42,8 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     require_once '../config/tce_config.php';
     require_once '../../shared/config/tce_user_registration.php';
     require_once '../../shared/code/tce_functions_form.php';
+    require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+    $access_settings = openvsosh_get_access_settings();
     $str = '<div class="container login-container">' . K_NEWLINE;
     $str .= '<div class="tceformbox login-box">' . K_NEWLINE;
     $str .= '<div class="login-brand">' . K_NEWLINE;
@@ -137,8 +139,29 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     $str .= '</div>' . K_NEWLINE;
     $str .= F_getCSRFTokenField() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
+    if ($access_settings['registration_enabled'] || $access_settings['password_reset_enabled']) {
+        $str .= '<nav class="login-access-actions" aria-label="'
+            . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset']) . '">' . K_NEWLINE;
+        if ($access_settings['registration_enabled']) {
+            $str .= '<a href="tce_user_registration.php">'
+                . htmlspecialchars($l['t_user_registration'], ENT_QUOTES, $l['a_meta_charset'])
+                . '</a>' . K_NEWLINE;
+        }
+        if ($access_settings['password_reset_enabled']) {
+            $str .= '<a href="tce_password_reset.php">'
+                . htmlspecialchars($l['w_forgot_password'], ENT_QUOTES, $l['a_meta_charset'])
+                . '</a>' . K_NEWLINE;
+        }
+        $str .= '</nav>' . K_NEWLINE;
+    }
     $str .= '<div class="login-support">' . K_NEWLINE;
-    $str .= '<p>' . htmlspecialchars($l['ov_login_support'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+    if ($access_settings['access_help'] !== '') {
+        $str .= '<div class="login-access-help">'
+            . nl2br(htmlspecialchars($access_settings['access_help'], ENT_QUOTES, $l['a_meta_charset']))
+            . '</div>' . K_NEWLINE;
+    } else {
+        $str .= '<p>' . htmlspecialchars($l['ov_login_support'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
+    }
     $str .= '<p>' . htmlspecialchars($l['ov_results_site'], ENT_QUOTES, $l['a_meta_charset']) . ': '
         . '<a href="https://vsoshlk.irro.ru">vsoshlk.irro.ru</a></p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;

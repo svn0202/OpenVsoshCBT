@@ -58,8 +58,8 @@ $menu = [
     ],
     'tce_onboarding_settings.php' => [
         'link' => 'tce_onboarding_settings.php',
-        'title' => 'Выбрать тест-инструкцию и демо-тест',
-        'name' => 'Настройки',
+        'title' => $l['ov_instance_settings'],
+        'name' => $l['ov_instance_settings'],
         'level' => K_AUTH_ADMIN_TESTS,
         'key' => '',
         'enabled' => true,
