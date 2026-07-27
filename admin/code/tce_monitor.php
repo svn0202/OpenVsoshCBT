@@ -193,6 +193,43 @@ $visible_participants = array_filter(
     },
 );
 
+if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
+    require_once '../../shared/code/tce_functions_xlsx.php';
+    $rows = [[
+        'login', 'last_name', 'first_name', 'status', 'answered', 'total',
+        'remaining_seconds', 'last_activity', 'last_saved',
+    ]];
+    foreach ($visible_participants as $participant) {
+        $user = $participant['user'];
+        $attempt = $participant['attempt'];
+        $rows[] = [
+            $user['user_name'],
+            $user['user_lastname'],
+            $user['user_firstname'],
+            $status_labels[$participant['status']],
+            ['value' => $participant['questions_answered'], 'type' => 'number'],
+            ['value' => $participant['questions_total'], 'type' => 'number'],
+            $participant['remaining_seconds'] === null
+                ? ''
+                : ['value' => $participant['remaining_seconds'], 'type' => 'number'],
+            $attempt['testuser_last_activity'] ?? '',
+            $participant['answer_saved_at'] ?? '',
+        ];
+    }
+    $bytes = F_tmf_xlsx_build([[
+        'name' => 'Мониторинг ' . $test_id,
+        'widths' => [20, 22, 22, 18, 12, 10, 20, 22, 22],
+        'rows' => $rows,
+    ]]);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="monitor-test-' . $test_id . '.xlsx"');
+    header('Content-Length: ' . strlen($bytes));
+    header('Cache-Control: private, no-store, max-age=0');
+    header('X-Content-Type-Options: nosniff');
+    echo $bytes;
+    exit();
+}
+
 if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="monitor-test-' . $test_id . '.csv"');
@@ -281,7 +318,10 @@ if ($test_id > 0) {
         . '</code></dd></div></dl>' . K_NEWLINE;
     echo '<p><a class="xmlbutton" href="?test_id=' . $test_id . '&amp;status='
         . rawurlencode($status_filter) . '&amp;search=' . rawurlencode($search)
-        . '&amp;export=csv">Экспортировать CSV</a></p>' . K_NEWLINE;
+        . '&amp;export=csv">Экспортировать CSV</a> '
+        . '<a class="xmlbutton" href="?test_id=' . $test_id . '&amp;status='
+        . rawurlencode($status_filter) . '&amp;search=' . rawurlencode($search)
+        . '&amp;export=xlsx">Экспортировать XLSX</a></p>' . K_NEWLINE;
 
     echo '<div class="monitor-table-wrap"><table class="monitor-table"><thead><tr>'
         . '<th>Участник</th><th>Состояние</th><th>Прогресс</th><th>Осталось</th>'

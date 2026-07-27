@@ -593,6 +593,11 @@ if (isset($_REQUEST['sel'])) {
                 . '">TSV</a> '
         ;
         echo
+            '<a href="tce_xlsx_result_allusers.php?'
+                . $filter
+                . '" class="xmlbutton" title="Экспорт результатов XLSX">XLSX</a> '
+        ;
+        echo
             '<a href="tce_pdf_results.php?mode=1'
                 . $filter
                 . '" class="xmlbutton" title="'
