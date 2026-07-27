@@ -142,9 +142,13 @@ CREATE TABLE "tce_tests_users" (
 	"testuser_creation_time" Timestamp NOT NULL,
 	"testuser_last_activity" Timestamp,
 	"testuser_close_reason" Varchar(16),
+	"testuser_generation_hash" Char(64),
+	"testuser_pregenerated" Boolean NOT NULL Default '0',
 	"testuser_comment" Text,
 constraint "pk_tce_tests_users" primary key ("testuser_id")
 ) Without Oids;
+CREATE INDEX "idx_testuser_pregenerated" ON "tce_tests_users"
+    ("testuser_test_id","testuser_pregenerated","testuser_status");
 
 CREATE TABLE "tce_monitor_audit" (
 	"monitor_audit_id" BigSerial NOT NULL,

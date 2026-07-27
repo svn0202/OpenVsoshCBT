@@ -152,7 +152,10 @@ CREATE TABLE tce_tests_users (
 	testuser_creation_time Datetime NOT NULL,
 	testuser_last_activity Datetime,
 	testuser_close_reason Varchar(16),
+	testuser_generation_hash Char(64),
+	testuser_pregenerated Bool NOT NULL DEFAULT '0',
 	testuser_comment Text,
+	Index idx_testuser_pregenerated (testuser_test_id,testuser_pregenerated,testuser_status),
  Primary Key (testuser_id)
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;

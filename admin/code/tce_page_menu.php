@@ -241,6 +241,14 @@ $menu['tce_menu_tests.php']['sub'] = [
         'key' => '',
         'enabled' => true,
     ],
+    'tce_pregenerate.php' => [
+        'link' => 'tce_pregenerate.php',
+        'title' => 'Предварительная генерация вариантов',
+        'name' => 'Генерация вариантов',
+        'level' => K_AUTH_ADMIN_TESTS,
+        'key' => '',
+        'enabled' => true,
+    ],
     'tce_edit_test.php' => [
         'link' => 'tce_edit_test.php',
         'title' => $l['t_tests_editor'],
