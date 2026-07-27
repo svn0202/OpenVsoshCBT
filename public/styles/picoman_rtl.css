@@ -141,6 +141,81 @@ ol.answer > li > select {width:auto;margin-right:var(--form-element-spacing-hori
 ol.answer li > span {display: flex;align-items: center}
 ol.answer li span > label {margin: var(--block-round)}
 
+.exam-page .tcecontentbox,
+.exam-page .tcecontentbox label,
+.exam-page ol.answer label {
+	min-width: 0;
+	overflow-wrap: anywhere;
+	word-break: normal;
+}
+
+.exam-page .tcecontentbox img,
+.exam-page ol.answer img,
+.exam-page ol.answer audio,
+.exam-page ol.answer video {
+	max-width: 100%;
+}
+
+.exam-page ol.answer audio,
+.exam-page ol.answer video {
+	height: auto;
+}
+
+.exam-previewable-image {
+	cursor: zoom-in;
+}
+
+.exam-image-preview {
+	box-sizing: border-box;
+	width: min(94vw, 1200px);
+	max-width: 1200px;
+	height: min(92vh, 900px);
+	max-height: 92vh;
+	padding: 3rem 1rem 1rem;
+	border: 0;
+	border-radius: var(--block-round);
+	background: var(--background);
+}
+
+.exam-image-preview::backdrop {
+	background: rgb(0 0 0 / 78%);
+}
+
+.exam-image-preview img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.exam-image-preview-close {
+	position: absolute;
+	top: .5rem;
+	left: .5rem;
+	width: auto;
+	margin: 0;
+	padding: .35rem .8rem;
+}
+
+@media (max-width: 575px) {
+	.exam-page ol.answer > li {
+		align-items: flex-start;
+		flex-wrap: wrap;
+		gap: .5rem;
+	}
+
+	.exam-page ol.answer > li > label {
+		flex: 1 1 calc(100% - 2rem);
+		width: auto;
+	}
+
+	.exam-page ol.answer > li > select {
+		flex: 0 0 100%;
+		width: 100%;
+		margin: 0;
+	}
+}
+
 .popupcontainer > .row {display:flex;justify-content: center}
 /* a link primary-button style */
 .popupcontainer > .row > a:first-child, .buttonblue, .buttongreen, .infolink a{color: var(--background)}

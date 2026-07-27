@@ -139,12 +139,14 @@ final class WordImportTest extends TestCase
         $options = \F_tmf_question_options(
             '<!--TMF_CHECKBOX--><!--TMF_MAX_SEL:2-->'
             . '<!--TMF_SIMILARITY:85-->'
+            . '<!--TMF_MATCH_POSITIONS:5-->'
             . '<!--TMF_MCMA_HEADER:[&quot;Факт&quot;,&quot;Да&quot;,&quot;Нет&quot;,&quot;Пропуск&quot;]-->',
         );
 
         self::assertTrue($options['checkbox']);
         self::assertSame(2, $options['max_selections']);
         self::assertSame(85, $options['similarity_threshold']);
+        self::assertSame(5, $options['matching_positions']);
         self::assertSame(['Факт', 'Да', 'Нет', 'Пропуск'], $options['headers']);
         self::assertTrue(\F_tmf_selection_limit_is_valid([1, 0, 1], 2));
         self::assertFalse(\F_tmf_selection_limit_is_valid([1, 1, 1], 2));
@@ -152,6 +154,10 @@ final class WordImportTest extends TestCase
         self::assertSame(0.0, \F_tmf_answer_score(0, true, 8.0, -2.0));
         self::assertSame(8.0, \F_tmf_answer_score(null, true, 8.0, -2.0));
         self::assertSame(-2.0, \F_tmf_answer_score(null, false, 8.0, -2.0));
+        self::assertSame(
+            7,
+            \F_tmf_question_options(\F_tmf_set_matching_positions('Question', 7))['matching_positions'],
+        );
     }
 
     public function testStalePreviewCleanupRemovesOnlyAbandonedMedia(): void
