@@ -1201,6 +1201,28 @@ if (isset($question_subject_id) && $question_subject_id > 0) {
     ;
 }
 
+if (isset($question_subject_id) && $question_subject_id > 0) {
+    $question_list_url =
+        'tce_show_all_questions.php?subject_module_id='
+        . $subject_module_id
+        . '&amp;subject_id='
+        . $question_subject_id
+        . '&amp;submitted=1&amp;firstrow=0';
+    if (isset($question_id) && $question_id > 0) {
+        $question_list_url .= '#qid_' . $question_id;
+    }
+
+    echo
+        '<a href="'
+        . $question_list_url
+        . '" title="'
+        . $l['t_questions_list']
+        . '" class="xmlbutton question-list-return">&lt; '
+        . $l['w_list']
+        . '</a>'
+    ;
+}
+
 echo '</span>' . K_NEWLINE;
 echo '<span class="right">' . K_NEWLINE;
 if (isset($question_id) && $question_id > 0) {

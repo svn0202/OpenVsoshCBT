@@ -594,36 +594,45 @@ function F_show_select_questions(
                 $questlist .= '<abbr class="offbox" title="' . $l['w_disabled'] . '">-</abbr>';
             }
 
+            $question_type_label = '';
             switch ($m['question_type']) {
                 case 1:
                     {
-                        $questlist .= ' <abbr class="offbox" title="' . $l['w_single_answer'] . '">S</abbr>';
+                        $question_type_label = $l['w_single_answer'];
                         break;
                     }
                 case 2:
                     {
-                        $questlist .= ' <abbr class="offbox" title="' . $l['w_multiple_answers'] . '">M</abbr>';
+                        $question_type_label = $l['w_multiple_answers'];
                         break;
                     }
                 case 3:
                     {
-                        $questlist .= ' <abbr class="offbox" title="' . $l['w_free_answer'] . '">T</abbr>';
+                        $question_type_label = $l['w_free_answer'];
                         break;
                     }
                 case 4:
                     {
-                        $questlist .= ' <abbr class="offbox" title="' . $l['w_ordering_answer'] . '">O</abbr>';
+                        $question_type_label = $l['w_ordering_answer'];
                         break;
                     }
                 case 5:
                     {
-                        $questlist .= ' <abbr class="offbox" title="' . $l['w_matching_answer'] . '">C</abbr>';
+                        $question_type_label = $l['w_matching_answer'];
                         break;
                     }
             }
 
+            if ($question_type_label !== '') {
+                $questlist .=
+                    '<span class="question-card__type">'
+                    . F_text_to_xml($question_type_label)
+                    . '</span>';
+            }
+
+            $questlist .= '<div class="question-card__flags">';
             $questlist .=
-                ' <abbr class="offbox" title="'
+                ' <abbr class="question-card__difficulty" title="'
                 . $l['h_question_difficulty']
                 . '">'
                 . $m['question_difficulty']
@@ -635,36 +644,21 @@ function F_show_select_questions(
                     . '">'
                     . (int) $m['question_position']
                     . '</abbr>';
-            } else {
-                $questlist .= ' <abbr class="offbox" title="' . $l['h_position'] . '">&nbsp;</abbr>';
             }
 
             if (F_getBoolean($m['question_fullscreen'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_fullscreen'] . ': ' . $l['w_enabled'] . '">F</abbr>';
-            } else {
-                $questlist .=
-                    ' <abbr class="offbox" title="' . $l['w_fullscreen'] . ': ' . $l['w_disabled'] . '">&nbsp;</abbr>';
             }
 
             if (F_getBoolean($m['question_inline_answers'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_inline_answers'] . ': ' . $l['w_enabled'] . '">I</abbr>';
-            } else {
-                $questlist .=
-                    ' <abbr class="offbox" title="'
-                    . $l['w_inline_answers']
-                    . ': '
-                    . $l['w_disabled']
-                    . '">&nbsp;</abbr>';
             }
 
             if (F_getBoolean($m['question_auto_next'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_auto_next'] . ': ' . $l['w_enabled'] . '">A</abbr>';
-            } else {
-                $questlist .=
-                    ' <abbr class="offbox" title="' . $l['w_auto_next'] . ': ' . $l['w_disabled'] . '">&nbsp;</abbr>';
             }
 
             if ($m['question_timer'] > 0) {
@@ -674,9 +668,8 @@ function F_show_select_questions(
                     . '">'
                     . (int) $m['question_timer']
                     . '</abbr>';
-            } else {
-                $questlist .= ' <abbr class="offbox" title="' . $l['h_question_timer'] . '">&nbsp;</abbr>';
             }
+            $questlist .= '</div>';
 
             $questlist .=
                 ' <a href="tce_edit_question.php?subject_module_id='
@@ -723,53 +716,51 @@ function F_show_select_questions(
 					ORDER BY answer_enabled DESC,answer_position,answer_isright DESC';
                 if ($ra = F_db_query($sqla, $db)) {
                     $answlist = '';
+                    $answer_index = 0;
                     while ($ma = F_db_fetch_array($ra)) {
+                        ++$answer_index;
                         $answer_enabled = F_getBoolean($ma['answer_enabled']);
                         $answer_correct = !in_array((int) $m['question_type'], [4, 5], true)
                             && F_getBoolean($ma['answer_isright']);
+                        $answer_label = $answer_index <= 26 ? chr(64 + $answer_index) : (string) $answer_index;
                         $answlist .= '<li class="answer-card'
                             . ($answer_correct ? ' is-correct' : '')
                             . ($answer_enabled ? '' : ' is-disabled')
                             . '">';
-                        if ($answer_enabled) {
-                            $answlist .= '<abbr class="onbox" title="' . $l['w_enabled'] . '">+</abbr>';
-                        } else {
-                            $answlist .= '<abbr class="offbox" title="' . $l['w_disabled'] . '">-</abbr>';
-                        }
-
+                        $answlist .=
+                            '<div class="answer-card__label"><strong>'
+                            . $answer_label
+                            . '</strong><small title="'
+                            . $l['h_position']
+                            . '">'
+                            . ($ma['answer_position'] > 0 ? (int) $ma['answer_position'] : $answer_index)
+                            . '</small></div>';
+                        $answlist .=
+                            '<div class="answer-content">'
+                            . F_decode_tcecode($ma['answer_description'])
+                            . '</div>'
+                            . K_NEWLINE;
+                        $answlist .= '<div class="answer-card__actions">';
                         if (!in_array((int) $m['question_type'], [4, 5], true)) {
-                            if ($answer_correct) {
-                                $answlist .= ' <abbr class="okbox" title="' . $l['h_answer_right'] . '">T</abbr>';
-                            } else {
-                                $answlist .= ' <abbr class="nobox" title="' . $l['h_answer_wrong'] . '">F</abbr>';
-                            }
-                        }
-
-                        if ($ma['answer_position'] > 0) {
                             $answlist .=
-                                ' <abbr class="onbox" title="'
-                                . $l['h_position']
+                                '<abbr class="answer-card__correctness" title="'
+                                . ($answer_correct ? $l['h_answer_right'] : $l['h_answer_wrong'])
                                 . '">'
-                                . (int) $ma['answer_position']
+                                . ($answer_correct ? '&#10003;' : '&#8212;')
                                 . '</abbr>';
-                        } else {
-                            $answlist .= ' <abbr class="offbox" title="' . $l['h_position'] . '">&nbsp;</abbr>';
                         }
 
                         if ($ma['answer_keyboard_key'] > 0) {
                             $answlist .=
-                                ' <abbr class="onbox" title="'
+                                '<abbr class="answer-card__key" title="'
                                 . $l['h_answer_keyboard_key']
                                 . '">'
                                 . F_text_to_xml(chr($ma['answer_keyboard_key']))
                                 . '</abbr>';
-                        } else {
-                            $answlist .=
-                                ' <abbr class="offbox" title="' . $l['h_answer_keyboard_key'] . '">&nbsp;</abbr>';
                         }
 
                         $answlist .=
-                            ' <a href="tce_edit_answer.php?subject_module_id='
+                            '<a href="tce_edit_answer.php?subject_module_id='
                             . $subject_module_id
                             . '&amp;question_subject_id='
                             . $subject_id
@@ -781,19 +772,13 @@ function F_show_select_questions(
                             . $l['t_answers_editor']
                             . ' [ID = '
                             . $ma['answer_id']
-                            . ']" class="xmlbutton">'
+                            . ']" aria-label="'
                             . $l['w_edit']
-                            . '</a>';
-                        //$answlist .= " ";
-                        //$answlist .= "".F_decode_tcecode($ma['answer_description'])."";
-                        $answlist .=
-                            '<div class="answer-content">'
-                            . F_decode_tcecode($ma['answer_description'])
-                            . '</div>'
-                            . K_NEWLINE;
+                            . '" class="xmlbutton answer-card__edit">&#9998;</a>';
+                        $answlist .= '</div>';
                         if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
                             $answlist .=
-                                '<div class="paddingleft"><br /><span class="explanation">'
+                                '<div class="answer-card__explanation"><span class="explanation">'
                                 . $l['w_explanation']
                                 . ':</span><br />'
                                 . F_decode_tcecode($ma['answer_explanation'])
