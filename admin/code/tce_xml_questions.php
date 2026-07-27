@@ -218,6 +218,10 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= $boolean[(int) F_getBoolean($m['question_auto_next'])];
                             $xml .= '</auto_next>' . K_NEWLINE;
 
+                            $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<shuffle_answers>';
+                            $xml .= $boolean[(int) F_getBoolean($m['question_shuffle_answers'])];
+                            $xml .= '</shuffle_answers>' . K_NEWLINE;
+
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
                             $xml .= F_text_to_xml($m['question_description']);
                             $xml .= '</description>' . K_NEWLINE;

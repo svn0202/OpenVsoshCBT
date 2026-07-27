@@ -78,6 +78,7 @@ CREATE TABLE "tce_questions" (
 	"question_fullscreen" Boolean NOT NULL Default '0',
 	"question_inline_answers" Boolean NOT NULL DEFAULT '0',
 	"question_auto_next" Boolean NOT NULL DEFAULT '0',
+	"question_shuffle_answers" Boolean NOT NULL DEFAULT '0',
 constraint "PK_tce_questions_question_id" primary key ("question_id")
 ) Without Oids;
 

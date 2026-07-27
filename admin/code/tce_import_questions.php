@@ -337,6 +337,7 @@ function F_TSVQuestionImporter($tsvfile)
                     $question_inline_answers = isset($qdata[9]) ? (int) $qdata[9] : 0;
 
                     $question_auto_next = isset($qdata[10]) ? (int) $qdata[10] : 0;
+                    $question_shuffle_answers = isset($qdata[11]) ? (int) $qdata[11] : 0;
 
                     // check if this question already exist
                     $sql = 'SELECT question_id
@@ -409,7 +410,8 @@ function F_TSVQuestionImporter($tsvfile)
 					question_timer,
 					question_fullscreen,
 					question_inline_answers,
-					question_auto_next
+					question_auto_next,
+					question_shuffle_answers
 					) VALUES (
 					'
                         . $current_subject_id
@@ -443,6 +445,9 @@ function F_TSVQuestionImporter($tsvfile)
                         . '\',
 					\''
                         . $question_auto_next
+                        . '\',
+					\''
+                        . $question_shuffle_answers
                         . '\'
 					)';
                     if (!($r = F_db_query($sql, $db))) {

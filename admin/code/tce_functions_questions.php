@@ -243,7 +243,8 @@ function F_question_copy($question_id, $new_subject_id)
 				question_timer,
 				question_fullscreen,
 				question_inline_answers,
-				question_auto_next
+				question_auto_next,
+				question_shuffle_answers
 				) VALUES (
 				'
                 . $new_subject_id
@@ -277,6 +278,9 @@ function F_question_copy($question_id, $new_subject_id)
                 . '\',
 				\''
                 . $q['question_auto_next']
+                . '\',
+				\''
+                . $q['question_shuffle_answers']
                 . '\'
 				)';
             if (!($r = F_db_query($sql, $db))) {

@@ -112,6 +112,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
     $tsv .= K_TAB . 'question_fullscreen';
     $tsv .= K_TAB . 'question_inline_answers';
     $tsv .= K_TAB . 'question_auto_next';
+    $tsv .= K_TAB . 'question_shuffle_answers';
     $tsv .= K_NEWLINE;
 
     $tsv .= 'A=ANSWER'; // ANSWER
@@ -176,6 +177,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
                             $tsv .= K_TAB . (int) F_getBoolean($m['question_fullscreen']);
                             $tsv .= K_TAB . (int) F_getBoolean($m['question_inline_answers']);
                             $tsv .= K_TAB . (int) F_getBoolean($m['question_auto_next']);
+                            $tsv .= K_TAB . (int) F_getBoolean($m['question_shuffle_answers']);
                             $tsv .= K_NEWLINE;
                             // display alternative answers
                             $sqla =

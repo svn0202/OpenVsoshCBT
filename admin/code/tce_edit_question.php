@@ -118,6 +118,12 @@ if (!isset($_REQUEST['question_auto_next']) || empty($_REQUEST['question_auto_ne
     $question_auto_next = F_getBoolean($_REQUEST['question_auto_next']);
 }
 
+if (!isset($_REQUEST['question_shuffle_answers']) || empty($_REQUEST['question_shuffle_answers'])) {
+    $question_shuffle_answers = false;
+} else {
+    $question_shuffle_answers = F_getBoolean($_REQUEST['question_shuffle_answers']);
+}
+
 if (isset($_REQUEST['question_description'])) {
     $question_description = utrim($_REQUEST['question_description']);
     if (function_exists('normalizer_normalize')) {
@@ -487,6 +493,9 @@ switch ($menu_mode) {
                     . '\',
 				question_auto_next=\''
                     . (int) $question_auto_next
+                    . '\',
+				question_shuffle_answers=\''
+                    . (int) $question_shuffle_answers
                     . '\'
 				WHERE question_id='
                     . $question_id
@@ -573,7 +582,8 @@ switch ($menu_mode) {
 				question_timer,
 				question_fullscreen,
 				question_inline_answers,
-				question_auto_next
+				question_auto_next,
+				question_shuffle_answers
 				) VALUES (
 				'
                     . $question_subject_id
@@ -607,6 +617,9 @@ switch ($menu_mode) {
                     . '\',
 				\''
                     . (int) $question_auto_next
+                    . '\',
+				\''
+                    . (int) $question_shuffle_answers
                     . '\'
 				)';
                 if (!($r = F_db_query($sql, $db))) {
@@ -637,6 +650,7 @@ switch ($menu_mode) {
             $question_fullscreen = false;
             $question_inline_answers = false;
             $question_auto_next = false;
+            $question_shuffle_answers = false;
             break;
         }
 
@@ -680,6 +694,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $question_fullscreen = false;
         $question_inline_answers = false;
         $question_auto_next = false;
+        $question_shuffle_answers = false;
     } else {
         $sql = 'SELECT *
 				FROM ' . K_TABLE_QUESTIONS . '
@@ -699,6 +714,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_fullscreen = F_getBoolean($m['question_fullscreen']);
                 $question_inline_answers = F_getBoolean($m['question_inline_answers']);
                 $question_auto_next = F_getBoolean($m['question_auto_next']);
+                $question_shuffle_answers = F_getBoolean($m['question_shuffle_answers']);
             } else {
                 $question_description = '';
                 $question_explanation = '';
@@ -710,6 +726,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_fullscreen = false;
                 $question_inline_answers = false;
                 $question_auto_next = false;
+                $question_shuffle_answers = false;
             }
         } else {
             F_display_db_error();
@@ -1164,6 +1181,18 @@ echo
         '',
         1,
         $question_auto_next,
+        false,
+        '',
+    )
+;
+echo
+    getFormRowCheckBox(
+        'question_shuffle_answers',
+        'Перемешивать ответы',
+        'Перемешивать варианты только для этого вопроса независимо от общей настройки теста',
+        '',
+        1,
+        $question_shuffle_answers,
         false,
         '',
     )
