@@ -812,6 +812,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'minimum_duration' => '7',
                     'require_all_answers' => '1',
                     'block_below_threshold' => '1',
+                    'live_score' => '1',
+                    'auto_fullscreen' => '1',
+                    'hide_exam_info' => '1',
                     'disable_previous' => '1',
                     'completion_message' => 'Готово безопасно',
                     'csrf_token' => $token,
@@ -827,6 +830,11 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'Готово безопасно',
                 $this->dbScalar('SELECT test_completion_message FROM tce_tests WHERE test_id=' . $testId),
             );
+            foreach (['test_live_score', 'test_auto_fullscreen', 'test_hide_exam_info'] as $field) {
+                $this->assertTrue(\F_getBoolean(
+                    $this->dbScalar('SELECT ' . $field . ' FROM tce_tests WHERE test_id=' . $testId),
+                ));
+            }
         } finally {
             $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
         }

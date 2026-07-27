@@ -113,7 +113,14 @@ function F_tmf_save_question_answer(
             return ['status' => 'error', 'version' => $current_version];
         }
 
-        return ['status' => 'saved', 'version' => $new_version];
+        $response = ['status' => 'saved', 'version' => $new_version];
+        if (function_exists('F_tmf_live_score')) {
+            $live_score = F_tmf_live_score($test_id, (int) $row['testlog_testuser_id']);
+            if ($live_score !== null) {
+                $response['live_score'] = $live_score;
+            }
+        }
+        return $response;
     } catch (Throwable) {
         F_db_query('ROLLBACK', $db);
         return ['status' => 'error', 'version' => $expected_version];

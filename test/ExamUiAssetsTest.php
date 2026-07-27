@@ -18,6 +18,8 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('bindImagePreviews();', $script);
         self::assertStringContainsString('bindAudioLimits();', $script);
         self::assertStringContainsString("audio.addEventListener('play'", $script);
+        self::assertStringContainsString("toolbar.dataset.autoFullscreen === '1'", $script);
+        self::assertStringContainsString("payload, 'live_score'", $script);
     }
 
     public function testBothDirectionsKeepMatchingAndMediaResponsive(): void

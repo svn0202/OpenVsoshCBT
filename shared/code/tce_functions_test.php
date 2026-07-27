@@ -2152,7 +2152,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
     $user_id = (int) $_SESSION['session_user_id'];
     $aswkeys = [];
     $str = '';
-    $question_reviewed = false;
     if (!isset($test_id) || $test_id == 0) {
         return;
     }
@@ -2204,7 +2203,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            $question_reviewed = F_getBoolean($m['testlog_reviewed'] ?? false);
             if (F_getBoolean($m['question_fullscreen'])) {
                 // hide some section for fullscreen mode
                 $str .= '<style>' . K_NEWLINE;
@@ -2663,11 +2661,13 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $testuser_id = (int) $testuser_id;
     $testlog_id = (int) $testlog_id;
     $str = '';
+    $question_reviewed = false;
+    $tmf_options = F_tmf_question_options('');
     $testlog_id_prev = 0; // previous question ID
     $testlog_id_next = 0; // next question ID
     $testlog_id_last = 0; // temp variable
     $sql =
-        'SELECT question_description, question_difficulty, question_timer, testlog_id, testlog_answer_text, testlog_display_time, testlog_change_time
+        'SELECT question_description, question_difficulty, question_timer, testlog_id, testlog_answer_text, testlog_display_time, testlog_change_time, testlog_reviewed
 		FROM '
         . K_TABLE_QUESTIONS
         . ', '
@@ -2698,6 +2698,8 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     $testlog_id_next = $m['testlog_id'];
                 }
             } else {
+                $question_reviewed = F_getBoolean($m['testlog_reviewed'] ?? false);
+                $tmf_options = F_tmf_question_options((string) $m['question_description']);
                 $str .= '<li class="selected" data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="button" name="jumpquestion_'
@@ -2775,6 +2777,8 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         . '" data-image-preview-close="'
         . htmlspecialchars($l['w_close'], ENT_QUOTES, $l['a_meta_charset'])
         . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
+        . '" data-auto-fullscreen="' . (F_getBoolean($testdata['test_auto_fullscreen'] ?? false) ? '1' : '0')
+        . '" data-hide-exam-info="' . (F_getBoolean($testdata['test_hide_exam_info'] ?? false) ? '1' : '0')
         . '">' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'
         . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])
@@ -2797,6 +2801,14 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
         . '">⛶</button>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;
+    $live_score = F_tmf_live_score((int) ($testdata['test_id'] ?? 0), $testuser_id);
+    if ($live_score !== null) {
+        $toolbar .= '<output id="exam-live-score" class="exam-live-score" aria-live="polite">'
+            . 'Текущий балл: <span>'
+            . htmlspecialchars((string) $live_score, ENT_QUOTES, $l['a_meta_charset'])
+            . '</span></output>'
+            . K_NEWLINE;
+    }
     $toolbar .= '<label class="exam-review-toggle"><input type="checkbox" data-exam-review'
         . ' data-review-save="tce_test_review.php" data-reviewed="'
         . ($question_reviewed ? '1' : '0')
@@ -2904,6 +2916,33 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     }
 
     return $rstr;
+}
+
+/**
+ * Return the current score only when the test explicitly enables LiveScore.
+ */
+function F_tmf_live_score(int $test_id, int $testuser_id): ?float
+{
+    require_once '../config/tce_config.php';
+    global $db;
+    if ($test_id <= 0 || $testuser_id <= 0) {
+        return null;
+    }
+    $enabled_result = F_db_query(
+        'SELECT test_live_score FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1',
+        $db,
+    );
+    $enabled = $enabled_result ? F_db_fetch_array($enabled_result) : false;
+    if (!is_array($enabled) || !F_getBoolean($enabled['test_live_score'] ?? false)) {
+        return null;
+    }
+    $score_result = F_db_query(
+        'SELECT COALESCE(SUM(testlog_score),0) AS live_score FROM ' . K_TABLE_TESTS_LOGS
+        . ' WHERE testlog_testuser_id=' . $testuser_id,
+        $db,
+    );
+    $score = $score_result ? F_db_fetch_array($score_result) : false;
+    return is_array($score) ? round((float) $score['live_score'], 3) : 0.0;
 }
 
 /**

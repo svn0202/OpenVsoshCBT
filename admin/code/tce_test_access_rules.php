@@ -51,6 +51,9 @@ if (isset($_POST['save_rules'])) {
             . 'test_minimum_duration_time=' . $minimum_duration . ','
             . "test_require_all_answers='" . (isset($_POST['require_all_answers']) ? 1 : 0) . "',"
             . "test_block_finish_below_threshold='" . (isset($_POST['block_below_threshold']) ? 1 : 0) . "',"
+            . "test_live_score='" . (isset($_POST['live_score']) ? 1 : 0) . "',"
+            . "test_auto_fullscreen='" . (isset($_POST['auto_fullscreen']) ? 1 : 0) . "',"
+            . "test_hide_exam_info='" . (isset($_POST['hide_exam_info']) ? 1 : 0) . "',"
             . "test_disable_previous='" . (isset($_POST['disable_previous']) ? 1 : 0) . "',"
             . "test_disable_next='" . (isset($_POST['disable_next']) ? 1 : 0) . "',"
             . "test_hide_editor='" . (isset($_POST['hide_editor']) ? 1 : 0) . "',"
@@ -68,6 +71,9 @@ $rules = [
     'test_minimum_duration_time' => 0,
     'test_require_all_answers' => 0,
     'test_block_finish_below_threshold' => 0,
+    'test_live_score' => 0,
+    'test_auto_fullscreen' => 0,
+    'test_hide_exam_info' => 0,
     'test_disable_previous' => 0,
     'test_disable_next' => 0,
     'test_hide_editor' => 0,
@@ -129,6 +135,9 @@ if ($test_id > 0) {
     foreach ([
         'require_all_answers' => ['test_require_all_answers', 'Требовать ответ на каждый вопрос'],
         'block_below_threshold' => ['test_block_finish_below_threshold', 'Не завершать ниже проходного балла'],
+        'live_score' => ['test_live_score', 'Показывать текущий балл во время экзамена'],
+        'auto_fullscreen' => ['test_auto_fullscreen', 'Открывать fullscreen после первого действия'],
+        'hide_exam_info' => ['test_hide_exam_info', 'Скрывать служебную информацию во время экзамена'],
         'disable_previous' => ['test_disable_previous', 'Отключить кнопку «Назад»'],
         'disable_next' => ['test_disable_next', 'Отключить кнопку «Далее»'],
         'hide_editor' => ['test_hide_editor', 'Не загружать редактор для эссе'],

@@ -172,6 +172,10 @@
 
         return sendAnswer(data, 0, button).then(function (payload) {
             answerVersion.value = String(payload.version);
+            var liveScore = form.querySelector('#exam-live-score span');
+            if (liveScore && Object.prototype.hasOwnProperty.call(payload, 'live_score')) {
+                liveScore.textContent = String(payload.live_score);
+            }
             if (changedDuringSave) {
                 answerDirty = true;
                 setSaveStatus('dirty', button.dataset.answerUnsaved);
@@ -251,6 +255,21 @@
                     });
                 }
             });
+        }
+
+        document.body.classList.toggle('exam-hide-info', toolbar.dataset.hideExamInfo === '1');
+        if (toolbar.dataset.autoFullscreen === '1' && !document.fullscreenElement) {
+            var enterFullscreen = function () {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(function () {
+                        // Browser policy may deny fullscreen; the manual button remains available.
+                    });
+                }
+                document.removeEventListener('pointerdown', enterFullscreen);
+                document.removeEventListener('keydown', enterFullscreen);
+            };
+            document.addEventListener('pointerdown', enterFullscreen, {once: true});
+            document.addEventListener('keydown', enterFullscreen, {once: true});
         }
 
         toolbar.addEventListener('click', function (event) {
