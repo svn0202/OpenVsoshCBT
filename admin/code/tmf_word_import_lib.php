@@ -9,6 +9,100 @@
 
 class TmfWordImportException extends Exception {}
 
+const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
+
+function F_tmf_word_import_is_batch_id(string $batch_id): bool
+{
+    return preg_match('/^[a-f0-9]{32}$/', $batch_id) === 1;
+}
+
+/**
+ * Remove a preview and its extracted media. Confirmed imports must use
+ * $remove_media=false because their question HTML references these files.
+ */
+function F_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_id, bool $remove_media = true): bool
+{
+    if (!F_tmf_word_import_is_batch_id($batch_id)) {
+        return false;
+    }
+
+    $cache_directory = rtrim($cache_directory, '/\\');
+    $preview_file = $cache_directory . '/wordimport-preview/' . $batch_id . '.php';
+    if (is_file($preview_file) || is_link($preview_file)) {
+        unlink($preview_file);
+    }
+
+    if ($remove_media) {
+        F_tmf_word_import_remove_directory($cache_directory . '/wordimport/' . $batch_id);
+    }
+
+    return true;
+}
+
+/**
+ * Remove abandoned previews and only the media directories tied to them.
+ */
+function F_tmf_word_import_cleanup_stale(
+    string $cache_directory,
+    int $maximum_age = TMF_WORD_IMPORT_PREVIEW_TTL,
+    ?int $now = null,
+): int {
+    $preview_directory = rtrim($cache_directory, '/\\') . '/wordimport-preview';
+    if (!is_dir($preview_directory)) {
+        return 0;
+    }
+
+    $now ??= time();
+    $removed = 0;
+    $entries = scandir($preview_directory);
+    if ($entries === false) {
+        return 0;
+    }
+
+    foreach ($entries as $entry) {
+        $matches = [];
+        if (preg_match('/^([a-f0-9]{32})\.php$/', $entry, $matches) !== 1 || !isset($matches[1])) {
+            continue;
+        }
+        $preview_file = $preview_directory . '/' . $entry;
+        $modified = filemtime($preview_file);
+        if ($modified !== false && ($now - $modified) > $maximum_age) {
+            F_tmf_word_import_cleanup_batch($cache_directory, $matches[1]);
+            ++$removed;
+        }
+    }
+
+    return $removed;
+}
+
+function F_tmf_word_import_remove_directory(string $directory): void
+{
+    if (is_link($directory)) {
+        unlink($directory);
+        return;
+    }
+    if (!is_dir($directory)) {
+        return;
+    }
+
+    $entries = scandir($directory);
+    if ($entries === false) {
+        return;
+    }
+    foreach ($entries as $entry) {
+        if ($entry === '.' || $entry === '..') {
+            continue;
+        }
+        $path = $directory . '/' . $entry;
+        if (is_link($path) || is_file($path)) {
+            unlink($path);
+        } elseif (is_dir($path)) {
+            F_tmf_word_import_remove_directory($path);
+        }
+    }
+    rmdir($directory);
+}
+
 class TmfWordImporter
 {
     private string $filename;

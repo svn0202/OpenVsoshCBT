@@ -151,4 +151,48 @@ final class WordImportTest extends TestCase
         self::assertSame(8.0, \F_tmf_answer_score(null, true, 8.0, -2.0));
         self::assertSame(-2.0, \F_tmf_answer_score(null, false, 8.0, -2.0));
     }
+
+    public function testStalePreviewCleanupRemovesOnlyAbandonedMedia(): void
+    {
+        $staleBatch = str_repeat('a', 32);
+        $freshBatch = str_repeat('b', 32);
+        $confirmedBatch = str_repeat('c', 32);
+        $previewDirectory = $this->temporaryDirectory . '/wordimport-preview';
+        self::assertTrue(mkdir($previewDirectory, 0o700, true));
+
+        foreach ([$staleBatch, $freshBatch, $confirmedBatch] as $batch) {
+            $mediaDirectory = $this->temporaryDirectory . '/wordimport/' . $batch;
+            self::assertTrue(mkdir($mediaDirectory, 0o700, true));
+            self::assertNotFalse(file_put_contents($mediaDirectory . '/image.png', 'image'));
+        }
+        self::assertNotFalse(file_put_contents($previewDirectory . '/' . $staleBatch . '.php', 'preview'));
+        self::assertNotFalse(file_put_contents($previewDirectory . '/' . $freshBatch . '.php', 'preview'));
+        self::assertTrue(touch($previewDirectory . '/' . $staleBatch . '.php', 100));
+        self::assertTrue(touch($previewDirectory . '/' . $freshBatch . '.php', 190));
+
+        self::assertSame(1, \F_tmf_word_import_cleanup_stale($this->temporaryDirectory, 50, 200));
+        self::assertFileDoesNotExist($previewDirectory . '/' . $staleBatch . '.php');
+        self::assertDirectoryDoesNotExist($this->temporaryDirectory . '/wordimport/' . $staleBatch);
+        self::assertFileExists($previewDirectory . '/' . $freshBatch . '.php');
+        self::assertDirectoryExists($this->temporaryDirectory . '/wordimport/' . $freshBatch);
+        self::assertDirectoryExists($this->temporaryDirectory . '/wordimport/' . $confirmedBatch);
+    }
+
+    public function testConfirmedBatchCleanupKeepsImportedMedia(): void
+    {
+        $batch = str_repeat('d', 32);
+        $previewDirectory = $this->temporaryDirectory . '/wordimport-preview';
+        $mediaDirectory = $this->temporaryDirectory . '/wordimport/' . $batch;
+        self::assertTrue(mkdir($previewDirectory, 0o700, true));
+        self::assertTrue(mkdir($mediaDirectory, 0o700, true));
+        self::assertNotFalse(file_put_contents($previewDirectory . '/' . $batch . '.php', 'preview'));
+        self::assertNotFalse(file_put_contents($mediaDirectory . '/image.png', 'image'));
+
+        self::assertTrue(\F_tmf_word_import_cleanup_batch($this->temporaryDirectory, $batch, false));
+        self::assertFileDoesNotExist($previewDirectory . '/' . $batch . '.php');
+        self::assertFileExists($mediaDirectory . '/image.png');
+        self::assertFalse(
+            \F_tmf_word_import_cleanup_batch($this->temporaryDirectory, '../../unsafe', true),
+        );
+    }
 }
