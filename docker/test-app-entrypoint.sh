@@ -47,7 +47,12 @@ sed -i \
 sed -i \
     -e "s|define('K_RANDOM_SECURITY', '[^']*')|define('K_RANDOM_SECURITY', '${SECRET}')|" \
     -e "s|define('K_BRUTE_FORCE_DELAY_RATIO', [0-9]*)|define('K_BRUTE_FORCE_DELAY_RATIO', 0)|" \
+    -e "s|define('K_PASSWORD_RESET', [a-z]*)|define('K_PASSWORD_RESET', true)|" \
     "${APP}/shared/config/tce_config.php"
+
+# Password reset is disabled in the olympiad production defaults. The HTTP integration
+# suite enables it only inside this disposable app container so the reset controller
+# remains covered without changing the deployed security policy.
 
 # Disable the registration email-confirmation step so integration tests don't require an SMTP server.
 sed -i "s|define('K_USRREG_EMAIL_CONFIRM', true)|define('K_USRREG_EMAIL_CONFIRM', false)|" \
