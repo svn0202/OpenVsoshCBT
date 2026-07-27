@@ -17,6 +17,12 @@ if (isset($_POST['confirm'])) {
     }
     $menu_mode = 'confirm';
 }
+if (isset($_POST['cancelpreview'])) {
+    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+        exit();
+    }
+    $menu_mode = 'cancelpreview';
+}
 
 $thispage_title = 'Импорт вопросов из Word';
 $thispage_title_icon = '<i class="fas fa-file-word icon-gradient bg-sunny-morning"></i> ';
@@ -24,6 +30,8 @@ $message = '';
 $error = '';
 $preview = null;
 $batch_id = '';
+
+F_tmf_word_import_cleanup_stale(K_PATH_CACHE);
 
 try {
     if (isset($menu_mode) && $menu_mode === 'upload' && !empty($_FILES['userfile']['name'])) {
@@ -56,34 +64,52 @@ try {
             throw new TmfWordImportException('Не удалось сохранить предварительный просмотр.');
         }
         chmod($preview_file, 0640);
-    } elseif (isset($menu_mode) && $menu_mode === 'confirm') {
+    } elseif (isset($menu_mode) && in_array($menu_mode, array('confirm', 'cancelpreview'), true)) {
         $batch_id = isset($_POST['batch_id']) ? $_POST['batch_id'] : '';
-        if (!preg_match('/^[a-f0-9]{32}$/', $batch_id)) {
+        if (!F_tmf_word_import_is_batch_id($batch_id)) {
             throw new TmfWordImportException('Некорректный идентификатор импорта.');
         }
-        $preview_file = K_PATH_CACHE . 'wordimport-preview/' . $batch_id . '.php';
-        if (!is_file($preview_file) || (time() - filemtime($preview_file)) > 86400) {
-            throw new TmfWordImportException('Предварительный просмотр не найден или устарел.');
+        if ($menu_mode === 'cancelpreview') {
+            F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+            $message = 'Предварительный просмотр отменён, временные файлы удалены.';
+            $batch_id = '';
+            $preview = null;
+        } else {
+            $preview_file = K_PATH_CACHE . 'wordimport-preview/' . $batch_id . '.php';
+            if (
+                !is_file($preview_file)
+                || (time() - filemtime($preview_file)) > TMF_WORD_IMPORT_PREVIEW_TTL
+            ) {
+                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                throw new TmfWordImportException('Предварительный просмотр не найден или устарел.');
+            }
+            $preview_contents = file_get_contents($preview_file);
+            $preview_separator = is_string($preview_contents) ? strpos($preview_contents, "\n") : false;
+            if ($preview_separator === false) {
+                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
+            }
+            $preview = json_decode(substr($preview_contents, $preview_separator + 1), true);
+            if (!is_array($preview)) {
+                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
+            }
+            $counts = F_tmf_import_word_questions($preview);
+            F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id, false);
+            $message = sprintf(
+                'Импорт завершён: модуль «%s», тема «%s», вопросов %d, ответов %d.',
+                htmlspecialchars($counts['module_name'], ENT_QUOTES, 'UTF-8'),
+                htmlspecialchars($counts['subject_name'], ENT_QUOTES, 'UTF-8'),
+                $counts['questions'],
+                $counts['answers'],
+            );
+            $preview = null;
         }
-        $preview_contents = file_get_contents($preview_file);
-        $preview = json_decode(substr($preview_contents, strpos($preview_contents, "\n") + 1), true);
-        if (!is_array($preview)) {
-            throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
-        }
-        $counts = F_tmf_import_word_questions($preview);
-        if (is_file($preview_file)) {
-            unlink($preview_file);
-        }
-        $message = sprintf(
-            'Импорт завершён: модуль «%s», тема «%s», вопросов %d, ответов %d.',
-            htmlspecialchars($counts['module_name'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($counts['subject_name'], ENT_QUOTES, 'UTF-8'),
-            $counts['questions'],
-            $counts['answers'],
-        );
-        $preview = null;
     }
 } catch (Exception $exception) {
+    if (isset($menu_mode) && $menu_mode === 'upload' && F_tmf_word_import_is_batch_id($batch_id)) {
+        F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+    }
     $error = $exception->getMessage();
 }
 
@@ -155,6 +181,7 @@ if (is_array($preview)) {
     ;
     echo F_getCSRFTokenField() . K_NEWLINE;
     F_submit_button('confirm', 'Импортировать', 'Создать модуль, тему, вопросы и ответы');
+    F_submit_button('cancelpreview', 'Отменить', 'Удалить предварительный просмотр и временные файлы');
     echo '</form>' . K_NEWLINE;
 } else {
     echo
