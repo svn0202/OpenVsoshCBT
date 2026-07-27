@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="OpenVsoshCBT">
+  <rect width="512" height="512" rx="96" fill="#183b64"/>
+  <path d="M108 132h296v58H108zm0 190h296v58H108z" fill="#fff"/>
+  <path d="M132 108h58v296h-58zm190 0h58v296h-58z" fill="#fff"/>
+  <circle cx="256" cy="256" r="72" fill="#ef3340"/>
+  <path d="M220 256l25 25 52-58" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

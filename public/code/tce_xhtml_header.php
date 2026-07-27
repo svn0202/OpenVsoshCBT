@@ -100,6 +100,12 @@ $theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260727-1" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
+echo '<link rel="manifest" href="../manifest.webmanifest" />' . K_NEWLINE;
+echo '<meta name="theme-color" content="#183b64" />' . K_NEWLINE;
+echo '<script type="text/javascript">'
+    . 'if("serviceWorker" in navigator){window.addEventListener("load",function(){'
+    . 'navigator.serviceWorker.register("../sw.js",{scope:"../"}).catch(function(){return null;});'
+    . '});}</script>' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 

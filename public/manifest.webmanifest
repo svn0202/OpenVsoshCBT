@@ -1,0 +1,26 @@
+{
+  "id": "./code/",
+  "name": "OpenVsoshCBT — олимпиадное тестирование",
+  "short_name": "OpenVsoshCBT",
+  "description": "Безопасная платформа проведения олимпиадного тестирования",
+  "lang": "ru",
+  "start_url": "./code/",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#183b64",
+  "icons": [
+    {
+      "src": "pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "../images/vsosh-logo.png",
+      "sizes": "472x472",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
