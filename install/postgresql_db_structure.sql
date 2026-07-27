@@ -165,6 +165,21 @@ constraint "pk_tce_monitor_audit" primary key ("monitor_audit_id")
 CREATE INDEX "idx_monitor_audit_test_time" ON "tce_monitor_audit" ("monitor_test_id","monitor_audit_time");
 CREATE INDEX "idx_monitor_audit_attempt" ON "tce_monitor_audit" ("monitor_testuser_id");
 
+CREATE TABLE "tce_offline_packages" (
+	"offline_package_id" Char(32) NOT NULL,
+	"offline_testuser_id" Bigint NOT NULL,
+	"offline_test_id" Bigint NOT NULL,
+	"offline_user_id" Bigint NOT NULL,
+	"offline_issued_at" Timestamp NOT NULL,
+	"offline_expires_at" Timestamp NOT NULL,
+	"offline_payload_hash" Char(64) NOT NULL,
+	"offline_status" Varchar(16) NOT NULL Default 'issued',
+	"offline_imported_at" Timestamp,
+	"offline_result_hash" Char(64),
+constraint "pk_tce_offline_packages" primary key ("offline_package_id")
+) Without Oids;
+CREATE INDEX "idx_offline_test_status" ON "tce_offline_packages" ("offline_test_id","offline_status");
+
 CREATE TABLE "tce_tests_logs" (
 	"testlog_id" BigSerial NOT NULL,
 	"testlog_testuser_id" Bigint NOT NULL,

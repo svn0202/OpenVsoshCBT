@@ -82,6 +82,9 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 Для предварительной пакетной генерации вариантов дополнительно примените
 `install/upgrade/<СУБД>/openvsosh_pregeneration.sql`.
 
+Для подписанных автономных пакетов дополнительно примените
+`install/upgrade/<СУБД>/openvsosh_offline.sql`.
+
 Миграции применяются по порядку и только один раз. Перед ними создайте дамп,
 а после проверьте вход администратора, сохранение настроек и страницу входа.
 Полный безопасный порядок обновления описан в
@@ -98,6 +101,7 @@ mysql ИМЯ_БАЗЫ < install/upgrade/mysql/openvsosh_access_settings.sql
 - [Надёжное сохранение ответов](doc/admin/answer-saving.md)
 - [Наблюдение за тестированием](doc/admin/monitoring.md)
 - [Предварительная генерация вариантов](doc/admin/pregeneration.md)
+- [Автономное электронное проведение](doc/admin/offline-exams.md)
 - [Безопасное обновление](doc/admin/upgrade.md)
 - [Решение известных проблем](doc/admin/troubleshooting.md)
 - [Карта официальной документации TCExam](doc/admin/tcexam-reference.md)

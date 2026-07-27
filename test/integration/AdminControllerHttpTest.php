@@ -272,7 +272,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_edit_backup.php', 'tce_edit_user.php', 'tce_edit_test.php', 'tce_edit_rating.php',
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
             'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
-            'tce_pregenerate.php',
+            'tce_pregenerate.php', 'tce_offline.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -858,6 +858,154 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 . ' AND usrgrp_group_id=' . $groupId
             );
             $this->deleteGroupById($groupId);
+        }
+    }
+
+    public function testSignedOfflinePackageImportsIdempotentlyAndRejectsTampering(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_offline_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time,test_end_time) "
+            . "VALUES ('itest_offline_test','d'," . $adminId . ",60,'2035-01-01 00:00:00')"
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_offline_test'"
+        ) ?? '0');
+        $this->dbExec("DELETE FROM tce_modules WHERE module_name='itest_offline_module'");
+        $this->dbExec(
+            "INSERT INTO tce_modules (module_name,module_enabled,module_user_id) "
+            . "VALUES ('itest_offline_module','1'," . $adminId . ')'
+        );
+        $moduleId = (int) ($this->dbScalar(
+            "SELECT module_id FROM tce_modules WHERE module_name='itest_offline_module'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_subjects (subject_module_id,subject_name,subject_description,"
+            . "subject_enabled,subject_user_id) VALUES ("
+            . $moduleId . ",'itest_offline_subject','d','1'," . $adminId . ')'
+        );
+        $subjectId = (int) ($this->dbScalar(
+            "SELECT subject_id FROM tce_subjects WHERE subject_name='itest_offline_subject'"
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_questions (question_subject_id,question_description,question_type,"
+            . "question_enabled,question_position) VALUES ("
+            . $subjectId . ",'Offline essay',3,'1',1)"
+        );
+        $questionId = (int) ($this->dbScalar(
+            'SELECT question_id FROM tce_questions WHERE question_subject_id=' . $subjectId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
+            . 'testuser_creation_time,testuser_last_activity) VALUES ('
+            . $testId . ',' . $adminId . ",1,'2026-07-27 12:00:00','2026-07-27 12:00:00')"
+        );
+        $attemptId = (int) ($this->dbScalar(
+            'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+        ) ?? '0');
+        $this->dbExec(
+            "INSERT INTO tce_tests_logs (testlog_testuser_id,testlog_question_id,testlog_score,"
+            . "testlog_creation_time,testlog_order) VALUES ("
+            . $attemptId . ',' . $questionId . ",0,'2026-07-27 12:00:00',1)"
+        );
+        $testlogId = (int) ($this->dbScalar(
+            'SELECT testlog_id FROM tce_tests_logs WHERE testlog_testuser_id=' . $attemptId
+        ) ?? '0');
+
+        try {
+            [, $page] = $this->http(
+                'GET',
+                '/admin/code/tce_offline.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($page);
+            $this->assertNotNull($token);
+            [$status, $html] = $this->http('POST', '/admin/code/tce_offline.php', $cookies, [
+                'test_id' => (string) $testId,
+                'testuser_id' => (string) $attemptId,
+                'export_offline' => '1',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('default-src', $html);
+            $this->assertMatchesRegularExpression('/var envelope = (\\{[^;]+\\});/', $html);
+            preg_match('/var envelope = (\\{[^;]+\\});/', $html, $match);
+            $envelope = json_decode($match[1], true, 16, JSON_THROW_ON_ERROR);
+            $this->assertIsArray($envelope);
+
+            $offlineResult = json_encode([
+                'format' => 'OpenVsoshCBT-offline-result-v1',
+                'payload_b64' => $envelope['payload_b64'],
+                'signature' => $envelope['signature'],
+                'submitted_at' => '2026-07-27T12:30:00Z',
+                'answers' => [[
+                    'testlog_id' => $testlogId,
+                    'positions' => [],
+                    'text' => 'offline answer',
+                    'reaction_time' => 1200,
+                ]],
+            ], JSON_THROW_ON_ERROR);
+            $tampered = json_decode($offlineResult, true, 16, JSON_THROW_ON_ERROR);
+            $tampered['signature'] = str_repeat('0', 64);
+            [$status, $body] = $this->httpUpload(
+                '/admin/code/tce_offline.php?test_id=' . $testId,
+                $cookies,
+                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                'result_file',
+                'tampered.json',
+                json_encode($tampered, JSON_THROW_ON_ERROR),
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('signature_failed', $body);
+
+            [$status, $body] = $this->httpUpload(
+                '/admin/code/tce_offline.php?test_id=' . $testId,
+                $cookies,
+                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                'result_file',
+                'result.json',
+                $offlineResult,
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('Результат принят: imported', $body);
+            $this->assertSame(
+                '4',
+                $this->dbScalar(
+                    'SELECT testuser_status FROM tce_tests_users WHERE testuser_id=' . $attemptId
+                )
+            );
+            $this->assertSame(
+                'offline answer',
+                $this->dbScalar(
+                    'SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $testlogId
+                )
+            );
+
+            [, $body] = $this->httpUpload(
+                '/admin/code/tce_offline.php?test_id=' . $testId,
+                $cookies,
+                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                'result_file',
+                'result.json',
+                $offlineResult,
+            );
+            $this->assertStringContainsString('Результат принят: duplicate', $body);
+            $this->assertSame(
+                '1',
+                $this->dbScalar(
+                    "SELECT COUNT(*) FROM tce_offline_packages WHERE offline_testuser_id="
+                    . $attemptId . " AND offline_status='imported'"
+                )
+            );
+        } finally {
+            $this->dbExec('DELETE FROM tce_offline_packages WHERE offline_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_questions WHERE question_id=' . $questionId);
+            $this->dbExec('DELETE FROM tce_subjects WHERE subject_id=' . $subjectId);
+            $this->dbExec('DELETE FROM tce_modules WHERE module_id=' . $moduleId);
         }
     }
 

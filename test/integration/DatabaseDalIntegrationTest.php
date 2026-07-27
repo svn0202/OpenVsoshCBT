@@ -233,9 +233,15 @@ final class DatabaseDalIntegrationTest extends TestCase
             'SELECT monitor_audit_time, monitor_action, monitor_details FROM tce_monitor_audit WHERE 1=0',
             $this->db
         );
+        $offline = \F_db_query(
+            'SELECT offline_payload_hash, offline_status, offline_result_hash '
+            . 'FROM tce_offline_packages WHERE 1=0',
+            $this->db
+        );
 
         $this->assertNotFalse($attempt, 'fresh schemas must include attempt monitoring columns');
         $this->assertNotFalse($answer, 'fresh schemas must include answer activity timestamps');
         $this->assertNotFalse($audit, 'fresh schemas must include the immutable monitoring audit');
+        $this->assertNotFalse($offline, 'fresh schemas must include signed offline package records');
     }
 }
