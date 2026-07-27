@@ -27,6 +27,7 @@
  */
 require_once __DIR__ . '/tce_functions_tmf_question.php';
 require_once __DIR__ . '/tce_functions_answer_save.php';
+require_once __DIR__ . '/tce_functions_monitoring.php';
 
 function F_getUserTests()
 {
@@ -434,17 +435,24 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
  * @param $test_id (int) test ID
  * @since 4.0.000 (2006-09-27)
  */
-function F_terminateUserTest($test_id)
+function F_terminateUserTest($test_id, $reason = 'completed')
 {
     require_once '../config/tce_config.php';
     global $db, $l;
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
+    $allowed_reasons = ['completed', 'timeout', 'blocked'];
+    if (!in_array($reason, $allowed_reasons, true)) {
+        $reason = 'completed';
+    }
+    $now = date(K_TIMESTAMP_FORMAT);
     $sql =
         'UPDATE '
         . K_TABLE_TEST_USER
         . '
-		SET testuser_status=4
+		SET testuser_status=4,
+			testuser_close_reason=\'' . $reason . '\',
+			testuser_last_activity=\'' . $now . '\'
 		WHERE testuser_test_id='
         . $test_id
         . '
@@ -513,9 +521,11 @@ function F_checkTestStatus($user_id, $test_id, $duration)
             );
             if ($test_status > 0 && $test_status < 4 && $current_time > $endtime) {
                 // update test mode to 4 = test locked (for timeout)
-                $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
-					SET testuser_status=4
-					WHERE testuser_id=' . $testuser_id . '';
+                $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . "
+					SET testuser_status=4,
+						testuser_close_reason='timeout',
+						testuser_last_activity='" . $current_time . "'
+					WHERE testuser_id=" . $testuser_id;
                 if (!($ru = F_db_query($sqlu, $db))) {
                     F_display_db_error();
                 } else {
@@ -1330,15 +1340,17 @@ function F_createTest($test_id, $user_id)
     // 1. create user's test entry
     // ------------------------------
     $date = date(K_TIMESTAMP_FORMAT);
-    $sql = 'INSERT INTO ' . K_TABLE_TEST_USER . ' (
+	$sql = 'INSERT INTO ' . K_TABLE_TEST_USER . ' (
 		testuser_test_id,
 		testuser_user_id,
 		testuser_status,
-		testuser_creation_time
+		testuser_creation_time,
+		testuser_last_activity
 		) VALUES (
 		' . $test_id . ',
 		' . $user_id . ',
 		0,
+		\'' . $date . '\',
 		\'' . $date . '\'
 		)';
     if (!($r = F_db_query($sql, $db))) {
@@ -2562,6 +2574,14 @@ function F_questionForm($test_id, $testlog_id, $formname)
             if (!($ru = F_db_query($sqlu, $db))) {
                 F_display_db_error();
             }
+        }
+        $activity_time = date(K_TIMESTAMP_FORMAT);
+        $activity_sql = 'UPDATE ' . K_TABLE_TEST_USER . "
+			SET testuser_last_activity='" . $activity_time . "'
+			WHERE testuser_id=" . (int) $m['testlog_testuser_id'] . '
+				AND testuser_status<4';
+        if (!F_db_query($activity_sql, $db)) {
+            F_display_db_error();
         }
     } else {
         F_display_db_error();

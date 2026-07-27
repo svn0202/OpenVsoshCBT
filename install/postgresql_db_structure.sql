@@ -140,9 +140,26 @@ CREATE TABLE "tce_tests_users" (
 	"testuser_user_id" Bigint NOT NULL,
 	"testuser_status" Smallint NOT NULL Default 0,
 	"testuser_creation_time" Timestamp NOT NULL,
+	"testuser_last_activity" Timestamp,
+	"testuser_close_reason" Varchar(16),
 	"testuser_comment" Text,
 constraint "pk_tce_tests_users" primary key ("testuser_id")
 ) Without Oids;
+
+CREATE TABLE "tce_monitor_audit" (
+	"monitor_audit_id" BigSerial NOT NULL,
+	"monitor_audit_time" Timestamp NOT NULL,
+	"monitor_actor_user_id" Bigint NOT NULL,
+	"monitor_testuser_id" Bigint NOT NULL,
+	"monitor_test_id" Bigint NOT NULL,
+	"monitor_target_user_id" Bigint NOT NULL,
+	"monitor_action" Varchar(32) NOT NULL,
+	"monitor_details" Varchar(255),
+	"monitor_ip" Varchar(39),
+constraint "pk_tce_monitor_audit" primary key ("monitor_audit_id")
+) Without Oids;
+CREATE INDEX "idx_monitor_audit_test_time" ON "tce_monitor_audit" ("monitor_test_id","monitor_audit_time");
+CREATE INDEX "idx_monitor_audit_attempt" ON "tce_monitor_audit" ("monitor_testuser_id");
 
 CREATE TABLE "tce_tests_logs" (
 	"testlog_id" BigSerial NOT NULL,
@@ -159,6 +176,7 @@ CREATE TABLE "tce_tests_logs" (
 	"testlog_num_answers" Smallint NOT NULL Default 0,
 	"testlog_answer_version" Bigint NOT NULL Default 0,
 	"testlog_answer_operation" Varchar(32),
+	"testlog_answer_saved_at" Timestamp,
 	"testlog_comment" Text,
 constraint "PK_tce_tests_logs_testlog_id" primary key ("testlog_id")
 ) Without Oids;

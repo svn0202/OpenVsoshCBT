@@ -150,8 +150,26 @@ CREATE TABLE tce_tests_users (
 	testuser_user_id Bigint UNSIGNED NOT NULL,
 	testuser_status Smallint UNSIGNED NOT NULL DEFAULT 0,
 	testuser_creation_time Datetime NOT NULL,
+	testuser_last_activity Datetime,
+	testuser_close_reason Varchar(16),
 	testuser_comment Text,
  Primary Key (testuser_id)
+) ENGINE = InnoDB
+CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+CREATE TABLE tce_monitor_audit (
+	monitor_audit_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+	monitor_audit_time Datetime NOT NULL,
+	monitor_actor_user_id Bigint UNSIGNED NOT NULL,
+	monitor_testuser_id Bigint UNSIGNED NOT NULL,
+	monitor_test_id Bigint UNSIGNED NOT NULL,
+	monitor_target_user_id Bigint UNSIGNED NOT NULL,
+	monitor_action Varchar(32) NOT NULL,
+	monitor_details Varchar(255),
+	monitor_ip Varchar(39),
+ Primary Key (monitor_audit_id),
+ Index idx_monitor_audit_test_time (monitor_test_id,monitor_audit_time),
+ Index idx_monitor_audit_attempt (monitor_testuser_id)
 ) ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
@@ -170,6 +188,7 @@ CREATE TABLE tce_tests_logs (
 	testlog_num_answers Smallint UNSIGNED NOT NULL DEFAULT 0,
 	testlog_answer_version Bigint UNSIGNED NOT NULL DEFAULT 0,
 	testlog_answer_operation Varchar(32),
+	testlog_answer_saved_at Datetime,
 	testlog_comment Text,
  Primary Key (testlog_id)
 ) ENGINE = InnoDB

@@ -271,7 +271,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'tce_edit_subject.php', 'tce_edit_sslcerts.php', 'tce_filemanager.php', 'tce_select_mediafile.php',
             'tce_edit_backup.php', 'tce_edit_user.php', 'tce_edit_test.php', 'tce_edit_rating.php',
             'tce_import_users.php', 'tce_select_users.php', 'tce_select_tests.php', 'tce_show_all_questions.php',
-            'tce_show_result_allusers.php', 'tce_show_result_user.php',
+            'tce_show_result_allusers.php', 'tce_show_result_user.php', 'tce_monitor.php',
         ];
         $cases = [];
         foreach ($files as $f) {
@@ -631,6 +631,143 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->dbScalar('SELECT COUNT(*) FROM tce_tests_users WHERE testuser_id=' . $tid),
             'delete must read $itemcount and the testuserid<N> selection'
         );
+    }
+
+    public function testMonitoringActionsUpdateAttemptAndWriteAudit(): void
+    {
+        $cookies = $this->login();
+        $adminId = $this->userIdByName('admin');
+        $groupId = $this->ensureGroup('itest_monitor_group');
+        if (!$this->userInGroup($adminId, $groupId)) {
+            $this->dbExec(
+                'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
+                . $adminId . ',' . $groupId . ')'
+            );
+        }
+
+        $this->dbExec("DELETE FROM tce_tests WHERE test_name='itest_monitor_test'");
+        $this->dbExec(
+            "INSERT INTO tce_tests (test_name,test_description,test_user_id,test_duration_time) "
+            . "VALUES ('itest_monitor_test','d'," . $adminId . ',60)'
+        );
+        $testId = (int) ($this->dbScalar(
+            "SELECT test_id FROM tce_tests WHERE test_name='itest_monitor_test'"
+        ) ?? '0');
+        $this->assertGreaterThan(0, $testId);
+        $this->dbExec(
+            'INSERT INTO tce_testgroups (tstgrp_test_id,tstgrp_group_id) VALUES ('
+            . $testId . ',' . $groupId . ')'
+        );
+        $this->dbExec(
+            "INSERT INTO tce_tests_users (testuser_test_id,testuser_user_id,testuser_status,"
+            . 'testuser_creation_time,testuser_last_activity) VALUES ('
+            . $testId . ',' . $adminId . ",1,'2026-07-27 12:00:00','2026-07-27 12:00:00')"
+        );
+        $attemptId = (int) ($this->dbScalar(
+            'SELECT testuser_id FROM tce_tests_users WHERE testuser_test_id=' . $testId
+        ) ?? '0');
+
+        try {
+            [$status, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_monitor.php?test_id=' . $testId,
+                $cookies
+            );
+            $this->assertSame(200, $status);
+            $this->assertStringContainsString('itest_monitor_test', $body);
+            $token = self::extractCsrfToken($body);
+            $this->assertNotNull($token);
+
+            [$status] = $this->http('POST', '/admin/code/tce_monitor.php', $cookies, [
+                'test_id' => (string) $testId,
+                'testuser_id' => (string) $attemptId,
+                'monitor_action' => 'block',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertSame(
+                'blocked',
+                $this->dbScalar(
+                    'SELECT testuser_close_reason FROM tce_tests_users WHERE testuser_id=' . $attemptId
+                )
+            );
+            $this->assertSame(
+                '1',
+                $this->dbScalar(
+                    "SELECT COUNT(*) FROM tce_monitor_audit WHERE monitor_testuser_id="
+                    . $attemptId . " AND monitor_action='block'"
+                )
+            );
+
+            [, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_monitor.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($body) ?? '';
+            [$status] = $this->http('POST', '/admin/code/tce_monitor.php', $cookies, [
+                'test_id' => (string) $testId,
+                'testuser_id' => (string) $attemptId,
+                'monitor_action' => 'unblock',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertSame(
+                '1',
+                $this->dbScalar(
+                    'SELECT testuser_status FROM tce_tests_users WHERE testuser_id=' . $attemptId
+                )
+            );
+            $this->assertSame(
+                '2',
+                $this->dbScalar(
+                    'SELECT COUNT(*) FROM tce_monitor_audit WHERE monitor_testuser_id=' . $attemptId
+                )
+            );
+
+            [, $body] = $this->http(
+                'GET',
+                '/admin/code/tce_monitor.php?test_id=' . $testId,
+                $cookies
+            );
+            $token = self::extractCsrfToken($body) ?? '';
+            [$status] = $this->http('POST', '/admin/code/tce_monitor.php', $cookies, [
+                'test_id' => (string) $testId,
+                'testuser_id' => (string) $attemptId,
+                'monitor_action' => 'reset',
+                'csrf_token' => $token,
+            ]);
+            $this->assertSame(200, $status);
+            $this->assertSame(
+                'reset',
+                $this->dbScalar(
+                    'SELECT testuser_close_reason FROM tce_tests_users WHERE testuser_id=' . $attemptId
+                )
+            );
+            $this->assertSame(
+                '1',
+                $this->dbScalar(
+                    'SELECT COUNT(*) FROM tce_tests_users WHERE testuser_test_id=' . $testId
+                    . ' AND testuser_user_id=' . $adminId . ' AND testuser_status<5'
+                )
+            );
+            $this->assertSame(
+                '3',
+                $this->dbScalar(
+                    'SELECT COUNT(*) FROM tce_monitor_audit WHERE monitor_testuser_id=' . $attemptId
+                )
+            );
+        } finally {
+            $this->dbExec('DELETE FROM tce_monitor_audit WHERE monitor_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_testgroups WHERE tstgrp_test_id=' . $testId);
+            $this->dbExec('DELETE FROM tce_tests WHERE test_id=' . $testId);
+            $this->dbExec(
+                'DELETE FROM tce_usrgroups WHERE usrgrp_user_id=' . $adminId
+                . ' AND usrgrp_group_id=' . $groupId
+            );
+            $this->deleteGroupById($groupId);
+        }
     }
 
 }

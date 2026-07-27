@@ -57,6 +57,19 @@
 старого fingerprint на совместимый с AJAX вариант.
 Подробности: [Надёжное сохранение ответов](answer-saving.md).
 
+### Миграция панели наблюдения
+
+Для статусов присутствия, heartbeat, безопасного сброса и журнала действий
+примените:
+
+- MySQL/MariaDB — `install/upgrade/mysql/openvsosh_monitoring.sql`;
+- PostgreSQL — `install/upgrade/postgresql/openvsosh_monitoring.sql`;
+- Oracle — `install/upgrade/oracle/openvsosh_monitoring.sql`.
+
+Миграция добавляет времена активности и сохранения ответа, причину закрытия
+попытки и отдельный журнал действий наблюдателя. Подробности:
+[Наблюдение за тестированием](monitoring.md).
+
 ## Синхронизация с официальным TCExam
 
 ```sh

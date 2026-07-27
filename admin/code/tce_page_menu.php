@@ -233,6 +233,14 @@ $menu['tce_menu_modules.php']['sub'] = [
 ];
 
 $menu['tce_menu_tests.php']['sub'] = [
+    'tce_monitor.php' => [
+        'link' => 'tce_monitor.php',
+        'title' => 'Наблюдение за тестированием',
+        'name' => 'Наблюдение',
+        'level' => K_AUTH_ADMIN_RESULTS,
+        'key' => '',
+        'enabled' => true,
+    ],
     'tce_edit_test.php' => [
         'link' => 'tce_edit_test.php',
         'title' => $l['t_tests_editor'],
