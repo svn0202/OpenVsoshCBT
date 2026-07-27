@@ -104,6 +104,20 @@ final class WordImportTest extends TestCase
         foreach ($data['questions'] as $question) {
             $combinedHtml .= $question['description'];
             $actualTypes[$question['type']] = ($actualTypes[$question['type']] ?? 0) + 1;
+            if (in_array($question['type'], [1, 2], true)) {
+                self::assertNotEmpty(
+                    $question['right_keys'],
+                    $filename . ' question ' . $question['source_number'] . ' has no RIGHT key',
+                );
+                $answerKeys = array_column($question['answers'], 'key');
+                foreach ($question['right_keys'] as $rightKey) {
+                    self::assertContains(
+                        $rightKey,
+                        $answerKeys,
+                        $filename . ' question ' . $question['source_number'] . ' has an unknown RIGHT key',
+                    );
+                }
+            }
             foreach ($question['answers'] as $answer) {
                 $combinedHtml .= $answer['description'];
             }
@@ -132,6 +146,66 @@ final class WordImportTest extends TestCase
 
         $this->expectException(TmfWordImportException::class);
         (new TmfWordImporter($filename))->parse();
+    }
+
+    public function testMatchingMarkerCreatesIndependentMatchingQuestion(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            self::markTestSkipped('ZipArchive is not installed.');
+        }
+        $filename = $this->temporaryDirectory . '/matching.docx';
+        $zip = new ZipArchive();
+        self::assertTrue($zip->open($filename, ZipArchive::CREATE));
+        $paragraphs = [
+            'MODULE:=Matching audit',
+            'TOPIC:=Matching topic',
+            'Q:1) [[MATCHING]] Установите соответствие',
+            'A:) Первый элемент',
+            'B:) Второй элемент',
+            'C:) Третий элемент',
+        ];
+        $body = '';
+        foreach ($paragraphs as $paragraph) {
+            $body .= '<w:p><w:r><w:t>'
+                . htmlspecialchars($paragraph, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+                . '</w:t></w:r></w:p>';
+        }
+        self::assertTrue($zip->addFromString(
+            'word/document.xml',
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:body>' . $body . '</w:body></w:document>',
+        ));
+        $zip->close();
+
+        $data = (new TmfWordImporter($filename))->parse();
+        self::assertCount(1, $data['questions']);
+        self::assertSame(5, $data['questions'][0]['type']);
+        self::assertSame(3, count($data['questions'][0]['answers']));
+        self::assertSame(
+            3,
+            \F_tmf_question_options($data['questions'][0]['description'])['matching_positions'],
+        );
+        self::assertStringNotContainsString('[[MATCHING]]', $data['questions'][0]['description']);
+    }
+
+    public function testDownloadableTemplateRoundTripsEveryQuestionType(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            self::markTestSkipped('ZipArchive is not installed.');
+        }
+        $filename = $this->temporaryDirectory . '/downloaded-template.docx';
+        self::assertNotFalse(file_put_contents($filename, \F_tmf_word_import_template()));
+
+        $data = (new TmfWordImporter($filename))->parse();
+        self::assertSame('Тестовый модуль', $data['module']);
+        self::assertSame('Тестовая тема', $data['topic']);
+        self::assertCount(6, $data['questions']);
+        self::assertSame([1, 2, 3, 4, 5, 3], array_column($data['questions'], 'type'));
+        self::assertSame(['A', 'C'], $data['questions'][1]['right_keys']);
+        self::assertSame(
+            3,
+            \F_tmf_question_options($data['questions'][4]['description'])['matching_positions'],
+        );
     }
 
     public function testQuestionMetadataAndScoringHelpers(): void
