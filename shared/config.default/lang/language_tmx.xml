@@ -50597,6 +50597,28 @@ YYYYMMDDhhmmss_tcexam_backup.sql.gz، جہاں YYYYMMDDhhmmss سال (Y)، ما�
             <seg>О платформе</seg>
          </tuv>
       </tu>
+      <tu tuid="ov_audio_limit_exhausted" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Audio play limit reached</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Лимит воспроизведений исчерпан</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>تم استنفاد حد تشغيل الصوت</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ov_audio_plays_left" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>Plays remaining: {count}</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Осталось воспроизведений: {count}</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>مرات التشغيل المتبقية: {count}</seg>
+         </tuv>
+      </tu>
       <tu tuid="ov_based_on" datatype="plaintext">
          <tuv xml:lang="EN">
             <seg>based on</seg>

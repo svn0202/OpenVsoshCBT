@@ -397,6 +397,8 @@
         if (!limit || limit < 1) {
             return;
         }
+        var playsLeft = toolbar.dataset.audioPlaysLeft || 'Plays remaining: {count}';
+        var limitExhausted = toolbar.dataset.audioLimitExhausted || 'Audio play limit reached';
 
         form.querySelectorAll('.tcecontentbox audio, ol.answer audio').forEach(function (audio, index) {
             if (audio.dataset.examAudioBound === '1') {
@@ -412,8 +414,8 @@
             var updateStatus = function () {
                 var used = Math.max(0, Number(readJson(key, 0)) || 0);
                 status.textContent = used >= limit
-                    ? 'Лимит воспроизведений исчерпан'
-                    : 'Осталось воспроизведений: ' + (limit - used);
+                    ? limitExhausted
+                    : playsLeft.replace('{count}', String(limit - used));
                 audio.setAttribute('aria-disabled', used >= limit ? 'true' : 'false');
             };
             audio.addEventListener('play', function () {

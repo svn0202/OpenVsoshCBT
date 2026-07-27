@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>OpenVsoshCBT browser acceptance fixture</title>
+	<link rel="stylesheet" href="../../public/styles/picoman_rtl.css" />
+</head>
+<body class="exam-page">
+<main>
+	<form id="testform">
+		<input type="hidden" id="testid" value="17" />
+		<input type="hidden" id="testlogid" value="29" />
+		<input type="hidden" id="testuser_id" value="31" />
+		<div
+			class="exam-mobile-toolbar"
+			data-exam-toolbar
+			data-audio-play-limit="2"
+			data-audio-plays-left="مرات التشغيل المتبقية: {count}"
+			data-audio-limit-exhausted="تم استنفاد حد تشغيل الصوت"
+		>
+			<strong class="exam-question-number">السؤال <span>1</span> / 1</strong>
+		</div>
+		<div class="tcecontentbox">
+			<p id="arabic-sample">ما ناتج ٢ + ٣؟ الإجابة خمسة.</p>
+			<audio id="listening-sample" controls="controls"></audio>
+			<button
+				type="button"
+				id="simulate-audio-start"
+				onclick="document.getElementById('listening-sample').dispatchEvent(new Event('play'))"
+			>محاكاة بدء الصوت</button>
+		</div>
+		<ol class="answer">
+			<li><label>الخيار الأول الطويل لاختبار الالتفاف على شاشة الهاتف</label></li>
+		</ol>
+	</form>
+</main>
+<script src="../../shared/jscripts/mobile-exam.js"></script>
+</body>
+</html>

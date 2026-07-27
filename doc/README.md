@@ -9,6 +9,8 @@
 - [Регламент проведения олимпиады](admin/olympiad-runbook.md)
 - [Создание вопросов на сопоставление](admin/matching-questions.md)
 - [Импорт вопросов из Microsoft Word](admin/word-import.md)
+- [Арабский текст и шрифты](admin/fonts.md)
+- [Listening-тесты и лимит аудио](admin/listening-tests.md)
 - [Резервное копирование и восстановление](admin/backup-restore.md)
 - [Надёжное сохранение ответов](admin/answer-saving.md)
 - [Обновление без потери рабочего экземпляра](admin/upgrade.md)

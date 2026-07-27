@@ -1149,6 +1149,15 @@ fieldset.answergroup > legend {
 	object-fit: cover;
 }
 
+@font-face {
+	font-family: "Noto Sans Arabic";
+	src: url("../../shared/fonts/noto-sans-arabic.woff2") format("woff2");
+	font-style: normal;
+	font-weight: 100 900;
+	font-stretch: 62.5% 100%;
+	font-display: swap;
+}
+
 [lang="ar"],
 [dir="rtl"] {
 	font-family: "Noto Sans Arabic", "Noto Naskh Arabic", "DejaVu Sans", Tahoma, Arial, sans-serif;
