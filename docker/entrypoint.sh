@@ -28,7 +28,16 @@ warm_artifacts() {
         (cd "${APP}" && make fonts)
     fi
 
-    # 2) Translation caches — cheap; regenerate if absent (also built lazily at runtime otherwise).
+    # 2) Runtime translations are persistent configuration. Merge newly shipped units and
+    # language variants without overwriting any local translations, then rebuild stale caches.
+    if [ -f "${APP}/shared/config/lang/language_tmx.xml" ]; then
+        php "${APP}/install/sync_language.php" \
+            "${APP}/shared/config.default/lang/language_tmx.xml" \
+            "${APP}/shared/config/lang/language_tmx.xml" \
+            "${APP}/cache/lang" || true
+    fi
+
+    # 3) Translation caches — cheap; regenerate if absent (also built lazily at runtime otherwise).
     if ! ls "${APP}/cache/lang"/*.php >/dev/null 2>&1; then
         echo "[tcexam] building language caches…"
         if ! (cd "${APP}" && make lang); then
@@ -36,8 +45,8 @@ warm_artifacts() {
         fi
     fi
 
-    # 3) Writable runtime paths owned by the web user (volumes mount as root by default).
-    chown -R www-data:www-data "${APP}/cache" "${FONTS}" 2>/dev/null || true
+    # 4) Writable runtime paths owned by the web user (volumes mount as root by default).
+    chown -R www-data:www-data ${CONFIG_DIRS} "${APP}/cache" "${FONTS}" 2>/dev/null || true
 }
 
 # Zero-touch install: generate the configuration and load the database schema/data from the

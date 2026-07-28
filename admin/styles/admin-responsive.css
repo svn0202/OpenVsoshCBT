@@ -511,7 +511,7 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
 
 .admin-shell ul.question.admin-question-list > li.question-card {
     display: grid;
-    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-columns: 150px minmax(0, 1fr);
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -592,8 +592,12 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
 }
 
 .admin-shell .question-card__meta > a.xmlbutton {
-    flex: 1 0 100%;
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding-inline: 8px;
+    box-sizing: border-box;
     margin-top: 5px;
+    overflow-wrap: anywhere;
     text-align: center;
 }
 
