@@ -596,9 +596,10 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
     max-width: 100%;
     padding-inline: 8px;
     box-sizing: border-box;
+    font-size: 12px;
     margin-top: 5px;
-    overflow-wrap: anywhere;
     text-align: center;
+    white-space: nowrap;
 }
 
 .admin-shell .question-card__body {
