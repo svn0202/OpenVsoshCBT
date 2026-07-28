@@ -67,6 +67,22 @@ final class BackupTest extends TestCase
         self::assertSame($config['password'], \F_tmf_backup_environment($config)['PGPASSWORD']);
     }
 
+    public function testOnlyHarmlessPostgresqlVersionMismatchDiagnosticIsIgnored(): void
+    {
+        $diagnostic = 'pg_restore: error: could not execute query: ERROR:  '
+            . "unrecognized configuration parameter \"transaction_timeout\"\n"
+            . "Command was: SET transaction_timeout = 0;\n"
+            . 'pg_restore: warning: errors ignored on restore: 1';
+
+        self::assertTrue(\F_tmf_backup_ignorable_postgresql_restore_diagnostic($diagnostic));
+        self::assertFalse(\F_tmf_backup_ignorable_postgresql_restore_diagnostic(
+            $diagnostic . "\npg_restore: error: relation \"backup_probe\" does not exist",
+        ));
+        self::assertFalse(\F_tmf_backup_ignorable_postgresql_restore_diagnostic(
+            'pg_restore: error: connection to server failed',
+        ));
+    }
+
     public function testCheckedBackupStreamsOutputAndRemovesFailedArchive(): void
     {
         $config = [
