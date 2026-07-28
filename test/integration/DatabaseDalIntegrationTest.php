@@ -307,7 +307,7 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
         $row = \F_db_fetch_assoc($result);
-        $this->assertSame(13, (int) $row['n']);
+        $this->assertSame(14, (int) $row['n']);
 
         $verify = proc_open(
             [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],

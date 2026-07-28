@@ -71,7 +71,12 @@ function F_tmf_backup_start_process(
  * @param array<mixed>         $pipes
  * @param resource|null        $output
  */
-function F_tmf_backup_finish_process(mixed $process, array $pipes, mixed $output = null): void
+function F_tmf_backup_finish_process(
+    mixed $process,
+    array $pipes,
+    mixed $output = null,
+    bool $allow_postgresql_version_mismatch = false,
+): void
 {
     if (isset($pipes[1]) && is_resource($pipes[1])) {
         while (!feof($pipes[1])) {
@@ -102,13 +107,34 @@ function F_tmf_backup_finish_process(mixed $process, array $pipes, mixed $output
     if ($error_file !== '' && is_file($error_file)) {
         unlink($error_file);
     }
-    if ($status !== 0) {
+    if (
+        $status !== 0
+        && (!$allow_postgresql_version_mismatch
+            || !F_tmf_backup_ignorable_postgresql_restore_diagnostic($diagnostic))
+    ) {
         $message = 'Утилита БД завершилась с кодом ' . $status . '.';
         if ($diagnostic !== '') {
             $message .= ' ' . mb_substr($diagnostic, 0, 1000);
         }
         throw new TmfBackupException($message);
     }
+}
+
+/**
+ * PostgreSQL 17 pg_dump writes this harmless setting into archives even when
+ * the target server is PostgreSQL 16, where the setting does not exist.
+ * pg_restore continues successfully but returns 1. Ignore only that exact,
+ * single-error diagnostic; every other restore error remains fatal.
+ */
+function F_tmf_backup_ignorable_postgresql_restore_diagnostic(string $diagnostic): bool
+{
+    return preg_match(
+        '/\Apg_restore: error: could not execute query: ERROR:\s+'
+        . 'unrecognized configuration parameter "transaction_timeout"\R'
+        . 'Command was: SET transaction_timeout = 0;\R'
+        . 'pg_restore: warning: errors ignored on restore: 1\z/',
+        $diagnostic,
+    ) === 1;
 }
 
 /**
@@ -305,7 +331,12 @@ function F_tmf_backup_restore(array $config, string $archive_path): void
             $pipes,
             $stdin_file,
         );
-        F_tmf_backup_finish_process($process, $pipes);
+        F_tmf_backup_finish_process(
+            $process,
+            $pipes,
+            null,
+            $config['type'] === 'POSTGRESQL',
+        );
     } finally {
         if (is_resource($source)) {
             gzclose($source);
