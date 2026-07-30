@@ -52,6 +52,8 @@ $question_subject_id = isset($_REQUEST['question_subject_id']) ? (int) $_REQUEST
 
 $answer_id = isset($_REQUEST['answer_id']) ? (int) $_REQUEST['answer_id'] : 0;
 
+$answer_list_firstrow = isset($_REQUEST['firstrow']) ? max(0, (int) $_REQUEST['firstrow']) : 0;
+
 if (!isset($_REQUEST['answer_isright']) || empty($_REQUEST['answer_isright'])) {
     $answer_isright = false;
 } else {
@@ -105,6 +107,22 @@ $prev_answer_position = isset($_REQUEST['prev_answer_position']) ? (int) $_REQUE
 $subject_id = isset($_REQUEST['subject_id']) ? (int) $_REQUEST['subject_id'] : 0;
 
 $answer_question_id = isset($_REQUEST['answer_question_id']) ? (int) $_REQUEST['answer_question_id'] : 0;
+
+$matching_reuse_positions = false;
+if ($answer_question_id > 0) {
+    $question_options_sql = 'SELECT question_type,question_description FROM ' . K_TABLE_QUESTIONS
+        . ' WHERE question_id=' . $answer_question_id . ' LIMIT 1';
+    if ($question_options_result = F_db_query($question_options_sql, $db)) {
+        if ($question_options_row = F_db_fetch_array($question_options_result)) {
+            $matching_reuse_positions = (int) $question_options_row['question_type'] === 5
+                && F_tmf_question_options(
+                    (string) $question_options_row['question_description'],
+                )['matching_reuse_positions'];
+        }
+    } else {
+        F_display_db_error();
+    }
+}
 
 $answer_keyboard_key = !isset($_REQUEST['answer_keyboard_key']) || empty($_REQUEST['answer_keyboard_key'])
     ? ''
@@ -244,7 +262,7 @@ switch ($menu_mode) {
                 } else {
                     $answer_id = false;
                     // adjust questions ordering
-                    if ($answer_position > 0) {
+                    if ($answer_position > 0 && !$matching_reuse_positions) {
                         $sql =
                             'UPDATE '
                             . K_TABLE_ANSWERS
@@ -386,7 +404,7 @@ switch ($menu_mode) {
                 }
 
                 // arrange positions if necessary
-                if ($answer_position !== $prev_answer_position) {
+                if (!$matching_reuse_positions && $answer_position !== $prev_answer_position) {
                     if ($answer_position > 0) {
                         if ($prev_answer_position > 0) {
                             // swap positions
@@ -522,7 +540,7 @@ switch ($menu_mode) {
                 }
 
                 // adjust questions ordering
-                if ($answer_position > 0) {
+                if ($answer_position > 0 && !$matching_reuse_positions) {
                     $sql =
                         'UPDATE '
                         . K_TABLE_ANSWERS
@@ -968,14 +986,7 @@ echo '<span class="label">' . K_NEWLINE;
 echo '<label for="answer_description">' . $l['w_answer'] . '</label>' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
 
-echo
-    '<button type="button" title="'
-        . $l['h_preview']
-        . '" class="xmlbutton" onclick="previewWindow=window.open(\'tce_preview_tcecode.php?tcexamcode=\'+encodeURIComponent(document.getElementById(\'form_answereditor\').answer_description.value),\'previewWindow\',\'dependent,height=500,width=500,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no\'); return false;">'
-        . $l['w_preview']
-        . '</button>'
-        . K_NEWLINE
-;
+echo get_rich_content_editor_button('answer_description') . K_NEWLINE;
 
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw" style="border:1px solid #808080;">' . K_NEWLINE;
@@ -987,7 +998,9 @@ echo
 
 echo '>' . htmlspecialchars($answer_description, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
+echo '<div class="tcecode-toolbar">';
 echo tcecodeEditorTagButtons('form_answereditor', 'answer_description');
+echo '</div>';
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
@@ -1009,11 +1022,7 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
     $hideexplanationarea = "javascript:if(document.getElementById('explanationarea').style.display=='block'){document.getElementById('explanationarea').style.display='none';document.getElementById('showexplanationarea').style.display='block';document.getElementById('hideexplanationarea').style.display='none';}; return false;";
     echo '<span id="hideexplanationarea" style="display:none;">';
     echo
-        '<button type="button" title="'
-            . $l['h_preview']
-            . '" class="xmlbutton" onclick="previewWindow=window.open(\'tce_preview_tcecode.php?tcexamcode=\'+encodeURIComponent(document.getElementById(\'form_answereditor\').answer_explanation.value),\'previewWindow\',\'dependent,height=500,width=500,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no\'); return false;">'
-            . $l['w_preview']
-            . '</button>'
+        get_rich_content_editor_button('answer_explanation')
             . K_NEWLINE
     ;
     echo
@@ -1034,9 +1043,11 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
             . '"'
     ;
 
-    echo '>' . htmlspecialchars($answer_explanation, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
+    echo '>' . htmlspecialchars((string) ($answer_explanation ?? ''), ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
     echo '<br />' . K_NEWLINE;
+    echo '<div class="tcecode-toolbar">';
     echo tcecodeEditorTagButtons('form_answereditor', 'answer_explanation');
+    echo '</div>';
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 }
@@ -1091,6 +1102,17 @@ if ($matching_question_result = F_db_query($matching_question_sql, $db)) {
         if ((int) $matching_question['question_type'] === 5 && $configured_positions > 0) {
             $matching_position_limit = (int) $configured_positions;
             $max_position = max($max_position, $matching_position_limit);
+        } elseif ((int) $matching_question['question_type'] === 5 && $matching_reuse_positions) {
+            $maximum_position_sql = 'SELECT MAX(answer_position) AS maximum_position FROM '
+                . K_TABLE_ANSWERS . ' WHERE answer_question_id=' . (int) $answer_question_id
+                . ' AND answer_enabled=\'1\'';
+            if ($maximum_position_result = F_db_query($maximum_position_sql, $db)) {
+                if ($maximum_position_row = F_db_fetch_array($maximum_position_result)) {
+                    $max_position = max($max_position, (int) $maximum_position_row['maximum_position']);
+                }
+            } else {
+                F_display_db_error();
+            }
         }
     }
 }
@@ -1191,11 +1213,36 @@ if (isset($answer_question_id) && $answer_question_id > 0) {
             . $question_subject_id
             . '&amp;question_id='
             . $answer_question_id
+            . '&amp;firstrow='
+            . $answer_list_firstrow
             . '" title="'
             . $l['t_questions_editor']
             . '" class="xmlbutton">&lt; '
             . $l['t_questions_editor']
             . '</a>'
+    ;
+}
+
+if (isset($question_subject_id) && $question_subject_id > 0) {
+    $answer_list_url =
+        'tce_show_all_questions.php?subject_module_id='
+        . $subject_module_id
+        . '&amp;subject_id='
+        . $question_subject_id
+        . '&amp;submitted=1&amp;firstrow='
+        . $answer_list_firstrow;
+    if (isset($answer_question_id) && $answer_question_id > 0) {
+        $answer_list_url .= '#qid_' . $answer_question_id;
+    }
+
+    echo
+        '<a href="'
+        . $answer_list_url
+        . '" title="'
+        . $l['t_questions_list']
+        . '" class="xmlbutton question-list-return">&lt; '
+        . $l['w_list']
+        . '</a>'
     ;
 }
 

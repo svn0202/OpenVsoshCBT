@@ -183,6 +183,22 @@ function tcecodeEditorTagButtons($callingform, $callingfield)
 }
 
 /**
+ * Return a button that toggles the visual HTML editor for a textarea.
+ * The editor itself is initialized by rich-content-editor.js.
+ *
+ * @param string $field_id textarea ID
+ * @return string button HTML
+ */
+function get_rich_content_editor_button(string $field_id): string
+{
+    $field_id = preg_replace('/[^a-z0-9_]/', '', $field_id) ?? '';
+    return '<button type="button" class="xmlbutton rich-editor-toggle" data-rich-editor-for="'
+        . $field_id
+        . '" data-open-label="Открыть редактор" data-close-label="Закрыть редактор"'
+        . ' aria-controls="' . $field_id . '" aria-expanded="false">Открыть редактор</button>';
+}
+
+/**
  * Display one tag button
  * @param $name (string) name of the button
  * @param $tag (string) tag value

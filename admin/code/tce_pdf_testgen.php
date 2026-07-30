@@ -58,6 +58,10 @@ $doc_title = unhtmlentities($l['w_test']);
 $doc_description = F_compact_string(unhtmlentities($l['h_test']));
 $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
+$matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
+    ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
+    : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
+
 $rtl_doc = $l['a_meta_dir'] == 'rtl';
 $dirlabel = $rtl_doc ? 'left' : 'right';
 $dirvalue = $rtl_doc ? 'right' : 'left';
@@ -311,7 +315,14 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     . " WHERE answer_enabled='1' AND answer_position>0
 					GROUP BY answer_question_id
 					HAVING (COUNT(answer_id)>1)
-					AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))";
+					AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))
+						OR answer_question_id IN (
+							SELECT question_id FROM "
+                    . K_TABLE_QUESTIONS
+                    . ' WHERE '
+                    . $matching_reuse_condition
+                    . "
+						))))";
             }
 
             if ($m['tsubset_type'] == 1) {
@@ -385,7 +396,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 if (!isset($answers_order_questions_ids[$position_type])) {
                     $answers_order_questions_ids[$position_type] = '0';
                     $matching_having = $position_type === 5
-                        ? ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                        ? ' AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                            . ' OR answer_question_id IN (SELECT question_id FROM '
+                            . K_TABLE_QUESTIONS
+                            . ' WHERE ' . $matching_reuse_condition . '))'
                         : '';
                     $sqlt =
                         'SELECT answer_question_id FROM '

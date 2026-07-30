@@ -118,6 +118,14 @@ if ($admin_navigation_path !== false && is_file($admin_navigation_path)) {
 echo '<script defer="defer" src="'
     . htmlspecialchars($admin_navigation_url, ENT_QUOTES, $l['a_meta_charset'])
     . '"></script>' . K_NEWLINE;
+$rich_editor_url = '../jscripts/rich-content-editor.js';
+$rich_editor_path = realpath(__DIR__ . '/' . $rich_editor_url);
+if ($rich_editor_path !== false && is_file($rich_editor_path)) {
+    $rich_editor_url .= '?v=' . (int) filemtime($rich_editor_path);
+}
+echo '<script defer="defer" src="'
+    . htmlspecialchars($rich_editor_url, ENT_QUOTES, $l['a_meta_charset'])
+    . '"></script>' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;

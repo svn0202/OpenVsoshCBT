@@ -55,4 +55,18 @@ final class RegradeTest extends TestCase
         );
         self::assertSame(1.0, $score);
     }
+
+    public function testMatchingScoresRepeatedCorrectPositionsIndependently(): void
+    {
+        $score = \F_tmf_recorded_answer_score(
+            $this->test,
+            ['question_type' => 5, 'question_difficulty' => 1],
+            [
+                ['logansw_selected' => 1, 'logansw_position' => 1, 'answer_position' => 1],
+                ['logansw_selected' => 1, 'logansw_position' => 1, 'answer_position' => 1],
+                ['logansw_selected' => 1, 'logansw_position' => 2, 'answer_position' => 2],
+            ],
+        );
+        self::assertSame(4.0, $score);
+    }
 }

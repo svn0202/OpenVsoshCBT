@@ -101,9 +101,10 @@ function F_getBoolean($str)
  * The first occurrence is retained and later duplicates become unanswered.
  *
  * @param array $positions Submitted positions, keyed by displayed answer position.
- * @return array Normalized positions with no repeated positive value.
+ * @param bool $allow_repeated Whether positive positions may be used more than once.
+ * @return array Normalized positions.
  */
-function F_normalizeMatchingPositions(array $positions): array
+function F_normalizeMatchingPositions(array $positions, bool $allow_repeated = false): array
 {
     $seen = [];
     foreach ($positions as $key => $position) {
@@ -113,7 +114,7 @@ function F_normalizeMatchingPositions(array $positions): array
             continue;
         }
 
-        if (isset($seen[$position])) {
+        if (!$allow_repeated && isset($seen[$position])) {
             $positions[$key] = 0;
             continue;
         }

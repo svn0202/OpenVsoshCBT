@@ -131,6 +131,8 @@ $question_similarity_threshold = isset($_REQUEST['question_similarity_threshold'
 $question_matching_positions = isset($_REQUEST['question_matching_positions'])
     ? max(0, min(100, (int) $_REQUEST['question_matching_positions']))
     : 0;
+$question_matching_reuse_positions = isset($_REQUEST['question_matching_reuse_positions'])
+    && F_getBoolean($_REQUEST['question_matching_reuse_positions']);
 $question_audio_play_limit = isset($_REQUEST['question_audio_play_limit'])
     ? max(0, min(99, (int) $_REQUEST['question_audio_play_limit']))
     : 0;
@@ -147,6 +149,10 @@ if (isset($_REQUEST['question_description'])) {
     $question_description = F_tmf_set_matching_positions(
         $question_description,
         $question_matching_positions,
+    );
+    $question_description = F_tmf_set_matching_reuse_positions(
+        $question_description,
+        $question_matching_reuse_positions,
     );
     $question_description = F_tmf_set_audio_play_limit(
         $question_description,
@@ -675,6 +681,7 @@ switch ($menu_mode) {
             $question_shuffle_answers = false;
             $question_similarity_threshold = 0;
             $question_matching_positions = 0;
+            $question_matching_reuse_positions = false;
             $question_audio_play_limit = 0;
             break;
         }
@@ -722,6 +729,7 @@ if ($formstatus && $menu_mode != 'clear') {
         $question_shuffle_answers = false;
         $question_similarity_threshold = 0;
         $question_matching_positions = 0;
+        $question_matching_reuse_positions = false;
         $question_audio_play_limit = 0;
     } else {
         $sql = 'SELECT *
@@ -749,6 +757,9 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_matching_positions = F_tmf_question_options(
                     (string) $question_description,
                 )['matching_positions'];
+                $question_matching_reuse_positions = F_tmf_question_options(
+                    (string) $question_description,
+                )['matching_reuse_positions'];
                 $question_audio_play_limit = F_tmf_question_options(
                     (string) $question_description,
                 )['audio_play_limit'];
@@ -766,6 +777,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_shuffle_answers = false;
                 $question_similarity_threshold = 0;
                 $question_matching_positions = 0;
+                $question_matching_reuse_positions = false;
                 $question_audio_play_limit = 0;
             }
         } else {
@@ -987,26 +999,27 @@ echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
 echo '<label for="question_description">' . $l['w_question'] . '</label>' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
-echo
-    '<button type="button" title="'
-        . $l['h_preview']
-        . '" class="xmlbutton" onclick="previewWindow=window.open(\'tce_preview_tcecode.php?tcexamcode=\'+encodeURIComponent(document.getElementById(\'form_questioneditor\').question_description.value),\'previewWindow\',\'dependent,height=500,width=500,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no\'); return false;">'
-        . $l['w_preview']
-        . '</button>'
-        . K_NEWLINE
-;
+echo get_rich_content_editor_button('question_description') . K_NEWLINE;
 
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw" style="border:1px solid #808080;">' . K_NEWLINE;
+$question_description_for_editor = F_tmf_question_editor_description((string) $question_description);
 echo
     '<textarea cols="50" rows="10" name="question_description" id="question_description" aria-required="true" title="'
         . $l['h_question_description']
         . '"'
 ;
 
-echo '>' . htmlspecialchars($question_description, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
+echo
+    '>'
+        . htmlspecialchars($question_description_for_editor, ENT_NOQUOTES, $l['a_meta_charset'])
+        . '</textarea>'
+        . K_NEWLINE
+;
 echo '<br />' . K_NEWLINE;
+echo '<div class="tcecode-toolbar">';
 echo tcecodeEditorTagButtons('form_questioneditor', 'question_description');
+echo '</div>';
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
@@ -1028,11 +1041,7 @@ if (K_ENABLE_QUESTION_EXPLANATION) {
     $hideexplanationarea = "javascript:if(document.getElementById('explanationarea').style.display=='block'){document.getElementById('explanationarea').style.display='none';document.getElementById('showexplanationarea').style.display='block';document.getElementById('hideexplanationarea').style.display='none';}; return false;";
     echo '<span id="hideexplanationarea" style="display:none;">';
     echo
-        '<button type="button" title="'
-            . $l['h_preview']
-            . '" class="xmlbutton" onclick="previewWindow=window.open(\'tce_preview_tcecode.php?tcexamcode=\'+encodeURIComponent(document.getElementById(\'form_questioneditor\').question_explanation.value),\'previewWindow\',\'dependent,height=500,width=500,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no\'); return false;">'
-            . $l['w_preview']
-            . '</button>'
+        get_rich_content_editor_button('question_explanation')
             . K_NEWLINE
     ;
     echo
@@ -1055,7 +1064,9 @@ if (K_ENABLE_QUESTION_EXPLANATION) {
 
     echo '>' . htmlspecialchars($question_explanation, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
     echo '<br />' . K_NEWLINE;
+    echo '<div class="tcecode-toolbar">';
     echo tcecodeEditorTagButtons('form_questioneditor', 'question_explanation');
+    echo '</div>';
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 }
@@ -1158,7 +1169,7 @@ if (isset($question_id) && $question_id > 0) {
 echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
 for ($pos = 1; $pos <= $max_position; ++$pos) {
     echo '<option value="' . $pos . '"';
-    if ($pos == $question_position) {
+    if ($pos === (int) $question_position) {
         echo ' selected="selected"';
     }
 
@@ -1216,6 +1227,19 @@ echo
         3,
         false,
         false,
+        false,
+        '',
+    )
+;
+
+echo
+    getFormRowCheckBox(
+        'question_matching_reuse_positions',
+        'Разрешать повтор позиций',
+        'Разрешить нескольким вариантам ответа соответствовать одному элементу левой колонки.',
+        '',
+        1,
+        $question_matching_reuse_positions,
         false,
         '',
     )
@@ -1365,6 +1389,8 @@ if (isset($question_id) && $question_id > 0) {
             . $question_subject_id
             . '&amp;answer_question_id='
             . $question_id
+            . '&amp;firstrow='
+            . $question_list_firstrow
             . '" title="'
             . $l['t_answers_editor']
             . '" class="xmlbutton">'
@@ -1384,7 +1410,7 @@ echo '<div class="rowl" title="' . $l['h_preview'] . '">' . K_NEWLINE;
 echo $l['w_preview'];
 echo '<div class="preview">' . K_NEWLINE;
 
-echo F_decode_tcecode($question_description);
+echo F_decode_tcecode($question_description_for_editor);
 
 echo '&nbsp;' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;

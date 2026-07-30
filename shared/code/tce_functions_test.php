@@ -1320,6 +1320,9 @@ function F_createTest($test_id, $user_id)
     $test_random_answers_order = F_getBoolean($testdata['test_random_answers_order']);
     $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
     $random_questions = $test_random_questions_select || $test_random_questions_order;
+    $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
+        ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
+        : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
     $sql_answer_position = '';
     if (!$test_random_answers_order && $test_answers_order_mode == 0) {
         $sql_answer_position = ' AND answer_position>0';
@@ -1448,7 +1451,14 @@ function F_createTest($test_id, $user_id)
                         . " WHERE answer_enabled='1' AND answer_position>0
 						GROUP BY answer_question_id
 						HAVING (COUNT(answer_id)>1)
-						AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))";
+						AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))
+							OR answer_question_id IN (
+								SELECT question_id FROM "
+                        . K_TABLE_QUESTIONS
+                        . ' WHERE '
+                        . $matching_reuse_condition
+                        . "
+							))))";
                 }
 
                 if ($m['tsubset_type'] == 1) {
@@ -1527,7 +1537,10 @@ function F_createTest($test_id, $user_id)
                     if (!isset($answers_order_questions_ids[$position_type])) {
                         $answers_order_questions_ids[$position_type] = '0';
                         $matching_having = $position_type === 5
-                            ? ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                            ? ' AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                                . ' OR answer_question_id IN (SELECT question_id FROM '
+                                . K_TABLE_QUESTIONS
+                                . ' WHERE ' . $matching_reuse_condition . '))'
                             : '';
                         $sqlt =
                             'SELECT answer_question_id FROM '
@@ -1847,11 +1860,14 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
         return false;
     }
 
+    $tmf_options = F_tmf_question_options((string) $question_description);
     if ((int) $question_type === 5) {
-        $answpos = F_normalizeMatchingPositions((array) $answpos);
+        $answpos = F_normalizeMatchingPositions(
+            (array) $answpos,
+            $tmf_options['matching_reuse_positions'],
+        );
     }
 
-    $tmf_options = F_tmf_question_options((string) $question_description);
     if (
         (int) $question_type === 2
         && !F_tmf_selection_limit_is_valid((array) $answpos, (int) $tmf_options['max_selections'])
@@ -2250,12 +2266,23 @@ function F_questionForm($test_id, $testlog_id, $formname)
             $str .= '<span id="questionsection"></span>' . K_NEWLINE;
             $str .= '<div class="tcecontentbox">' . K_NEWLINE;
             $tmf_options = F_tmf_question_options((string) $m['question_description']);
+            $question_description = (string) $m['question_description'];
+            $matching_labels = [];
+            if ((int) $m['question_type'] === 5) {
+                $matching_presentation = F_tmf_matching_presentation(
+                    $question_description,
+                    (int) $tmf_options['matching_positions'],
+                );
+                $question_description = $matching_presentation['description'];
+                $matching_labels = $matching_presentation['labels'];
+            }
+            $question_description = F_tmf_question_editor_description($question_description);
             // display question description
             if ($m['question_type'] == 3) {
                 $str .= '<label for="answertext">';
             }
 
-            $str .= F_decode_tcecode($m['question_description']) . K_NEWLINE;
+            $str .= F_decode_tcecode($question_description) . K_NEWLINE;
             if ($m['question_type'] == 3) {
                 $str .= '</label>';
             }
@@ -2295,7 +2322,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 $str .= '<fieldset class="answergroup">' . K_NEWLINE;
                 $str .= '<legend class="sr-only">' . $l['w_answers'] . '</legend>' . K_NEWLINE;
                 if ((int) $m['question_type'] === 5) {
-                    $str .= '<p class="matching-instructions">' . $l['h_matching_test'] . '</p>' . K_NEWLINE;
                     $str .= '<p id="matching-status" class="sr-only" aria-live="polite"></p>' . K_NEWLINE;
                 }
                 if (
@@ -2322,6 +2348,25 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id=' . $testlog_id . '');
                     if ((int) $m['question_type'] === 5 && $tmf_options['matching_positions'] > 0) {
                         $max_position = (int) $tmf_options['matching_positions'];
+                    } elseif ((int) $m['question_type'] === 5 && $tmf_options['matching_reuse_positions']) {
+                        $maximum_position_sql =
+                            'SELECT MAX(answer_position) AS maximum_position FROM '
+                            . K_TABLE_ANSWERS
+                            . ', '
+                            . K_TABLE_LOG_ANSWER
+                            . ' WHERE logansw_answer_id=answer_id'
+                            . ' AND logansw_testlog_id='
+                            . $testlog_id;
+                        if ($maximum_position_result = F_db_query($maximum_position_sql, $db)) {
+                            if ($maximum_position_row = F_db_fetch_array($maximum_position_result)) {
+                                $max_position = max(
+                                    $max_position,
+                                    (int) $maximum_position_row['maximum_position'],
+                                );
+                            }
+                        } else {
+                            F_display_db_error();
+                        }
                     }
                 }
 
@@ -2522,7 +2567,13 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             $str .= ' selected="selected"';
                                         }
 
-                                        $str .= '>' . $pos . '</option>' . K_NEWLINE;
+                                        $position_label = $matching_labels[$pos - 1] ?? (string) $pos;
+                                        $str .=
+                                            '>'
+                                            . htmlspecialchars($position_label, ENT_QUOTES, $l['a_meta_charset'])
+                                            . '</option>'
+                                            . K_NEWLINE
+                                        ;
                                     }
 
                                     $str .= '</select>' . K_NEWLINE;
@@ -2583,7 +2634,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
             $str .= '}}' . K_NEWLINE;
             $str .= 'document.onkeypress=actionByChar;' . K_NEWLINE;
-            if ((int) $m['question_type'] === 5) {
+            if ((int) $m['question_type'] === 5 && !$tmf_options['matching_reuse_positions']) {
                 $str .=
                     'document.querySelectorAll("select.matching-position").forEach(function(select){'
                     . 'select.addEventListener("change",function(){'
@@ -2690,14 +2741,22 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         $qsel = 1;
         while ($m = F_db_fetch_array($r)) {
             ++$i;
+            $item_classes = [];
+            if (F_getBoolean($m['testlog_reviewed'] ?? false)) {
+                $item_classes[] = 'marked-for-review';
+            }
             if ($m['testlog_id'] != $testlog_id) {
-                $str .= '<li data-testlog-id="' . $m['testlog_id'] . '">';
+                $str .= '<li'
+                    . ($item_classes !== [] ? ' class="' . implode(' ', $item_classes) . '"' : '')
+                    . ' data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="submit" name="jumpquestion_'
                     . $m['testlog_id']
                     . '" id="jumpquestion_'
                     . $m['testlog_id']
-                    . '" value="&gt;" title="'
+                    . '" value="'
+                    . $i
+                    . '" title="'
                     . F_tcecodeToTitle($m['question_description'])
                     . '" /> ';
                 if ($testlog_id_last == $testlog_id) {
@@ -2706,13 +2765,17 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             } else {
                 $question_reviewed = F_getBoolean($m['testlog_reviewed'] ?? false);
                 $tmf_options = F_tmf_question_options((string) $m['question_description']);
-                $str .= '<li class="selected" data-testlog-id="' . $m['testlog_id'] . '">';
+                array_unshift($item_classes, 'selected');
+                $str .= '<li class="' . implode(' ', $item_classes)
+                    . '" data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="button" name="jumpquestion_'
                     . $m['testlog_id']
                     . '" id="jumpquestion_'
                     . $m['testlog_id']
-                    . '" value="&gt;" title="'
+                    . '" value="'
+                    . $i
+                    . '" title="'
                     . F_tcecodeToTitle($m['question_description'])
                     . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
@@ -2761,7 +2824,9 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             }
 
             $testlog_id_last = $m['testlog_id'];
-            $str .= F_tcecodeToLine($m['question_description']);
+            $str .= '<span class="exam-question-menu-description">'
+                . F_tcecodeToLine($m['question_description'])
+                . '</span>';
             $str .= '</li>' . K_NEWLINE;
         }
     } else {
@@ -2841,12 +2906,6 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             . '</span></output>'
             . K_NEWLINE;
     }
-    $toolbar .= '<label class="exam-review-toggle"><input type="checkbox" data-exam-review'
-        . ' data-review-save="tce_test_review.php" data-reviewed="'
-        . ($question_reviewed ? '1' : '0')
-        . '" /> '
-        . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $l['a_meta_charset'])
-        . '</label>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;
 
     $navlink = '';
@@ -2865,15 +2924,18 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         }
 
         $navlink .= ' />';
-        // button for confirm current question
-        $navlink .=
-            '<input type="submit" name="confirmanswer" id="confirmanswer" value="('
-            . $qsel
-            . ') '
-            . $l['w_confirm']
-            . '" />';
     }
     if (!$disable) {
+        $navlink .= '<label class="exam-review-toggle exam-review-nav"><input type="checkbox" data-exam-review'
+            . ' data-review-save="tce_test_review.php" data-reviewed="'
+            . ($question_reviewed ? '1' : '0')
+            . '"'
+            . ($question_reviewed ? ' checked="checked"' : '')
+            . ' /><span>('
+            . $qsel
+            . ') '
+            . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $l['a_meta_charset'])
+            . '</span></label>';
         $navlink .=
             '<button type="button" id="saveanswer" data-answer-save="tce_test_answer_save.php" data-answer-saving="'
             . htmlspecialchars($l['ov_answer_saving'], ENT_QUOTES, $l['a_meta_charset'])
@@ -2940,7 +3002,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     if (F_getBoolean($testdata['test_menu_enabled']) && !$disable) {
         // display questions menu
         $rstr .= '<span id="questionssection"></span>' . K_NEWLINE;
-        $rstr .= '<details class="tcecontentbox exam-question-list">' . K_NEWLINE;
+        $rstr .= '<details class="tcecontentbox exam-question-list" open="open">' . K_NEWLINE;
         $rstr .= '<summary>' . $l['w_questions'] . '</summary>' . K_NEWLINE;
         $rstr .= '<ol class="qlist">' . K_NEWLINE . $str . '</ol>' . K_NEWLINE;
         $rstr .= '</details>' . K_NEWLINE;

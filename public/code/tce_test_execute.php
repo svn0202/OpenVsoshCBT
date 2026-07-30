@@ -231,7 +231,9 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         }
 
         if ($answer_save_error !== '') {
+            echo '<div data-answer-save-error="1">' . K_NEWLINE;
             F_print_error('ERROR', htmlspecialchars($answer_save_error, ENT_QUOTES, $l['a_meta_charset']));
+            echo '</div>' . K_NEWLINE;
         }
 
         // confirmation form to terminate the test

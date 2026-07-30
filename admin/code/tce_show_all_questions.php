@@ -770,6 +770,8 @@ function F_show_select_questions(
                             . $m['question_id']
                             . '&amp;answer_id='
                             . $ma['answer_id']
+                            . '&amp;firstrow='
+                            . $firstrow
                             . '" title="'
                             . $l['t_answers_editor']
                             . ' [ID = '
