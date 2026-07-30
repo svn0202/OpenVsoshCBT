@@ -129,6 +129,9 @@
                 }
                 var responseError = new Error(payload.status || 'error');
                 responseError.retryable = response.status >= 500;
+                if (payload.status === 'conflict' && Number.isFinite(Number(payload.version))) {
+                    responseError.serverVersion = Number(payload.version);
+                }
                 throw responseError;
             });
         }).finally(function () {
@@ -186,6 +189,9 @@
             return payload;
         }).catch(function (error) {
             answerDirty = true;
+            if (error.message === 'conflict' && Number.isFinite(error.serverVersion)) {
+                answerVersion.value = String(error.serverVersion);
+            }
             setSaveStatus(
                 'error',
                 error.message === 'conflict'
@@ -216,9 +222,15 @@
             return;
         }
 
-        var review = toolbar.querySelector('[data-exam-review]');
+        var review = form.querySelector('[data-exam-review]');
         var reviewed = getReviewed();
         if (review) {
+            form.querySelectorAll('.exam-question-list li.marked-for-review[data-testlog-id]')
+                .forEach(function (item) {
+                    if (reviewed.indexOf(item.dataset.testlogId) === -1) {
+                        reviewed.push(item.dataset.testlogId);
+                    }
+                });
             var serverReviewed = review.dataset.reviewed === '1';
             reviewed = reviewed.filter(function (id) {
                 return id !== String(testlogId);
@@ -523,6 +535,9 @@
             form.innerHTML = replacement.innerHTML;
             try {
                 executeQuestionScripts();
+                document.querySelectorAll('[data-answer-save-error]').forEach(function (message) {
+                    message.remove();
+                });
                 window.history.replaceState({testlogid: target}, '', url);
                 formSubmitting = false;
                 refreshQuestionState();
@@ -584,7 +599,13 @@
                 return;
             }
             return loadQuestion(target);
-        }).catch(function () {
+        }).catch(function (error) {
+            if (error.message === 'conflict') {
+                // A different request has already stored the authoritative
+                // answer. Continue with that server state instead of posting
+                // the stale version once more and producing a lasting error.
+                return loadQuestion(target);
+            }
             fallbackSubmit(submitterName, submitterValue);
         });
     });

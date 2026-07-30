@@ -25,6 +25,7 @@ require_once '../config/tce_config.php';
 // explicit reads of POST inputs (formerly provided by register-globals emulation)
 $forcedelete = $_POST['forcedelete'] ?? '';
 $new_test_password = $_POST['new_test_password'] ?? '';
+$test_password = isset($_POST['test_password']) && is_string($_POST['test_password']) ? $_POST['test_password'] : '';
 $sslcerts = $_POST['sslcerts'] ?? [];
 $user_groups = $_POST['user_groups'] ?? [];
 $test_name = $_REQUEST['test_name'] ?? '';
@@ -48,6 +49,10 @@ require_once 'tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once 'tce_functions_user_select.php';
 require_once 'tce_functions_test_select.php';
+
+$matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
+    ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
+    : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'test_name,test_description,test_ip_range,test_duration_time,test_score_right';
@@ -392,7 +397,11 @@ switch ($menu_mode) {
 							AND answer_position>0
 							GROUP BY answer_question_id
 							HAVING (COUNT(answer_id)>1)
-							AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))))';
+							AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))
+								OR answer_question_id IN (
+									SELECT question_id FROM ' . K_TABLE_QUESTIONS . '
+									WHERE ' . $matching_reuse_condition . '
+								))))';
                 }
 
                 if ($tsubset_type == 1) {
@@ -443,7 +452,10 @@ switch ($menu_mode) {
 							GROUP BY answer_question_id
 							HAVING (COUNT(answer_id)>1)';
                     if ((int) $tsubset_type === 5) {
-                        $sqlq .= ' AND (COUNT(answer_id)=COUNT(DISTINCT answer_position))';
+                        $sqlq .= ' AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))'
+                            . ' OR answer_question_id IN (SELECT question_id FROM '
+                            . K_TABLE_QUESTIONS
+                            . ' WHERE ' . $matching_reuse_condition . '))';
                     }
 
                     $sqlq .= ')';
@@ -1337,6 +1349,14 @@ echo '<span class="label">' . K_NEWLINE;
 echo '<label for="user_groups">' . $l['w_groups'] . '</label>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
+echo
+    '<input type="search" id="user_groups_filter" placeholder="'
+        . htmlspecialchars($l['w_search'] . ': ' . $l['w_groups'], ENT_COMPAT, $l['a_meta_charset'])
+        . '" aria-label="'
+        . htmlspecialchars($l['w_search'] . ': ' . $l['w_groups'], ENT_COMPAT, $l['a_meta_charset'])
+        . '" aria-controls="user_groups" autocomplete="off" />'
+        . K_NEWLINE
+;
 echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple">' . K_NEWLINE;
 //$sql = F_user_group_select_sql();
 $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
@@ -1649,6 +1669,14 @@ if (isset($test_id) && $test_id > 0) {
     echo '</span>' . K_NEWLINE;
     echo '<span class="formw">' . K_NEWLINE;
     echo
+        '<input type="search" id="subject_filter" placeholder="'
+            . htmlspecialchars($l['w_search'] . ': ' . $l['w_subjects'], ENT_COMPAT, $l['a_meta_charset'])
+            . '" aria-label="'
+            . htmlspecialchars($l['w_search'] . ': ' . $l['w_subjects'], ENT_COMPAT, $l['a_meta_charset'])
+            . '" aria-controls="subject_id" autocomplete="off" />'
+            . K_NEWLINE
+    ;
+    echo
         '<select name="subject_id[]" id="subject_id" size="10" multiple="multiple" title="'
             . $l['h_subjects']
             . '">'
@@ -1759,8 +1787,18 @@ if (isset($test_id) && $test_id > 0) {
         . '</div>' . K_NEWLINE;
     echo '<script type="text/javascript">'
         . '(function(){var list=document.getElementById("subject_id");'
+        . 'var filter=document.getElementById("subject_filter");'
+        . 'function setVisible(option,visible){option.hidden=!visible;option.style.display=visible?"":"none";}'
+        . 'function filterSubjects(){var query=filter.value.trim().toLocaleLowerCase();'
+        . 'var heading=null;var moduleMatches=false;'
+        . 'Array.prototype.forEach.call(list.options,function(option){'
+        . 'var matches=query===""||option.text.toLocaleLowerCase().indexOf(query)!==-1;'
+        . 'if(option.value.charAt(0)==="#"){heading=option;moduleMatches=matches;setVisible(option,matches);return;}'
+        . 'var visible=query===""||moduleMatches||matches;setVisible(option,visible);'
+        . 'if(visible&&heading){setVisible(heading,true);}});}'
         . 'function setAll(selected){Array.prototype.forEach.call(list.options,function(option){'
         . 'option.selected=selected&&option.value.charAt(0)!=="#";});}'
+        . 'filter.addEventListener("input",filterSubjects);'
         . 'document.getElementById("select_all_subjects").addEventListener("click",function(){setAll(true);});'
         . 'document.getElementById("clear_all_subjects").addEventListener("click",function(){setAll(false);});'
         . '}());'
@@ -2061,6 +2099,22 @@ echo
 ;
 echo '}' . K_NEWLINE;
 echo 'JF_check_random_boxes();' . K_NEWLINE;
+echo 'function JF_filter_user_groups() {' . K_NEWLINE;
+echo " var filter=document.getElementById('user_groups_filter');" . K_NEWLINE;
+echo " var groups=document.getElementById('user_groups');" . K_NEWLINE;
+echo ' if (!filter || !groups) {return;}' . K_NEWLINE;
+echo ' var query=filter.value.trim().toLocaleLowerCase();' . K_NEWLINE;
+echo ' for (var i=0;i<groups.options.length;i++) {' . K_NEWLINE;
+echo '  var option=groups.options[i];' . K_NEWLINE;
+echo '  var visible=(query==="" || option.text.toLocaleLowerCase().indexOf(query)!==-1);' . K_NEWLINE;
+echo '  option.hidden=!visible;' . K_NEWLINE;
+echo '  option.style.display=visible?"":"none";' . K_NEWLINE;
+echo ' }' . K_NEWLINE;
+echo '}' . K_NEWLINE;
+echo
+    "document.getElementById('user_groups_filter').addEventListener('input', JF_filter_user_groups);"
+        . K_NEWLINE
+;
 echo '//]]>' . K_NEWLINE;
 echo '</script>' . K_NEWLINE;
 

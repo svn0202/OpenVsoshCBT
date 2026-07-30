@@ -91,7 +91,6 @@
 			// Time relative to the end of the test, in seconds: negative while
 			// time is left, zero or positive once it is over.
 			const diffSeconds = remainingTime + ((Date.now() - startTime) / 1000);
-			let sign = '-';
 
 			// Two seconds before the end, auto-submit the test form once to save
 			// the current answer. The interval is stopped right away so this page
@@ -107,7 +106,6 @@
 			}
 
 			if (diffSeconds >= 0) {
-				sign = '+';
 				if (displayEndtime && (msgEndtime.length > 1)) {
 					displayEndtime = false;
 					stopTimer();
@@ -123,7 +121,7 @@
 			const minutes = Math.floor((absSeconds % 3600) / 60);
 			const seconds = Math.floor(absSeconds % 60);
 			if (timerField) {
-				timerField.value = `${sign}${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)} `;
+				timerField.value = `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
 				updateCountdownState(timerField, Math.max(0, -diffSeconds));
 			}
 		} else { // --- CLOCK MODE ---

@@ -9,7 +9,7 @@
 /**
  * Read optional behavior markers embedded by the DOCX importer.
  *
- * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int, audio_play_limit: int}
+ * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int, matching_reuse_positions: bool, audio_play_limit: int}
  */
 function F_tmf_question_options(string $description): array
 {
@@ -19,6 +19,7 @@ function F_tmf_question_options(string $description): array
         'max_selections' => 0,
         'similarity_threshold' => 0,
         'matching_positions' => 0,
+        'matching_reuse_positions' => str_contains($description, '<!--TMF_MATCH_REUSE-->'),
         'audio_play_limit' => 0,
     ];
 
@@ -51,6 +52,18 @@ function F_tmf_question_options(string $description): array
 }
 
 /**
+ * Enable or disable repeated use of a left-side matching position.
+ */
+function F_tmf_set_matching_reuse_positions(string $description, bool $enabled): string
+{
+    $description = (string) preg_replace('/\s*<!--TMF_MATCH_REUSE-->/', '', $description);
+    if ($enabled) {
+        $description = rtrim($description) . '<!--TMF_MATCH_REUSE-->';
+    }
+    return $description;
+}
+
+/**
  * Replace the optional number of permitted audio starts.
  */
 function F_tmf_set_audio_play_limit(string $description, int $limit): string
@@ -77,6 +90,58 @@ function F_tmf_set_matching_positions(string $description, int $positions): stri
 }
 
 /**
+ * Move a matching question's numbered conditions from its description into
+ * plain-text labels suitable for the position selectors.
+ *
+ * The list is removed only when its item count exactly matches the explicitly
+ * configured number of matching positions. This prevents unrelated ordered
+ * lists in the question text from being hidden.
+ *
+ * @return array{description: string, labels: list<string>}
+ */
+function F_tmf_matching_presentation(string $description, int $positions): array
+{
+    $result = ['description' => $description, 'labels' => []];
+    if ($positions < 1) {
+        return $result;
+    }
+
+    $candidate_pattern =
+        '~<div\b[^>]*>\s*<ol\b[^>]*>.*?</ol>\s*</div>|<ol\b[^>]*>.*?</ol>~isu';
+    if (!preg_match_all($candidate_pattern, $description, $candidates, PREG_OFFSET_CAPTURE)) {
+        return $result;
+    }
+
+    for ($candidate_index = count($candidates[0]) - 1; $candidate_index >= 0; --$candidate_index) {
+        [$candidate, $offset] = $candidates[0][$candidate_index];
+        if (!preg_match_all('~<li\b[^>]*>(.*?)</li>~isu', $candidate, $items)) {
+            continue;
+        }
+        if (count($items[1]) !== $positions) {
+            continue;
+        }
+
+        $labels = [];
+        foreach ($items[1] as $item) {
+            $label = preg_replace('~<br\s*/?>~iu', ' ', (string) $item);
+            $label = html_entity_decode(strip_tags((string) $label), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $label = str_replace("\u{00A0}", ' ', $label);
+            $label = trim((string) preg_replace('/\s+/u', ' ', $label));
+            if ($label === '') {
+                continue 2;
+            }
+            $labels[] = $label;
+        }
+
+        $result['description'] = substr_replace($description, '', (int) $offset, strlen($candidate));
+        $result['labels'] = $labels;
+        return $result;
+    }
+
+    return $result;
+}
+
+/**
  * Replace the optional short-answer similarity marker in a question description.
  */
 function F_tmf_set_similarity_threshold(string $description, int $threshold): string
@@ -87,6 +152,18 @@ function F_tmf_set_similarity_threshold(string $description, int $threshold): st
         $description = rtrim($description) . '<!--TMF_SIMILARITY:' . $threshold . '-->';
     }
     return $description;
+}
+
+/**
+ * Return question content without metadata controlled by dedicated editor
+ * fields. Saving the form adds these markers back from their controls.
+ */
+function F_tmf_question_editor_description(string $description): string
+{
+    $description = F_tmf_set_similarity_threshold($description, 0);
+    $description = F_tmf_set_matching_positions($description, 0);
+    $description = F_tmf_set_matching_reuse_positions($description, false);
+    return F_tmf_set_audio_play_limit($description, 0);
 }
 
 /**

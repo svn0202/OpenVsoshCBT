@@ -396,6 +396,64 @@ html[dir="rtl"].admin-menu-ready body.admin-nav-collapsed .admin-shell > .scroll
     outline: none;
 }
 
+.admin-shell .rich-content-editor {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #bec9d8;
+    border-radius: 7px;
+    background: #fff;
+}
+
+.admin-shell .rich-content-editor__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 7px;
+    border-bottom: 1px solid #d7dee8;
+    background: #f4f7fa;
+}
+
+.admin-shell .rich-content-editor__toolbar button,
+.admin-shell .rich-content-editor__toolbar select {
+    min-width: 36px;
+    min-height: 34px;
+    padding: 5px 8px;
+    border: 1px solid #b8c5d4;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--admin-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.admin-shell .rich-content-editor__toolbar button:hover {
+    border-color: var(--admin-accent);
+    background: #eaf4fd;
+}
+
+.admin-shell .rich-content-editor__surface {
+    min-height: 260px;
+    max-height: 65vh;
+    overflow: auto;
+    padding: 14px;
+    color: var(--admin-text);
+    line-height: 1.5;
+    outline: none;
+}
+
+.admin-shell .rich-content-editor__surface:focus {
+    box-shadow: inset 0 0 0 3px rgba(8, 121, 201, 0.14);
+}
+
+.admin-shell .rich-content-editor__surface img {
+    max-width: 100%;
+    height: auto;
+}
+
+.admin-shell .formw:has(> .rich-content-editor:not([hidden])) .tcecode-toolbar {
+    display: none;
+}
+
 .admin-shell input[type="submit"],
 .admin-shell input[type="button"],
 .admin-shell button.xmlbutton,

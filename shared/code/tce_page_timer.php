@@ -33,6 +33,8 @@ require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
 $timer_settings = openvsosh_get_runtime_settings();
 $timer_warning_text = openvsosh_contrast_text((string) $timer_settings['timer_warning_color']);
 $timer_critical_text = openvsosh_contrast_text((string) $timer_settings['timer_critical_color']);
+$is_exam_timer = basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php';
+$timer_label = $is_exam_timer ? $l['w_remaining'] : $l['w_time'];
 
 echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" id="timerform" style="'
     . '--timer-warning-bg:' . $timer_settings['timer_warning_color'] . ';'
@@ -42,7 +44,7 @@ echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . 
 // role="timer" identifies the region to assistive technologies; aria-live stays "off"
 // (the default for the timer role) on purpose, so the per-second updates are not announced.
 echo '<div role="timer" aria-live="off">' . K_NEWLINE;
-echo '<label for="timer" class="timerlabel">' . $l['w_time'] . ':</label>' . K_NEWLINE;
+echo '<label for="timer" class="timerlabel">' . $timer_label . ':</label>' . K_NEWLINE;
 echo
     '<input type="text" name="timer" id="timer" value="" size="29" maxlength="29" title="'
         . $l['w_clock_timer']
@@ -52,7 +54,7 @@ echo
 echo '<span id="timer-status" class="timer-status" aria-live="polite"></span>' . K_NEWLINE;
 echo '&nbsp;</div>' . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
-echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'timer.js" type="text/javascript"></script>' . K_NEWLINE;
+echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'timer.js?v=20260729-1" type="text/javascript"></script>' . K_NEWLINE;
 echo '<script type="text/javascript">' . K_NEWLINE;
 echo '//<![CDATA[' . K_NEWLINE;
 echo 'FJ_configure_timer('

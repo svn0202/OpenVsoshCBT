@@ -261,6 +261,7 @@ final class WordImportTest extends TestCase
             '<!--TMF_CHECKBOX--><!--TMF_MAX_SEL:2-->'
             . '<!--TMF_SIMILARITY:85-->'
             . '<!--TMF_MATCH_POSITIONS:5-->'
+            . '<!--TMF_MATCH_REUSE-->'
             . '<!--TMF_AUDIO_PLAYS:2-->'
             . '<!--TMF_MCMA_HEADER:[&quot;Факт&quot;,&quot;Да&quot;,&quot;Нет&quot;,&quot;Пропуск&quot;]-->',
         );
@@ -269,6 +270,7 @@ final class WordImportTest extends TestCase
         self::assertSame(2, $options['max_selections']);
         self::assertSame(85, $options['similarity_threshold']);
         self::assertSame(5, $options['matching_positions']);
+        self::assertTrue($options['matching_reuse_positions']);
         self::assertSame(2, $options['audio_play_limit']);
         self::assertSame(['Факт', 'Да', 'Нет', 'Пропуск'], $options['headers']);
         self::assertTrue(\F_tmf_selection_limit_is_valid([1, 0, 1], 2));
@@ -281,6 +283,39 @@ final class WordImportTest extends TestCase
             7,
             \F_tmf_question_options(\F_tmf_set_matching_positions('Question', 7))['matching_positions'],
         );
+        self::assertTrue(
+            \F_tmf_question_options(
+                \F_tmf_set_matching_reuse_positions('Question', true),
+            )['matching_reuse_positions'],
+        );
+        self::assertFalse(
+            \F_tmf_question_options(
+                \F_tmf_set_matching_reuse_positions('Question<!--TMF_MATCH_REUSE-->', false),
+            )['matching_reuse_positions'],
+        );
+        $matchingPresentation = \F_tmf_matching_presentation(
+            'Сопоставление<div><ol><li><strong>Автомобиль</strong></li>'
+            . '<li>Город&nbsp;</li></ol></div><!--TMF_MATCH_POSITIONS:2-->',
+            2,
+        );
+        self::assertSame(['Автомобиль', 'Город'], $matchingPresentation['labels']);
+        self::assertStringNotContainsString('<ol>', $matchingPresentation['description']);
+        self::assertStringContainsString('<!--TMF_MATCH_POSITIONS:2-->', $matchingPresentation['description']);
+        self::assertSame(
+            'Сопоставление',
+            \F_tmf_question_editor_description($matchingPresentation['description']),
+        );
+        $unmatchedPresentation = \F_tmf_matching_presentation(
+            'Вопрос<ol><li>Первый</li><li>Второй</li></ol>',
+            3,
+        );
+        self::assertSame([], $unmatchedPresentation['labels']);
+        self::assertStringContainsString('<ol>', $unmatchedPresentation['description']);
+        $editorDescription = \F_tmf_question_editor_description(
+            'Вопрос<!--TMF_CHECKBOX--><!--TMF_SIMILARITY:85-->'
+            . '<!--TMF_MATCH_POSITIONS:2--><!--TMF_MATCH_REUSE--><!--TMF_AUDIO_PLAYS:3-->',
+        );
+        self::assertSame('Вопрос<!--TMF_CHECKBOX-->', $editorDescription);
         self::assertSame(
             3,
             \F_tmf_question_options(\F_tmf_set_audio_play_limit('Question', 3))['audio_play_limit'],
