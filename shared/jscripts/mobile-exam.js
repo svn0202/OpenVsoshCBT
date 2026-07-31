@@ -339,6 +339,57 @@
         });
     }
 
+    function bindQuestionMenu() {
+        var menu = form.querySelector('.exam-question-list');
+        if (!menu || menu.dataset.questionMenuBound === '1') {
+            return;
+        }
+        menu.dataset.questionMenuBound = '1';
+
+        function jumpFromItem(item) {
+            var submitter = item
+                ? item.querySelector('input[type="submit"][name^="jumpquestion_"]')
+                : null;
+            if (!submitter || submitter.disabled) {
+                return;
+            }
+            if (form.requestSubmit) {
+                form.requestSubmit(submitter);
+            } else {
+                submitter.click();
+            }
+        }
+
+        menu.querySelectorAll('li[data-testlog-id]').forEach(function (item) {
+            var submitter = item.querySelector('input[type="submit"][name^="jumpquestion_"]');
+            if (!submitter || submitter.disabled) {
+                return;
+            }
+            item.classList.add('question-menu-link');
+            item.tabIndex = 0;
+            item.setAttribute('role', 'button');
+            item.setAttribute('aria-label', submitter.title || submitter.value);
+        });
+
+        menu.addEventListener('click', function (event) {
+            if (event.target.closest('input, button, a, label, select, textarea')) {
+                return;
+            }
+            jumpFromItem(event.target.closest('li.question-menu-link'));
+        });
+        menu.addEventListener('keydown', function (event) {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+            }
+            var item = event.target.closest('li.question-menu-link');
+            if (!item || event.target !== item) {
+                return;
+            }
+            event.preventDefault();
+            jumpFromItem(item);
+        });
+    }
+
     function resizeAnswerText() {
         var answerText = form.querySelector('#answertext');
         if (!answerText) {
@@ -455,6 +506,7 @@
         reviewKey = 'tcexam:' + testId + ':' + testuserId + ':reviewed';
         bindToolbar();
         bindAnswerControls();
+        bindQuestionMenu();
         resizeAnswerText();
         bindImagePreviews();
         bindAudioLimits();

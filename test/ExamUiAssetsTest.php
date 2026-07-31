@@ -216,6 +216,13 @@ final class ExamUiAssetsTest extends TestCase
         );
         self::assertStringContainsString("if (error.message === 'conflict')", $script);
         self::assertStringContainsString('return loadQuestion(target);', $script);
+        self::assertStringContainsString('function bindQuestionMenu()', $script);
+        self::assertStringContainsString("item.classList.add('question-menu-link')", $script);
+        self::assertStringContainsString('form.requestSubmit(submitter)', $script);
+        self::assertStringContainsString(
+            '.exam-question-list li.question-menu-link {',
+            $stylesheet,
+        );
     }
 
     public function testParticipantPhotosAreServedThroughAnAuthorizedController(): void
