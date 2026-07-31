@@ -89,6 +89,17 @@ function F_tmf_pregeneration_hash(int $test_id, int $user_id): string
 }
 
 /**
+ * Return the public catalogue status for an attempt.
+ *
+ * A pre-generated attempt is only a prepared variant. It must look like a
+ * test that can be started until the participant actually opens it.
+ */
+function F_tmf_catalog_test_status(int $test_status, bool $pregenerated): int
+{
+    return $pregenerated && $test_status === 1 ? 0 : $test_status;
+}
+
+/**
  * Delete unopened pre-generated attempts whose source inputs changed.
  */
 function F_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
@@ -158,9 +169,12 @@ function F_tmf_pregeneration_activate(int $test_id, int $user_id): string
         );
         return 'invalidated';
     }
+    $started_at = date(K_TIMESTAMP_FORMAT);
     $updated = F_db_query(
         'UPDATE ' . K_TABLE_TEST_USER . '
-        SET testuser_pregenerated=\'0\'
+        SET testuser_pregenerated=\'0\',
+            testuser_creation_time=\'' . $started_at . '\',
+            testuser_last_activity=\'' . $started_at . '\'
         WHERE testuser_id=' . (int) $attempt['testuser_id'] . '
             AND testuser_status=1
             AND testuser_pregenerated=\'1\'',
