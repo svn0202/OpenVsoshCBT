@@ -2088,6 +2088,16 @@ body.app-page.exam-page .exam-question-list li.selected.marked-for-review {
 body.app-page.exam-page .exam-question-list li > input[id^="jumpquestion_"] {
     cursor: pointer;
 }
+body.app-page.exam-page .exam-question-list li.question-menu-link {
+    cursor: pointer;
+}
+body.app-page.exam-page .exam-question-list li.question-menu-link:hover,
+body.app-page.exam-page .exam-question-list li.question-menu-link:focus-visible {
+    border-color: #08769b;
+    background: rgba(21, 155, 197, .2);
+    outline: 3px solid rgba(21, 155, 197, .24);
+    outline-offset: 2px;
+}
 body.app-page.exam-page .navlink {
     position: relative;
     display: flex;
@@ -2166,6 +2176,9 @@ body.app-page.exam-page #terminatetest { margin: 18px 0 0; }
         padding: 0;
         border: 0;
         background: transparent;
+    }
+    body.app-page.exam-page .exam-question-list li.question-menu-link:focus-visible {
+        outline-offset: 3px;
     }
     body.app-page.exam-page .exam-question-list li abbr,
     body.app-page.exam-page .exam-question-list .exam-question-menu-description {
