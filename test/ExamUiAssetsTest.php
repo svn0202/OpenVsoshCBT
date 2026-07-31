@@ -207,6 +207,8 @@ final class ExamUiAssetsTest extends TestCase
             $stylesheet,
         );
         self::assertStringContainsString('display: flex;', $stylesheet);
+        self::assertStringContainsString('min-width: 132px;', $stylesheet);
+        self::assertStringContainsString('white-space: nowrap;', $stylesheet);
         self::assertStringContainsString('data-answer-save-error="1"', $controller);
         self::assertStringContainsString(
             "document.querySelectorAll('[data-answer-save-error]')",

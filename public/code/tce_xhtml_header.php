@@ -98,7 +98,7 @@ echo
 ;
 $theme_stylesheet = ($l['a_meta_dir'] === 'rtl') ? 'picoman_rtl.css' : 'picoman.css';
 echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . $theme_stylesheet . '?v=20260718-2" />' . K_NEWLINE;
-echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260730-1" />' . K_NEWLINE;
+echo '<link rel="stylesheet" href="' . K_PATH_STYLE_SHEETS . 'tmf-reference.css?v=20260731-1" />' . K_NEWLINE;
 echo '<link rel="icon" href="' . $thispage_icon . '" />' . K_NEWLINE;
 echo '<link rel="manifest" href="../manifest.webmanifest" />' . K_NEWLINE;
 echo '<meta name="theme-color" content="#183b64" />' . K_NEWLINE;

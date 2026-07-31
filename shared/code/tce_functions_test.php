@@ -59,7 +59,12 @@ function F_getUserTests()
             if (F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
                 // the user's IP is valid, check test status
-                [$test_status, $testuser_id] = F_checkTestStatus($user_id, $m['test_id'], $m['test_duration_time']);
+                [$test_status, $testuser_id, $test_pregenerated] = F_checkTestStatus(
+                    $user_id,
+                    $m['test_id'],
+                    $m['test_duration_time'],
+                );
+                $catalog_test_status = F_tmf_catalog_test_status($test_status, $test_pregenerated);
                 if (strtotime($current_time) >= strtotime($m['test_end_time'])) {
                     // the test is expired.
                     $expired = true;
@@ -84,7 +89,7 @@ function F_getUserTests()
                 $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
                 $str .= '<td';
-                if ($test_status >= 4 && F_tmf_results_are_published($m)) {
+                if ($catalog_test_status >= 4 && F_tmf_results_are_published($m)) {
                     $usrtestdata = F_getUserTestStat($m['test_id'], $user_id, $testuser_id);
                     $passmsg = '';
                     if (
@@ -150,7 +155,7 @@ function F_getUserTests()
                     $str .= '<span class="offbox">' . htmlspecialchars($reason, ENT_QUOTES, $l['a_meta_charset'])
                         . '</span>';
                 } elseif (!$expired && !$upcoming) {
-                    switch ($test_status) {
+                    switch ($catalog_test_status) {
                         case 0:
                             { // 0 = the test generation process is started but not completed
                                 // print execute test link
@@ -501,7 +506,7 @@ function F_countUserTest($user_id, $test_id)
  * @param $user_id (int) user ID
  * @param $test_id (int) test ID
  * @param $duration (int) test duration in seconds
- * @return array of (test_status_code, testuser_id). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
+ * @return array of (test_status_code, testuser_id, testuser_pregenerated). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
  */
 function F_checkTestStatus($user_id, $test_id, $duration)
 {
@@ -514,9 +519,10 @@ function F_checkTestStatus($user_id, $test_id, $duration)
     $test_id = (int) $test_id;
     $duration = (int) $duration;
     $testuser_id = 0;
+    $test_pregenerated = false;
     // get current test status for the selected user
     $sql =
-        'SELECT testuser_id, testuser_status, testuser_creation_time
+        'SELECT testuser_id, testuser_status, testuser_creation_time, testuser_pregenerated
 		FROM '
         . K_TABLE_TEST_USER
         . '
@@ -532,11 +538,12 @@ function F_checkTestStatus($user_id, $test_id, $duration)
         if ($m = F_db_fetch_array($r)) {
             $testuser_id = $m['testuser_id'];
             $test_status = $m['testuser_status'];
+            $test_pregenerated = F_getBoolean($m['testuser_pregenerated'] ?? false);
             $endtime = date(
                 K_TIMESTAMP_FORMAT,
                 strtotime($m['testuser_creation_time']) + ($duration * K_SECONDS_IN_MINUTE),
             );
-            if ($test_status > 0 && $test_status < 4 && $current_time > $endtime) {
+            if (!$test_pregenerated && $test_status > 0 && $test_status < 4 && $current_time > $endtime) {
                 // update test mode to 4 = test locked (for timeout)
                 $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . "
 					SET testuser_status=4,
@@ -613,7 +620,7 @@ function F_checkTestStatus($user_id, $test_id, $duration)
         F_display_db_error();
     }
 
-    return [$test_status, $testuser_id];
+    return [$test_status, $testuser_id, $test_pregenerated];
 }
 
 /**
