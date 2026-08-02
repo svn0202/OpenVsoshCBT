@@ -1,7 +1,8 @@
 # TCExam development / demo stack (plan Stage 7).
 #
 #   docker compose up --build        # or: make up
-#   then open http://localhost:8080/  and sign in at /admin/code/ (admin / 1234).
+#   then read the generated initial admin password from `docker compose logs app` and open
+#   http://localhost:8080/admin/code/ . Set TCEXAM_ADMIN_PASSWORD to provide your own value.
 #
 # The app entrypoint runs the non-interactive installer automatically using the TCEXAM_* settings
 # below, so no browser install step is required. The installer is idempotent.
@@ -30,6 +31,7 @@ services:
       TCEXAM_DB_NAME: tcexam
       TCEXAM_DB_USER: tcexam
       TCEXAM_DB_PASSWORD: tcexam
+      TCEXAM_ADMIN_PASSWORD: "${TCEXAM_ADMIN_PASSWORD:-}"
       TCEXAM_TABLE_PREFIX: tce_
       TCEXAM_PATH_HOST: "http://localhost:${TCEXAM_PORT:-8080}"
       TCEXAM_PATH_TCEXAM: /

@@ -52,11 +52,12 @@ A high-quality report helps us triage and fix issues faster. Please provide:
 TCExam is a self-hosted application that handles personal data, credentials and exam results.
 The deploying administrator is responsible for the security of the installation. We recommend:
 
-- **Complete and lock down the installer.** Run `install/install.php` once, then **delete the
-  entire `install/` directory** — it must not remain reachable on a production server.
-- **Change the default credentials immediately.** The shipped admin account is
-  `admin` / `1234`. Create a new level-10 administrator and remove the default `admin` user
-  as soon as possible.
+- **Use the command-line installer.** The interactive web installer is disabled. Run
+  `php install/install_cli.php`, then keep `install/` denied by the web server (or remove it after
+  completing any required migrations).
+- **Protect the initial administrator credential.** Set a strong `TCEXAM_ADMIN_PASSWORD` during
+  installation or securely capture the generated one-time password from the installer output.
+  Change it after first sign-in and use named level-10 administrator accounts for routine work.
 - **Set a unique `K_RANDOM_SECURITY`.** The installer generates a per-install random secret; if
   you are migrating an old configuration, replace any placeholder or historical default with a
   fresh random value, e.g. `php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"`. The PDF

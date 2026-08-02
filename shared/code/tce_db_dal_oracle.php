@@ -176,7 +176,12 @@ function F_db_affected_rows($link_identifier, $result)
 function F_db_num_rows($result)
 {
     $output = [];
-    @oci_fetch_all($result, $output);
+    set_error_handler(static fn (): bool => true);
+    try {
+        oci_fetch_all($result, $output);
+    } finally {
+        restore_error_handler();
+    }
     return $output['TOTAL'][0] ?? oci_num_rows($result);
 }
 
@@ -190,7 +195,13 @@ function F_db_num_rows($result)
 function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     $query = 'SELECT ' . $tablename . '_seq.currval FROM dual';
-    if (($r = @F_db_query($query, $link_identifier)) && ($m = oci_fetch_array($r, OCI_NUM))) {
+    set_error_handler(static fn (): bool => true);
+    try {
+        $r = F_db_query($query, $link_identifier);
+    } finally {
+        restore_error_handler();
+    }
+    if ($r && ($m = oci_fetch_array($r, OCI_NUM))) {
         return $m[0];
     }
 

@@ -30,4 +30,27 @@ final class TcecodeFunctionsTest extends TestCase
             . '<img src="data:image/svg+xml,evil" onerror="alert(2)"></p>',
         ));
     }
+
+    public function testMathmlRemovesEventHandlersAndForeignMarkup(): void
+    {
+        $rendered = \F_mathml_callback([
+            '',
+            '<math onclick="alert(1)"><mtext mathvariant="bold" onmouseover="alert(2)">Safe</mtext>'
+                . '<img src="x" onerror="alert(3)"></math>',
+        ]);
+
+        $this->assertSame('<math><mtext mathvariant="bold">Safe</mtext></math>', $rendered);
+        $this->assertStringNotContainsStringIgnoringCase('onmouseover', $rendered);
+        $this->assertStringNotContainsStringIgnoringCase('<img', $rendered);
+    }
+
+    public function testMathmlRejectsExecutableAttributeValues(): void
+    {
+        $rendered = \F_mathml_callback([
+            '',
+            '<math><mtext mathcolor="url(javascript:alert(1))">Safe</mtext></math>',
+        ]);
+
+        $this->assertSame('<math><mtext>Safe</mtext></math>', $rendered);
+    }
 }

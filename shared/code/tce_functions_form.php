@@ -45,8 +45,23 @@ if (isset($_POST['update'])) {
 
 if (empty($menu_mode)) {
     $menu_mode = '';
-} elseif (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
-    // check for CSRF
+}
+
+// Every non-empty POST reaching the shared form controller is state-changing or participates in
+// a state-changing workflow. Validate it independently of the button name: several controllers
+// use custom actions (backup, restore, lock, unlock, exam navigation, and others) that are not in
+// the legacy menu_mode list above.
+if (
+    PHP_SAPI !== 'cli'
+    && strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST'
+    && $_POST !== []
+    && (
+        empty($_POST['csrf_token'])
+        || !is_string($_POST['csrf_token'])
+        || !checkCSRFToken($_POST['csrf_token'])
+    )
+) {
+    http_response_code(403);
     exit();
 }
 

@@ -55,9 +55,9 @@ sudo apt-get install apache2 libapache2-mod-php \
 
 ### Preparing the database
 
-The web installer can create the database and its tables for you, provided the database user has
-the necessary privileges. On hosted environments where the database must be created in advance,
-note the following settings before you start:
+The command-line installer can create the database and its tables for you, provided the database
+user has the necessary privileges. On hosted environments where the database must be created in
+advance, note the following settings before you start:
 
 - The **database name** (some hosts pre-assign it).
 - The **database host** (usually `localhost` on a single server; check with your provider on
@@ -67,7 +67,8 @@ note the following settings before you start:
 ## Installation
 
 Installing TCExam for the first time involves getting the files, installing the PHP dependencies,
-setting filesystem permissions, and running the web installer.
+setting filesystem permissions, and running the command-line installer. The interactive web
+installer is disabled because it can rewrite configuration and database tables.
 
 ### 1. Get the files
 
@@ -95,53 +96,15 @@ make lang
 
 ### 3. Set filesystem permissions
 
-Make the runtime directories writable by the web-server user. The web installer also needs to
-write the configuration files, so the `*/config/` parent directories must be writable during
-installation. The writable locations are: `cache/`, `admin/backup/`, and the `admin/config/`,
+Make the runtime directories writable by the web-server user. The command-line installer must
+be able to write the configuration files, so the `*/config/` parent directories must be writable
+during installation. The writable locations are: `cache/`, `admin/backup/`, and the `admin/config/`,
 `public/config/` and `shared/config/` directories. Final, locked-down permissions are applied
 after installation (see [Access and security](#5-access-and-security-post-installation)).
 
-### 4. Run the web installer
+### 4. Run the command-line installer
 
-Point your browser at the installation script, e.g.
-`https://www.yoursite.com/install/install.php` (or
-`https://www.yoursite.com/tcexam_folder/install/install.php`). Fill in the form and press
-**INSTALL**.
-
-> **Warning:** the installer creates the database tables and the default data, and will overwrite
-> the data of any previous installation using the same database and table prefix. Back up first if
-> you are reinstalling.
-
-The form fields are:
-
-| Field | Description |
-|-------|-------------|
-| **db type** | the DBMS type (default *MySQL*) |
-| **db host** | the database host (usually *localhost*) |
-| **db port** | the database port (usually *3306* for MySQL, *5432* for PostgreSQL) |
-| **db user** | the database user (often *root* for MySQL, *postgres* for PostgreSQL) |
-| **db password** | that user's password |
-| **db name** | the database name (usually *tcexam*); change it only if other copies of TCExam share the same server |
-| **tables prefix** | prefix added to the table names (usually *tce_*) |
-| **host URL** | the domain of your site (e.g. *https://www.yoursite.com*) |
-| **relative URL** | the path from the web-server root to the TCExam files (usually */* or */tcexam_folder/*) |
-| **TCExam path** | the full server path to the installation folder (e.g. */var/www/tcexam/*) |
-| **TCExam port** | the connection port (usually *80* for HTTP or *443* for HTTPS) |
-
-The installer writes the configuration files and generates a unique, random `K_RANDOM_SECURITY`
-value for this instance. If the installation succeeds, continue to
-[Access and security](#5-access-and-security-post-installation). If it fails, use the
-[manual installation](#manual-installation) procedure instead.
-
-> The installer never drops an existing database automatically (tick **Drop Existing Database?**
-> only for a deliberate clean reinstall). Leaving **Create New Database?** ticked is safe: if the
-> database already exists or the database user lacks the `CREATE` privilege — as on many managed
-> and Docker setups — the installer falls back to the existing database.
-
-### 4b. Alternative: non-interactive command-line installer
-
-For scripted, headless or container installs you can skip the web form and run the command-line
-installer instead. It reads its settings from environment variables, is idempotent (it preserves
+The installer reads its settings from environment variables, is idempotent (it preserves
 an existing configuration and never overwrites existing data), and is what the Docker entrypoint
 runs automatically:
 
@@ -149,30 +112,30 @@ runs automatically:
 TCEXAM_DB_TYPE=MYSQL \
 TCEXAM_DB_HOST=localhost TCEXAM_DB_PORT=3306 \
 TCEXAM_DB_NAME=tcexam TCEXAM_DB_USER=tcexam TCEXAM_DB_PASSWORD=secret \
+TCEXAM_ADMIN_PASSWORD='a-long-unique-initial-password' \
 TCEXAM_PATH_HOST=https://www.yoursite.com TCEXAM_PATH_TCEXAM=/ \
 TCEXAM_PATH_MAIN=/var/www/tcexam/ TCEXAM_STANDARD_PORT=443 \
 php install/install_cli.php
 ```
 
 Set `TCEXAM_DB_CREATE=1` to have it attempt to create the database first, and pass `--reconfig`
-to rewrite the configuration files when they already exist. See the header comment of
+to rewrite the configuration files when they already exist. If `TCEXAM_ADMIN_PASSWORD` is omitted,
+the installer prints a generated one-time initial password. See the header comment of
 `install/install_cli.php` for the complete list of variables and defaults.
 
 ### 5. Access and security (post-installation)
 
 Once installed, you can reach the administration area at
-`https://www.yoursite.com/tcexam_folder/admin/code/` using the default account:
-
-- name: **admin**
-- password: **1234**
+`https://www.yoursite.com/tcexam_folder/admin/code/` as **admin**, using either the password passed
+through `TCEXAM_ADMIN_PASSWORD` or the generated one-time password printed by the installer.
 
 Immediately complete the following hardening steps (see [SECURITY.md](../SECURITY.md) for the full
 checklist):
 
 - **Delete the entire `install/` directory** — it must not remain reachable on a production server
   (e.g. `rm -fR /var/www/tcexam/install`).
-- **Change the default credentials.** Create a new level-10 administrator and remove the default
-  `admin` user as soon as possible.
+- **Change the initial credential.** Store it securely, change it on first sign-in, and create
+  named level-10 administrator accounts for routine work.
 - **Confirm `K_RANDOM_SECURITY` is set** to a unique random value in
   `shared/config/tce_general_constants.php` (the installer does this automatically; the PDF
   result-access token fails closed while it is left at the placeholder).
@@ -197,7 +160,7 @@ checklist):
 
 ## Manual installation
 
-If the web installer cannot be used, you can configure TCExam by hand: edit the configuration
+If the command-line installer cannot be used, you can configure TCExam by hand: edit the configuration
 files and load the database schema manually.
 
 ### Configuration files
@@ -264,8 +227,9 @@ make up            # or: docker compose up --build
 This starts TCExam together with a MariaDB database and **installs it automatically**: the
 container entrypoint runs the non-interactive installer (`install_cli.php`) using the database
 settings from `docker-compose.yml`, so no browser install step is required. When the stack is up,
-open `http://localhost:8080/` and sign in under `admin/code/` (`admin` / `1234`). The installed
-configuration is kept in a named volume and survives `docker compose down` / `up`. See the
+read the generated password with `docker compose logs app`, then open
+`http://localhost:8080/admin/code/` and sign in as `admin`. The installed configuration is kept in
+a named volume and survives `docker compose down` / `up`. See the
 [README](../README.md) for details.
 
 ## Upgrading

@@ -1,1 +1,3 @@
-#deny from all
+# The interactive web installer is intentionally disabled. Use install_cli.php
+# from the command line so installation cannot be restarted over HTTP.
+Require all denied

@@ -1,9 +1,8 @@
 # TCExam — Upgrade Guide
 
 > **IMPORTANT — password reset (14.0.0+).** Starting with version 14.0.0 the password
-> encryption algorithm changed and **all passwords must be reset**. The default password for
-> `admin` is `1234` and its encoding is in `install/db_data.sql`. Create a new administrator
-> (level 10) and delete the default `admin` user as soon as possible.
+> encryption algorithm changed and **all passwords must be reset**. Current fresh installations
+> keep the seeded `admin` account locked until `install_cli.php` assigns a unique password.
 
 Always [back up your database and files](#general-upgrade-process) before upgrading.
 

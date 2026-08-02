@@ -5,8 +5,8 @@
 #
 # Description : Entrypoint for the TCExam app-under-test container used by the
 #               HTTP controller integration tests. Generates the per-area
-#               configuration non-interactively (what the web installer would
-#               write) pointing at the test database, then serves via Apache.
+#               configuration non-interactively, pointing at the test database,
+#               then serves via Apache.
 #
 # (c) Copyright 2004-2026 Nicola Asuni - Tecnick.com LTD
 # License: AGPL-3.0-or-later (see LICENSE).

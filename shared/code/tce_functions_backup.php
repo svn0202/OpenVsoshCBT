@@ -248,7 +248,13 @@ function F_tmf_backup_create(array $config, string $backup_directory, ?string $t
         $path = rtrim($backup_directory, DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR . $candidate_timestamp . '_tcexam_backup.' . $extension . '.gz';
         // A hard link publishes the complete archive atomically and never overwrites an existing one.
-        if (@link($partial_path, $path)) {
+        set_error_handler(static fn (): bool => true);
+        try {
+            $published = link($partial_path, $path);
+        } finally {
+            restore_error_handler();
+        }
+        if ($published) {
             unlink($partial_path);
             return $path;
         }

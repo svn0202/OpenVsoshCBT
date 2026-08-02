@@ -41,15 +41,63 @@ function F_encodeOMRTestData($data)
  */
 function F_decodeOMRTestData($str)
 {
-    if (empty($str)) {
+    $max_encoded_bytes = 1_048_576;
+    $max_decompressed_bytes = 4_194_304;
+    $max_questions = 10_000;
+
+    if (!is_string($str) || $str === '' || strlen($str) > $max_encoded_bytes) {
         return false;
     }
 
-    $data = $str;
-    $data = urldecode($data);
-    $data = base64_decode($data);
-    $data = gzuncompress($data);
-    return unserialize($data);
+    $encoded = urldecode($str);
+    if (strlen($encoded) > $max_encoded_bytes) {
+        return false;
+    }
+    $compressed = base64_decode($encoded, true);
+    if (!is_string($compressed) || strlen($compressed) > $max_encoded_bytes) {
+        return false;
+    }
+    set_error_handler(static function () {
+        return true;
+    });
+    try {
+        $data = gzuncompress($compressed, $max_decompressed_bytes);
+    } finally {
+        restore_error_handler();
+    }
+    if (!is_string($data) || strlen($data) > $max_decompressed_bytes) {
+        return false;
+    }
+    try {
+        $decoded = unserialize($data, ['allowed_classes' => false]);
+    } catch (Throwable) {
+        return false;
+    }
+    if (!is_array($decoded) || count($decoded) < 1 || count($decoded) > ($max_questions + 1)) {
+        return false;
+    }
+    if (!isset($decoded[0]) || !is_numeric($decoded[0]) || (int) $decoded[0] <= 0) {
+        return false;
+    }
+    for ($index = 1, $count = count($decoded); $index < $count; ++$index) {
+        $question = $decoded[$index] ?? null;
+        if (
+            !is_array($question)
+            || !isset($question[0], $question[1])
+            || !is_numeric($question[0])
+            || (int) $question[0] <= 0
+            || !is_array($question[1])
+            || count($question[1]) > 1_000
+        ) {
+            return false;
+        }
+        foreach ($question[1] as $position => $answer_id) {
+            if (!is_numeric($position) || (int) $position <= 0 || !is_numeric($answer_id) || (int) $answer_id <= 0) {
+                return false;
+            }
+        }
+    }
+    return $decoded;
 }
 
 /**
