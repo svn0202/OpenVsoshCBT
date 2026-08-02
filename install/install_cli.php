@@ -33,6 +33,7 @@
 //     TCEXAM_STANDARD_PORT  HTTP/HTTPS port                              [80]
 //     TCEXAM_DB_CREATE      "1" => attempt CREATE DATABASE first         [0]
 //     TCEXAM_DB_WAIT        seconds to wait for the database             [60]
+//     TCEXAM_ADMIN_PASSWORD initial admin password (minimum 12 chars)     [generated]
 //
 //   Flags:  --reconfig  rewrite the configuration files even if present
 //                       (regenerates K_RANDOM_SECURITY if it is still the
@@ -112,6 +113,7 @@ $path_tcexam   = F_cli_env('TCEXAM_PATH_TCEXAM', '/');
 $path_main     = rtrim(str_replace('\\', '/', F_cli_env('TCEXAM_PATH_MAIN', dirname(__DIR__))), '/').'/';
 $create_db     = (F_cli_env('TCEXAM_DB_CREATE', '0') === '1');
 $db_wait       = (int) F_cli_env('TCEXAM_DB_WAIT', '60');
+$admin_password_env = getenv('TCEXAM_ADMIN_PASSWORD');
 
 $progress_log  = __DIR__.'/install.log';
 $config_marker = __DIR__.'/../shared/config/tce_db_config.php';
@@ -175,7 +177,14 @@ if (!$db) {
 
 // Idempotency: if the application tables already exist, do not reload the schema/data.
 $already_installed = false;
-$probe = @F_db_query('SELECT 1 FROM '.$table_prefix.'users', $db);
+set_error_handler(static function () {
+    return true;
+});
+try {
+    $probe = F_db_query('SELECT 1 FROM '.$table_prefix.'users', $db);
+} finally {
+    restore_error_handler();
+}
 if ($probe !== false) {
     $already_installed = true;
 }
@@ -202,9 +211,45 @@ if ($already_installed) {
     F_cli_log('database initialised with the default data.');
 }
 
-@F_db_close($db);
+// Assign a unique initial administrator password. Existing installations are left untouched
+// unless they still use the historical public password or the locked seed hash shipped above.
+$locked_admin_hash = '$2y$12$cBrOjbxaS0G6tcdxaSrp8.9CgjVniRNHvIxjz7BN0D1ZmvMmjaBdS';
+$admin_result = F_db_query(
+    "SELECT user_password FROM {$table_prefix}users WHERE user_name='admin' AND user_level=10 LIMIT 1",
+    $db
+);
+$admin_row = $admin_result ? F_db_fetch_array($admin_result) : false;
+$current_admin_hash = is_array($admin_row) ? (string) $admin_row['user_password'] : '';
+$admin_requires_initialisation = !$already_installed
+    || $current_admin_hash === $locked_admin_hash
+    || ($current_admin_hash !== '' && password_verify('1234', $current_admin_hash));
+if ($admin_requires_initialisation) {
+    $admin_password_was_generated = !is_string($admin_password_env) || $admin_password_env === '';
+    $admin_password = $admin_password_was_generated
+        ? rtrim(strtr(base64_encode(random_bytes(18)), '+/', '-_'), '=')
+        : $admin_password_env;
+    if (strlen($admin_password) < 12 || strlen($admin_password) > 4096) {
+        F_cli_err('TCEXAM_ADMIN_PASSWORD must contain between 12 and 4096 bytes.');
+        exit(7);
+    }
+    $admin_hash = password_hash($admin_password, PASSWORD_DEFAULT);
+    $admin_sql = "UPDATE {$table_prefix}users SET user_password='"
+        . F_escape_sql($db, $admin_hash) . "' WHERE user_name='admin' AND user_level=10";
+    if (!F_db_query($admin_sql, $db)) {
+        F_cli_err('could not initialise the administrator password.');
+        exit(8);
+    }
+    if ($admin_password_was_generated) {
+        F_cli_log('generated one-time initial admin password: '.$admin_password);
+        F_cli_log('store it securely and change it immediately after the first sign-in.');
+    } else {
+        F_cli_log('initial administrator password set from TCEXAM_ADMIN_PASSWORD.');
+    }
+}
 
-F_cli_log('installation complete. Sign in at '.rtrim($path_host, '/').rtrim($path_tcexam, '/').'/admin/code/ (default: admin / 1234 — change it immediately).');
+F_db_close($db);
+
+F_cli_log('installation complete. Sign in as admin at '.rtrim($path_host, '/').rtrim($path_tcexam, '/').'/admin/code/.');
 exit(0);
 
 //============================================================+

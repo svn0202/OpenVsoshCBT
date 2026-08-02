@@ -62,8 +62,7 @@ if [ -f "${APP}/install/install_cli.php" ]; then
         chown -R www-data:www-data ${CONFIG_DIRS} 2>/dev/null || true
     else
         echo "[tcexam] WARNING: automatic installation did not complete. The app may not be" >&2
-        echo "[tcexam]          configured yet; you can finish it from the web installer at" >&2
-        echo "[tcexam]          http://<host>:<port>/install/ ." >&2
+        echo "[tcexam]          configured yet; inspect the error above and rerun the CLI installer." >&2
     fi
 fi
 

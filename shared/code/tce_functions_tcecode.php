@@ -569,18 +569,93 @@ function F_mathml_callback($matches)
     $mathml_tags = '<abs><and><annotation><annotation-xml><apply><approx><arccos><arccosh><arccot><arccoth><arccsc><arccsch><arcsec><arcsech><arcsin><arcsinh><arctan><arctanh><arg><bind><bvar><card><cartesianproduct><cbytes><ceiling><cerror><ci><cn><codomain><complexes><compose><condition><conjugate><cos><cosh><cot><coth><cs><csc><csch><csymbol><curl><declare><degree><determinant><diff><divergence><divide><domain><domainofapplication><el><emptyset><eq><equivalent><eulergamma><exists><exp><exponentiale><factorial><factorof><false><floor><fn><forall><gcd><geq><grad><gt><ident><image><imaginary><imaginaryi><implies><in><infinity><int><integers><intersect><interval><inverse><lambda><laplacian><lcm><leq><limit><list><ln><log><logbase><lowlimit><lt><maction><malign><maligngroup><malignmark><malignscope><math><matrix><matrixrow><max><mean><median><menclose><merror><mfenced><mfrac><mfraction><mglyph><mi><min><minus><mlabeledtr><mlongdiv><mmultiscripts><mn><mo><mode><moment><momentabout><mover><mpadded><mphantom><mprescripts><mroot><mrow><ms><mscarries><mscarry><msgroup><msline><mspace><msqrt><msrow><mstack><mstyle><msub><msubsup><msup><mtable><mtd><mtext><mtr><munder><munderover><naturalnumbers><neq><none><not><notanumber><note><notin><notprsubset><notsubset><or><otherwise><outerproduct><partialdiff><pi><piece><piecewise><plus><power><primes><product><prsubset><quotient><rationals><real><reals><reln><rem><root><scalarproduct><sdev><sec><sech><selector><semantics><sep><set><setdiff><share><sin><sinh><subset><sum><tan><tanh><tendsto><times><transpose><true><union><uplimit><variance><vector><vectorproduct><xor>';
     // extract latex code and convert some entities
     $mathml = unhtmlentities($matches[1], true);
-    // $mathml = str_replace("&gt;", '>', $mathml);
-    // $mathml = str_replace("&lt;", '<', $mathml);
-    // remove all non-MathML tags
-    $mathml = strip_tags($mathml, $mathml_tags);
-    $mathml = preg_replace("/[\n\r\s]+/", ' ', $mathml);
-    $mathml = trim($mathml);
+    $mathml = F_sanitize_mathml_content($mathml, $mathml_tags);
     if (!str_starts_with($mathml, '<math')) {
         // add default math parent tag
         return '<math xmlns="http://www.w3.org/1998/Math/MathML">' . $mathml . '</math>';
     }
 
     return $mathml;
+}
+
+/**
+ * Sanitize a MathML fragment while preserving a conservative set of presentation attributes.
+ */
+function F_sanitize_mathml_content(string $mathml, string $allowed_tag_string): string
+{
+    if ($mathml === '' || !class_exists('DOMDocument')) {
+        return htmlspecialchars($mathml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    preg_match_all('/<([a-z0-9-]+)>/i', $allowed_tag_string, $tag_matches);
+    $allowed_tags = array_map('strtolower', $tag_matches[1] ?? []);
+
+    $document = new DOMDocument('1.0', 'UTF-8');
+    $previous_errors = libxml_use_internal_errors(true);
+    $loaded = $document->loadHTML(
+        '<!DOCTYPE html><html><body><div id="tce-mathml">' . $mathml . '</div></body></html>',
+        LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING,
+    );
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous_errors);
+    $container = $loaded ? $document->getElementById('tce-mathml') : null;
+    if (!$container instanceof DOMElement) {
+        return htmlspecialchars($mathml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+    F_sanitize_mathml_node($container, $allowed_tags);
+    $result = '';
+    foreach ($container->childNodes as $child) {
+        $result .= $document->saveHTML($child);
+    }
+    return trim((string) preg_replace('/[\n\r\s]+/', ' ', $result));
+}
+
+/**
+ * Recursively remove non-MathML elements and executable attributes.
+ *
+ * @param list<string> $allowed_tags
+ */
+function F_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
+{
+    $allowed_attributes = [
+        'accent', 'accentunder', 'align', 'bevelled', 'close', 'columnalign', 'columnlines',
+        'columnspacing', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'fence',
+        'form', 'frame', 'framespacing', 'height', 'linethickness', 'lspace', 'mathbackground',
+        'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation',
+        'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'scriptlevel',
+        'scriptminsize', 'scriptsizemultiplier', 'separator', 'separators', 'stretchy', 'symmetric',
+        'voffset', 'width', 'xmlns',
+    ];
+
+    for ($node = $parent->firstChild; $node !== null;) {
+        $next = $node->nextSibling;
+        if ($node instanceof DOMComment) {
+            $parent->removeChild($node);
+        } elseif ($node instanceof DOMElement) {
+            $tag = strtolower($node->tagName);
+            if (!in_array($tag, $allowed_tags, true)) {
+                F_sanitize_mathml_node($node, $allowed_tags);
+                while ($node->firstChild !== null) {
+                    $parent->insertBefore($node->firstChild, $node);
+                }
+                $parent->removeChild($node);
+            } else {
+                foreach (iterator_to_array($node->attributes) as $attribute) {
+                    $name = strtolower($attribute->name);
+                    $value = (string) $attribute->value;
+                    if (
+                        !in_array($name, $allowed_attributes, true)
+                        || preg_match('/[\x00-\x1f<>&]/', $value) === 1
+                        || preg_match('/(?:javascript|data)\s*:|url\s*\(/i', $value) === 1
+                        || ($name === 'xmlns' && $value !== 'http://www.w3.org/1998/Math/MathML')
+                    ) {
+                        $node->removeAttributeNode($attribute);
+                    }
+                }
+                F_sanitize_mathml_node($node, $allowed_tags);
+            }
+        }
+        $node = $next;
+    }
 }
 
 /**

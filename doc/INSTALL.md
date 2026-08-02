@@ -15,12 +15,13 @@ make up            # or: docker compose up --build
 
 The stack **installs itself automatically** — the container entrypoint runs the non-interactive
 installer (`install/install_cli.php`) using the database settings from `docker-compose.yml`, so
-there is no browser install step. When it is up, open <http://localhost:8080/> and log in under
-`admin/code/` with the default account `admin` / `1234` (**change it immediately**).
+there is no browser install step. Read the generated initial password with
+`docker compose logs app`, then open <http://localhost:8080/admin/code/> and sign in as `admin`.
+Set `TCEXAM_ADMIN_PASSWORD` before startup to supply your own password (minimum 12 characters).
 
 The installer is idempotent and the configuration is kept in a named volume, so the installed
 instance survives `docker compose down` / `up`; use `docker compose down -v` to start fresh. The
-interactive web installer at <http://localhost:8080/install/> remains available as a fallback.
+The interactive web installer is disabled.
 
 See the **Quick start** section of [README.md](../README.md) for more details (PostgreSQL, font
 generation and persistence notes).
@@ -45,15 +46,15 @@ generation and persistence notes).
    make `cache/`, `install/`, `admin/backup/` and the `*/config/` parents writable by the web
    user.
 
-4. **Run the installer.** Run `install/install.php` (open `http://your-host/install/` in a
-   browser). The installer creates the configuration files and generates a unique random
-   `K_RANDOM_SECURITY` for the instance. The full step-by-step manual is
-   [install/README.md](../install/README.md).
+4. **Run the installer.** Run `php install/install_cli.php` with the environment variables
+   documented in [install/README.md](../install/README.md). The installer creates the
+   configuration files, generates `K_RANDOM_SECURITY`, and assigns a unique initial administrator
+   password. The web installer is intentionally unavailable.
 
 5. **Secure the installation:**
    - **Delete the `install/` directory** once installation is complete.
-   - Log in under `admin/code/` with the default account `admin` / `1234`, create a new level-10
-     administrator and **remove the default `admin` user immediately**.
+   - Store the generated initial password securely, change it on first sign-in, and create named
+     administrator accounts for routine use.
 
    See [SECURITY.md](../SECURITY.md) for the full hardening checklist.
 

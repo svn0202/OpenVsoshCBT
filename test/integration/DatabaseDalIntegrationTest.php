@@ -372,7 +372,9 @@ final class DatabaseDalIntegrationTest extends TestCase
         $rollbackTopic = self::ROW_PREFIX . 'word_rollback_' . $suffix;
         $commitTopic = self::ROW_PREFIX . 'word_commit_' . $suffix;
         $adminId = (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'");
-        $GLOBALS['db'] = $this->db;
+        // @mago-expect lint:no-global -- integration test wires the connection expected by the legacy DB helpers
+        global $db;
+        $db = $this->db;
         $_SESSION['session_user_id'] = $adminId;
         $docx = tempnam(sys_get_temp_dir(), 'openvsosh-word-db-');
         $this->assertNotFalse($docx);

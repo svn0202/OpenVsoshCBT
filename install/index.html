@@ -15,10 +15,9 @@
 <h2>Docker (recommended for evaluation)</h2>
 
 <p>If you started TCExam with <code>make up</code> (or <code>docker compose up --build</code>), the
-installation is performed <strong>automatically</strong> on first start — there is no need to run
-this web installer. Just open <a href="../" title="TCExam home">the application</a> and sign in at
-<code>admin/code/</code> with the default account <code>admin</code> / <code>1234</code>
-(<strong>change it immediately</strong>).</p>
+installation is performed <strong>automatically</strong> on first start. Read the generated initial
+password from <code>docker compose logs app</code>, then sign in as <code>admin</code> at
+<code>admin/code/</code> and change the password immediately.</p>
 
 <h2>Manual / self-hosted install</h2>
 
@@ -27,23 +26,18 @@ PDF engine, mailer, CAS, RADIUS — are <strong>no longer shipped</strong> in th
 
 <pre>composer install</pre>
 
-<p>Then either run the web installer or the command-line installer:</p>
-
-<ul>
-<li><strong>Web installer:</strong> <a href="install.php" title="Run the TCExam installer">run
-install.php</a> and fill in the form.</li>
-<li><strong>Command-line installer</strong> (non-interactive, scriptable): set the
+<p>The interactive web installer is disabled. Run the command-line installer: set the
 <code>TCEXAM_DB_*</code> / <code>TCEXAM_PATH_*</code> environment variables and run
-<code>php install/install_cli.php</code>. See the header of that file for the full list.</li>
-</ul>
+<code>php install/install_cli.php</code>. Set <code>TCEXAM_ADMIN_PASSWORD</code> or securely record
+the generated password printed once by the installer. See the script header for the full list.</p>
 
 <p>The full step-by-step manual — system requirements, manual installation and post-installation
 security — is in <code>install/README.md</code> (also rendered on
 <a href="https://github.com/tecnickcom/tcexam/blob/main/install/README.md" title="TCExam installation manual">GitHub</a>),
 and at the project website <a href="https://tcexam.org" title="TCExam website">tcexam.org</a>.</p>
 
-<p><strong>Important:</strong> delete this entire <code>install/</code> directory once installation
-is complete — it must not remain reachable on a production server.</p>
+<p><strong>Important:</strong> keep <code>install/</code> denied at the web-server layer. You may
+remove it from a production artifact after installation.</p>
 
 </main>
 </body>
