@@ -307,7 +307,7 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
         $row = \F_db_fetch_assoc($result);
-        $this->assertSame(14, (int) $row['n']);
+        $this->assertSame(15, (int) $row['n']);
 
         $verify = proc_open(
             [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
@@ -329,7 +329,8 @@ final class DatabaseDalIntegrationTest extends TestCase
     {
         $attempt = \F_db_query(
             'SELECT testuser_last_activity, testuser_close_reason, testuser_generation_hash, '
-            . 'testuser_pregenerated FROM tce_tests_users WHERE 1=0',
+            . 'testuser_pregenerated, testuser_focus_loss_count, testuser_last_focus_event '
+            . 'FROM tce_tests_users WHERE 1=0',
             $this->db
         );
         $answer = \F_db_query(
