@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var form = document.getElementById('testform');
+    var form = document.getElementById('testform') || document.getElementById('form_test_terminate');
     if (!form) {
         return;
     }
@@ -29,6 +29,116 @@
     var testuserId = '0';
     var reviewKey = '';
     var heartbeatTimer = null;
+    var focusLossOpen = false;
+    var focusLossSending = false;
+    var pendingFocusEvents = [];
+    var focusWarning = null;
+    var allowedSystemDialogOpen = false;
+
+    function focusEventId() {
+        return operationId();
+    }
+
+    function ensureFocusWarning() {
+        if (focusWarning) {
+            return focusWarning;
+        }
+        focusWarning = document.createElement('dialog');
+        focusWarning.id = 'exam-focus-warning';
+        focusWarning.className = 'exam-focus-warning';
+        focusWarning.setAttribute('aria-labelledby', 'exam-focus-warning-title');
+        focusWarning.innerHTML = '<div class="exam-focus-warning-icon" aria-hidden="true">!</div>'
+            + '<h2 id="exam-focus-warning-title">Зафиксирована попытка переключения окна</h2>'
+            + '<p>Во время тестирования нельзя переходить в другие окна или вкладки.</p>'
+            + '<p class="exam-focus-warning-count" aria-live="polite"></p>'
+            + '<button type="button">Вернуться к тесту</button>';
+        focusWarning.querySelector('button').addEventListener('click', function () {
+            focusWarning.close();
+        });
+        focusWarning.addEventListener('cancel', function (event) {
+            event.preventDefault();
+        });
+        document.body.appendChild(focusWarning);
+        return focusWarning;
+    }
+
+    function updateFocusWarning(count) {
+        var warning = ensureFocusWarning();
+        var status = warning.querySelector('.exam-focus-warning-count');
+        if (status && count !== null && Number.isFinite(Number(count))) {
+            status.textContent = 'Количество зафиксированных попыток: ' + String(count) + '.';
+        }
+        if (!warning.open) {
+            try {
+                warning.showModal();
+            } catch (error) {
+                warning.setAttribute('open', 'open');
+            }
+        }
+    }
+
+    function sendNextFocusEvent() {
+        var csrf = form.querySelector('[name="csrf_token"]');
+        if (focusLossSending || pendingFocusEvents.length === 0 || !window.fetch || !csrf) {
+            return;
+        }
+        focusLossSending = true;
+        var data = new FormData();
+        data.set('csrf_token', csrf.value);
+        data.set('testid', testId);
+        data.set('testlogid', testlogId);
+        data.set('event_id', pendingFocusEvents[0]);
+        var recorded = false;
+        window.fetch('tce_test_focus.php', {
+            method: 'POST',
+            body: data,
+            credentials: 'same-origin',
+            keepalive: true,
+            headers: {'Accept': 'application/json'}
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return {status: 'error'};
+            }).then(function (payload) {
+                if (!response.ok || payload.status !== 'recorded') {
+                    var responseError = new Error(payload.status || 'error');
+                    responseError.retryable = response.status >= 500;
+                    throw responseError;
+                }
+                pendingFocusEvents.shift();
+                recorded = true;
+                updateFocusWarning(payload.count);
+            });
+        }).catch(function (error) {
+            if (error.retryable === false) {
+                pendingFocusEvents.shift();
+                recorded = true;
+            } else {
+                window.setTimeout(sendNextFocusEvent, 3000);
+            }
+        }).finally(function () {
+            focusLossSending = false;
+            if (recorded && pendingFocusEvents.length > 0) {
+                window.setTimeout(sendNextFocusEvent, 0);
+            }
+        });
+    }
+
+    function recordFocusLoss() {
+        if (focusLossOpen || formSubmitting || allowedSystemDialogOpen) {
+            return;
+        }
+        focusLossOpen = true;
+        pendingFocusEvents.push(focusEventId());
+        updateFocusWarning(null);
+        sendNextFocusEvent();
+    }
+
+    function closeFocusLossEpisode() {
+        if (document.visibilityState === 'visible' && document.hasFocus()) {
+            focusLossOpen = false;
+            allowedSystemDialogOpen = false;
+        }
+    }
 
     function sendHeartbeat() {
         var csrf = form.querySelector('[name="csrf_token"]');
@@ -675,6 +785,21 @@
     });
 
     refreshQuestionState();
+    form.addEventListener('click', function (event) {
+        if (event.target.closest('input[type="file"]')) {
+            allowedSystemDialogOpen = true;
+        }
+    }, true);
+    window.addEventListener('blur', recordFocusLoss);
+    window.addEventListener('focus', closeFocusLossEpisode);
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+            recordFocusLoss();
+        } else {
+            closeFocusLossEpisode();
+            sendNextFocusEvent();
+        }
+    });
     sendHeartbeat();
     heartbeatTimer = window.setInterval(sendHeartbeat, heartbeatInterval);
     window.addEventListener('pagehide', function () {

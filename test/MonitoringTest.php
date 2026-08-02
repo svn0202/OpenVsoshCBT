@@ -27,4 +27,11 @@ final class MonitoringTest extends TestCase
         }
         self::assertFalse(\F_tmf_monitor_action_is_valid('delete'));
     }
+
+    public function testFocusEventIdentifiersAreStrictlyValidated(): void
+    {
+        self::assertTrue(\F_tmf_focus_event_is_valid('0123456789abcdef0123456789abcdef'));
+        self::assertFalse(\F_tmf_focus_event_is_valid('0123456789ABCDEF0123456789ABCDEF'));
+        self::assertFalse(\F_tmf_focus_event_is_valid('../0123456789abcdef0123456789abcdef'));
+    }
 }

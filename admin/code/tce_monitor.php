@@ -89,12 +89,13 @@ if ($test_id > 0) {
             'questions_total' => 0,
             'questions_answered' => 0,
             'answer_saved_at' => null,
+            'focus_loss_count' => 0,
         ];
     }
 
     $attempt_sql = 'SELECT testuser_id, testuser_user_id, testuser_status,
             testuser_creation_time, testuser_last_activity, testuser_close_reason,
-            testuser_pregenerated
+            testuser_pregenerated, testuser_focus_loss_count
         FROM ' . K_TABLE_TEST_USER . '
         WHERE testuser_test_id=' . $test_id . '
         ORDER BY testuser_user_id, testuser_status, testuser_id DESC';
@@ -130,13 +131,16 @@ if ($test_id > 0) {
 
     foreach ($participants as &$participant) {
         $attempt = $participant['attempt'];
-        if ($attempt !== null && isset($log_totals[(int) $attempt['testuser_id']])) {
+        if (is_array($attempt) && isset($log_totals[(int) $attempt['testuser_id']])) {
             $log = $log_totals[(int) $attempt['testuser_id']];
             $participant['questions_total'] = (int) $log['questions_total'];
             $participant['questions_answered'] = (int) $log['questions_answered'];
             $participant['answer_saved_at'] = $log['answer_saved_at'];
         }
-        $participant['status'] = $attempt !== null && F_getBoolean($attempt['testuser_pregenerated'])
+        if (is_array($attempt)) {
+            $participant['focus_loss_count'] = (int) $attempt['testuser_focus_loss_count'];
+        }
+        $participant['status'] = is_array($attempt) && F_getBoolean($attempt['testuser_pregenerated'])
             ? 'not_started'
             : F_tmf_monitor_status(
                 $attempt === null ? null : (int) $attempt['testuser_status'],
@@ -150,7 +154,7 @@ if ($test_id > 0) {
             );
         $participant['remaining_seconds'] = null;
         if (
-            $attempt !== null
+            is_array($attempt)
             && in_array($participant['status'], ['in_progress', 'connection_lost', 'blocked'], true)
         ) {
             $participant['remaining_seconds'] = max(
@@ -197,7 +201,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     require_once '../../shared/code/tce_functions_xlsx.php';
     $rows = [[
         'login', 'last_name', 'first_name', 'status', 'answered', 'total',
-        'remaining_seconds', 'last_activity', 'last_saved',
+        'focus_loss_count', 'remaining_seconds', 'last_activity', 'last_saved',
     ]];
     foreach ($visible_participants as $participant) {
         $user = $participant['user'];
@@ -209,6 +213,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
             $status_labels[$participant['status']],
             ['value' => $participant['questions_answered'], 'type' => 'number'],
             ['value' => $participant['questions_total'], 'type' => 'number'],
+            ['value' => (int) ($participant['focus_loss_count'] ?? 0), 'type' => 'number'],
             $participant['remaining_seconds'] === null
                 ? ''
                 : ['value' => $participant['remaining_seconds'], 'type' => 'number'],
@@ -218,7 +223,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     }
     $bytes = F_tmf_xlsx_build([[
         'name' => 'Мониторинг ' . $test_id,
-        'widths' => [20, 22, 22, 18, 12, 10, 20, 22, 22],
+        'widths' => [20, 22, 22, 18, 12, 10, 18, 20, 22, 22],
         'rows' => $rows,
     ]]);
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -242,6 +247,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'csv') {
         'Статус',
         'Отвечено',
         'Всего',
+        'Попытки переключения',
         'Осталось, сек.',
         'Последняя активность',
         'Последнее сохранение',
@@ -256,6 +262,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'csv') {
             $status_labels[$participant['status']],
             $participant['questions_answered'],
             $participant['questions_total'],
+            (int) ($participant['focus_loss_count'] ?? 0),
             $participant['remaining_seconds'] ?? '',
             $attempt['testuser_last_activity'] ?? '',
             $participant['answer_saved_at'] ?? '',
@@ -325,7 +332,7 @@ if ($test_id > 0) {
 
     echo '<div class="monitor-table-wrap"><table class="monitor-table"><thead><tr>'
         . '<th>Участник</th><th>Состояние</th><th>Прогресс</th><th>Осталось</th>'
-        . '<th>Последняя активность</th><th>Последнее сохранение</th>'
+        . '<th>Переключения</th><th>Последняя активность</th><th>Последнее сохранение</th>'
         . '<th>Управление</th></tr></thead><tbody>' . K_NEWLINE;
     foreach ($visible_participants as $participant) {
         $user = $participant['user'];
@@ -339,9 +346,10 @@ if ($test_id > 0) {
         $remaining = $participant['remaining_seconds'];
         echo '<td>' . ($remaining === null ? '—' : sprintf('%02d:%02d', intdiv($remaining, 60), $remaining % 60))
             . '</td>';
+        echo '<td><strong>' . (int) ($participant['focus_loss_count'] ?? 0) . '</strong></td>';
         echo '<td>' . F_tmf_monitor_html($attempt['testuser_last_activity'] ?? '—') . '</td>';
         echo '<td>' . F_tmf_monitor_html($participant['answer_saved_at'] ?? '—') . '</td><td>';
-        if ($attempt !== null) {
+        if (is_array($attempt)) {
             echo '<form action="tce_monitor.php" method="post" class="monitor-actions">';
             echo '<input type="hidden" name="test_id" value="' . $test_id . '" />';
             echo '<input type="hidden" name="testuser_id" value="' . (int) $attempt['testuser_id'] . '" />';
@@ -365,7 +373,7 @@ if ($test_id > 0) {
         echo '</td></tr>' . K_NEWLINE;
     }
     if ($visible_participants === []) {
-        echo '<tr><td colspan="7">Нет участников, соответствующих фильтру.</td></tr>';
+        echo '<tr><td colspan="8">Нет участников, соответствующих фильтру.</td></tr>';
     }
     echo '</tbody></table></div>' . K_NEWLINE;
 

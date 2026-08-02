@@ -7,6 +7,11 @@
 const TMF_MONITOR_LOST_AFTER_SECONDS = 180;
 const TMF_MONITOR_ACTIONS = ['block', 'unblock', 'extend', 'reset'];
 
+function F_tmf_focus_event_is_valid(string $event_id): bool
+{
+    return preg_match('/\A[a-f0-9]{32}\z/', $event_id) === 1;
+}
+
 function F_tmf_monitor_audit_table(): string
 {
     return K_TABLE_PREFIX . 'monitor_audit';

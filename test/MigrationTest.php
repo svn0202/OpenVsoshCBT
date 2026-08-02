@@ -31,7 +31,8 @@ final class MigrationTest extends TestCase
         $files = \F_tmf_migration_files(__DIR__ . '/../install/upgrade/mysql');
         self::assertSame('openvsosh_access_settings.sql', basename($files[0]));
         self::assertSame('openvsosh_result_publication.sql', basename($files[array_key_last($files)]));
-        self::assertSame('openvsosh_roles.sql', basename($files[10]));
-        self::assertCount(14, $files);
+        self::assertSame('openvsosh_roles.sql', basename($files[11]));
+        self::assertSame('openvsosh_focus_monitoring.sql', basename($files[4]));
+        self::assertCount(15, $files);
     }
 }

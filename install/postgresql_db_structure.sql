@@ -168,6 +168,8 @@ CREATE TABLE "tce_tests_users" (
 	"testuser_creation_time" Timestamp NOT NULL,
 	"testuser_last_activity" Timestamp,
 	"testuser_close_reason" Varchar(16),
+	"testuser_focus_loss_count" Integer NOT NULL Default 0,
+	"testuser_last_focus_event" Char(32),
 	"testuser_generation_hash" Char(64),
 	"testuser_pregenerated" Boolean NOT NULL Default '0',
 	"testuser_comment" Text,
