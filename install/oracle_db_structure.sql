@@ -181,6 +181,8 @@ CREATE TABLE tce_tests_users (
 	testuser_creation_time DATE NOT NULL,
 	testuser_last_activity DATE,
 	testuser_close_reason VARCHAR2(16),
+	testuser_focus_loss_count NUMBER(10,0) DEFAULT 0 NOT NULL,
+	testuser_last_focus_event CHAR(32),
 	testuser_generation_hash CHAR(64),
 	testuser_pregenerated NUMBER(1) DEFAULT '0' NOT NULL,
 	testuser_comment NCLOB,

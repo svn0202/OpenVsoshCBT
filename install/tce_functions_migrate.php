@@ -63,6 +63,7 @@ function F_tmf_migration_files(string $directory): array
         'openvsosh_word_import.sql',
         'openvsosh_answer_save.sql',
         'openvsosh_monitoring.sql',
+        'openvsosh_focus_monitoring.sql',
         'openvsosh_pregeneration.sql',
         'openvsosh_offline.sql',
         'openvsosh_test_access.sql',
