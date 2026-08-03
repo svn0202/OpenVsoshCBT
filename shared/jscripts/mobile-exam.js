@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var form = document.getElementById('testform') || document.getElementById('form_test_terminate');
+    var form = document.getElementById('testform');
     if (!form) {
         return;
     }
@@ -53,6 +53,7 @@
             + '<p class="exam-focus-warning-count" aria-live="polite"></p>'
             + '<button type="button">Вернуться к тесту</button>';
         focusWarning.querySelector('button').addEventListener('click', function () {
+            document.body.classList.remove('exam-focus-obscured');
             focusWarning.close();
         });
         focusWarning.addEventListener('cancel', function (event) {
@@ -128,6 +129,7 @@
             return;
         }
         focusLossOpen = true;
+        document.body.classList.add('exam-focus-obscured');
         pendingFocusEvents.push(focusEventId());
         updateFocusWarning(null);
         sendNextFocusEvent();

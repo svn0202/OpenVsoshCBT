@@ -157,6 +157,7 @@ if ($test_id > 0) {
             is_array($attempt)
             && in_array($participant['status'], ['in_progress', 'connection_lost', 'blocked'], true)
         ) {
+            // @mago-expect analysis:mixed-array-assignment -- participant rows are assembled above from DB data
             $participant['remaining_seconds'] = max(
                 0,
                 strtotime((string) $attempt['testuser_creation_time'])

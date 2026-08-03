@@ -2025,6 +2025,12 @@ body.app-page.exam-page .exam-focus-warning h2 { margin: 0 0 .75rem; color: #b42
 body.app-page.exam-page .exam-focus-warning p { margin: .5rem 0; }
 body.app-page.exam-page .exam-focus-warning-count { font-weight: 700; }
 body.app-page.exam-page .exam-focus-warning button { margin-top: 1rem; }
+body.app-page.exam-page.exam-focus-obscured #testform > div {
+    opacity: .08;
+    filter: blur(20px);
+    pointer-events: none;
+    user-select: none;
+}
 body.app-page.exam-page .exam-question-number {
     flex: 1 1 auto;
     margin: 0;

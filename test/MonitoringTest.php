@@ -30,8 +30,11 @@ final class MonitoringTest extends TestCase
 
     public function testFocusEventIdentifiersAreStrictlyValidated(): void
     {
+        // @mago-expect analysis:non-existent-function -- implementation is loaded by the require_once above
         self::assertTrue(\F_tmf_focus_event_is_valid('0123456789abcdef0123456789abcdef'));
+        // @mago-expect analysis:non-existent-function -- implementation is loaded by the require_once above
         self::assertFalse(\F_tmf_focus_event_is_valid('0123456789ABCDEF0123456789ABCDEF'));
+        // @mago-expect analysis:non-existent-function -- implementation is loaded by the require_once above
         self::assertFalse(\F_tmf_focus_event_is_valid('../0123456789abcdef0123456789abcdef'));
     }
 }

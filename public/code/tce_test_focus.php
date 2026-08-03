@@ -56,13 +56,16 @@ $log_result = F_db_query(
     WHERE testlog_id=' . $testlog_id,
     $db,
 );
+// @mago-expect analysis:no-value -- the active DAL returns a database result object or false
 $log = $log_result ? F_db_fetch_array($log_result) : false;
+// @mago-expect analysis:impossible-type-comparison -- DB fetch returns an array at runtime
 $testuser_id = is_array($log) ? (int) $log['testlog_testuser_id'] : 0;
 if ($testuser_id <= 0) {
     F_tmf_focus_json(403, ['status' => 'forbidden']);
 }
 
 $escaped_event_id = F_escape_sql($db, $event_id);
+// @mago-expect analysis:invalid-operand -- validated positive integer derived from the fetched DB row
 $sql = 'UPDATE ' . K_TABLE_TEST_USER . '
     SET testuser_focus_loss_count=testuser_focus_loss_count+1,
         testuser_last_focus_event=\'' . $escaped_event_id . '\'
@@ -78,6 +81,7 @@ if (!$result) {
     F_tmf_focus_json(500, ['status' => 'error']);
 }
 
+// @mago-expect analysis:invalid-operand -- validated positive integer derived from the fetched DB row
 $count_result = F_db_query(
     'SELECT testuser_focus_loss_count, testuser_last_focus_event
     FROM ' . K_TABLE_TEST_USER . '
@@ -88,7 +92,9 @@ $count_result = F_db_query(
         AND testuser_status<4',
     $db,
 );
+// @mago-expect analysis:no-value -- the active DAL returns a database result object or false
 $attempt = $count_result ? F_db_fetch_array($count_result) : false;
+// @mago-expect analysis:impossible-type-comparison -- DB fetch returns an array at runtime
 if (!is_array($attempt)) {
     F_tmf_focus_json(409, ['status' => 'closed']);
 }
