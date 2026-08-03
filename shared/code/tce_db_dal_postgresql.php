@@ -85,7 +85,7 @@ function F_db_error($link_identifier = null)
  * NOTE: Convert MySQL RAND() function to PostgreSQL RANDOM() on ORDER BY clause of selection queries.
  * @param $query (string) The query tosend. The query string should not end with a semicolon.
  * @param $link_identifier (resource) database link identifier.
- * @return false in case of error, TRUE or resource-identifier in case of success.
+ * @return PgSql\Result|false query result on success, false on error.
  */
 function F_db_query($query, $link_identifier)
 {
@@ -97,8 +97,8 @@ function F_db_query($query, $link_identifier)
 /**
  * Fetch a result row as an associative and numeric array.
  * Note: This function sets NULL fields to PHP NULL value.
- * @param $result (resource) result resource to the query result.
- * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
+ * @param PgSql\Result $result result resource to the query result.
+ * @return array<int|string, mixed>|false row data, or false if there are no more rows.
  */
 function F_db_fetch_array($result)
 {

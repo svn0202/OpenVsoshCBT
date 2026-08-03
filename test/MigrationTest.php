@@ -28,11 +28,24 @@ final class MigrationTest extends TestCase
 
     public function testManifestOrderIsStableAndComplete(): void
     {
+        /** @var array<int, string> $files */
         $files = \F_tmf_migration_files(__DIR__ . '/../install/upgrade/mysql');
-        self::assertSame('openvsosh_access_settings.sql', basename($files[0]));
-        self::assertSame('openvsosh_result_publication.sql', basename($files[array_key_last($files)]));
-        self::assertSame('openvsosh_roles.sql', basename($files[11]));
-        self::assertSame('openvsosh_focus_monitoring.sql', basename($files[4]));
-        self::assertCount(15, $files);
+        self::assertSame([
+            'openvsosh_access_settings.sql',
+            'openvsosh_word_import.sql',
+            'openvsosh_answer_save.sql',
+            'openvsosh_monitoring.sql',
+            'openvsosh_focus_monitoring.sql',
+            'openvsosh_pregeneration.sql',
+            'openvsosh_offline.sql',
+            'openvsosh_test_access.sql',
+            'openvsosh_essay_attachments.sql',
+            'openvsosh_question_shuffle.sql',
+            'openvsosh_review_flag.sql',
+            'openvsosh_roles.sql',
+            'openvsosh_exam_display.sql',
+            'openvsosh_user_card.sql',
+            'openvsosh_result_publication.sql',
+        ], array_map(static fn (string $path): string => basename($path), $files));
     }
 }
