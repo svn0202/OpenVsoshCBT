@@ -32,6 +32,7 @@ $menu = [
         'level' => K_AUTH_INDEX,
         'key' => '',
         'enabled' => true,
+        'icon' => 'home',
     ],
     'tce_menu_users.php' => [
         'link' => 'tce_menu_users.php',
@@ -40,6 +41,7 @@ $menu = [
         'level' => K_AUTH_ADMIN_USERS,
         'key' => '',
         'enabled' => true,
+        'icon' => 'users',
     ],
     'tce_menu_modules.php' => [
         'link' => 'tce_menu_modules.php',
@@ -48,6 +50,7 @@ $menu = [
         'level' => K_AUTH_ADMIN_MODULES,
         'key' => '',
         'enabled' => true,
+        'icon' => 'library',
     ],
     'tce_menu_tests.php' => [
         'link' => 'tce_menu_tests.php',
@@ -56,6 +59,7 @@ $menu = [
         'level' => K_AUTH_OPERATOR,
         'key' => '',
         'enabled' => true,
+        'icon' => 'tests',
     ],
     'tce_onboarding_settings.php' => [
         'link' => 'tce_onboarding_settings.php',
@@ -64,6 +68,7 @@ $menu = [
         'level' => K_AUTH_ADMINISTRATOR,
         'key' => '',
         'enabled' => true,
+        'icon' => 'settings',
     ],
     'tce_edit_backup.php' => [
         'link' => 'tce_edit_backup.php',
@@ -72,6 +77,7 @@ $menu = [
         'level' => K_AUTH_BACKUP,
         'key' => '',
         'enabled' => K_DATABASE_TYPE === 'MYSQL' || K_DATABASE_TYPE == 'POSTGRESQL',
+        'icon' => 'backup',
     ],
     'public' => [
         'link' => '../../public/code/index.php',
@@ -80,6 +86,7 @@ $menu = [
         'level' => 0,
         'key' => '',
         'enabled' => true,
+        'icon' => 'external',
     ],
     'tce_self_profile.php' => [
         'link' => 'tce_self_profile.php',
@@ -88,6 +95,7 @@ $menu = [
         'level' => K_AUTH_OPERATOR,
         'key' => '',
         'enabled' => $_SESSION['session_user_level'] >= K_AUTH_OPERATOR,
+        'icon' => 'profile',
     ],
     'tce_page_help.php' => [
         'link' => 'tce_page_help.php',
@@ -96,6 +104,7 @@ $menu = [
         'level' => K_AUTH_ADMIN_INFO,
         'key' => '',
         'enabled' => true,
+        'icon' => 'help',
     ],
     'tce_page_info.php' => [
         'link' => 'tce_page_info.php',
@@ -104,6 +113,7 @@ $menu = [
         'level' => K_AUTH_ADMIN_INFO,
         'key' => '',
         'enabled' => true,
+        'icon' => 'info',
     ],
     'tce_logout.php' => [
         'link' => 'tce_logout.php',
@@ -112,6 +122,7 @@ $menu = [
         'level' => 1,
         'key' => '',
         'enabled' => $_SESSION['session_user_level'] > 0,
+        'icon' => 'logout',
     ],
     'tce_login.php' => [
         'link' => 'tce_login.php',
@@ -120,6 +131,7 @@ $menu = [
         'level' => 0,
         'key' => '',
         'enabled' => $_SESSION['session_user_level'] < 1,
+        'icon' => 'login',
     ],
 ];
 

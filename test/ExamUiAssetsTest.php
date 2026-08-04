@@ -8,6 +8,27 @@ use PHPUnit\Framework\TestCase;
 
 final class ExamUiAssetsTest extends TestCase
 {
+    public function testAdministratorThemeHasIconsDashboardAndLiveAppearancePreview(): void
+    {
+        $menu = (string) file_get_contents(__DIR__ . '/../shared/code/tce_functions_menu.php');
+        $dashboard = (string) file_get_contents(__DIR__ . '/../admin/code/index.php');
+        $settings = (string) file_get_contents(__DIR__ . '/../admin/code/tce_onboarding_settings.php');
+        $script = (string) file_get_contents(__DIR__ . '/../admin/jscripts/appearance-preview.js');
+        $stylesheet = (string) file_get_contents(__DIR__ . '/../admin/styles/admin-responsive.css');
+        $publicStylesheet = (string) file_get_contents(__DIR__ . '/../public/styles/tmf-reference.css');
+
+        self::assertStringContainsString('function f_menu_icon_svg', $menu);
+        self::assertStringContainsString('class="menu-icon"', $menu);
+        self::assertStringContainsString('class="admin-dashboard"', $dashboard);
+        self::assertStringContainsString('class="settings-preview"', $settings);
+        self::assertStringContainsString('name="admin_palette"', $settings);
+        self::assertStringContainsString('name="login_background_overlay"', $settings);
+        self::assertStringContainsString("preview.dataset.palette", $script);
+        self::assertStringContainsString('body.admin-palette-forest', $stylesheet);
+        self::assertStringContainsString('.dashboard-stats {', $stylesheet);
+        self::assertStringContainsString('--login-background-position', $publicStylesheet);
+    }
+
     public function testImagePreviewIsKeyboardAccessibleAndSurvivesAjaxNavigation(): void
     {
         $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/mobile-exam.js');
