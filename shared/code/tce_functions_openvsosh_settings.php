@@ -273,6 +273,76 @@ function openvsosh_save_site_settings(array $input): array
 }
 
 /**
+ * Return administrator-controlled visual preferences from a constrained set.
+ *
+ * @return array{admin_palette:string,admin_density:string,ui_font:string,
+ *     login_background_position:string,login_background_size:string,login_background_overlay:int}
+ */
+function openvsosh_get_appearance_settings(): array
+{
+    $overlay = openvsosh_get_setting('login_background_overlay');
+    return [
+        'admin_palette' => openvsosh_get_setting('admin_palette') ?? 'ocean',
+        'admin_density' => openvsosh_get_setting('admin_density') ?? 'comfortable',
+        'ui_font' => openvsosh_get_setting('ui_font') ?? 'system',
+        'login_background_position' => openvsosh_get_setting('login_background_position') ?? 'center',
+        'login_background_size' => openvsosh_get_setting('login_background_size') ?? 'cover',
+        'login_background_overlay' => $overlay === null ? 34 : (int) $overlay,
+    ];
+}
+
+/**
+ * Validate and save visual preferences without accepting arbitrary CSS values.
+ * Missing fields retain their current values for backwards-compatible posts.
+ *
+ * @return array{saved:bool,errors:array<int,string>}
+ */
+function openvsosh_save_appearance_settings(array $input): array
+{
+    $current = openvsosh_get_appearance_settings();
+    $values = [
+        'admin_palette' => (string) ($input['admin_palette'] ?? $current['admin_palette']),
+        'admin_density' => (string) ($input['admin_density'] ?? $current['admin_density']),
+        'ui_font' => (string) ($input['ui_font'] ?? $current['ui_font']),
+        'login_background_position' => (string) (
+            $input['login_background_position'] ?? $current['login_background_position']
+        ),
+        'login_background_size' => (string) ($input['login_background_size'] ?? $current['login_background_size']),
+        'login_background_overlay' => (int) (
+            $input['login_background_overlay'] ?? $current['login_background_overlay']
+        ),
+    ];
+    $errors = [];
+    if (!in_array($values['admin_palette'], ['ocean', 'slate', 'forest', 'berry'], true)) {
+        $errors[] = 'Выбрана недопустимая палитра оформления.';
+    }
+    if (!in_array($values['admin_density'], ['comfortable', 'compact'], true)) {
+        $errors[] = 'Выбрана недопустимая плотность интерфейса.';
+    }
+    if (!in_array($values['ui_font'], ['system', 'humanist', 'serif'], true)) {
+        $errors[] = 'Выбран недопустимый шрифт интерфейса.';
+    }
+    if (!in_array($values['login_background_position'], ['center', 'top', 'bottom', 'left', 'right'], true)) {
+        $errors[] = 'Выбрано недопустимое положение фона.';
+    }
+    if (!in_array($values['login_background_size'], ['cover', 'contain', 'auto'], true)) {
+        $errors[] = 'Выбран недопустимый размер фона.';
+    }
+    if ($values['login_background_overlay'] < 0 || $values['login_background_overlay'] > 80) {
+        $errors[] = 'Затемнение фона должно быть от 0 до 80 процентов.';
+    }
+    if ($errors !== []) {
+        return ['saved' => false, 'errors' => $errors];
+    }
+    foreach ($values as $key => $value) {
+        if (!openvsosh_save_setting($key, (string) $value)) {
+            return ['saved' => false, 'errors' => ['Не удалось сохранить настройки оформления.']];
+        }
+    }
+    return ['saved' => true, 'errors' => []];
+}
+
+/**
  * @return array{default_language:string,default_timezone:string,timer_warning_seconds:int,
  *     timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string}
  */
@@ -301,6 +371,7 @@ function openvsosh_bootstrap_settings_path(): string
 }
 
 /**
+ * @param array<array-key, mixed> $input
  * @return array{saved:bool,errors:array<int,string>}
  */
 function openvsosh_save_runtime_settings(array $input): array
@@ -374,7 +445,7 @@ function openvsosh_contrast_text(string $background): string
     }
     $channels = array_map(static function (int $channel): float {
         $value = $channel / 255;
-        return $value <= 0.04045 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
+        return $value <= 0.040_45 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
     }, $rgb);
     $luminance = (0.2126 * $channels[0]) + (0.7152 * $channels[1]) + (0.0722 * $channels[2]);
     $white_contrast = 1.05 / ($luminance + 0.05);

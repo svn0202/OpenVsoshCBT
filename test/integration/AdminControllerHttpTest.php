@@ -706,6 +706,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'timer_critical_seconds' => '180',
                 'timer_warning_color' => '#9a4f00',
                 'timer_critical_color' => '#a40000',
+                'admin_palette' => 'forest',
+                'admin_density' => 'compact',
+                'ui_font' => 'humanist',
+                'login_background_position' => 'top',
+                'login_background_size' => 'cover',
+                'login_background_overlay' => '42',
                 'csrf_token' => $token,
             ]);
             $this->assertSame(200, $status);
@@ -718,6 +724,16 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'UTC',
                 $this->dbScalar(
                     "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='default_timezone'"
+                )
+            );
+            $this->assertSame(
+                'forest',
+                $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='admin_palette'")
+            );
+            $this->assertSame(
+                '42',
+                $this->dbScalar(
+                    "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='login_background_overlay'"
                 )
             );
             [$bootstrapStatus] = $this->http('GET', '/shared/config/openvsosh-bootstrap.json');

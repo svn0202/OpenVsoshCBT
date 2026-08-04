@@ -10,13 +10,16 @@ require_once '../../shared/config/tce_user_registration.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 require_once '../../shared/code/tce_functions_site_assets.php';
 
-$thispage_title = $l['ov_instance_settings'];
+$settings_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
+$thispage_title = (string) ($l['ov_instance_settings'] ?? 'Настройки площадки');
 require_once 'tce_page_header.php';
 
-$config = F_getOnboardingConfig();
+$config_candidate = F_getOnboardingConfig();
+$config = is_array($config_candidate) ? $config_candidate : [];
 $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
+$appearance_config = openvsosh_get_appearance_settings();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
@@ -26,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if ($instruction_id > 0 && $instruction_id === $demo_id) {
         F_print_error('WARNING', 'Для инструкции и демо-теста выберите разные тесты.');
     } elseif (F_saveOnboardingConfig($instruction_id, $demo_id)) {
-        $config = F_getOnboardingConfig();
+        $config_candidate = F_getOnboardingConfig();
+        $config = is_array($config_candidate) ? $config_candidate : [];
         F_print_error('MESSAGE', 'Настройки вводных тестов сохранены.');
     } else {
         F_print_error('ERROR', 'Не удалось сохранить настройки. Проверьте права на shared/config.', false);
@@ -39,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
     }
     $site_result = openvsosh_save_site_settings($_POST);
     $runtime_result = openvsosh_save_runtime_settings($_POST);
-    if ($site_result['saved'] && $runtime_result['saved']) {
+    $appearance_result = openvsosh_save_appearance_settings($_POST);
+    if ($site_result['saved'] && $runtime_result['saved'] && $appearance_result['saved']) {
         $asset_errors = [];
         foreach (['logo', 'background'] as $asset_type) {
             if (isset($_FILES['site_' . $asset_type])) {
@@ -54,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
         }
         $site_config = openvsosh_get_site_settings();
         $runtime_config = openvsosh_get_runtime_settings();
+        $appearance_config = openvsosh_get_appearance_settings();
         if ($asset_errors === []) {
             F_print_error('MESSAGE', 'Настройки площадки сохранены.');
         } else {
@@ -66,7 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
         F_print_error(
             'WARNING',
             htmlspecialchars(
-                implode(' ', array_merge($site_result['errors'], $runtime_result['errors'])),
+                implode(' ', array_merge(
+                    $site_result['errors'],
+                    $runtime_result['errors'],
+                    $appearance_result['errors'],
+                )),
                 ENT_QUOTES,
                 $l['a_meta_charset'],
             ),
@@ -102,35 +112,31 @@ if ($r = F_db_query($sql, $db)) {
     }
 }
 
-function F_onboardingTestSelect($name, $selected, $tests)
+/** @param list<mixed> $tests */
+function f_onboarding_test_select(string $name, int $selected, array $tests, string $charset): void
 {
-    global $l;
     echo '<select name="' . $name . '" id="' . $name . '">' . K_NEWLINE;
     echo '<option value="0">— не назначен —</option>' . K_NEWLINE;
     foreach ($tests as $test) {
-        $id = (int) $test['test_id'];
+        if (!is_array($test)) {
+            continue;
+        }
+        $id = (int) ($test['test_id'] ?? 0);
         echo '<option value="' . $id . '"' . ($id === (int) $selected ? ' selected="selected"' : '') . '>';
-        echo htmlspecialchars((string) $test['test_name'], ENT_QUOTES, $l['a_meta_charset']);
+        echo htmlspecialchars((string) ($test['test_name'] ?? ''), ENT_QUOTES, $charset);
         echo '</option>' . K_NEWLINE;
     }
     echo '</select>' . K_NEWLINE;
 }
 
-echo '<div class="container onboarding-admin">' . K_NEWLINE;
-echo '<style>
-.onboarding-admin{max-width:900px;margin:28px auto;padding:28px 32px;background:#fff;border:1px solid #cbd5df;border-radius:12px;box-shadow:0 12px 32px rgba(30,50,70,.08)}
-.onboarding-admin h1{margin:0 0 8px;color:#183b64}.onboarding-admin>p{margin:0 0 26px;color:#52677d}
-.onboarding-admin fieldset{padding:22px;border:1px solid #d5dee8;border-radius:10px}.onboarding-admin legend{padding:0 8px;font-weight:700;color:#274f7c}
-.onboarding-admin .row{display:grid;grid-template-columns:190px minmax(260px,1fr);gap:8px 18px;align-items:center;margin:16px 0}
-.onboarding-admin label{font-weight:700}.onboarding-admin select,.onboarding-admin textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid #aebdcb;border-radius:7px;background:#fff;box-sizing:border-box}
-.onboarding-admin textarea{min-height:150px;resize:vertical}.onboarding-admin .check-row{grid-template-columns:32px minmax(0,1fr)}.onboarding-admin .check-row input{width:22px;height:22px;margin:0;accent-color:#2f6da8}.onboarding-admin .check-row label{display:block}.onboarding-admin .check-row .form-help{grid-column:2}
-.onboarding-admin .form-help{grid-column:2;color:#65798d;font-size:13px}.onboarding-admin-actions{display:flex;justify-content:flex-end;margin-top:20px}
-.onboarding-admin-actions .button{padding:10px 24px;border:0;border-radius:7px;background:#2f6da8;color:#fff;font-weight:700;cursor:pointer}
-@media(max-width:700px){.onboarding-admin .row{grid-template-columns:1fr}.onboarding-admin .form-help{grid-column:1}}
-</style>' . K_NEWLINE;
-echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+echo '<div class="container onboarding-admin settings-console">' . K_NEWLINE;
+echo '<section class="settings-intro"><div><span>Центр управления</span>'
+    . '<h2>Внешний вид и поведение площадки</h2>'
+    . '<p>Настройте узнаваемое оформление, экран входа и основные параметры без правки файлов.</p></div>'
+    . '<a href="../../public/code/index.php">Открыть площадку <span aria-hidden="true">↗</span></a></section>' . K_NEWLINE;
+echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
     . '" method="post" enctype="multipart/form-data">' . K_NEWLINE;
-echo '<fieldset><legend>Оформление площадки</legend>' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">01</span> Фирменное оформление</legend>' . K_NEWLINE;
 $site_fields = [
     'site_name' => ['Название площадки', 120],
     'site_description' => ['Краткое описание', 500],
@@ -149,13 +155,67 @@ foreach ($site_fields as $key => [$label, $limit]) {
     }
     echo '</div>' . K_NEWLINE;
 }
+echo '<div class="settings-preview" id="appearance-preview" data-palette="'
+    . htmlspecialchars($appearance_config['admin_palette'], ENT_QUOTES) . '">' . K_NEWLINE;
+echo '<div class="settings-preview-sidebar"><span></span><i></i><i></i><i></i></div>' . K_NEWLINE;
+echo '<div class="settings-preview-stage">' . K_NEWLINE;
+$preview_background_fit = $appearance_config['login_background_size'] === 'auto'
+    ? 'none'
+    : $appearance_config['login_background_size'];
+echo '<div class="settings-preview-login" style="--preview-overlay:'
+    . ((int) $appearance_config['login_background_overlay'] / 100) . ';--preview-position:'
+    . htmlspecialchars($appearance_config['login_background_position'], ENT_QUOTES) . ';--preview-size:'
+    . htmlspecialchars($preview_background_fit, ENT_QUOTES) . '">' . K_NEWLINE;
+if (openvsosh_site_asset_metadata('background')) {
+    echo '<img src="../../public/code/tce_site_asset.php?type=background" alt="" />' . K_NEWLINE;
+}
+echo '<div><strong>' . htmlspecialchars($site_config['site_name'], ENT_QUOTES, $l['a_meta_charset'])
+    . '</strong><span>Предпросмотр экрана входа</span></div></div></div></div>' . K_NEWLINE;
+echo '<div class="settings-choice-grid">' . K_NEWLINE;
+echo '<div class="row"><label for="admin_palette">Палитра админки</label><select name="admin_palette" id="admin_palette">';
+foreach (['ocean' => 'Северный океан', 'slate' => 'Графит', 'forest' => 'Лес', 'berry' => 'Ягода'] as $value => $label) {
+    echo '<option value="' . $value . '"' . ($appearance_config['admin_palette'] === $value ? ' selected="selected"' : '')
+        . '>' . $label . '</option>';
+}
+echo '</select><span class="form-help">Цвет меню, акцентов и кнопок.</span></div>' . K_NEWLINE;
+echo '<div class="row"><label for="ui_font">Шрифт интерфейса</label><select name="ui_font" id="ui_font">';
+foreach (['system' => 'Системный', 'humanist' => 'Гуманистический', 'serif' => 'Классический с засечками'] as $value => $label) {
+    echo '<option value="' . $value . '"' . ($appearance_config['ui_font'] === $value ? ' selected="selected"' : '')
+        . '>' . $label . '</option>';
+}
+echo '</select><span class="form-help">Применяется в админке и на экране входа.</span></div>' . K_NEWLINE;
+echo '<div class="row"><label for="admin_density">Плотность форм</label><select name="admin_density" id="admin_density">';
+foreach (['comfortable' => 'Комфортная', 'compact' => 'Компактная'] as $value => $label) {
+    echo '<option value="' . $value . '"' . ($appearance_config['admin_density'] === $value ? ' selected="selected"' : '')
+        . '>' . $label . '</option>';
+}
+echo '</select><span class="form-help">Компактный режим показывает больше полей на экране.</span></div>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 echo '<div class="row"><label for="site_logo">Основной логотип</label>'
     . '<input type="file" name="site_logo" id="site_logo" accept="image/jpeg,image/png" />'
     . '<span class="form-help">JPEG/PNG, 32–8192 px, до 5 МБ.</span></div>' . K_NEWLINE;
 echo '<div class="row"><label for="site_background">Фон страницы входа</label>'
     . '<input type="file" name="site_background" id="site_background" accept="image/jpeg,image/png" />'
     . '<span class="form-help">JPEG/PNG, 32–8192 px, до 5 МБ.</span></div>' . K_NEWLINE;
-echo '</fieldset><fieldset><legend>Язык, время и предупреждения</legend>' . K_NEWLINE;
+echo '<div class="settings-choice-grid settings-background-controls">' . K_NEWLINE;
+echo '<div class="row"><label for="login_background_position">Положение фона</label><select name="login_background_position" id="login_background_position">';
+foreach (['center' => 'По центру', 'top' => 'Сверху', 'bottom' => 'Снизу', 'left' => 'Слева', 'right' => 'Справа'] as $value => $label) {
+    echo '<option value="' . $value . '"' . ($appearance_config['login_background_position'] === $value ? ' selected="selected"' : '')
+        . '>' . $label . '</option>';
+}
+echo '</select></div>' . K_NEWLINE;
+echo '<div class="row"><label for="login_background_size">Масштаб фона</label><select name="login_background_size" id="login_background_size">';
+foreach (['cover' => 'Заполнить экран', 'contain' => 'Показать целиком', 'auto' => 'Исходный размер'] as $value => $label) {
+    echo '<option value="' . $value . '"' . ($appearance_config['login_background_size'] === $value ? ' selected="selected"' : '')
+        . '>' . $label . '</option>';
+}
+echo '</select></div>' . K_NEWLINE;
+echo '<div class="row range-row"><label for="login_background_overlay">Затемнение фона</label>'
+    . '<input type="range" name="login_background_overlay" id="login_background_overlay" min="0" max="80" step="1" value="'
+    . (int) $appearance_config['login_background_overlay'] . '" />'
+    . '<output for="login_background_overlay">' . (int) $appearance_config['login_background_overlay'] . '%</output></div>' . K_NEWLINE;
+echo '</div></fieldset>' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">02</span> Язык, время и предупреждения</legend>' . K_NEWLINE;
 echo '<div class="row"><label for="default_language">Язык по умолчанию</label>'
     . '<select name="default_language" id="default_language">';
 foreach ((array) unserialize(K_AVAILABLE_LANGUAGES, ['allowed_classes' => false]) as $code => $name) {
@@ -187,8 +247,8 @@ echo '<div class="row"><label for="timer_critical_color">Критический 
 echo '</fieldset><div class="onboarding-admin-actions">'
     . '<button type="submit" name="save_site" value="1" class="button">Сохранить оформление</button></div>'
     . F_getCSRFTokenField() . K_NEWLINE . '</form>' . K_NEWLINE;
-echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
-echo '<fieldset><legend>'
+echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">03</span> '
     . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])
     . '</legend>' . K_NEWLINE;
 echo '<div class="row check-row"><input type="checkbox" name="disable_registration" id="disable_registration" value="1"'
@@ -214,22 +274,33 @@ echo '<div class="row"><label for="access_help">'
     . '</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_access" value="1" class="button">'
-    . htmlspecialchars($l['ov_save'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars((string) ($l['ov_save'] ?? 'Сохранить'), ENT_QUOTES, $settings_charset)
     . '</button></div>' . K_NEWLINE;
 echo F_getCSRFTokenField() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '<p>Укажите, какие тесты считать инструкцией и демо. Они будут показаны участнику над основным каталогом, пока он их не завершит.</p>' . K_NEWLINE;
-echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
-echo '<fieldset><legend>Последовательность знакомства</legend>' . K_NEWLINE;
+echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">04</span> Последовательность знакомства</legend>' . K_NEWLINE;
 echo '<div class="row"><label for="instruction_test_id">1. Тест-инструкция</label>' . K_NEWLINE;
-F_onboardingTestSelect('instruction_test_id', $config['instruction_test_id'], $tests);
+f_onboarding_test_select(
+    'instruction_test_id',
+    (int) ($config['instruction_test_id'] ?? 0),
+    $tests,
+    $settings_charset,
+);
 echo '<span class="form-help">Объясняет порядок работы и правила прохождения.</span></div>' . K_NEWLINE;
 echo '<div class="row"><label for="demo_test_id">2. Демо-тест</label>' . K_NEWLINE;
-F_onboardingTestSelect('demo_test_id', $config['demo_test_id'], $tests);
+f_onboarding_test_select('demo_test_id', (int) ($config['demo_test_id'] ?? 0), $tests, $settings_charset);
 echo '<span class="form-help">Позволяет участнику проверить вход и интерфейс без риска.</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_onboarding" value="1" class="button">Сохранить</button></div>' . K_NEWLINE;
 echo F_getCSRFTokenField() . K_NEWLINE;
 echo '</form></div>' . K_NEWLINE;
+
+$appearance_script = '../jscripts/appearance-preview.js';
+$appearance_script_path = realpath(__DIR__ . '/' . $appearance_script);
+if ($appearance_script_path !== false) {
+    echo '<script src="' . $appearance_script . '?v=' . (int) filemtime($appearance_script_path) . '"></script>' . K_NEWLINE;
+}
 
 require_once 'tce_page_footer.php';

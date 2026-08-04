@@ -114,6 +114,9 @@ $is_login_page = (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_lo
 $body_classes = ($_SESSION['session_user_level'] < 1 || $is_login_page)
     ? ['login-page']
     : ['app-page', 'theme-light'];
+require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+$appearance = openvsosh_get_appearance_settings();
+$body_classes[] = 'ui-font-' . $appearance['ui_font'];
 if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php') {
     $body_classes[] = 'exam-page';
 }
@@ -121,7 +124,11 @@ if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php
 $body_attributes = ' class="' . implode(' ', $body_classes) . '"';
 require_once '../../shared/code/tce_functions_site_assets.php';
 if ($is_login_page && openvsosh_site_asset_metadata('background')) {
-    $body_attributes .= ' style="--login-background-image:url(&quot;tce_site_asset.php?type=background&quot;)"';
+    $overlay = max(0, min(80, (int) $appearance['login_background_overlay'])) / 100;
+    $body_attributes .= ' style="--login-background-image:url(&quot;tce_site_asset.php?type=background&quot;);'
+        . '--login-background-position:' . $appearance['login_background_position'] . ';'
+        . '--login-background-size:' . $appearance['login_background_size'] . ';'
+        . '--login-background-overlay:' . $overlay . '"';
 }
 $shell_translations = [
     'open-menu' => $l['ov_open_menu'],
