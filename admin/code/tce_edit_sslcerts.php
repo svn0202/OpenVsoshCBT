@@ -253,7 +253,9 @@ if ($formstatus && $menu_mode != 'clear') {
         $sql = 'SELECT * FROM ' . K_TABLE_SSLCERTS . ' WHERE ssl_id=' . $ssl_id . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $ssl_id = $m['ssl_id'];
+                /** @var int|numeric-string $stored_ssl_id */
+                $stored_ssl_id = $m['ssl_id'];
+                $ssl_id = (int) $stored_ssl_id;
                 $ssl_name = $m['ssl_name'];
                 $ssl_hash = $m['ssl_hash'];
                 $ssl_end_date = $m['ssl_end_date'];
@@ -294,7 +296,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($ssl_id == 0) {
+if ($ssl_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -304,7 +306,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['ssl_id'] . '"';
-        if ($m['ssl_id'] == $ssl_id) {
+        /** @var int|numeric-string $listed_ssl_id */
+        $listed_ssl_id = $m['ssl_id'];
+        if ((int) $listed_ssl_id === $ssl_id) {
             echo ' selected="selected"';
         }
 
@@ -333,7 +337,7 @@ echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 echo getFormRowTextInput('ssl_name', $l['w_name'], $l['w_name'], '', $ssl_name, '', 255, false, false, false, '');
 
-if (!isset($ssl_id) || $ssl_id <= 0) {
+if ($ssl_id <= 0) {
     echo '<div class="row">' . K_NEWLINE;
     echo '<span class="label">' . K_NEWLINE;
     echo '<label for="userfile">' . $l['w_upload_file'] . '</label>' . K_NEWLINE;
@@ -353,7 +357,7 @@ echo getFormRowCheckBox('ssl_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, 
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if (isset($ssl_id) && $ssl_id > 0) {
+if ($ssl_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'

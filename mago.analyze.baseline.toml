@@ -1438,7 +1438,7 @@ count = 38
 file = "admin/code/tce_edit_sslcerts.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 9
+count = 8
 
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
@@ -1473,32 +1473,14 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
 code = "mixed-operand"
-message = "Left operand in `<=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
-code = "mixed-operand"
 message = "Left operand in `>=` comparison has `mixed` type."
 count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
 code = "mixed-operand"
-message = "Left operand in `>` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
-code = "mixed-operand"
 message = "Right operand in `==` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
