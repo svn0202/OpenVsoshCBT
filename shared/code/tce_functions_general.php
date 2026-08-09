@@ -66,7 +66,7 @@ function F_empty_to_null($str)
  * @param $num (string) string to check.
  * @return string $num if != 0, NULL otherwise
  */
-function f_zero_to_null($num)
+function f_zero_to_null($num): mixed
 {
     global $db;
     require_once '../../shared/code/tce_db_dal.php';
