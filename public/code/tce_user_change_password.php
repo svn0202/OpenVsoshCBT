@@ -22,9 +22,13 @@
 
 require_once '../config/tce_config.php';
 
-$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword']) ? $_POST['currentpassword'] : '';
+$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword'])
+    ? $_POST['currentpassword']
+    : '';
 $newpassword = isset($_POST['newpassword']) && is_string($_POST['newpassword']) ? $_POST['newpassword'] : '';
-$newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat']) ? $_POST['newpassword_repeat'] : '';
+$newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat'])
+    ? $_POST['newpassword_repeat']
+    : '';
 
 $pagelevel = K_AUTH_USER_CHANGE_PASSWORD;
 $thispage_title = $l['t_user_change_password'];
@@ -45,55 +49,54 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars(
 
 // process submitted data
 switch ($menu_mode) {
-    case 'update':
-        { // Update user
-            if ($formstatus = F_check_form_fields()) {
-                // check password
-                // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
-                if (empty($newpassword) || empty($newpassword_repeat) || $newpassword !== $newpassword_repeat) {
-                    //print message and exit
-                    F_print_error('WARNING', $l['m_different_passwords']);
+    case 'update': // Update user
+        if ($formstatus = F_check_form_fields()) {
+            // check password
+            // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
+            if (empty($newpassword) || empty($newpassword_repeat) || $newpassword !== $newpassword_repeat) {
+                //print message and exit
+                F_print_error('WARNING', $l['m_different_passwords']);
+                $formstatus = false;
+
+                break;
+            }
+
+            $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
+            if ($r = F_db_query($sql, $db)) {
+                if (
+                    !($m = F_db_fetch_array($r))
+                    || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))
+                ) {
+                    F_print_error('WARNING', $l['m_login_wrong']);
                     $formstatus = false;
 
                     break;
                 }
-
-                $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
-                if ($r = F_db_query($sql, $db)) {
-                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))) {
-                        F_print_error('WARNING', $l['m_login_wrong']);
-                        $formstatus = false;
-
-                        break;
-                    }
-                } else {
-                    F_display_db_error(false);
-                    break;
-                }
-
-                $sql =
-                    'UPDATE '
-                    . K_TABLE_USERS
-                    . ' SET
-				user_password=\''
-                    . F_escape_sql($db, getPasswordHash($newpassword))
-                    . '\'
-				WHERE user_id='
-                    . $user_id;
-                if (!($r = F_db_query($sql, $db))) {
-                    F_display_db_error(false);
-                } else {
-                    F_print_error('MESSAGE', $l['m_password_updated']);
-                }
+            } else {
+                F_display_db_error(false);
+                break;
             }
 
-            break;
+            $sql =
+                'UPDATE '
+                . K_TABLE_USERS
+                . ' SET
+				user_password=\''
+                . F_escape_sql($db, getPasswordHash($newpassword))
+                . '\'
+				WHERE user_id='
+                . $user_id;
+            if (!($r = F_db_query($sql, $db))) {
+                F_display_db_error(false);
+            } else {
+                F_print_error('MESSAGE', $l['m_password_updated']);
+            }
         }
 
+        break;
+
     default:
-        {
-            break;
-        }
+        break;
 } //end of switch
 
 echo '<div class="container">' . K_NEWLINE;

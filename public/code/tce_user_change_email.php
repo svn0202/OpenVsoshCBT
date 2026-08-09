@@ -22,7 +22,9 @@
 
 require_once '../config/tce_config.php';
 
-$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword']) ? $_POST['currentpassword'] : '';
+$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword'])
+    ? $_POST['currentpassword']
+    : '';
 $user_email = $_POST['user_email'] ?? '';
 $user_email_repeat = $_POST['user_email_repeat'] ?? '';
 
@@ -44,78 +46,77 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars(
 
 // process submitted data
 switch ($menu_mode) {
-    case 'update':
-        { // Update user
-            if ($formstatus = F_check_form_fields()) {
-                // check password
-                if (empty($user_email) || empty($user_email_repeat) || $user_email !== $user_email_repeat) {
-                    //print message and exit
-                    F_print_error('WARNING', $l['m_different_emails']);
+    case 'update': // Update user
+        if ($formstatus = F_check_form_fields()) {
+            // check password
+            if (empty($user_email) || empty($user_email_repeat) || $user_email !== $user_email_repeat) {
+                //print message and exit
+                F_print_error('WARNING', $l['m_different_emails']);
+                $formstatus = false;
+
+                break;
+            }
+
+            $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
+            if ($r = F_db_query($sql, $db)) {
+                if (
+                    !($m = F_db_fetch_array($r))
+                    || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))
+                ) {
+                    F_print_error('WARNING', $l['m_login_wrong']);
                     $formstatus = false;
 
                     break;
                 }
-
-                $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
-                if ($r = F_db_query($sql, $db)) {
-                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))) {
-                        F_print_error('WARNING', $l['m_login_wrong']);
-                        $formstatus = false;
-
-                        break;
-                    }
-                } else {
-                    F_display_db_error(false);
-                    break;
-                }
-
-                $current_level = (int) $_SESSION['session_user_level'];
-                $user_verifycode = getNewSessionID(); // verification code
-                $requires_verification = $current_level < 5;
-                $sql =
-                    'UPDATE '
-                    . K_TABLE_USERS
-                    . ' SET
-				user_email=\''
-                    . F_escape_sql($db, $user_email)
-                    . '\', user_verifycode='
-                    . ($requires_verification ? "'" . $user_verifycode . "'" : 'NULL')
-                    . ($requires_verification ? ", user_level='0'" : '')
-                    . '
-				WHERE user_id='
-                    . $user_id;
-                if (!($r = F_db_query($sql, $db))) {
-                    F_display_db_error(false);
-                } else {
-                    F_print_error('MESSAGE', $l['m_email_updated']);
-                    if ($requires_verification) {
-                        // Basic participant accounts retain the existing email-verification flow.
-                        require_once '../../shared/code/tce_functions_user_registration.php';
-                        F_send_user_reg_email($user_id, $user_email, $user_verifycode);
-                        F_print_error('MESSAGE', $user_email . ': ' . $l['m_user_verification_sent']);
-                    }
-                    echo '<div class="container">' . K_NEWLINE;
-                    echo
-                        '<strong><a href="index.php" title="'
-                            . $l['h_index']
-                            . '">'
-                            . $l['h_index']
-                            . ' &gt;</a></strong>'
-                            . K_NEWLINE
-                    ;
-                    echo '</div>' . K_NEWLINE;
-                    require_once 'tce_page_footer.php';
-                    exit();
-                }
+            } else {
+                F_display_db_error(false);
+                break;
             }
 
-            break;
+            $current_level = (int) $_SESSION['session_user_level'];
+            $user_verifycode = getNewSessionID(); // verification code
+            $requires_verification = $current_level < 5;
+            $sql =
+                'UPDATE '
+                . K_TABLE_USERS
+                . ' SET
+				user_email=\''
+                . F_escape_sql($db, $user_email)
+                . '\', user_verifycode='
+                . ($requires_verification ? "'" . $user_verifycode . "'" : 'NULL')
+                . ($requires_verification ? ", user_level='0'" : '')
+                . '
+				WHERE user_id='
+                . $user_id;
+            if (!($r = F_db_query($sql, $db))) {
+                F_display_db_error(false);
+            } else {
+                F_print_error('MESSAGE', $l['m_email_updated']);
+                if ($requires_verification) {
+                    // Basic participant accounts retain the existing email-verification flow.
+                    require_once '../../shared/code/tce_functions_user_registration.php';
+                    F_send_user_reg_email($user_id, $user_email, $user_verifycode);
+                    F_print_error('MESSAGE', $user_email . ': ' . $l['m_user_verification_sent']);
+                }
+                echo '<div class="container">' . K_NEWLINE;
+                echo
+                    '<strong><a href="index.php" title="'
+                        . $l['h_index']
+                        . '">'
+                        . $l['h_index']
+                        . ' &gt;</a></strong>'
+                        . K_NEWLINE
+                ;
+                echo '</div>' . K_NEWLINE;
+                require_once 'tce_page_footer.php';
+                exit();
+            }
         }
 
+        break;
+
     default:
-        {
-            break;
-        }
+        break;
 } //end of switch
 
 echo '<div class="container">' . K_NEWLINE;
