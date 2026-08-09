@@ -748,7 +748,7 @@ function F_select_table_header_element(mixed $order_field, mixed $orderdir, mixe
     global $l;
     require_once '../config/tce_config.php';
     $ord = '';
-    if ($order_field == $current_order_field) {
+    if ($order_field === $current_order_field) {
         if (f_legacy_int_equals($orderdir, 1)) {
             $ord = ' <abbr title="' . $l['w_ascent'] . '">&gt;</abbr>';
         } else {
