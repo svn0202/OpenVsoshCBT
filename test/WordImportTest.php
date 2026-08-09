@@ -35,7 +35,8 @@ final class WordImportTest extends TestCase
             \RecursiveIteratorIterator::CHILD_FIRST,
         );
         foreach ($iterator as $path) {
-            $path->isDir() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+            $pathname = (string) $path;
+            is_dir($pathname) ? rmdir($pathname) : unlink($pathname);
         }
         rmdir($this->temporaryDirectory);
     }
