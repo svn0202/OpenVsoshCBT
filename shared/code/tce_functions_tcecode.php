@@ -42,7 +42,7 @@ function f_tcecode_preview_input(mixed $value): string
  * @param $text_to_decode (string) text to convert
  * @return string XHTML code
  */
-function F_decode_tcecode($text_to_decode): string
+function F_decode_tcecode(mixed $text_to_decode): string
 {
     require_once '../config/tce_config.php';
     global $l, $db;
