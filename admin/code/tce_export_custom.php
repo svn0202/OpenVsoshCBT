@@ -26,3 +26,6 @@
 // customize this file to export questions to your custom format file.
 
 // ...
+
+// Preserve the standard return value of an otherwise empty included PHP file.
+return 1;
