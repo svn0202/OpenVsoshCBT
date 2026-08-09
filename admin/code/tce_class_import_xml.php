@@ -226,8 +226,8 @@ class XMLQuestionImporter
                     // convert XML special chars
                     $this->level_data[$this->level][$this->current_element] = f_xml_to_text(utrim($this->current_data));
                     if (
-                        $this->current_element == 'question_description'
-                        || $this->current_element == 'answer_description'
+                        $this->current_element === 'question_description'
+                        || $this->current_element === 'answer_description'
                     ) {
                         // normalize UTF-8 string based on settings
                         $this->level_data[$this->level][$this->current_element] = f_utf8_normalizer(
