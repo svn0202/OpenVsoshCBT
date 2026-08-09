@@ -9,7 +9,7 @@ const TMF_PREGENERATION_BATCH_MAX = 25;
 /**
  * Return query rows in a stable, JSON-safe representation.
  */
-function F_tmf_pregeneration_hash_rows(string $sql): array
+function f_tmf_pregeneration_hash_rows(string $sql): array
 {
     require_once '../config/tce_config.php';
     global $db;
