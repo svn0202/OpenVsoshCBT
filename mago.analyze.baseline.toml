@@ -13413,7 +13413,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_count_rows` is missing a return type hint."
+message = "Function `f_count_rows` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -13563,7 +13563,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_count_rows`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_count_rows`. Saw type `mixed`."
 count = 1
 
 [[issues]]
