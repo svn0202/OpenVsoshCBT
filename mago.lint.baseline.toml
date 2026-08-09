@@ -2017,24 +2017,6 @@ message = "Function name `F_tmf_offline_table` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "function-name"
-message = "Function name `F_getOnboardingConfig` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "function-name"
-message = "Function name `F_getPendingOnboardingTests` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "function-name"
-message = "Function name `F_saveOnboardingConfig` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_otp.php"
 code = "function-name"
 message = "Function name `F_decodeBase32` should be in snake case."
