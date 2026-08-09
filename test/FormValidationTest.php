@@ -266,6 +266,26 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testUploadFileRowPreservesNamesAndOnChangeMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $markup = \getFormUploadFile('upload[]', 'upload_id', 'Upload', 'Upload a file', 'preview(this)');
+
+        $this->assertStringContainsString('<div class="row" id="divupload_id">', $markup);
+        $this->assertStringContainsString(
+            '<label for="upload_id" title="Upload a file">Upload</label>',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            'type="file" name="upload[]" id="upload_id" size="20" title="Upload a file" '
+                . 'onchange="preview(this)"',
+            $markup,
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
