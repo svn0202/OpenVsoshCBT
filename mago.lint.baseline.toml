@@ -751,12 +751,6 @@ message = "Function name `F_menu_link` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_monitoring.php"
-code = "function-name"
-message = "Function name `F_tmf_monitor_apply_action` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "function-name"
 message = "Function name `F_tmf_offline_html` should be in snake case."
