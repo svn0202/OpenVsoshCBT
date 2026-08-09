@@ -20721,12 +20721,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_tmx.php"
 code = "missing-return-type"
-message = "Function `getResource` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-return-type"
 message = "Function `segContentHandler` is missing a return type hint."
 count = 1
 

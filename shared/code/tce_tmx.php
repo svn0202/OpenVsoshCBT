@@ -308,7 +308,7 @@ class TMXResourceBundle
      * Returns the resource array containing the translated word/sentences.
      * @return array.
      */
-    public function getResource()
+    public function getResource(): mixed
     {
         return $this->resource;
     }
