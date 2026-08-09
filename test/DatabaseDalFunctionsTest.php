@@ -6,6 +6,78 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseConnectionBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => [
+                'value' => 'connection',
+                'calls' => [
+                    ['connect', 'db.local:3307', 'user', 'secret'],
+                    ['select', 'schema', 'connection'],
+                    ['query', 'connection', "SET NAMES 'utf8' COLLATE 'utf8_unicode_ci'"],
+                    ['query', 'connection', "SET CHARACTER SET 'utf8'"],
+                ],
+            ],
+            'mysqli' => [
+                'value' => 'connection',
+                'calls' => [
+                    ['connect', 'db.local', 'user', 'secret', 'schema', '3307'],
+                    ['query', 'connection', "SET NAMES 'utf8' COLLATE 'utf8_unicode_ci'"],
+                    ['query', 'connection', "SET CHARACTER SET 'utf8'"],
+                ],
+            ],
+            'oracle' => [
+                'value' => 'connection',
+                'calls' => [
+                    ['connect', 'user', 'secret', '//db.local:3307/schema', 'UTF8'],
+                    ['query', "ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'", 'connection'],
+                ],
+            ],
+            'postgresql' => [
+                'value' => 'connection',
+                'calls' => [
+                    ['connect', "host='db.local' port='3307' dbname='schema' user='user' password='secret'"],
+                ],
+            ],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_connect(...$args) { $GLOBALS["calls"][] = ["connect", ...$args]; '
+                    . 'return "connection"; } function mysql_select_db(...$args) { '
+                    . '$GLOBALS["calls"][] = ["select", ...$args]; return true; } '
+                    . 'function mysql_query(...$args) { $GLOBALS["calls"][] = ["query", ...$args]; return true; } ',
+                'mysqli' => 'function mysqli_connect(...$args) { $GLOBALS["calls"][] = ["connect", ...$args]; '
+                    . 'return "connection"; } function mysqli_query(...$args) { '
+                    . '$GLOBALS["calls"][] = ["query", ...$args]; return true; } ',
+                'oracle' => 'function oci_connect(...$args) { $GLOBALS["calls"][] = ["connect", ...$args]; '
+                    . 'return "connection"; } function F_db_query(...$args) { '
+                    . '$GLOBALS["calls"][] = ["query", ...$args]; return true; } ',
+                'postgresql' => 'function pg_connect(...$args) { $GLOBALS["calls"][] = ["connect", ...$args]; '
+                    . 'return "connection"; } ',
+            };
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-n',
+                    '-r',
+                    'namespace Harness; $GLOBALS["calls"] = []; ' . $prelude
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_connect/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                        . '$value = F_db_connect("db.local", "3307", "user", "secret", "schema"); '
+                        . 'echo json_encode(["value" => $value, "calls" => $GLOBALS["calls"]]);',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testSqlEscapingBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
