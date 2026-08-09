@@ -275,15 +275,19 @@ function F_close_button(string $onclick = ''): string
 
 /**
  * Prints the XHTML submit button.
- * @param $name (string) button name
- * @param $value (string) label for button
- * @param $title (string) button title, default=''
- * @param $extra (string) optional extra fields to add to the input tag, default=''
+ * @param mixed $name button name
+ * @param mixed $value label for button
+ * @param mixed $title button title, default=''
+ * @param mixed $extra optional extra fields to add to the input tag, default=''
  *
  * @return void
  */
-function F_submit_button($name, $value, $title = '', $extra = ''): void
+function F_submit_button(mixed $name, mixed $value, mixed $title = '', mixed $extra = ''): void
 {
+    $name = is_scalar($name) ? (string) $name : '';
+    $value = is_scalar($value) ? (string) $value : '';
+    $title = is_scalar($title) ? (string) $title : '';
+    $extra = is_scalar($extra) ? (string) $extra : '';
     echo
         '<input type="submit" name="'
             . $name
