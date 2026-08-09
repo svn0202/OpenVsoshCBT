@@ -6,6 +6,43 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseRowCountBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['value' => 4],
+            'mysqli' => ['exception' => 'TypeError'],
+            'oracle' => ['value' => 5],
+            'postgresql' => ['exception' => 'TypeError'],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_num_rows($result) { return $result === "rows" ? 4 : 0; } ',
+                'oracle' => 'function oci_fetch_all($result, &$output) { $output = ["TOTAL" => [5]]; return 1; } '
+                    . 'function oci_num_rows($result) { return 9; } ',
+                default => '',
+            };
+            $result = ($driver === 'mysql' || $driver === 'oracle') ? '"rows"' : 'null';
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    $prelude . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_num_rows/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval(substr($source, $start, $end - $start)); '
+                        . 'try { echo json_encode(["value" => F_db_num_rows(' . $result . ')]); } '
+                        . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseCloseBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
