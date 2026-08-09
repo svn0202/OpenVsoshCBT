@@ -500,12 +500,12 @@ function getFormRowTextInput(
  * @return string
  */
 function getFormRowTextBox(
-    $field_name,
-    $name,
-    $description = '',
-    $value = '',
-    $disabled = false,
-    $prefix = '',
+    string $field_name,
+    string $name,
+    string $description = '',
+    ?string $value = '',
+    bool $disabled = false,
+    string $prefix = '',
     bool $required = false,
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';

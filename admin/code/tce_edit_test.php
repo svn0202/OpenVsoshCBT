@@ -31,7 +31,9 @@ $test_password = isset($_POST['test_password']) && is_string($_POST['test_passwo
 $sslcerts = isset($_POST['sslcerts']) && is_array($_POST['sslcerts']) ? $_POST['sslcerts'] : [];
 $user_groups = $_POST['user_groups'] ?? [];
 $test_name = $_REQUEST['test_name'] ?? '';
-$test_description = $_REQUEST['test_description'] ?? '';
+$test_description = isset($_REQUEST['test_description']) && is_string($_REQUEST['test_description'])
+    ? $_REQUEST['test_description']
+    : '';
 // the native datetime-local control submits an ISO 'T' separator; store it space-separated
 $test_begin_time = str_replace('T', ' ', $_REQUEST['test_begin_time'] ?? '');
 $test_end_time = str_replace('T', ' ', $_REQUEST['test_end_time'] ?? '');
@@ -1139,7 +1141,7 @@ if ($formstatus && $menu_mode != 'clear') {
             if ($m = F_db_fetch_array($r)) {
                 $test_id = $m['test_id'];
                 $test_name = $m['test_name'];
-                $test_description = $m['test_description'];
+                $test_description = (string) ($m['test_description'] ?? '');
                 $test_begin_time = $m['test_begin_time'];
                 $test_end_time = $m['test_end_time'];
                 $test_duration_time = $m['test_duration_time'];
@@ -1290,8 +1292,8 @@ echo getFormRowTextInput('test_name', $l['w_name'], $l['h_test_name'], '', $test
 echo
     getFormRowTextBox(
         'test_description',
-        $l['w_description'],
-        $l['h_test_description'],
+        (string) $l['w_description'],
+        (string) $l['h_test_description'],
         $test_description,
         false,
         '',

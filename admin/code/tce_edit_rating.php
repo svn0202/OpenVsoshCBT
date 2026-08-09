@@ -41,7 +41,9 @@ if (isset($selectcategory)) {
 
 // explicit form inputs (register_globals emulation removed)
 $testlog_score = $_REQUEST['testlog_score'] ?? '';
-$testlog_comment = $_REQUEST['testlog_comment'] ?? '';
+$testlog_comment = isset($_REQUEST['testlog_comment']) && is_string($_REQUEST['testlog_comment'])
+    ? $_REQUEST['testlog_comment']
+    : '';
 $max_score = $_REQUEST['max_score'] ?? '';
 $display_user_info = $_REQUEST['display_user_info'] ?? '';
 $display_all = $_REQUEST['display_all'] ?? '';
@@ -269,7 +271,7 @@ if ($sql !== '' && $sql !== '0') {
             $testlog_id = $m['testlog_id'];
             $test_id = $m['test_id'];
             $testlog_score = $m['testlog_score'];
-            $testlog_comment = $m['testlog_comment'];
+            $testlog_comment = (string) ($m['testlog_comment'] ?? '');
             $test_score_right = round($m['test_score_right'] * $m['question_difficulty'], 3);
             $test_score_wrong = round($m['test_score_wrong'] * $m['question_difficulty'], 3);
             $test_score_unanswered = round($m['test_score_unanswered'] * $m['question_difficulty'], 3);
@@ -588,7 +590,7 @@ echo
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowTextBox('testlog_comment', $l['w_comment'], $l['w_comment'], $testlog_comment);
+echo getFormRowTextBox('testlog_comment', (string) $l['w_comment'], (string) $l['w_comment'], $testlog_comment);
 
 echo '<div class="row">' . K_NEWLINE;
 
