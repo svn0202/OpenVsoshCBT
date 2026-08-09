@@ -800,27 +800,21 @@ function f_utf8_normalizer(mixed $str, mixed $mode = 'NONE'): mixed
 
             return $str;
 
-            break;
         case 'C':
             // Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition
             return normalizer_normalize($str, Normalizer::FORM_C);
-            break;
         case 'D':
             // Normalization Form D (NFD) - Canonical Decomposition
             return normalizer_normalize($str, Normalizer::FORM_D);
-            break;
         case 'KC':
             // Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition
             return normalizer_normalize($str, Normalizer::FORM_KC);
-            break;
         case 'KD':
             // Normalization Form KD (NFKD) - Compatibility Decomposition
             return normalizer_normalize($str, Normalizer::FORM_KD);
-            break;
         case 'NONE':
         default:
             return $str;
-            break;
     }
 }
 
