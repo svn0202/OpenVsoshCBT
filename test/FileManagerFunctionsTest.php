@@ -8,6 +8,51 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    /** @throws Random\RandomException */
+    public function testListsDirectoriesAndFilesInNaturalCaseInsensitiveOrder(): void
+    {
+        $temporaryDirectory = sys_get_temp_dir() . '/tcexam-filemanager-' . bin2hex(random_bytes(6));
+        self::assertTrue(mkdir($temporaryDirectory));
+        self::assertTrue(mkdir($temporaryDirectory . '/zeta'));
+        self::assertTrue(mkdir($temporaryDirectory . '/Alpha'));
+        self::assertNotFalse(file_put_contents($temporaryDirectory . '/zeta.txt', 'z'));
+        self::assertNotFalse(file_put_contents($temporaryDirectory . '/alpha.txt', 'a'));
+
+        try {
+            $directory = $temporaryDirectory . '/';
+            [$status, $output] = F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                        . '$data = f_get_dir_files($argv[1], $argv[1], "[^/]*"); '
+                        . 'echo implode("\n", $data["dirs"]) . "\n--\n" . implode("\n", $data["files"]);',
+                    $directory,
+                ],
+                __DIR__ . '/../admin/code',
+            );
+
+            self::assertSame(0, $status);
+            self::assertSame(
+                $temporaryDirectory
+                    . "/Alpha\n"
+                    . $temporaryDirectory
+                    . "/zeta\n--\n"
+                    . $temporaryDirectory
+                    . "/alpha.txt\n"
+                    . $temporaryDirectory
+                    . '/zeta.txt',
+                $output,
+            );
+        } finally {
+            unlink($temporaryDirectory . '/zeta.txt');
+            unlink($temporaryDirectory . '/alpha.txt');
+            rmdir($temporaryDirectory . '/zeta');
+            rmdir($temporaryDirectory . '/Alpha');
+            rmdir($temporaryDirectory);
+        }
+    }
+
     public function testBuildsLinkedMediaDirectoryPath(): void
     {
         [$status, $output] = F_tcecode_run_process(
