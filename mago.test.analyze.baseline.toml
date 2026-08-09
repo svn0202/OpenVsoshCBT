@@ -8,12 +8,6 @@ count = 3
 
 [[issues]]
 file = "test/WordImportTest.php"
-code = "invalid-method-access"
-message = "Attempting to access a method on a non-object type (`string`)."
-count = 3
-
-[[issues]]
-file = "test/WordImportTest.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `F_tmf_question_options`: expected `string`, but found `mixed`."
 count = 2
@@ -39,20 +33,8 @@ count = 1
 [[issues]]
 file = "test/WordImportTest.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `rmdir`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strip_tags`: expected `string`, but found `mixed`."
 count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `unlink`: expected `string`, but found `mixed`."
-count = 1
 
 [[issues]]
 file = "test/WordImportTest.php"
