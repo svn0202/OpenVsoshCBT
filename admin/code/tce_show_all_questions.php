@@ -587,30 +587,20 @@ function F_show_select_questions(
             $question_type_label = '';
             switch ($m['question_type']) {
                 case 1:
-                    {
                         $question_type_label = $l['w_single_answer'];
                         break;
-                    }
                 case 2:
-                    {
                         $question_type_label = $l['w_multiple_answers'];
                         break;
-                    }
                 case 3:
-                    {
                         $question_type_label = $l['w_free_answer'];
                         break;
-                    }
                 case 4:
-                    {
                         $question_type_label = $l['w_ordering_answer'];
                         break;
-                    }
                 case 5:
-                    {
                         $question_type_label = $l['w_matching_answer'];
                         break;
-                    }
             }
 
             if ($question_type_label !== '') {
