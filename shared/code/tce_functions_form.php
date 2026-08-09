@@ -912,7 +912,7 @@ function getFormNoscriptSelect(string $name = 'selectrecord'): string
  * @param mixed $value Initial value.
  * @return string
  */
-function getFormDescriptionLine(mixed $name, mixed $description = '', mixed $value = ''): string
+function get_form_description_line(mixed $name, mixed $description = '', mixed $value = ''): string
 {
     $name = is_scalar($name) ? (string) $name : '';
     $description = is_scalar($description) ? (string) $description : '';

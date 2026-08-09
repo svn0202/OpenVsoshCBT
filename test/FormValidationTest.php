@@ -103,7 +103,7 @@ final class FormValidationTest extends TestCase
             define('K_NEWLINE', "\n");
         }
 
-        $markup = \getFormDescriptionLine('Score:', 'Total score', '42');
+        $markup = \get_form_description_line('Score:', 'Total score', '42');
 
         $this->assertStringContainsString('<span title="Total score">Score:</span>', $markup);
         $this->assertStringContainsString('<span class="formw">' . K_NEWLINE . '42&nbsp;', $markup);
