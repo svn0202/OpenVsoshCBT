@@ -45,12 +45,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "function-name"
-message = "Function name `F_get_user_groups` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_user_select.php"
-code = "function-name"
 message = "Function name `F_isAuthorizedEditorForGroup` should be in snake case."
 count = 1
 

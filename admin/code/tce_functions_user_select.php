@@ -1053,7 +1053,7 @@ function F_user_group_select($name = 'group_id')
  * @param $user_id (int) user ID
  * @return array containing user's groups IDs
  */
-function F_get_user_groups($user_id)
+function f_get_user_groups($user_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
