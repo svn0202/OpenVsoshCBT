@@ -287,7 +287,7 @@ function f_tmf_backup_resolve_file(string $backup_directory, string $filename): 
 /**
  * @param array<string,string> $config
  */
-function F_tmf_backup_restore(array $config, string $archive_path): void
+function f_tmf_backup_restore(array $config, string $archive_path): void
 {
     if (!is_file($archive_path) || !is_readable($archive_path)) {
         throw new TmfBackupException('Резервная копия недоступна для чтения.');
