@@ -35,4 +35,4 @@ $w = isset($_REQUEST['w']) ? (int) $_REQUEST['w'] : '';
 // graph height
 $h = isset($_REQUEST['h']) ? (int) $_REQUEST['h'] : '';
 
-F_getSVGGraph($p, $w, $h);
+f_get_svg_graph($p, $w, $h);
