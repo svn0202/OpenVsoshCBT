@@ -148,8 +148,8 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testGetContrastColor(): void
     {
-        $this->assertSame('ffffff', \getContrastColor('000000')); // dark background -> white
-        $this->assertSame('000000', \getContrastColor('ffffff')); // light background -> black
+        $this->assertSame('ffffff', \get_contrast_color('000000')); // dark background -> white
+        $this->assertSame('000000', \get_contrast_color('ffffff')); // light background -> black
     }
 
     public function testIsUrl(): void
