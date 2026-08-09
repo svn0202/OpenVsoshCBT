@@ -20461,12 +20461,6 @@ message = "Reference created from a previously undefined variable `$match`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "possibly-false-argument"
-message = "Argument #4 of function `imagefill` is possibly `false`, but parameter type `int` does not accept it."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_user_registration.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."

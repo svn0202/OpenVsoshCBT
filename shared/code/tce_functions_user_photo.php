@@ -45,7 +45,7 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     $target_height = max(1, (int) round($height * $scale));
     $target = imagecreatetruecolor($target_width, $target_height);
     $white = imagecolorallocate($target, 255, 255, 255);
-    imagefill($target, 0, 0, $white);
+    imagefill($target, 0, 0, (int) $white);
     imagecopyresampled($target, $image, 0, 0, 0, 0, $target_width, $target_height, $width, $height);
     unset($image);
 
