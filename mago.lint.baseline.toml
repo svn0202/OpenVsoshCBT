@@ -75,12 +75,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
-message = "Function name `getFormRowTextBox` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "function-name"
 message = "Function name `getFormRowTextInput` should be in snake case."
 count = 1
 
