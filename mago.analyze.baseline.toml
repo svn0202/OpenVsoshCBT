@@ -9729,7 +9729,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_show_result_user.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_results_are_published`: expected `array<string, mixed>`, but found `mixed`."
+message = "Invalid argument type for argument #1 of `f_tmf_results_are_published`: expected `array<string, mixed>`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -10263,7 +10263,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_test_results.php"
 code = "less-specific-argument"
-message = "Argument type mismatch for argument #1 of `F_tmf_results_are_published`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
+message = "Argument type mismatch for argument #1 of `f_tmf_results_are_published`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
 count = 1
 
 [[issues]]
@@ -15135,7 +15135,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_results_are_published`: expected `array<string, mixed>`, but found `unknown-ref(Returns)`."
+message = "Invalid argument type for argument #1 of `f_tmf_results_are_published`: expected `array<string, mixed>`, but found `unknown-ref(Returns)`."
 count = 1
 
 [[issues]]

@@ -5,7 +5,7 @@
  *
  * @param array<string,mixed> $test
  */
-function F_tmf_results_are_published(array $test, ?int $now = null): bool
+function f_tmf_results_are_published(array $test, ?int $now = null): bool
 {
     if (!f_get_boolean($test['test_results_to_users'] ?? false)) {
         return false;
