@@ -434,7 +434,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 $sqlq .= $sql_questions_order_by;
             }
 
-            if (K_DATABASE_TYPE == 'ORACLE') {
+            if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                 $sqlq = 'SELECT * FROM (' . $sqlq . ') WHERE rownum <= ' . $m['tsubset_quantity'];
             } else {
                 $sqlq .= ' LIMIT ' . $m['tsubset_quantity'];
