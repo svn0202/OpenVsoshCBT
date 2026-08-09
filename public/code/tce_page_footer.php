@@ -31,6 +31,7 @@ echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'mobile-exam.js?v=20260802-1" de
 echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'login-page.js?v=20260718-2" defer="defer"></script>' . K_NEWLINE;
 echo '<script src="' . K_PATH_SHARED_JSCRIPTS . 'public-app-shell.js?v=20260809-1" defer="defer"></script>' . K_NEWLINE;
 
-echo '<!-- ' . base64_decode(K_KEY_SECURITY) . ' -->' . K_NEWLINE;
+$security_key = base64_decode(K_KEY_SECURITY);
+echo '<!-- ' . ($security_key === false ? '' : $security_key) . ' -->' . K_NEWLINE;
 echo '</body>' . K_NEWLINE;
 echo '</html>';

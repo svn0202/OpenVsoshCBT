@@ -30,6 +30,7 @@ include '../../shared/code/tce_page_userbar.php'; // display user bar
 echo '</footer>' . K_NEWLINE;
 include '../config/theme/' . K_ADMIN_THEME . '.php'; // load extra script for the selected theme
 
-echo '<!-- ' . base64_decode(K_KEY_SECURITY) . ' -->' . K_NEWLINE;
+$security_key = base64_decode(K_KEY_SECURITY);
+echo '<!-- ' . ($security_key === false ? '' : $security_key) . ' -->' . K_NEWLINE;
 echo '</body>' . K_NEWLINE;
 echo '</html>';
