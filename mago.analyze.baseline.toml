@@ -17546,24 +17546,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_site_assets.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `openvsosh_site_asset_metadata` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `hash_equals`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
 code = "possibly-false-argument"
 message = "Argument #2 of function `hash_equals` is possibly `false`, but parameter type `string` does not accept it."
 count = 1
@@ -17579,24 +17561,6 @@ file = "shared/code/tce_functions_site_assets.php"
 code = "possibly-false-operand"
 message = "Possibly false right operand used in string concatenation (type `false|non-negative-int`)."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('mime')` accessed on `non-empty-array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('sha256')` accessed on `non-empty-array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('stored')` accessed on `non-empty-array<array-key, mixed>`."
-count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_site_assets.php"
