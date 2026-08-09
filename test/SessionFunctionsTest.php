@@ -24,6 +24,34 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testSessionClosePassesConfiguredLifetimeAsInteger(): void
+    {
+        $handler = new class extends \TCExamSessionHandler {
+            public ?int $received_lifetime = null;
+
+            public function gc(int $max_lifetime): int|false
+            {
+                $this->received_lifetime = $max_lifetime;
+                return 0;
+            }
+        };
+
+        self::assertTrue($handler->close());
+        self::assertSame((int) ini_get('session.gc_maxlifetime'), $handler->received_lifetime);
+    }
+
+    public function testPlainCsrfTokenUsesEntryScriptSessionAndFingerprint(): void
+    {
+        $included_files = get_included_files();
+        self::assertNotEmpty($included_files);
+
+        /** @var non-empty-list<non-empty-string> $included_files */
+        self::assertSame(
+            $included_files[0] . (string) session_id() . K_RANDOM_SECURITY . \getClientFingerprint(),
+            \getPlainCSRFToken(),
+        );
+    }
+
     public function testSessionStringDecoderPreservesKeysAndValueTypes(): void
     {
         self::assertSame(
