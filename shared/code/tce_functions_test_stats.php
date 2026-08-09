@@ -1704,7 +1704,7 @@ function F_printUserTestStat($testuser_id)
                     . K_NEWLINE;
             }
 
-            if ($m['question_type'] == 3) {
+            if (f_legacy_int_equals($m['question_type'], 3)) {
                 // TEXT
                 $ret .= '<ul class="answer"><li>' . K_NEWLINE;
                 $ret .= F_decode_tcecode($m['testlog_answer_text']);
@@ -1732,7 +1732,10 @@ function F_printUserTestStat($testuser_id)
                         if (in_array((int) $m['question_type'], [4, 5], true)) {
                             // ORDER / MATCHING
                             if ($ma['logansw_position'] > 0) {
-                                if ($ma['logansw_position'] == $ma['answer_position']) {
+                                if (f_legacy_int_equals(
+                                    $ma['logansw_position'],
+                                    (int) $ma['answer_position'],
+                                )) {
                                     $ret .=
                                         '<abbr title="'
                                         . $l['h_answer_right']
@@ -1756,10 +1759,10 @@ function F_printUserTestStat($testuser_id)
                             } else {
                                 $ret .= '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">x</abbr>';
                             }
-                        } elseif ($m['question_type'] == 1) {
+                        } elseif (f_legacy_int_equals($m['question_type'], 1)) {
                             // MCSA
                             $ret .= '<abbr title="-" class="offbox">&nbsp;</abbr>';
-                        } elseif ($ma['logansw_selected'] == 0) {
+                        } elseif (f_legacy_int_equals($ma['logansw_selected'], 0)) {
                             if (f_get_boolean($ma['answer_isright'])) {
                                 $ret .= '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">&nbsp;</abbr>';
                             } else {
@@ -2023,8 +2026,10 @@ function F_getAllUsersTestStat(
                 'x'
                 . $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score_perc']
                 . 'v'
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
                 . $data['testuser']["'" . $mr['testuser_id'] . "'"]['right_perc'];
             // collects data for descriptive statistics
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
             $statsdata['score'][] = $mr['total_score'];
             $statsdata['score_perc'][] = $total_score_perc;
             if ($stats > 0) {
@@ -2193,6 +2198,7 @@ function F_getTestIDs($test_id, $user_id, $filter = 'test_results_to_users')
         . '=1';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_assoc($r)) {
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches permitted test rows as arrays
             $str .= ',' . $m['test_id'];
         }
     } else {
