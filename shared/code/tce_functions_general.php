@@ -278,7 +278,7 @@ function f_substr_utf8(mixed $str, mixed $start, mixed $length): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function f_text_to_xml($str): string
+function f_text_to_xml(mixed $str): string
 {
     if (empty($str)) {
         return '';
@@ -298,7 +298,7 @@ function f_text_to_xml($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function f_xml_to_text($str): string
+function f_xml_to_text(mixed $str): string
 {
     if (empty($str)) {
         return '';
@@ -317,7 +317,7 @@ function f_xml_to_text($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function f_text_to_tsv($str): string
+function f_text_to_tsv(mixed $str): string
 {
     if (empty($str)) {
         return '';
@@ -337,7 +337,7 @@ function f_text_to_tsv($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function f_tsv_to_text($str): string
+function f_tsv_to_text(mixed $str): string
 {
     if (empty($str)) {
         return '';
