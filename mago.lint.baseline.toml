@@ -1059,12 +1059,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "function-name"
-message = "Function name `F_tmf_xlsx_safe_sheet_name` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_xlsx.php"
-code = "function-name"
 message = "Function name `F_tmf_xlsx_sheet_xml` should be in snake case."
 count = 1
 
