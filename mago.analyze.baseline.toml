@@ -20462,32 +20462,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_user_photo.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$upload` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_photo.php"
 code = "possibly-false-argument"
 message = "Argument #4 of function `imagefill` is possibly `false`, but parameter type `int` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "redundant-null-coalesce"
-message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `F_tmf_user_photo_store`.'
 count = 1
 
 [[issues]]
