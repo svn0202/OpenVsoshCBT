@@ -1143,12 +1143,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "function-name"
-message = "Function name `F_has_html_markup` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "function-name"
 message = "Function name `F_is_safe_html_url` should be in snake case."
 count = 1
 

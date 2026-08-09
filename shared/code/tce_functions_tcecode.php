@@ -128,7 +128,7 @@ function F_decode_tcecode(mixed $text_to_decode): string
  * @param $text (string) content to inspect
  * @return bool true for HTML content
  */
-function F_has_html_markup(string $text): bool
+function f_has_html_markup(string $text): bool
 {
     return preg_match(
         '/<\/?(?:a|b|blockquote|br|code|del|div|em|h[1-6]|hr|i|img|li|mark|ol|p|pre|s|small|span|strong|sub|sup|table|tbody|td|tfoot|th|thead|tr|u|ul)(?:\s|\/?>)/i',
