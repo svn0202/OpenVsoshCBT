@@ -231,7 +231,7 @@ switch ($menu_mode) {
 
     case 'forcedelete':
             // Delete
-            if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+            if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'START TRANSACTION';
                 if (!($r = F_db_query($sql, $db))) {
                     F_display_db_error(false);
