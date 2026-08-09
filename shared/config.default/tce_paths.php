@@ -140,21 +140,28 @@ define('K_PATH_TMX_FILE', K_PATH_MAIN . 'shared/config/lang/language_tmx.xml');
 define('K_BLANK_IMAGE', K_PATH_IMAGES . '_blank.png');
 
 // DOCUMENT_ROOT fix for IIS Webserver
-if (!isset($_SERVER['DOCUMENT_ROOT']) or empty($_SERVER['DOCUMENT_ROOT'])) {
-    if (isset($_SERVER['SCRIPT_FILENAME'])) {
+$server_string = static fn(string $key): string => isset($_SERVER[$key]) && is_string($_SERVER[$key])
+    ? $_SERVER[$key]
+    : '';
+if ($server_string('DOCUMENT_ROOT') === '') {
+    $script_filename = $server_string('SCRIPT_FILENAME');
+    $path_translated = $server_string('PATH_TRANSLATED');
+    $php_self = $server_string('PHP_SELF');
+    if ($script_filename !== '') {
         $_SERVER['DOCUMENT_ROOT'] = str_replace(
             '\\',
             '/',
-            substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen($_SERVER['PHP_SELF'])),
+            substr($script_filename, 0, -strlen($php_self)),
         );
-    } elseif (isset($_SERVER['PATH_TRANSLATED'])) {
+    } elseif ($path_translated !== '') {
         $_SERVER['DOCUMENT_ROOT'] = str_replace(
             '\\',
             '/',
-            substr(str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']), 0, -strlen($_SERVER['PHP_SELF'])),
+            substr(str_replace('\\\\', '\\', $path_translated), 0, -strlen($php_self)),
         );
     } else {
         // define here your DOCUMENT_ROOT path if the previous fails
         $_SERVER['DOCUMENT_ROOT'] = '/var/www';
     }
 }
+unset($server_string, $script_filename, $path_translated, $php_self);
