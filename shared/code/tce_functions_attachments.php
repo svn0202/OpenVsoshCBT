@@ -327,7 +327,7 @@ function f_tmf_attachment_delete_attempt(int $testuser_id): void
     }
 }
 
-function F_tmf_attempt_archive(int $testuser_id): string
+function f_tmf_attempt_archive(int $testuser_id): string
 {
     global $db;
     if (!class_exists(ZipArchive::class)) {
