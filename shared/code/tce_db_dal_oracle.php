@@ -34,7 +34,7 @@
  * @param $database (string) Database name.
  * @return Oracle link identifier on success, or FALSE on failure.
  */
-function F_db_connect(
+function f_db_connect(
     $host = 'localhost',
     $port = '1521',
     $username = 'root',
