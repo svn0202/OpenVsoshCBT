@@ -607,12 +607,6 @@ message = "Unsafe use of error control operator `@`."
 count = 3
 
 [[issues]]
-file = "admin/code/tce_select_mediafile.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 6
-
-[[issues]]
 file = "admin/code/tce_show_all_questions.php"
 code = "function-name"
 message = "Function name `F_show_select_questions` should be in snake case."
