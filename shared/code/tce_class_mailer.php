@@ -63,15 +63,23 @@ class C_mailer extends PHPMailer\PHPMailer\PHPMailer
      * PHPMailer's "<key>" message. English defaults are loaded first so any key TCExam does not
      * translate still resolves.
      *
-     * @param $lang (array) TCExam language array (the global $l).
+     * @param mixed $lang TCExam language data (normally the global $l array).
      * @public
      */
-    public function setLanguageData($lang)
+    public function setLanguageData(mixed $lang): void
     {
         parent::setLanguage();
-        foreach ($lang as $key => $val) {
-            if (is_string($val) && str_starts_with($key, 'm_mailerror_')) {
-                self::$language[substr($key, 12)] = $val; // 12 == strlen('m_mailerror_')
+        if (!is_array($lang)) {
+            return;
+        }
+        foreach (array_keys($lang) as $key) {
+            if (
+                is_string($key)
+                && isset($lang[$key])
+                && is_string($lang[$key])
+                && str_starts_with($key, 'm_mailerror_')
+            ) {
+                self::$language[substr($key, 12)] = $lang[$key]; // 12 == strlen('m_mailerror_')
             }
         }
     }

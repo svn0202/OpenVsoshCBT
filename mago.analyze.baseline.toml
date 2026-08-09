@@ -14245,42 +14245,6 @@ message = "Unreachable else clause"
 count = 3
 
 [[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "missing-parameter-type"
-message = "Parameter `$lang` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "missing-return-type"
-message = "Function `setLanguageData` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `str_starts_with`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_db_dal.php"
 code = "match-default-arm-always-executed"
 message = "This default arm is always executed because no other arms can match."
