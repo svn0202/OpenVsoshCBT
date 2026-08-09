@@ -67,16 +67,16 @@ header('Content-Type: text/tab-separated-values', false);
 header('Content-Disposition: attachment; filename=' . $tsv_filename . ';');
 header('Content-Transfer-Encoding: binary');
 
-echo F_tsv_export_questions($module_id, $subject_id, $expmode);
+echo f_tsv_export_questions($module_id, $subject_id, $expmode);
 
 /**
  * Export all questions of the selected subject to TSV.
- * @param $module_id (int)  module ID
- * @param $subject_id (int) topic ID
- * @param $expmode (int) export mode: 1 = selected topic; 2 = selected module; 3 = all modules.
- * @return TSV data
+ * @param int $module_id module ID
+ * @param int $subject_id topic ID
+ * @param int $expmode export mode: 1 = selected topic; 2 = selected module; 3 = all modules.
+ * @return string TSV data
  */
-function F_tsv_export_questions($module_id, $subject_id, $expmode)
+function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
