@@ -1266,7 +1266,7 @@ echo '</span>' . K_NEWLINE;
 echo '<br /><br />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectrecord');
+echo get_form_noscript_select('selectrecord');
 
 echo '<nav class="editor-section-nav" aria-label="Разделы настроек">'
     . '<a href="#editor-basics">Основное</a><a href="#editor-audience">Участники и доступ</a>'

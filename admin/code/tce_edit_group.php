@@ -318,7 +318,7 @@ F_submit_button('search', $l['w_search'], $l['w_search']);
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectrecord');
+echo get_form_noscript_select('selectrecord');
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 

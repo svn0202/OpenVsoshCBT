@@ -698,7 +698,7 @@ echo '<button type="button" onclick="' . $jsaction . '" class="xmlbutton" title=
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectrecord');
+echo get_form_noscript_select('selectrecord');
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 

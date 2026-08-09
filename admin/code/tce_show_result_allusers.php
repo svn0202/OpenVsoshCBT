@@ -311,7 +311,7 @@ echo '<button type="button" onclick="' . $jsaction . '" class="xmlbutton" title=
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectcategory');
+echo get_form_noscript_select('selectcategory');
 
 echo
     getFormRowTextInput(
@@ -379,7 +379,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectgroup');
+echo get_form_noscript_select('selectgroup');
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -460,7 +460,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('display_mode');
+echo get_form_noscript_select('display_mode');
 
 echo getFormRowCheckBox('show_graph', $l['w_graph'], $l['w_result_graph'], '', 1, $show_graph, false, '');
 

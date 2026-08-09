@@ -115,7 +115,7 @@ final class FormValidationTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'require $argv[1]; echo getFormNoscriptSelect("selectcategory");',
+                'require $argv[1]; echo get_form_noscript_select("selectcategory");',
                 dirname(__DIR__) . '/shared/code/tce_functions_form.php',
             ],
             dirname(__DIR__) . '/public/code',
