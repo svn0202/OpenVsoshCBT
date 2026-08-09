@@ -11527,42 +11527,6 @@ message = "Undefined variable: `$thispage_title`."
 count = 1
 
 [[issues]]
-file = "public/code/tce_page_menu.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 16
-
-[[issues]]
-file = "public/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "public/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "public/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `>` comparison has `mixed` type."
-count = 3
-
-[[issues]]
-file = "public/code/tce_page_menu.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 5
-
-[[issues]]
-file = "public/code/tce_page_menu.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 16
-
-[[issues]]
 file = "public/code/tce_password_reset.php"
 code = "array-to-string-conversion"
 message = "Potentially casting `array` to `string`."
