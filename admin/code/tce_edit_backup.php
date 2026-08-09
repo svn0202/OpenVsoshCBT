@@ -44,7 +44,7 @@ if (isset($_POST['backup'])) {
     $menu_mode = 'download';
 }
 
-function F_isValidbackupFile(mixed $file): bool
+function f_is_valid_backup_file(mixed $file): bool
 {
     return is_string($file) && F_tmf_backup_file_is_valid($file);
 }
@@ -53,7 +53,7 @@ function F_isValidbackupFile(mixed $file): bool
 $backup_file = $_REQUEST['backup_file'] ?? '';
 
 // check backup filename
-if (!is_string($backup_file) || $backup_file !== '' && !F_isValidbackupFile($backup_file)) {
+if (!is_string($backup_file) || $backup_file !== '' && !f_is_valid_backup_file($backup_file)) {
     F_print_error('ERROR', 'SECURITY ERROR', true);
 }
 
@@ -173,7 +173,7 @@ echo '<option value="">&nbsp;</option>' . K_NEWLINE;
 // get backup files
 $files_list = [];
 while (false !== ($file = readdir($handle))) {
-    if (F_isValidbackupFile($file) && is_file(K_PATH_BACKUP . $file)) {
+    if (f_is_valid_backup_file($file) && is_file(K_PATH_BACKUP . $file)) {
         $files_list[] = $file;
     }
 }
