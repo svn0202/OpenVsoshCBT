@@ -22,13 +22,12 @@ final class MigrationTest extends TestCase
             . 'BEGIN SELECT seq.nextval INTO :new.id FROM DUAL; END;; CREATE INDEX idx ON x(id);';
         $statements = \F_tmf_migration_statements($sql, 'ORACLE');
         self::assertCount(2, $statements);
-        self::assertStringContainsString('BEGIN SELECT', $statements[0]);
-        self::assertSame('CREATE INDEX idx ON x(id)', $statements[1]);
+        self::assertStringContainsString('BEGIN SELECT', $statements[0] ?? '');
+        self::assertSame('CREATE INDEX idx ON x(id)', $statements[1] ?? null);
     }
 
     public function testManifestOrderIsStableAndComplete(): void
     {
-        /** @var array<int, string> $files */
         $files = \F_tmf_migration_files(__DIR__ . '/../install/upgrade/mysql');
         self::assertSame([
             'openvsosh_access_settings.sql',

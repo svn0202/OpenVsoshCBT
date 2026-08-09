@@ -7,7 +7,7 @@ workspace = "."
 paths = ["test"]
 # Application directories are symbol-only includes: tests are checked as the target source while
 # calls into the procedural application receive their real signatures instead of `mixed` stubs.
-includes = ["vendor", "admin", "public", "shared"]
+includes = ["vendor", "admin", "public", "shared", "install"]
 excludes = []
 
 [source.glob]
