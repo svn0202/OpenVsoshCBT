@@ -172,6 +172,10 @@ final class GeneralFunctionsTest extends TestCase
     {
         // localhost forms collapse to the same normalized value
         $this->assertSame(\getNormalizedIP('127.0.0.1'), \getNormalizedIP('::1'));
+        $this->assertSame(
+            \getNormalizedIP('127.0.0.1'),
+            \getNormalizedIP('0000:0000:0000:0000:0000:0000:0000:0001'),
+        );
         // an already-expanded IPv6 address normalizes to itself
         $ipv6 = '2001:0db8:0000:0000:0000:0000:0000:0001';
         $this->assertSame($ipv6, \getNormalizedIP($ipv6));
