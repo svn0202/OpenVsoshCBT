@@ -66,6 +66,30 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    public function testObjectCallbackReturnsImageMarkup(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_tcecode.php"; '
+                    . '$name = "tce-object-callback-test-" . hrtime(true); $path = K_PATH_CACHE . $name . ".png"; '
+                    . 'file_put_contents($path, base64_decode('
+                    . '"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z8ZkAAAAASUVORK5CYII=")); '
+                    . 'try { $markup = F_objects_callback(["", $name, "png", "10", "20"]); '
+                    . 'echo json_encode(str_replace($name, "{name}", $markup)); } finally { unlink($path); }',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(
+            '"<img src=\"\\/cache\\/{name}.png\" alt=\"image:{name}.png\" width=\"10\" height=\"20\" '
+                . 'class=\"tcecode\" \\/>"',
+            $output,
+        );
+    }
+
     public function testStringTransformersPreserveTcecodeRendering(): void
     {
         $this->assertSame(

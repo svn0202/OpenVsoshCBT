@@ -16454,12 +16454,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_objects_callback` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `min`: expected `float|non-empty-array<array-key, float>`, but found `mixed`."
 count = 1
