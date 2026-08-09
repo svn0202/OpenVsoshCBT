@@ -54,6 +54,7 @@ function F_db_connect(
         . "' password='"
         . $password
         . "'";
+    // @mago-expect lint:no-error-control-operator -- connection failures follow the DAL's false-return contract
     if (!($db = @pg_connect($connection_string))) {
         return false;
     }
@@ -147,6 +148,7 @@ function F_db_num_rows($result)
 function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     if (
+        // @mago-expect lint:no-error-control-operator -- a missing sequence value follows the DAL's zero-return fallback
         ($r = @pg_query(
             $link_identifier,
             "SELECT CURRVAL('" . $tablename . '_' . $fieldname . "_seq')",

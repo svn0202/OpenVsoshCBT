@@ -469,12 +469,6 @@ message = "Function name `F_escape_sql` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_db_dal_postgresql.php"
-code = "no-error-control-operator"
-message = "Unsafe use of error control operator `@`."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_functions_answer_save.php"
 code = "function-name"
 message = "Function name `F_tmf_answer_save_decision` should be in snake case."
