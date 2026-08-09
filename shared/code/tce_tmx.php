@@ -31,6 +31,7 @@
  * @author Nicola Asuni [tecnick.com]
  * @version 1.1.005
  */
+// @mago-expect lint:file-name -- public legacy include path retained for backward compatibility
 class TMXResourceBundle
 {
     public $parser;
@@ -101,6 +102,7 @@ class TMXResourceBundle
         $cached_source_size = false;
         if ($source_exists && F_file_exists($this->cachefile)) {
             $cache_header = file_get_contents($this->cachefile, false, null, 0, 512);
+            $matches = [];
             if (
                 is_string($cache_header)
                 && preg_match('/^\/\/ SOURCE SIZE: ([0-9]+)$/m', $cache_header, $matches) === 1
@@ -113,7 +115,7 @@ class TMXResourceBundle
             && (
                 !$source_exists
                 || (
-                    filemtime($this->cachefile) >= filemtime($tmxfile)
+                    (int) filemtime($this->cachefile) >= (int) filemtime($tmxfile)
                     && $source_size !== false
                     && $cached_source_size === $source_size
                 )
@@ -231,6 +233,8 @@ class TMXResourceBundle
                     $this->resource[$this->current_key] = $this->fallback_data;
                 }
                 if (!empty($this->cachefile)) {
+                    /** @var string $translation */
+                    $translation = $this->resource[$this->current_key] ?? '';
                     file_put_contents(
                         $this->cachefile,
                         "\n"
@@ -238,7 +242,7 @@ class TMXResourceBundle
                         . "tmx['"
                         . $this->current_key
                         . "']='"
-                        . str_replace("'", '\\\'', $this->resource[$this->current_key] ?? '')
+                        . str_replace("'", '\\\'', $translation)
                         . "';",
                         FILE_APPEND,
                     );
