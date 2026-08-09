@@ -352,7 +352,7 @@ if ($ssl_id <= 0) {
     echo '</div>' . K_NEWLINE;
 }
 
-echo getFormRowCheckBox('ssl_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $ssl_enabled, false, '');
+echo get_form_row_checkbox('ssl_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $ssl_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 

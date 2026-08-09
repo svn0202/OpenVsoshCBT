@@ -1077,7 +1077,7 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
     echo '</div>' . K_NEWLINE;
 }
 
-echo getFormRowCheckBox('answer_isright', $l['w_right'], $l['h_answer_isright'], '', 1, $answer_isright, false, '');
+echo get_form_row_checkbox('answer_isright', $l['w_right'], $l['h_answer_isright'], '', 1, $answer_isright, false, '');
 echo getFormRowTextInput(
     'answer_weight',
     'Вес ответа (%)',
@@ -1094,7 +1094,7 @@ echo getFormRowTextInput(
     '',
     'number',
 );
-echo getFormRowCheckBox('answer_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $answer_enabled, false, '');
+echo get_form_row_checkbox('answer_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $answer_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;

@@ -233,7 +233,7 @@ echo
     )
 ;
 
-echo getFormRowCheckBox('overwrite', $l['w_overwrite'], $l['h_omr_overwrite'], '', 1, $overwrite, false, '');
+echo get_form_row_checkbox('overwrite', $l['w_overwrite'], $l['h_omr_overwrite'], '', 1, $overwrite, false, '');
 
 // -----------------------------------------------------------------------------
 

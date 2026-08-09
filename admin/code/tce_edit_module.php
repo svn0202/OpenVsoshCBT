@@ -497,7 +497,7 @@ if ($rg = F_db_query($sqlg, $db)) {
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowCheckBox('module_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $module_enabled, false, '');
+echo get_form_row_checkbox('module_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $module_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 

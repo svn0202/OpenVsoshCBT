@@ -1566,9 +1566,9 @@ echo '</span>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowCheckBox('test_mcma_radio', $l['w_mcma_radio'], '', '', 1, $test_mcma_radio, false);
+echo get_form_row_checkbox('test_mcma_radio', $l['w_mcma_radio'], '', '', 1, $test_mcma_radio, false);
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'test_mcma_partial_score',
         $l['w_mcma_partial_score'],
         '',
@@ -1578,11 +1578,11 @@ echo
         false,
     )
 ;
-echo getFormRowCheckBox('test_noanswer_enabled', $l['w_enable_noanswer'], '', '', 1, $test_noanswer_enabled, false);
-echo getFormRowCheckBox('test_menu_enabled', $l['w_enable_menu'], '', '', 1, $test_menu_enabled, false);
-echo getFormRowCheckBox('test_comment_enabled', $l['w_enable_comment'], '', '', 1, $test_comment_enabled, false);
-echo getFormRowCheckBox('test_results_to_users', $l['w_results_to_users'], '', '', 1, $test_results_to_users, false);
-echo getFormRowCheckBox('test_report_to_users', $l['w_report_to_users'], '', '', 1, $test_report_to_users, false);
+echo get_form_row_checkbox('test_noanswer_enabled', $l['w_enable_noanswer'], '', '', 1, $test_noanswer_enabled, false);
+echo get_form_row_checkbox('test_menu_enabled', $l['w_enable_menu'], '', '', 1, $test_menu_enabled, false);
+echo get_form_row_checkbox('test_comment_enabled', $l['w_enable_comment'], '', '', 1, $test_comment_enabled, false);
+echo get_form_row_checkbox('test_results_to_users', $l['w_results_to_users'], '', '', 1, $test_results_to_users, false);
+echo get_form_row_checkbox('test_report_to_users', $l['w_report_to_users'], '', '', 1, $test_report_to_users, false);
 
 $repeat_options = [
     0 => $l['w_no'],
@@ -1594,7 +1594,7 @@ for ($i = 2; $i <= 127; ++$i) {
 
 echo getFormRowSelectBox('test_repeatable', (string) $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
 
-echo getFormRowCheckBox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
+echo get_form_row_checkbox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
 
 echo
     getFormRowTextInput(

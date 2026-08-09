@@ -166,8 +166,8 @@ final class FormValidationTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'require $argv[1]; require $argv[2]; '
-                    . '$name = function_exists("getFormRowCheckBox") '
-                    . '? "getFormRowCheckBox" : "get_form_row_checkbox"; '
+                    . '$name = function_exists("get_form_row_checkbox") '
+                    . '? "get_form_row_checkbox" : "get_form_row_checkbox"; '
                     . 'echo $name("enabled", "Enabled", "Account status", "Locked", '
                     . '"1&x", true, true, "PREFIX");',
                 dirname(__DIR__) . '/shared/code/tce_functions_general.php',

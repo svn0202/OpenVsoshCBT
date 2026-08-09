@@ -697,7 +697,7 @@ function getFormRowSelectBox(
  * @param mixed $prefix code to be displayed after label.
  * @return string
  */
-function getFormRowCheckBox(
+function get_form_row_checkbox(
     string $field_name,
     mixed $name,
     mixed $description = '',
