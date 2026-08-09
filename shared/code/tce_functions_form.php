@@ -96,7 +96,7 @@ function f_format_form_currency(string $value, int $decimals): string
  * Returns an array containing form fields.
  * @return array<array-key, mixed> containing form fields
  */
-function F_decode_form_fields(): array
+function f_decode_form_fields(): array
 {
     return $_REQUEST;
 }
