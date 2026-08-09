@@ -573,12 +573,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_edit_answer.php"
 code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_answer.php"
-code = "invalid-operand"
 message = "Invalid type for right operand."
 count = 1
 
@@ -812,12 +806,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_backup.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_backup.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 3
@@ -923,12 +911,6 @@ file = "admin/code/tce_edit_group.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 5
-
-[[issues]]
-file = "admin/code/tce_edit_group.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_group.php"
@@ -1136,12 +1118,6 @@ count = 18
 
 [[issues]]
 file = "admin/code/tce_edit_module.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_module.php"
 code = "less-specific-nested-argument-type"
 message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `non-empty-list<mixed>` is less specific."
 count = 1
@@ -1324,12 +1300,6 @@ count = 32
 file = "admin/code/tce_edit_question.php"
 code = "invalid-operand"
 message = "Invalid type `never` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_question.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
 count = 2
 
 [[issues]]
@@ -1586,12 +1556,6 @@ count = 26
 
 [[issues]]
 file = "admin/code/tce_edit_rating.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_rating.php"
 code = "invalid-type-cast"
 message = "Non numeric string of type `string` implicitly cast to `float`."
 count = 1
@@ -1820,12 +1784,6 @@ count = 11
 
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 2
@@ -2036,12 +1994,6 @@ count = 15
 
 [[issues]]
 file = "admin/code/tce_edit_subject.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_subject.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 4
@@ -2237,12 +2189,6 @@ file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 76
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -2543,12 +2489,6 @@ file = "admin/code/tce_edit_user.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 12
-
-[[issues]]
-file = "admin/code/tce_edit_user.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_user.php"
@@ -2879,12 +2819,6 @@ file = "admin/code/tce_filemanager.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(associative)`."
 count = 4
-
-[[issues]]
-file = "admin/code/tce_filemanager.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
@@ -5696,12 +5630,6 @@ count = 4
 
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_omr_answers.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 1
@@ -5888,12 +5816,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_import_omr_bulk.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_omr_bulk.php"
 code = "less-specific-nested-argument-type"
 message = 'Argument type mismatch for argument #1 of `Com\Tecnick\File\File::setAllowedPaths`: expected `array<array-key, string>`, but provided type `non-empty-array<array-key, mixed>|non-empty-list<string>` is less specific.'
 count = 1
@@ -6053,12 +5975,6 @@ file = "admin/code/tce_import_questions.php"
 code = "invalid-operand"
 message = "Invalid type `never` for middle operand in string concatenation."
 count = 4
-
-[[issues]]
-file = "admin/code/tce_import_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_import_questions.php"
@@ -6250,12 +6166,6 @@ count = 6
 file = "admin/code/tce_import_users.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `truthy-mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -6854,12 +6764,6 @@ count = 5
 
 [[issues]]
 file = "admin/code/tce_monitor.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_monitor.php"
 code = "mismatched-array-index"
 message = "Invalid array key type: `int` is not a valid key for this array."
 count = 1
@@ -7094,12 +6998,6 @@ count = 3
 
 [[issues]]
 file = "admin/code/tce_offline.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_offline.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 7
@@ -7198,18 +7096,6 @@ count = 1
 file = "admin/code/tce_onboarding_settings.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -8060,12 +7946,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_popup_test_info.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_popup_test_info.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 3
@@ -8093,12 +7973,6 @@ file = "admin/code/tce_pregenerate.php"
 code = "impossible-condition"
 message = "This loop condition (type `false`) will always evaluate to false."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_pregenerate.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_pregenerate.php"
@@ -8147,12 +8021,6 @@ file = "admin/code/tce_pregenerate.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_preview_tcecode.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_preview_tcecode.php"
@@ -8219,12 +8087,6 @@ file = "admin/code/tce_select_mediafile.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(associative)`."
 count = 5
-
-[[issues]]
-file = "admin/code/tce_select_mediafile.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
@@ -8426,12 +8288,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_select_tests.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_select_tests.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 1
@@ -8566,12 +8422,6 @@ count = 1
 file = "admin/code/tce_select_tests_popup.php"
 code = "invalid-argument"
 message = "Invalid argument type for argument #3 of `checkdate`: expected `int`, but found `null|string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_select_tests_popup.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -8744,12 +8594,6 @@ count = 3
 
 [[issues]]
 file = "admin/code/tce_select_users.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_select_users.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 1
@@ -8885,12 +8729,6 @@ file = "admin/code/tce_select_users_popup.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 3
-
-[[issues]]
-file = "admin/code/tce_select_users_popup.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_select_users_popup.php"
@@ -9038,12 +8876,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_self_profile.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_self_profile.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 2
@@ -9131,12 +8963,6 @@ file = "admin/code/tce_show_all_questions.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 40
-
-[[issues]]
-file = "admin/code/tce_show_all_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
@@ -9428,12 +9254,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_show_result_allusers.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_show_result_allusers.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 3
@@ -9617,12 +9437,6 @@ file = "admin/code/tce_show_result_user.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 19
-
-[[issues]]
-file = "admin/code/tce_show_result_user.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_show_result_user.php"
@@ -9892,12 +9706,6 @@ count = 1
 file = "admin/code/tce_test_access_rules.php"
 code = "impossible-condition"
 message = "This loop condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_test_access_rules.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -10283,12 +10091,6 @@ file = "admin/code/tce_users_xlsx.php"
 code = "impossible-condition"
 message = "This loop condition (type `false`) will always evaluate to false."
 count = 4
-
-[[issues]]
-file = "admin/code/tce_users_xlsx.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_users_xlsx.php"
@@ -12146,12 +11948,6 @@ count = 1
 
 [[issues]]
 file = "public/code/tce_password_reset.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "public/code/tce_password_reset.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 1
@@ -12364,12 +12160,6 @@ count = 8
 file = "public/code/tce_pdf_results.php"
 code = "unreachable-else-clause"
 message = "Unreachable else clause"
-count = 1
-
-[[issues]]
-file = "public/code/tce_popup_test_info.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
 count = 1
 
 [[issues]]
@@ -12626,12 +12416,6 @@ count = 7
 
 [[issues]]
 file = "public/code/tce_test_allresults.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_allresults.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 3
@@ -12803,12 +12587,6 @@ file = "public/code/tce_test_execute.php"
 code = "invalid-argument"
 message = "Invalid type for the first value."
 count = 1
-
-[[issues]]
-file = "public/code/tce_test_execute.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 2
 
 [[issues]]
 file = "public/code/tce_test_execute.php"
@@ -13532,12 +13310,6 @@ count = 1
 
 [[issues]]
 file = "public/code/tce_user_change_email.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_change_email.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 1
@@ -13624,12 +13396,6 @@ count = 1
 file = "public/code/tce_user_change_password.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_change_password.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -13757,12 +13523,6 @@ file = "public/code/tce_user_registration.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 2
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "public/code/tce_user_registration.php"
@@ -15830,12 +15590,6 @@ count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_isSslCertificateValid`: expected `true`, but found `false`."
 count = 1
@@ -16478,18 +16232,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_close_button`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_getCSRFTokenField`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$autocomplete` is missing a type hint."
 count = 1
@@ -16634,26 +16376,8 @@ count = 7
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
-code = "missing-return-statement"
-message = "Missing return statement in function `f_submit_button`"
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
 code = "missing-return-type"
 message = "Function `F_close_button` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `F_getCSRFTokenField` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `F_submit_button` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -16835,12 +16559,6 @@ file = "shared/code/tce_functions_form.php"
 code = "mixed-operand"
 message = "Right operand in `==` comparison has `mixed` type."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `XHTML`."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -19445,12 +19163,6 @@ file = "shared/code/tce_functions_test.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

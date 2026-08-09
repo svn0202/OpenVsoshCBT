@@ -249,7 +249,7 @@ function F_check_form_fields(): bool
 /**
  * Returns XHTML code string to display a window close button
  * @param $onclick (string) additional javascript code to execute before closing the window.
- * @return XHTML code string
+ * @return string XHTML code
  */
 function F_close_button($onclick = '')
 {
@@ -274,15 +274,15 @@ function F_close_button($onclick = '')
 }
 
 /**
- * Returns XHTML code string to display Form Submit Button.
+ * Prints the XHTML submit button.
  * @param $name (string) button name
  * @param $value (string) label for button
  * @param $title (string) button title, default=''
  * @param $extra (string) optional extra fields to add to the input tag, default=''
  *
- * @return XHTML code string
+ * @return void
  */
-function F_submit_button($name, $value, $title = '', $extra = '')
+function F_submit_button($name, $value, $title = '', $extra = ''): void
 {
     echo
         '<input type="submit" name="'
@@ -301,9 +301,9 @@ function F_submit_button($name, $value, $title = '', $extra = '')
 
 /**
  * Returns XHTML code string to display the CSRF token field.
- * @return XHTML code string
+ * @return string XHTML code
  */
-function F_getCSRFTokenField()
+function F_getCSRFTokenField(): string
 {
     return '<input type="hidden" name="csrf_token" id="csrf_token" value="' . F_getCSRFToken() . '" />';
 }
