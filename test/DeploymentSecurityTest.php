@@ -15,6 +15,16 @@ final class DeploymentSecurityTest extends TestCase
             '#<Directory "/var/www/html/install">.*?Require all denied.*?</Directory>#s',
             $apache,
         );
+        $this->assertFileDoesNotExist($root . '/install/phpinfo.php');
+    }
+
+    public function testApacheAddsBaselineSecurityHeaders(): void
+    {
+        $apache = (string) file_get_contents(dirname(__DIR__) . '/docker/tcexam-apache.conf');
+
+        $this->assertStringContainsString('Header always set X-Content-Type-Options "nosniff"', $apache);
+        $this->assertStringContainsString('Header always set X-Frame-Options "SAMEORIGIN"', $apache);
+        $this->assertStringContainsString("Header always set Content-Security-Policy \"frame-ancestors 'self'\"", $apache);
     }
 
     public function testSeededAdministratorDoesNotUseHistoricalPassword(): void

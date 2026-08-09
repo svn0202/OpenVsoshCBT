@@ -14,6 +14,7 @@
 
 namespace Test;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,6 +31,43 @@ final class SessionFunctionsTest extends TestCase
         $this->assertNotSame('s3cr3t-passphrase', $hash); // never stored in clear
         $this->assertTrue(\checkPassword('s3cr3t-passphrase', $hash));
         $this->assertFalse(\checkPassword('wrong', $hash));
+    }
+
+    public function testNewSessionIdUsesSchemaCompatibleCSPRNGValue(): void
+    {
+        $first = \getNewSessionID();
+        $second = \getNewSessionID();
+
+        $this->assertMatchesRegularExpression('/\A[0-9a-f]{32}\z/', $first);
+        $this->assertNotSame($first, $second);
+    }
+
+    public function testSecurityHeadersIncludeClickjackingAndTransportProtections(): void
+    {
+        $headers = \F_getSecurityHeaders();
+
+        $this->assertSame('nosniff', $headers['X-Content-Type-Options']);
+        $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options']);
+        $this->assertSame("frame-ancestors 'self'", $headers['Content-Security-Policy']);
+        $this->assertSame('max-age=31536000', $headers['Strict-Transport-Security']);
+    }
+
+    #[DataProvider('localRedirectProvider')]
+    public function testLocalRedirectValidation(string $uri, bool $expected): void
+    {
+        $this->assertSame($expected, \F_isSafeLocalRedirectUri($uri));
+    }
+
+    public static function localRedirectProvider(): array
+    {
+        return [
+            'ordinary path' => ['/public/code/index.php?lang=rus', true],
+            'empty' => ['', false],
+            'absolute URL' => ['https://evil.example/', false],
+            'network-path reference' => ['//evil.example/', false],
+            'backslash authority' => ['/\\evil.example/', false],
+            'header injection' => ["/safe\r\nLocation: https://evil.example/", false],
+        ];
     }
 
     /**

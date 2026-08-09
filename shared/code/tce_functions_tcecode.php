@@ -431,6 +431,54 @@ function F_tcecode_tag_arg($text)
 // ============================================================
 
 /**
+ * Run a renderer without invoking a command shell.
+ *
+ * @param list<string> $command Executable and arguments.
+ * @return array{0:int,1:string} Exit status and combined diagnostic output.
+ */
+function F_tcecode_run_process(array $command, string $working_directory): array
+{
+    $stdout_file = tempnam(sys_get_temp_dir(), 'openvsosh-render-out-');
+    $stderr_file = tempnam(sys_get_temp_dir(), 'openvsosh-render-err-');
+    if ($stdout_file === false || $stderr_file === false) {
+        if (is_string($stdout_file) && is_file($stdout_file)) {
+            unlink($stdout_file);
+        }
+        if (is_string($stderr_file) && is_file($stderr_file)) {
+            unlink($stderr_file);
+        }
+        return [1, 'unable to create renderer diagnostic files'];
+    }
+
+    $null_device = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
+    $descriptors = [
+        0 => ['file', $null_device, 'r'],
+        1 => ['file', $stdout_file, 'w'],
+        2 => ['file', $stderr_file, 'w'],
+    ];
+    $launch_error = '';
+    set_error_handler(static function (int $severity, string $message) use (&$launch_error): bool {
+        $launch_error = $message;
+        return true;
+    });
+    $pipes = [];
+    try {
+        $process = proc_open($command, $descriptors, $pipes, $working_directory);
+    } finally {
+        restore_error_handler();
+    }
+    $launched = is_resource($process);
+    $status = $launched ? proc_close($process) : 1;
+    $output = (string) file_get_contents($stdout_file) . (string) file_get_contents($stderr_file);
+    if (!$launched && $launch_error !== '') {
+        $output .= $launch_error;
+    }
+    unlink($stdout_file);
+    unlink($stderr_file);
+    return [$status, $output];
+}
+
+/**
  * Callback function for preg_replace_callback (LaTeX replacement).
  * Returns replacement image for LaTeX code.
  * @param $matches (string) array containing matches: $matches[0] is the complete match, $matches[1] the match for the first subpattern enclosed in '(...)' (the LaTeX code)
@@ -479,30 +527,32 @@ function F_latex_callback($matches)
         if (file_put_contents($imgpath . '.tex', $ltx) === false) {
             $error = 'unable to write on the cache folder';
         } else {
-            $cmd = 'cd ' . K_LATEX_PATH_PICTURE . ' && ' . K_LATEX_PDFLATEX . ' ' . $imgpath . '.tex';
-            $sts = exec($cmd, $out, $ret);
-            if ($sts === false || $ret != 0) {
-                $error = implode("\n", $out);
+            [$ret, $output] = F_tcecode_run_process([
+                K_LATEX_PDFLATEX,
+                '-no-shell-escape',
+                '-interaction=nonstopmode',
+                '-halt-on-error',
+                basename($imgpath . '.tex'),
+            ], K_LATEX_PATH_PICTURE);
+            if ($ret !== 0) {
+                $error = $output;
             } else {
                 // convert code using ImageMagick
-                $cmd =
-                    'cd '
-                    . K_LATEX_PATH_PICTURE
-                    . ' && '
-                    . K_LATEX_PATH_CONVERT
-                    . ' -density '
-                    . (K_LATEX_FORMULA_DENSITY * $dr)
-                    . ' -trim +repage '
-                    . $imgpath
-                    . '.pdf -depth 8 -quality 100 '
-                    . $imgpath
-                    . '.'
-                    . K_LATEX_IMG_FORMAT
-                    . ' 2>&1';
-                unset($out);
-                $sts = exec($cmd, $out, $ret);
-                if ($sts === false || $ret != 0) {
-                    $error = implode("\n", $out);
+                [$ret, $output] = F_tcecode_run_process([
+                    K_LATEX_PATH_CONVERT,
+                    '-density',
+                    (string) (K_LATEX_FORMULA_DENSITY * $dr),
+                    '-trim',
+                    '+repage',
+                    basename($imgpath . '.pdf'),
+                    '-depth',
+                    '8',
+                    '-quality',
+                    '100',
+                    basename($imgpath . '.' . K_LATEX_IMG_FORMAT),
+                ], K_LATEX_PATH_PICTURE);
+                if ($ret !== 0) {
+                    $error = $output;
                 } else {
                     $imsize = @getimagesize($imgpath . '.' . K_LATEX_IMG_FORMAT);
                     [$w, $h] = $imsize;

@@ -35,6 +35,42 @@ ini_set('session.cookie_secure', K_COOKIE_SECURE ? 'On' : 'Off');
 ini_set('session.cookie_samesite', K_COOKIE_SAMESITE);
 
 /**
+ * Return the baseline security headers used by every authenticated and public endpoint.
+ * Keep the CSP deliberately narrow: the legacy UI still contains inline scripts and styles,
+ * while frame-ancestors can be enforced independently without breaking those pages.
+ *
+ * @return array<string,string>
+ */
+function F_getSecurityHeaders(): array
+{
+    $headers = [
+        'X-Content-Type-Options' => 'nosniff',
+        'X-Frame-Options' => 'SAMEORIGIN',
+        'Referrer-Policy' => 'same-origin',
+        'Content-Security-Policy' => "frame-ancestors 'self'",
+    ];
+    if (K_COOKIE_SECURE) {
+        $headers['Strict-Transport-Security'] = 'max-age=31536000';
+    }
+    return $headers;
+}
+
+/** Send baseline security headers before any response body is emitted. */
+function F_sendSecurityHeaders(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    foreach (F_getSecurityHeaders() as $name => $value) {
+        header($name . ': ' . $value);
+    }
+}
+
+if (PHP_SAPI !== 'cli') {
+    F_sendSecurityHeaders();
+}
+
+/**
  * Session Handler Class implementing SessionHandlerInterface
  * @package com.tecnick.tcexam.shared
  */
@@ -295,7 +331,9 @@ function getLegacyClientFingerprint()
  */
 function getNewSessionID()
 {
-    return md5(getPasswordHash(uniqid(microtime() . getClientFingerprint() . K_RANDOM_SECURITY . session_id(), true)));
+    // The database schema stores 32 characters. Sixteen CSPRNG bytes preserve that shape while
+    // providing the full 128 bits of entropy directly, without timestamp- or hash-based mixing.
+    return bin2hex(random_bytes(16));
 }
 
 /**
@@ -339,6 +377,30 @@ function F_isRandomSecurityConfigured(#[\SensitiveParameter] $secret = null)
     }
 
     return !in_array($secret, $insecure, true);
+}
+
+/**
+ * Return true only for an origin-relative URI that is safe to copy into a Location header.
+ * Network-path references (//host) and backslashes are rejected because browsers may interpret
+ * them as an external authority even though the value begins with a slash.
+ */
+function F_isSafeLocalRedirectUri(string $uri): bool
+{
+    if (
+        $uri === ''
+        || !str_starts_with($uri, '/')
+        || str_starts_with($uri, '//')
+        || str_contains($uri, '\\')
+        || preg_match('/[\x00-\x1F\x7F]/', $uri) === 1
+    ) {
+        return false;
+    }
+
+    $parts = parse_url($uri);
+    return is_array($parts)
+        && !isset($parts['scheme'], $parts['host'], $parts['user'], $parts['pass'])
+        && isset($parts['path'])
+        && str_starts_with((string) $parts['path'], '/');
 }
 
 /**
