@@ -78,6 +78,18 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\f_get_boolean(0));
     }
 
+    public function testLegacyLiteralComparisonPreservesLooseScalarBehavior(): void
+    {
+        self::assertTrue(\f_legacy_literal_equals('login', 'login'));
+        self::assertFalse(\f_legacy_literal_equals('Login', 'login'));
+        self::assertTrue(\f_legacy_literal_equals(true, 'login'));
+        self::assertFalse(\f_legacy_literal_equals(false, 'login'));
+        self::assertFalse(\f_legacy_literal_equals(1, 'login'));
+        self::assertFalse(\f_legacy_literal_equals(1.0, 'login'));
+        self::assertFalse(\f_legacy_literal_equals(null, 'login'));
+        self::assertFalse(\f_legacy_literal_equals(['login'], 'login'));
+    }
+
     public function testUtf8NormalizerPreservesEveryMode(): void
     {
         [$status, $output] = \F_tcecode_run_process(
