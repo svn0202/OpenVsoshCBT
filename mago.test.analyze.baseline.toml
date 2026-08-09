@@ -1,18 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "test/MonitoringTest.php"
-code = "possibly-false-argument"
-message = "Argument #4 of function `F_tmf_monitor_status` is possibly `false`, but parameter type `int` does not accept it."
-count = 6
-
-[[issues]]
-file = "test/MonitoringTest.php"
-code = "unfulfilled-expect"
-message = "This pragma was not used and may be removed."
-count = 3
-
-[[issues]]
 file = "test/TmxResourceBundleTest.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('greeting')` accessed on `array<array-key, mixed>`."
