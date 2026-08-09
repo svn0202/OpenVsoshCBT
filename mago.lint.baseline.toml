@@ -597,12 +597,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_attachments.php"
 code = "function-name"
-message = "Function name `F_tmf_attachment_table` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_attachments.php"
-code = "function-name"
 message = "Function name `F_tmf_attempt_archive` should be in snake case."
 count = 1
 

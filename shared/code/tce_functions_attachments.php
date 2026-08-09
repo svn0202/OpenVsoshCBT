@@ -8,7 +8,7 @@ const TMF_ATTACHMENT_ALLOWED_MIME = [
     'application/pdf' => 'PDF',
 ];
 
-function F_tmf_attachment_table(): string
+function f_tmf_attachment_table(): string
 {
     return K_TABLE_PREFIX . 'testlog_attachments';
 }
