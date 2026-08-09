@@ -181,7 +181,7 @@ function f_tmf_users_xlsx_validate(
 /**
  * @param array<int,array<string,mixed>> $records
  */
-function F_tmf_users_xlsx_import(array $records): int
+function f_tmf_users_xlsx_import(array $records): int
 {
     global $db;
     if (!F_db_query('START TRANSACTION', $db)) {
