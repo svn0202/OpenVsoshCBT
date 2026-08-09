@@ -171,91 +171,79 @@ if (isset($menu_mode) && !empty($menu_mode)) {
             $testuser_id = (int) $_POST[$keyname];
             switch ($menu_mode) {
                 case 'delete':
-                    {
-                        $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
+                    $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 						WHERE testuser_id=' . $testuser_id . '';
-                        if (!($r = F_db_query($sql, $db))) {
-                            F_display_db_error();
-                        }
-
-                        break;
+                    if (!($r = F_db_query($sql, $db))) {
+                        F_display_db_error();
                     }
+
+                    break;
                 case 'extendtime':
-                    {
-                        // extend the test time by 5 minutes
-                        // this time extension is obtained moving forward the test starting time
-                        $extseconds = K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE;
-                        $sqlus =
-                            'SELECT testuser_creation_time
-						FROM '
-                            . K_TABLE_TEST_USER
-                            . '
-						WHERE testuser_id='
-                            . $testuser_id
-                            . '
+                    // extend the test time by 5 minutes
+                    // this time extension is obtained moving forward the test starting time
+                    $extseconds = K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE;
+                    $sqlus =
+                        'SELECT testuser_creation_time
+						FROM ' . K_TABLE_TEST_USER . '
+						WHERE testuser_id=' . $testuser_id . '
 						LIMIT 1';
-                        if ($rus = F_db_query($sqlus, $db)) {
-                            if ($mus = F_db_fetch_array($rus)) {
-                                $newstarttime = date(
-                                    K_TIMESTAMP_FORMAT,
-                                    strtotime($mus['testuser_creation_time']) + $extseconds,
-                                );
-                                $sqlu =
-                                    'UPDATE '
-                                    . K_TABLE_TEST_USER
-                                    . '
+                    if ($rus = F_db_query($sqlus, $db)) {
+                        if ($mus = F_db_fetch_array($rus)) {
+                            $newstarttime = date(
+                                K_TIMESTAMP_FORMAT,
+                                strtotime($mus['testuser_creation_time']) + $extseconds,
+                            );
+                            $sqlu =
+                                'UPDATE '
+                                . K_TABLE_TEST_USER
+                                . '
 								SET testuser_creation_time=\''
-                                    . $newstarttime
-                                    . '\'
+                                . $newstarttime
+                                . '\'
 								WHERE testuser_id='
-                                    . $testuser_id
-                                    . '';
-                                if (!($ru = F_db_query($sqlu, $db))) {
-                                    F_display_db_error();
-                                }
+                                . $testuser_id
+                                . '';
+                            if (!($ru = F_db_query($sqlu, $db))) {
+                                F_display_db_error();
                             }
-                        } else {
-                            F_display_db_error();
                         }
-
-                        break;
+                    } else {
+                        F_display_db_error();
                     }
+
+                    break;
                 case 'lock':
-                    {
-                        // update test mode to 4 = test locked
-                        $sqlu =
-                            'UPDATE '
-                            . K_TABLE_TEST_USER
-                            . '
+                    // update test mode to 4 = test locked
+                    $sqlu =
+                        'UPDATE '
+                        . K_TABLE_TEST_USER
+                        . '
 						SET testuser_status=4
 						WHERE testuser_id='
-                            . $testuser_id
-                            . '
+                        . $testuser_id
+                        . '
 						AND testuser_status<4';
-                        if (!($ru = F_db_query($sqlu, $db))) {
-                            F_display_db_error();
-                        }
-
-                        break;
+                    if (!($ru = F_db_query($sqlu, $db))) {
+                        F_display_db_error();
                     }
+
+                    break;
                 case 'unlock':
-                    {
-                        // update test mode to 1 = test unlocked
-                        $sqlu =
-                            'UPDATE '
-                            . K_TABLE_TEST_USER
-                            . '
+                    // update test mode to 1 = test unlocked
+                    $sqlu =
+                        'UPDATE '
+                        . K_TABLE_TEST_USER
+                        . '
 						SET testuser_status=1
 						WHERE testuser_id='
-                            . $testuser_id
-                            . '
+                        . $testuser_id
+                        . '
 						AND testuser_status<5';
-                        if (!($ru = F_db_query($sqlu, $db))) {
-                            F_display_db_error();
-                        }
-
-                        break;
+                    if (!($ru = F_db_query($sqlu, $db))) {
+                        F_display_db_error();
                     }
+
+                    break;
             } //end of switch
         }
     }
