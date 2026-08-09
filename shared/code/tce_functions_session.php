@@ -100,7 +100,7 @@ class TCExamSessionHandler implements SessionHandlerInterface
      */
     public function close(): bool
     {
-        $this->gc(ini_get('session.gc_maxlifetime'));
+        $this->gc((int) ini_get('session.gc_maxlifetime'));
         return true;
     }
 
@@ -423,6 +423,7 @@ function F_isSafeLocalRedirectUri(string $uri): bool
  */
 function getPlainCSRFToken(): string
 {
+    /** @var non-empty-list<non-empty-string> $inc */
     $inc = get_included_files();
     return getPlainCSRFTokenForScript($inc[0]);
 }
@@ -432,7 +433,7 @@ function getPlainCSRFToken(): string
  */
 function getPlainCSRFTokenForScript(string $script): string
 {
-    return $script . session_id() . K_RANDOM_SECURITY . getClientFingerprint();
+    return $script . (string) session_id() . K_RANDOM_SECURITY . getClientFingerprint();
 }
 
 /**
