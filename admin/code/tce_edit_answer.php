@@ -626,7 +626,13 @@ switch ($menu_mode) {
 if ($subject_module_id <= 0) {
     $sql = F_select_modules_sql() . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        $subject_module_id = ($m = F_db_fetch_array($r)) ? $m['module_id'] : 0;
+        if ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $default_module_id */
+            $default_module_id = $m['module_id'];
+            $subject_module_id = (int) $default_module_id;
+        } else {
+            $subject_module_id = 0;
+        }
     } else {
         F_display_db_error();
     }
@@ -636,7 +642,13 @@ if ($subject_module_id <= 0) {
 if ($changemodule > 0 || $question_subject_id <= 0) {
     $sql = F_select_subjects_sql('subject_module_id=' . $subject_module_id . '') . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        $question_subject_id = ($m = F_db_fetch_array($r)) ? $m['subject_id'] : 0;
+        if ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $default_subject_id */
+            $default_subject_id = $m['subject_id'];
+            $question_subject_id = (int) $default_subject_id;
+        } else {
+            $question_subject_id = 0;
+        }
     } else {
         F_display_db_error();
     }
@@ -655,7 +667,13 @@ if ($changesubject > 0 || $changemodule > 0 || $answer_question_id <= 0) {
     }
 
     if ($r = F_db_query($sql, $db)) {
-        $answer_question_id = ($m = F_db_fetch_array($r)) ? $m['question_id'] : 0;
+        if ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $default_question_id */
+            $default_question_id = $m['question_id'];
+            $answer_question_id = (int) $default_question_id;
+        } else {
+            $answer_question_id = 0;
+        }
     } else {
         F_display_db_error();
     }
@@ -679,8 +697,12 @@ if ($formstatus && $menu_mode != 'clear') {
 				LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $answer_id = $m['answer_id'];
-                $answer_question_id = $m['answer_question_id'];
+                /** @var int|numeric-string $stored_answer_id */
+                $stored_answer_id = $m['answer_id'];
+                /** @var int|numeric-string $stored_question_id */
+                $stored_question_id = $m['answer_question_id'];
+                $answer_id = (int) $stored_answer_id;
+                $answer_question_id = (int) $stored_question_id;
                 $answer_description = $m['answer_description'];
                 $answer_explanation = $m['answer_explanation'];
                 $answer_isright = f_get_boolean($m['answer_isright']);
@@ -748,7 +770,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['module_id'] . '"';
-        if ($m['module_id'] == $subject_module_id) {
+        /** @var int|numeric-string $listed_module_id */
+        $listed_module_id = $m['module_id'];
+        if ((int) $listed_module_id === $subject_module_id) {
             echo ' selected="selected"';
         }
 
@@ -799,7 +823,9 @@ $sql = F_select_subjects_sql('subject_module_id=' . $subject_module_id);
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['subject_id'] . '"';
-        if ($m['subject_id'] == $question_subject_id) {
+        /** @var int|numeric-string $listed_subject_id */
+        $listed_subject_id = $m['subject_id'];
+        if ((int) $listed_subject_id === $question_subject_id) {
             echo ' selected="selected"';
         }
 
@@ -861,7 +887,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['question_id'] . '"';
-        if ($m['question_id'] == $answer_question_id) {
+        /** @var int|numeric-string $listed_question_id */
+        $listed_question_id = $m['question_id'];
+        if ((int) $listed_question_id === $answer_question_id) {
             echo ' selected="selected"';
         }
 
@@ -910,7 +938,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($answer_id == 0) {
+if ($answer_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -931,7 +959,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['answer_id'] . '"';
-        if ($m['answer_id'] == $answer_id) {
+        /** @var int|numeric-string $listed_answer_id */
+        $listed_answer_id = $m['answer_id'];
+        if ((int) $listed_answer_id === $answer_id) {
             echo ' selected="selected"';
         }
 
@@ -1196,7 +1226,7 @@ echo '<div class="row">' . K_NEWLINE;
 echo '<span class="left">' . K_NEWLINE;
 echo '&nbsp;' . K_NEWLINE;
 
-if (isset($answer_question_id) && $answer_question_id > 0) {
+if ($answer_question_id > 0) {
     echo
         '<a href="tce_edit_question.php?subject_module_id='
             . $subject_module_id
@@ -1214,7 +1244,7 @@ if (isset($answer_question_id) && $answer_question_id > 0) {
     ;
 }
 
-if (isset($question_subject_id) && $question_subject_id > 0) {
+if ($question_subject_id > 0) {
     $answer_list_url =
         'tce_show_all_questions.php?subject_module_id='
         . $subject_module_id
@@ -1222,7 +1252,7 @@ if (isset($question_subject_id) && $question_subject_id > 0) {
         . $question_subject_id
         . '&amp;submitted=1&amp;firstrow='
         . $answer_list_firstrow;
-    if (isset($answer_question_id) && $answer_question_id > 0) {
+    if ($answer_question_id > 0) {
         $answer_list_url .= '#qid_' . $answer_question_id;
     }
 
