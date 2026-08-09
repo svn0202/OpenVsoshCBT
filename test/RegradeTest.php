@@ -9,6 +9,14 @@ require_once __DIR__ . '/../shared/code/tce_functions_regrade.php';
 
 final class RegradeTest extends TestCase
 {
+    /**
+     * @var array{
+     *     test_score_right: int,
+     *     test_score_wrong: int,
+     *     test_score_unanswered: int,
+     *     test_mcma_partial_score: int
+     * }
+     */
     private array $test = [
         'test_score_right' => 4,
         'test_score_wrong' => -1,
