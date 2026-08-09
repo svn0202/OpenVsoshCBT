@@ -223,7 +223,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                                     $html .=
                                         '<td style="text-align:center;">' . htmlspecialchars((string) $apos) . '</td>';
                                     $html .=
-                                        '<td style="text-align:center;">' . htmlspecialchars((string) $akey) . '</td>';
+                                        '<td style="text-align:center;">' . htmlspecialchars($akey) . '</td>';
                                     $html .= '<td>' . F_decode_tcecode($ma['answer_description']) . '</td>';
                                     $html .= '</tr>';
                                     if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
