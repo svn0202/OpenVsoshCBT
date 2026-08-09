@@ -55,7 +55,7 @@ function F_decodeBase32($code): string
     // for each char on code
     for ($c = 0; $c < $len; ++$c) {
         $n <<= 5;
-        $n += strpos($dict, $code[$c]);
+        $n += (int) strpos($dict, $code[$c]);
         $j += 5;
         if ($j >= 8) {
             $j -= 8;
