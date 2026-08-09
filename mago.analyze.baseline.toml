@@ -9266,18 +9266,6 @@ count = 13
 
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `TmfWordImporter::escapeText`: expected `string`, but found `null|string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `TmfWordImporter::removeHtmlMarker`: expected `string`, but found `null|string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `TmfWordImporter::cellGridSpan`: expected `DOMElement`, but found `mixed`."
 count = 1
@@ -9454,18 +9442,6 @@ count = 10
 file = "admin/code/tmf_word_import_lib.php"
 code = "mixed-property-access"
 message = "Attempting to access a property on a non-object type (`truthy-mixed`)."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "nullable-return-statement"
-message = "Function `TmfWordImporter::escapeText` is declared to return `string` but possibly returns a nullable value (inferred as `null|string`)."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "nullable-return-statement"
-message = "Function `TmfWordImporter::removeHtmlMarker` is declared to return `string` but possibly returns a nullable value (inferred as `null|string`)."
 count = 1
 
 [[issues]]
