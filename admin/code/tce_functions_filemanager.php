@@ -360,7 +360,7 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
  * @param $file (string) the file to search
  * @return true if the file is used, false otherwise
  */
-function F_isUsedMediaFile($file)
+function f_is_used_media_file($file)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

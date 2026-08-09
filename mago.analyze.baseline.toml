@@ -2589,7 +2589,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_isUsedMediaFile`: expected `true`, but found `false`."
+message = "Invalid return type for function `f_is_used_media_file`: expected `true`, but found `false`."
 count = 1
 
 [[issues]]
@@ -2601,7 +2601,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-return-type"
-message = "Function `F_isUsedMediaFile` is missing a return type hint."
+message = "Function `f_is_used_media_file` is missing a return type hint."
 count = 1
 
 [[issues]]
