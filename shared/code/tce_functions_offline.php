@@ -13,7 +13,7 @@ function F_tmf_offline_table(): string
     return K_TABLE_PREFIX . 'offline_packages';
 }
 
-function F_tmf_offline_payload_encode(array $payload): string
+function f_tmf_offline_payload_encode(array $payload): string
 {
     return base64_encode(
         json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR),
