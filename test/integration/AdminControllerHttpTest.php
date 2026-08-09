@@ -655,6 +655,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
+    /** @throws \Random\RandomException */
     public function testAccessSettingsControlPublicLinksAndStoreHelpInDatabase(): void
     {
         $cookies = $this->login();
@@ -1562,6 +1563,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
+    /** @throws \Random\RandomException */
     public function testSignedOfflinePackageImportsIdempotentlyAndRejectsTampering(): void
     {
         $cookies = $this->login();
@@ -1966,6 +1968,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
+    /** @throws \Random\RandomException */
     public function testEssayAttachmentUploadDownloadAndArchiveFlow(): void
     {
         $cookies = $this->login();
