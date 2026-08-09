@@ -90,7 +90,7 @@ echo '<fieldset class="noborder">' . K_NEWLINE;
 
 echo '<legend title="' . $l['w_type'] . '">' . $l['w_type'] . '</legend>' . K_NEWLINE;
 echo '<input type="radio" name="type" id="type_xml" value="1" title="TCExam XML Format"';
-if ($type == 1) {
+if ($type === 1) {
     echo ' checked="checked"';
 }
 
@@ -98,7 +98,7 @@ echo ' />';
 echo '<label for="type_xml">TCExam XML</label><br />' . K_NEWLINE;
 
 echo '<input type="radio" name="type" id="type_tsv" value="2" title="TCExam TSV Format"' . K_NEWLINE;
-if ($type == 2) {
+if ($type === 2) {
     echo ' checked="checked"';
 }
 
@@ -108,7 +108,7 @@ echo '<label for="type_tsv">TCExam TSV</label>' . K_NEWLINE;
 $custom_import = K_ENABLE_CUSTOM_IMPORT;
 if ($custom_import !== '') {
     echo '<input type="radio" name="type" id="type_custom" value="3" title="' . $custom_import . '"' . K_NEWLINE;
-    if ($type == 3) {
+    if ($type === 3) {
         echo ' checked="checked"';
     }
 
