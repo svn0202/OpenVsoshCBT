@@ -3041,9 +3041,3 @@ file = "shared/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
 count = 1
-
-[[issues]]
-file = "shared/custom_auth/basic.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
