@@ -195,7 +195,7 @@ function f_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
  *
  * @return array<int,int>
  */
-function F_tmf_unanswered_question_numbers(int $test_id, int $user_id): array
+function f_tmf_unanswered_question_numbers(int $test_id, int $user_id): array
 {
     global $db;
     $result = F_db_query(
