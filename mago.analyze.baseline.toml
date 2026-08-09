@@ -4010,12 +4010,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_upload.php"
-code = "possibly-false-array-access"
-message = "Cannot perform array access on possibly `false` value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_upload.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `htmlspecialchars`: expected `string`, but possibly received `array<array-key, string>|null|string`."
 count = 2

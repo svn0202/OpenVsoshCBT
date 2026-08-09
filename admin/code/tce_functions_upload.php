@@ -82,7 +82,7 @@ function f_read_file_size(mixed $filetocheck): int|false
     $filesize = 0;
     if ($fp = fopen($filetocheck, 'rb')) {
         $s_array = fstat($fp);
-        if ($s_array['size'] !== 0) {
+        if ($s_array !== false && $s_array['size'] !== 0) {
             $filesize = $s_array['size'];
         } else {
             //read size from remote file (very slow function)
