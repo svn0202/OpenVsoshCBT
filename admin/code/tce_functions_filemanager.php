@@ -399,9 +399,15 @@ function F_isUsedMediaFile($file)
  * @param $params (string) additional parameters to add on links
  * @param $rootdir (string) the user root dir.
  * @param $authdirs (string) regular expression containing the authorized dirs.
- * @return html table
+ * @return string HTML table
  */
-function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CACHE, $authdirs = '')
+function f_get_dir_table(
+    mixed $dir,
+    mixed $selected = '',
+    mixed $params = '',
+    mixed $rootdir = K_PATH_CACHE,
+    mixed $authdirs = '',
+): string
 {
     global $l;
     require_once '../config/tce_config.php';

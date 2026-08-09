@@ -8,6 +8,44 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    /** @throws Random\RandomException */
+    public function testRendersEmptyMediaDirectoryInBothDisplayModes(): void
+    {
+        $temporaryDirectory = sys_get_temp_dir() . '/tcexam-render-' . bin2hex(random_bytes(6));
+        self::assertTrue(mkdir($temporaryDirectory));
+
+        try {
+            [$status, $output] = F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    '$_SERVER["SCRIPT_NAME"] = "/files.php"; require "../config/tce_config.php"; '
+                        . 'require "tce_functions_filemanager.php"; $_SESSION["session_user_id"] = 7; '
+                        . '$l["w_directory"] = "Directory"; $l["w_name"] = "Name"; $l["w_size"] = "Size"; '
+                        . '$l["w_datetime_format"] = "Date format"; $l["w_date"] = "Date"; '
+                        . '$l["w_permissions"] = "Permissions"; '
+                        . 'echo base64_encode(f_get_dir_table($argv[1], "", "", $argv[1], "[^/]*")), "\n", '
+                        . 'base64_encode(F_getDirVisualTable($argv[1], "", "", $argv[1], "[^/]*"));',
+                    $temporaryDirectory . '/',
+                ],
+                __DIR__ . '/../admin/code',
+            );
+            self::assertSame(0, $status);
+
+            $table = '<table class="filemanager">' . "\n"
+                . '<caption class="sr-only">Directory</caption><thead><tr><th scope="col">Name</th>'
+                . '<th scope="col">Size</th><th scope="col" title="Date format">Date</th>'
+                . '<th scope="col">Permissions</th></tr>' . "\n"
+                . '</thead></table>' . "\n";
+            self::assertSame(
+                base64_encode($table) . "\n" . base64_encode('<br style="clear:both;" />'),
+                $output,
+            );
+        } finally {
+            rmdir($temporaryDirectory);
+        }
+    }
+
     public function testRejectsDirectoryDeletionOutsideMediaCache(): void
     {
         [$status, $output] = F_tcecode_run_process(

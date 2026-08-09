@@ -442,7 +442,7 @@ echo '<br />' . K_NEWLINE;
 // list files
 if ($viewmode) {
     // table mode
-    echo F_getDirTable($dir, basename($file), $params, $root_dir, $authdirs);
+    echo f_get_dir_table($dir, basename($file), $params, $root_dir, $authdirs);
 } else {
     // visual mode
     echo F_getDirVisualTable($dir, basename($file), $params, $root_dir, $authdirs);
