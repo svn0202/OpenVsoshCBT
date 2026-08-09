@@ -33,22 +33,21 @@ $openvsosh_bootstrap_language = 'ru';
 $openvsosh_bootstrap_timezone = 'UTC';
 $openvsosh_bootstrap_file = __DIR__ . '/openvsosh-bootstrap.json';
 if (is_file($openvsosh_bootstrap_file)) {
+    /** @var null|bool|int|float|string|array{language?: mixed, timezone?: mixed} $openvsosh_bootstrap */
     $openvsosh_bootstrap = json_decode((string) file_get_contents($openvsosh_bootstrap_file), true);
     $openvsosh_languages = [
         'ar', 'az', 'bg', 'br', 'cn', 'de', 'el', 'en', 'es', 'fa', 'fr', 'he', 'hi',
         'hu', 'id', 'it', 'jp', 'mr', 'ms', 'nl', 'pl', 'ro', 'ru', 'tr', 'ur', 'vn',
     ];
-    if (
-        is_array($openvsosh_bootstrap)
-        && in_array((string) ($openvsosh_bootstrap['language'] ?? ''), $openvsosh_languages, true)
-    ) {
-        $openvsosh_bootstrap_language = (string) $openvsosh_bootstrap['language'];
-    }
-    if (
-        is_array($openvsosh_bootstrap)
-        && in_array((string) ($openvsosh_bootstrap['timezone'] ?? ''), timezone_identifiers_list(), true)
-    ) {
-        $openvsosh_bootstrap_timezone = (string) $openvsosh_bootstrap['timezone'];
+    if (is_array($openvsosh_bootstrap)) {
+        $openvsosh_language_candidate = (string) ($openvsosh_bootstrap['language'] ?? '');
+        if (in_array($openvsosh_language_candidate, $openvsosh_languages, true)) {
+            $openvsosh_bootstrap_language = $openvsosh_language_candidate;
+        }
+        $openvsosh_timezone_candidate = (string) ($openvsosh_bootstrap['timezone'] ?? '');
+        if (in_array($openvsosh_timezone_candidate, timezone_identifiers_list(), true)) {
+            $openvsosh_bootstrap_timezone = $openvsosh_timezone_candidate;
+        }
     }
 }
 define('K_LANGUAGE', $openvsosh_bootstrap_language);
@@ -264,7 +263,9 @@ unset(
     $openvsosh_bootstrap_file,
     $openvsosh_bootstrap_language,
     $openvsosh_bootstrap_timezone,
+    $openvsosh_language_candidate,
     $openvsosh_languages,
+    $openvsosh_timezone_candidate,
 );
 
 /**
