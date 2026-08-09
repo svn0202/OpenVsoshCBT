@@ -58,7 +58,7 @@ if (!isset($thispage_icon) || empty($thispage_icon)) {
 }
 
 if (!isset($thispage_style) || empty($thispage_style)) {
-    $thispage_style = strcasecmp($l['a_meta_dir'], 'rtl') == 0 ? K_SITE_STYLE_RTL : K_SITE_STYLE;
+    $thispage_style = strcasecmp($l['a_meta_dir'], 'rtl') === 0 ? K_SITE_STYLE_RTL : K_SITE_STYLE;
 }
 
 echo '<!DOCTYPE html>' . K_NEWLINE;
