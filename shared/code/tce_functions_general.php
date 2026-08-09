@@ -773,7 +773,7 @@ function f_html_to_tsv(mixed $str): mixed
  * @param $filter (string) additional parameters to pass on URL
  * @return string table header element
  */
-function F_select_table_header_element(mixed $order_field, mixed $orderdir, mixed $title, mixed $name, mixed $current_order_field = '', mixed $filter = ''): string
+function f_select_table_header_element(mixed $order_field, mixed $orderdir, mixed $title, mixed $name, mixed $current_order_field = '', mixed $filter = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
