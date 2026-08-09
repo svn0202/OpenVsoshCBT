@@ -287,7 +287,7 @@ if (!empty($file)) {
             . ' x '
             . $h
             . ' px ( '
-            . F_formatFileSize($filedata['size'])
+            . f_format_file_size($filedata['size'])
             . ' ) '
             . $filedata['lastmod']
             . '</span>'

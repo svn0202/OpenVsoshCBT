@@ -41,10 +41,10 @@ final class FileManagerFunctionsTest extends TestCase
 
     public function testFormatsFileSizesUsingLegacyUnitsAndRounding(): void
     {
-        self::assertSame('0', F_formatFileSize(0));
-        self::assertSame('1 B ', F_formatFileSize(1));
-        self::assertSame('2 KB', F_formatFileSize(1536));
-        self::assertSame('1 MB', F_formatFileSize(1024 * 1024));
-        self::assertSame('1 KB', F_formatFileSize('1024'));
+        self::assertSame('0', f_format_file_size(0));
+        self::assertSame('1 B ', f_format_file_size(1));
+        self::assertSame('2 KB', f_format_file_size(1536));
+        self::assertSame('1 MB', f_format_file_size(1024 * 1024));
+        self::assertSame('1 KB', f_format_file_size('1024'));
     }
 }

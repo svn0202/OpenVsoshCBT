@@ -237,7 +237,7 @@ function F_getFileInfo(mixed $file): array
  * @param $size (int) size in bytes
  * @return string formatted size
  */
-function F_formatFileSize(mixed $size): string
+function f_format_file_size(mixed $size): string
 {
     $out = ''; // string to be returned
     $mult = ['B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']; // multipliers
@@ -447,7 +447,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
             . '" style="text-decoration:underline;">'
             . $info['basename']
             . '</a></strong></td>';
-        $out .= '<td style="text-align:right;">' . F_formatFileSize($info['size']) . '</td>';
+        $out .= '<td style="text-align:right;">' . f_format_file_size($info['size']) . '</td>';
         $out .= '<td>' . $info['lastmod'] . '</td>';
         $out .= '<td>' . $info['aperms'] . '</td>';
         $out .= '</tr>' . K_NEWLINE;
@@ -486,7 +486,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
                 . '">'
                 . $info['basename']
                 . '</a></td>';
-            $out .= '<td style="text-align:right;">' . F_formatFileSize($info['size']) . '</td>';
+            $out .= '<td style="text-align:right;">' . f_format_file_size($info['size']) . '</td>';
             //$out .= '<td style="text-align:right;">'.$info['size'].'</td>';
             $out .= '<td>' . $info['lastmod'] . '</td>';
             $out .= '<td>' . $info['aperms'] . '</td>';
@@ -577,7 +577,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
                     . ' : '
                     . $info['basename']
                     . ' ('
-                    . F_formatFileSize($info['size'])
+                    . f_format_file_size($info['size'])
                     . ')'
                     . '" style="border:none;" />';
             }
@@ -613,7 +613,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
                 . ' : '
                 . $info['basename']
                 . ' ('
-                . F_formatFileSize($info['size'])
+                . f_format_file_size($info['size'])
                 . ')'
                 . '">'
                 . $imgicon
