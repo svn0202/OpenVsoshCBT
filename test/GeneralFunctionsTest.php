@@ -53,7 +53,7 @@ final class GeneralFunctionsTest extends TestCase
     }
 
     #[RunInSeparateProcess]
-    public function testZeroToNullCoercion(): void
+    public function testSqlNullHelpersCoercion(): void
     {
         define('K_DATABASE_TYPE', 'MYSQL');
         $workingDirectory = getcwd();
@@ -61,6 +61,7 @@ final class GeneralFunctionsTest extends TestCase
         chdir(__DIR__ . '/../admin/code');
 
         try {
+            self::assertSame('NULL', \F_empty_to_null(''));
             self::assertSame('NULL', \f_zero_to_null(0));
             self::assertSame('NULL', \f_zero_to_null('0'));
             self::assertSame('NULL', \f_zero_to_null(0.0));
