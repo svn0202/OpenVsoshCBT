@@ -188,7 +188,7 @@ function f_tmf_normalize_short_answer(string $value, bool $binary = false): stri
 /**
  * Return Unicode-aware edit similarity in the inclusive 0–100 range.
  */
-function F_tmf_text_similarity(string $left, string $right, bool $binary = false): float
+function f_tmf_text_similarity(string $left, string $right, bool $binary = false): float
 {
     $left_chars = preg_split('//u', F_tmf_normalize_short_answer($left, $binary), -1, PREG_SPLIT_NO_EMPTY);
     $right_chars = preg_split('//u', F_tmf_normalize_short_answer($right, $binary), -1, PREG_SPLIT_NO_EMPTY);
