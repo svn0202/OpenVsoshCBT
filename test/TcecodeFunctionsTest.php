@@ -53,15 +53,16 @@ final class TcecodeFunctionsTest extends TestCase
                     . '"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z8ZkAAAAASUVORK5CYII=")); '
                     . '$maxWidth = 0; $maxHeight = 0; try { '
                     . '$markup = F_objects_replacement($name, "png", 10, 20, "", $maxWidth, $maxHeight); '
-                    . 'echo json_encode(str_replace($name, "{name}", $markup)); } finally { unlink($path); }',
+                    . 'echo json_encode([str_replace($name, "{name}", $markup), $maxWidth, $maxHeight]); '
+                    . '} finally { unlink($path); }',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status);
         self::assertSame(
-            '"<img src=\"\\/cache\\/{name}.png\" alt=\"image:{name}.png\" width=\"10\" height=\"20\" '
-                . 'class=\"tcecode\" \\/>"',
+            '["<img src=\"\\/cache\\/{name}.png\" alt=\"image:{name}.png\" width=\"10\" height=\"20\" '
+                . 'class=\"tcecode\" \\/>",1,1]',
             $output,
         );
     }
