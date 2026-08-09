@@ -144,7 +144,7 @@ function f_tmf_matching_presentation(string $description, int $positions): array
 /**
  * Replace the optional short-answer similarity marker in a question description.
  */
-function F_tmf_set_similarity_threshold(string $description, int $threshold): string
+function f_tmf_set_similarity_threshold(string $description, int $threshold): string
 {
     $description = (string) preg_replace('/\s*<!--TMF_SIMILARITY:\d{1,3}-->/', '', $description);
     $threshold = max(0, min(100, $threshold));
