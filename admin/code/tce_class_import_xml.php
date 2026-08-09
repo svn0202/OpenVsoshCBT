@@ -268,7 +268,7 @@ class XMLQuestionImporter
      * Add a new module if not exist.
      * @private
      */
-    private function addModule()
+    private function addModule(): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -332,7 +332,7 @@ class XMLQuestionImporter
      * Add a new subject if not exist.
      * @private
      */
-    private function addSubject()
+    private function addSubject(): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -407,7 +407,7 @@ class XMLQuestionImporter
      * Add a new question if not exist.
      * @private
      */
-    private function addQuestion()
+    private function addQuestion(): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -567,7 +567,7 @@ class XMLQuestionImporter
      * Add a new answer if not exist.
      * @private
      */
-    private function addAnswer()
+    private function addAnswer(): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
