@@ -133,12 +133,6 @@ message = "Function name `F_tmf_users_xlsx_groups_for_user` should be in snake c
 count = 1
 
 [[issues]]
-file = "admin/code/tce_users_xlsx.php"
-code = "function-name"
-message = "Function name `F_tmf_users_xlsx_send` should be in snake case."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_xml_question_stats.php"
 code = "function-name"
 message = "Function name `F_xml_export_question_stats` should be in snake case."

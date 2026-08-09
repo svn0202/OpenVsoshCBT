@@ -7,7 +7,7 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_users_xlsx.php';
 
-function F_tmf_users_xlsx_send(string $bytes, string $name): never
+function f_tmf_users_xlsx_send(string $bytes, string $name): never
 {
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment; filename="' . $name . '"');
