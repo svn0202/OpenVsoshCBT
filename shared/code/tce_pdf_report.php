@@ -656,7 +656,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             $html .=
                 '<td style="text-align:right;font-weight:bold;font-family:courier;">'
                 . htmlspecialchars(
-                    F_formatFloat($tu['total_score']) . ' '
+                    f_format_float($tu['total_score']) . ' '
                         . f_format_pdf_percentage(floatval($tu['total_score_perc']), false),
                 )
                 . '</td>';
@@ -698,7 +698,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 if ($i > 0 && $stats <= 0) {
                     break;
                 }
-                $cells[] = in_array($row, $noperc, true) ? F_formatFloat($col[$k]) : round($col[$k]) . '%';
+                $cells[] = in_array($row, $noperc, true) ? f_format_float($col[$k]) : round($col[$k]) . '%';
             }
             $srows .=
                 '<tr><td style="font-weight:bold;text-align:right;">' . htmlspecialchars($l['w_' . $row]) . '</td>';
