@@ -16317,7 +16317,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_tmf_test_completion_status`: expected `array{'allowed': bool, 'details': float|int|null, 'reason': string}`, but found `array{'allowed': false, 'details': unknown-ref(number), 'reason': string('required_answers')}`."
+message = "Invalid return type for function `f_tmf_test_completion_status`: expected `array{'allowed': bool, 'details': float|int|null, 'reason': string}`, but found `array{'allowed': false, 'details': unknown-ref(number), 'reason': string('required_answers')}`."
 count = 1
 
 [[issues]]
