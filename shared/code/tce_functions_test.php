@@ -2733,7 +2733,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             if (f_get_boolean($m['testlog_reviewed'] ?? false)) {
                 $item_classes[] = 'marked-for-review';
             }
-            if ($m['testlog_id'] != $testlog_id) {
+            if (!f_legacy_int_equals($m['testlog_id'], (int) $testlog_id)) {
                 $str .= '<li'
                     . ($item_classes !== [] ? ' class="' . implode(' ', $item_classes) . '"' : '')
                     . ' data-testlog-id="' . $m['testlog_id'] . '">';
@@ -2747,7 +2747,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     . '" title="'
                     . F_tcecodeToTitle($m['question_description'])
                     . '" /> ';
-                if ($testlog_id_last == $testlog_id) {
+                if (f_legacy_int_equals($testlog_id_last, (int) $testlog_id)) {
                     $testlog_id_next = $m['testlog_id'];
                 }
             } else {
