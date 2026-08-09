@@ -614,7 +614,7 @@ function F_show_select_test_popup(
  * @return boolean true/false
  * @since 12.1.000 (2013-07-09)
  */
-function F_isTestOnSSLCerts($test_id, $ssl_id)
+function f_is_test_on_ssl_certs(mixed $test_id, mixed $ssl_id): mixed
 {
     global $l, $db;
     require_once '../config/tce_config.php';
