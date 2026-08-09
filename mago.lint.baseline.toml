@@ -1395,12 +1395,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
-message = "Function name `F_substr_utf8` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "function-name"
 message = "Function name `F_text_to_tsv` should be in snake case."
 count = 1
 

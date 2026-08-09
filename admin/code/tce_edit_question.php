@@ -969,7 +969,7 @@ if ($r = F_db_query($sql, $db)) {
         echo
             ' '
                 . htmlspecialchars(
-                    F_substr_utf8(F_remove_tcecode($m['question_description']), 0, K_SELECT_SUBSTRING),
+                    f_substr_utf8(F_remove_tcecode($m['question_description']), 0, K_SELECT_SUBSTRING),
                     ENT_NOQUOTES,
                     $l['a_meta_charset'],
                 )
