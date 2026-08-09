@@ -179,7 +179,7 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
  * @param $preserve_tagsign (boolean) if true preserve <> symbols, default=FALSE
  * @return string Converted string.
  */
-function unhtmlentities($text_to_convert, $preserve_tagsign = false): string
+function unhtmlentities(mixed $text_to_convert, mixed $preserve_tagsign = false): string
 {
     if ($preserve_tagsign) {
         $text_to_convert = preg_replace('/\&([gl])t;/', '&amp;\\1t;', $text_to_convert);
@@ -201,7 +201,7 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false): string
  * @param $dquotes (boolean) If true add slash in fron of double quotes;
  * @return string Converted string.
  */
-function f_compact_string($string, $dquotes = false): string
+function f_compact_string(mixed $string, mixed $dquotes = false): string
 {
     $repTable = [
         "\t" => ' ',

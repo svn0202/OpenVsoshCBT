@@ -14607,12 +14607,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$dquotes` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$fieldid` is missing a type hint."
 count = 1
 
@@ -14649,31 +14643,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$preserve_tagsign` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$ratio` is missing a type hint."
 count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$string` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$table` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
-message = "Parameter `$text_to_convert` is missing a type hint."
 count = 1
 
 [[issues]]
