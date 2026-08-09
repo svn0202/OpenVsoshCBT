@@ -57,6 +57,8 @@ require_once '../../shared/code/tce_functions_otp.php';
 require_once '../../shared/code/tce_functions_user_photo.php';
 require_once 'tce_functions_user_select.php';
 
+$user_id = 0;
+$session_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
 if (isset($_REQUEST['user_id'])) {
     $user_id = (int) $_REQUEST['user_id'];
     if (!F_isAuthorizedEditorForUser($user_id)) {
@@ -73,13 +75,13 @@ if (isset($_REQUEST['group_id'])) {
 
 if (isset($_REQUEST['user_level'])) {
     $user_level = (int) $_REQUEST['user_level'];
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        if ($user_id == $_SESSION['session_user_id']) {
+    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
+        if (f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])) {
             // you cannot change your own level
-            $user_level = $_SESSION['session_user_level'];
+            $user_level = $session_user_level;
         } else {
             // you cannot create a user with a level equal or higher than yours
-            $user_level = min(max(0, $_SESSION['session_user_level'] - 1), $user_level);
+            $user_level = min(max(0, $session_user_level - 1), $user_level);
         }
     }
 }
@@ -92,9 +94,9 @@ switch ($menu_mode) { // process submitted data
     case 'delete':
             // ask confirmation
             if (
-                $_SESSION['session_user_level'] < K_AUTH_DELETE_USERS
-                || $user_id == $_SESSION['session_user_id']
-                || $user_id == 1
+                $session_user_level < K_AUTH_DELETE_USERS
+                || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+                || f_legacy_int_equals($user_id, 1)
             ) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
                 break;
@@ -127,16 +129,16 @@ switch ($menu_mode) { // process submitted data
     case 'forcedelete':
             // Delete specified user
             if (
-                $_SESSION['session_user_level'] < K_AUTH_DELETE_USERS
-                || $user_id == $_SESSION['session_user_id']
-                || $user_id == 1
+                $session_user_level < K_AUTH_DELETE_USERS
+                || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+                || f_legacy_int_equals($user_id, 1)
             ) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
                 break;
             }
 
             if ($forcedelete === $l['w_delete']) { //check if delete button has been pushed (redundant check)
-                if ($user_id == 1) { //can't delete anonymous user
+                if (f_legacy_int_equals($user_id, 1)) { //can't delete anonymous user
                     F_print_error('WARNING', $l['m_delete_anonymous']);
                 } else {
                     $sql = 'DELETE FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id . '';
@@ -522,7 +524,7 @@ switch ($menu_mode) { // process submitted data
 
 // --- Initialize variables
 if ($formstatus && $menu_mode !== 'clear') {
-    if (!isset($user_id) || empty($user_id)) {
+    if (empty($user_id)) {
         $user_id = 0;
         $user_regdate = '';
         $user_ip = '';
@@ -611,7 +613,7 @@ echo
     '<select name="user_id" id="user_id" onchange="document.getElementById(\'form_usereditor\').submit()">' . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($user_id == 0) {
+if (f_legacy_int_equals($user_id, 0)) {
     echo ' selected="selected"';
 }
 
@@ -644,8 +646,8 @@ if ($user_searchterms !== '') {
             . " OR (user_lastname LIKE '%" . $word . "%'))";
     }
 
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $sql .= ' AND ((user_level<' . (int) $_SESSION['session_user_level'] . ') OR (user_id='
+    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
+        $sql .= ' AND ((user_level<' . $session_user_level . ') OR (user_id='
             . (int) $_SESSION['session_user_id'] . '))';
         $sql .= ' AND user_id IN (SELECT tb.usrgrp_user_id FROM '
             . K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb'
@@ -943,9 +945,9 @@ echo '<div class="row">' . K_NEWLINE;
 // show buttons by case
 if (isset($user_id) && $user_id > 0) {
     if (
-        $user_level < $_SESSION['session_user_level']
-        || $user_id == $_SESSION['session_user_id']
-        || $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR
+        $user_level < $session_user_level
+        || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+        || $session_user_level >= K_AUTH_ADMINISTRATOR
     ) {
         echo '<span style="background-color:#999999;">';
         echo
@@ -965,8 +967,8 @@ if (isset($user_id) && $user_id > 0) {
 
     if (
         $user_id > 1
-        && $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
-        && $user_id != $_SESSION['session_user_id']
+        && $session_user_level >= K_AUTH_DELETE_USERS
+        && !f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
     ) {
         // your account and anonymous user can't be deleted
         F_submit_button('delete', $l['w_delete'], $l['h_delete']);
