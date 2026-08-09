@@ -22,9 +22,10 @@
 
 require_once '../config/tce_config.php';
 
-$pagelevel = K_AUTH_ADMIN_ONLINE_USERS;
+$pagelevel = (int) K_AUTH_ADMIN_ONLINE_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{t_online_users: string} $l Loaded language data. */
 $thispage_title = $l['t_online_users'];
 
 require_once '../code/tce_page_header.php';
