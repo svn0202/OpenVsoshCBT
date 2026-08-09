@@ -65,7 +65,7 @@ echo
 ;
 
 echo '<option value="0"';
-if ($group_id == 0) {
+if ($group_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -74,7 +74,7 @@ $sql = F_user_group_select_sql();
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if ($m['group_id'] == $group_id) {
+        if (f_form_option_is_selected($group_id, $m['group_id'])) {
             echo ' selected="selected"';
         }
 
@@ -142,7 +142,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         if (
                             $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
                             && $user_id > 1
-                            && $user_id != $_SESSION['session_user_id']
+                            && !f_form_option_is_selected($user_id, $_SESSION['session_user_id'])
                             && F_isAuthorizedEditorForUser($user_id)
                         ) {
                             $sql = 'DELETE FROM ' . K_TABLE_USERS . '
