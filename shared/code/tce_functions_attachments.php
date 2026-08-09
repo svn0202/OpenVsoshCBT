@@ -206,6 +206,17 @@ function F_tmf_attachment_list(int $testlog_id): array
     return $attachments;
 }
 
+/**
+ * @return array{
+ *     attachment_id: mixed,
+ *     attachment_user_id: mixed,
+ *     attachment_stored_name: mixed,
+ *     attachment_original_name: mixed,
+ *     attachment_mime: mixed,
+ *     attachment_sha256: mixed,
+ *     testuser_test_id: mixed
+ * }|false
+ */
 function F_tmf_attachment_find(int $attachment_id): array|false
 {
     global $db;
