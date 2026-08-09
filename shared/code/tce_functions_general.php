@@ -466,7 +466,7 @@ function get_normalized_ip(mixed $ip): string|false
  * @return string|false 16-byte packed IPv6 address, or false on invalid input.
  * @since 17.1.0 (2026-06-23)
  */
-function get_ip_as_bytes($ip): string|false
+function get_ip_as_bytes(mixed $ip): string|false
 {
     $norm = get_normalized_ip($ip);
     if ($norm === false) {
@@ -485,7 +485,7 @@ function get_ip_as_bytes($ip): string|false
  * @return string IP address as a readable string.
  * @since 9.0.033 (2009-11-03)
  */
-function get_ip_as_string($ip): string
+function get_ip_as_string(mixed $ip): string
 {
     $norm = get_normalized_ip($ip);
     if ($norm === false || $norm === '') {
