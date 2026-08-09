@@ -699,12 +699,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_result_publication.php"
 code = "function-name"
-message = "Function name `F_tmf_result_identity` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_result_publication.php"
-code = "function-name"
 message = "Function name `F_tmf_results_are_published` should be in snake case."
 count = 1
 
