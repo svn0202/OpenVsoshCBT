@@ -126,7 +126,7 @@ function f_display_db_error(mixed $exit = true): void
  * @param string $errfile File where the error was raised.
  * @param int $errline Line where the error was raised.
  */
-function F_error_handler(int $errno, string $errstr, string $errfile, int $errline): void
+function f_error_handler(int $errno, string $errstr, string $errfile, int $errline): void
 {
     $error_reporting = ini_get('error_reporting');
     if ($error_reporting === false || (is_numeric($error_reporting) && (float) $error_reporting === 0.0)) {
