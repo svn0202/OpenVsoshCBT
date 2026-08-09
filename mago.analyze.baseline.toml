@@ -2774,12 +2774,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(associative)`."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_filemanager.php"
 code = "invalid-operand"
 message = "Invalid type `unknown-ref(an)` for middle operand in string concatenation."
 count = 1
@@ -2818,7 +2812,7 @@ count = 1
 file = "admin/code/tce_filemanager.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 17
+count = 16
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
@@ -3206,12 +3200,6 @@ count = 25
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
-code = "impossible-assignment"
-message = "Invalid assignment: the right-hand side has type `never` and cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 2
@@ -3224,27 +3212,9 @@ count = 4
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(associative)`."
-count = 9
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 4
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-operand"
-message = "Invalid type `never` for middle operand in string concatenation."
-count = 5
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-operand"
-message = "Invalid type `never` for right operand in string concatenation."
-count = 3
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3286,12 +3256,6 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_getDirVisualTable`: expected `unknown-ref(html)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_getFileInfo`: expected `unknown-ref(associative)`, but found `array{'aperms': truthy-string, 'basename': string, 'dir': bool, 'dirname'?: string, 'extension': string(''), 'filename': string, 'lastmod': string, 'link': true, 'linkto': false|string, 'owner': false|non-negative-int, 'perms': false|non-negative-int, 'size': false|non-negative-int, 'tcefile': string, 'tcename': string}|array{'aperms': truthy-string, 'basename': string, 'dir': bool, 'dirname'?: string, 'extension': string, 'filename': string, 'lastmod': string, 'link': false, 'owner': false|non-negative-int, 'perms': false|non-negative-int, 'size': false|non-negative-int, 'tcefile': string, 'tcename': string}|array{'aperms': truthy-string, 'basename': string, 'dir': bool, 'dirname'?: string, 'extension': string, 'filename': string, 'lastmod': string, 'link': true, 'linkto': false|string, 'owner': false|non-negative-int, 'perms': false|non-negative-int, 'size': false|non-negative-int, 'tcefile': string, 'tcename': string}`."
 count = 1
 
 [[issues]]
@@ -3370,7 +3334,7 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$file` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3448,12 +3412,6 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-return-type"
 message = "Function `F_getDirVisualTable` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_getFileInfo` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3579,14 +3537,8 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 3
+count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3646,7 +3598,7 @@ count = 8
 file = "admin/code/tce_functions_filemanager.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 11
+count = 10
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3658,7 +3610,7 @@ count = 14
 file = "admin/code/tce_functions_filemanager.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 29
+count = 22
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3670,7 +3622,7 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3722,48 +3674,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `F_formatFileSize` has type `never`, meaning it cannot produce a value."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `F_objects_replacement` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `str_starts_with` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `strlen` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `strtolower` has type `never`, meaning it cannot produce a value."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #1 passed to function `substr` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "no-value"
-message = "Argument #2 passed to function `F_objects_replacement` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `a`."
 count = 1
@@ -3773,12 +3683,6 @@ file = "admin/code/tce_functions_filemanager.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `an`."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `associative`."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -7424,12 +7328,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(associative)`."
-count = 5
-
-[[issues]]
-file = "admin/code/tce_select_mediafile.php"
 code = "invalid-operand"
 message = "Invalid type `unknown-ref(an)` for middle operand in string concatenation."
 count = 1
@@ -7468,7 +7366,7 @@ count = 1
 file = "admin/code/tce_select_mediafile.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 28
+count = 26
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"

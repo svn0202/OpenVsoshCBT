@@ -180,9 +180,24 @@ function F_deleteMediaDir($dirname)
  * Get file information
  * @author Nicola Asuni
  * @param $file (string) the file name
- * @return associative array containing file info or false in case of error
+ * @return array{
+ *     dirname?: string,
+ *     basename: string,
+ *     extension: string,
+ *     filename: string,
+ *     dir: bool,
+ *     lastmod: string,
+ *     owner: int|false,
+ *     perms: int|false,
+ *     aperms: string,
+ *     size: int|false,
+ *     link: bool,
+ *     linkto?: string|false,
+ *     tcefile: string,
+ *     tcename: string
+ * }
  */
-function F_getFileInfo($file)
+function F_getFileInfo(mixed $file): array
 {
     require_once '../config/tce_config.php';
     $info = pathinfo($file);
@@ -443,8 +458,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
     foreach ($data['files'] as $file) {
         $info = F_getFileInfo($file);
         if (
-            isset($info['extension'])
-            && in_array(strtolower($info['extension']), $allowed_extensions)
+            in_array(strtolower($info['extension']), $allowed_extensions)
             && !str_starts_with($info['basename'], 'latex_')
         ) {
             $current_file = urlencode($dir . $info['basename']);
@@ -542,8 +556,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
     foreach ($data['files'] as $file) {
         $info = F_getFileInfo($file);
         if (
-            isset($info['extension'])
-            && in_array(strtolower($info['extension']), $allowed_extensions)
+            in_array(strtolower($info['extension']), $allowed_extensions)
             && !str_starts_with($info['basename'], 'latex_')
         ) {
             $current_file = urlencode($dir . $info['basename']);
