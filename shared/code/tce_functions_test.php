@@ -1059,8 +1059,8 @@ function F_selectAnswers(
 
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
-            if ($randorder || $ordmode != 0) {
-                if ($ordmode == 2) {
+            if ($randorder || !f_legacy_int_equals($ordmode, 0)) {
+                if (f_legacy_int_equals($ordmode, 2)) {
                     // order by ID
                     $answers_ids[$m['answer_id']] = $m['answer_id'];
                 } else {
