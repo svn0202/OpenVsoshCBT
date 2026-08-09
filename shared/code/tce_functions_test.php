@@ -392,7 +392,7 @@ function F_isValidSSLCert($test_id)
     require_once '../../shared/code/tce_functions_authorization.php';
     global $db, $l;
     $test_id = (int) $test_id;
-    if (F_count_rows(K_TABLE_TEST_SSLCERTS, 'WHERE tstssl_test_id=' . $test_id) == 0) {
+    if ((int) F_count_rows(K_TABLE_TEST_SSLCERTS, 'WHERE tstssl_test_id=' . $test_id) === 0) {
         // no certificates were selected for this test
         return true;
     }
@@ -568,10 +568,10 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                         // 1 = the test has been successfully created
                             // check if all questions were displayed
                             if (
-                                F_count_rows(
+                                (int) F_count_rows(
                                     K_TABLE_TESTS_LOGS,
                                     'WHERE testlog_testuser_id=' . $testuser_id . ' AND testlog_display_time IS NULL',
-                                ) == 0
+                                ) === 0
                             ) {
                                 // update test status to 2 = all questions have been displayed to the user
                                 $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
@@ -589,10 +589,10 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                         // 2 = all questions have been displayed to the user
                             // check if test has been completed in time
                             if (
-                                F_count_rows(
+                                (int) F_count_rows(
                                     K_TABLE_TESTS_LOGS,
                                     'WHERE testlog_testuser_id=' . $testuser_id . ' AND testlog_change_time IS NULL',
-                                ) == 0
+                                ) === 0
                             ) {
                                 // update test mode to 3 = all questions have been answered
                                 $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
