@@ -27,7 +27,7 @@
  * @param $data (array) link data
  * @param $level (int) item level
  */
-function F_menu_link(mixed $link, mixed $data, mixed $level = 0): ?string
+function f_menu_link(mixed $link, mixed $data, mixed $level = 0): ?string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
