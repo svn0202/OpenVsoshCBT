@@ -139,68 +139,56 @@ class XMLQuestionImporter
             case 'subject':
             case 'question':
             case 'answer':
-                {
-                    $this->level = $name;
-                    $this->level_data[$name] = [];
-                    $this->current_data = '';
-                    switch ($name) {
-                        case 'module':
-                            {
-                                $this->level_data['module']['module_name'] = 'default';
-                                $this->level_data['module']['module_enabled'] = 'false';
-                                $this->level_data['module']['module_user_id'] = '1';
-                                break;
-                            }
-                        case 'subject':
-                            {
-                                $this->addModule();
-                                $this->level_data['subject']['subject_name'] = 'default';
-                                $this->level_data['subject']['subject_description'] = 'default';
-                                $this->level_data['subject']['subject_enabled'] = 'false';
-                                $this->level_data['subject']['subject_user_id'] = '1';
-                                $this->level_data['subject']['subject_module_id'] = '1';
-                                break;
-                            }
-                        case 'question':
-                            {
-                                $this->addSubject();
-                                $this->level_data['question']['question_subject_id'] = '1';
-                                $this->level_data['question']['question_description'] = 'default';
-                                $this->level_data['question']['question_explanation'] = '';
-                                $this->level_data['question']['question_type'] = 'single';
-                                $this->level_data['question']['question_difficulty'] = '0';
-                                $this->level_data['question']['question_enabled'] = 'false';
-                                $this->level_data['question']['question_position'] = 0;
-                                $this->level_data['question']['question_timer'] = 0;
-                                $this->level_data['question']['question_fullscreen'] = 'false';
-                                $this->level_data['question']['question_inline_answers'] = 'false';
-                                $this->level_data['question']['question_auto_next'] = 'false';
-                                $this->level_data['question']['question_shuffle_answers'] = 'false';
-                                break;
-                            }
-                        case 'answer':
-                            {
-                                $this->addQuestion();
-                                $this->level_data['answer']['answer_question_id'] = '1';
-                                $this->level_data['answer']['answer_description'] = 'default';
-                                $this->level_data['answer']['answer_explanation'] = '';
-                                $this->level_data['answer']['answer_isright'] = 'false';
-                                $this->level_data['answer']['answer_enabled'] = 'false';
-                                $this->level_data['answer']['answer_position'] = '0';
-                                $this->level_data['answer']['answer_keyboard_key'] = '';
-                                $this->level_data['answer']['answer_weight'] = '';
-                                break;
-                            }
-                    }
+                $this->level = $name;
+                $this->level_data[$name] = [];
+                $this->current_data = '';
+                switch ($name) {
+                    case 'module':
+                        $this->level_data['module']['module_name'] = 'default';
+                        $this->level_data['module']['module_enabled'] = 'false';
+                        $this->level_data['module']['module_user_id'] = '1';
+                        break;
+                    case 'subject':
+                        $this->addModule();
+                        $this->level_data['subject']['subject_name'] = 'default';
+                        $this->level_data['subject']['subject_description'] = 'default';
+                        $this->level_data['subject']['subject_enabled'] = 'false';
+                        $this->level_data['subject']['subject_user_id'] = '1';
+                        $this->level_data['subject']['subject_module_id'] = '1';
+                        break;
+                    case 'question':
+                        $this->addSubject();
+                        $this->level_data['question']['question_subject_id'] = '1';
+                        $this->level_data['question']['question_description'] = 'default';
+                        $this->level_data['question']['question_explanation'] = '';
+                        $this->level_data['question']['question_type'] = 'single';
+                        $this->level_data['question']['question_difficulty'] = '0';
+                        $this->level_data['question']['question_enabled'] = 'false';
+                        $this->level_data['question']['question_position'] = 0;
+                        $this->level_data['question']['question_timer'] = 0;
+                        $this->level_data['question']['question_fullscreen'] = 'false';
+                        $this->level_data['question']['question_inline_answers'] = 'false';
+                        $this->level_data['question']['question_auto_next'] = 'false';
+                        $this->level_data['question']['question_shuffle_answers'] = 'false';
+                        break;
+                    case 'answer':
+                        $this->addQuestion();
+                        $this->level_data['answer']['answer_question_id'] = '1';
+                        $this->level_data['answer']['answer_description'] = 'default';
+                        $this->level_data['answer']['answer_explanation'] = '';
+                        $this->level_data['answer']['answer_isright'] = 'false';
+                        $this->level_data['answer']['answer_enabled'] = 'false';
+                        $this->level_data['answer']['answer_position'] = '0';
+                        $this->level_data['answer']['answer_keyboard_key'] = '';
+                        $this->level_data['answer']['answer_weight'] = '';
+                        break;
+                }
 
-                    break;
-                }
+                break;
             default:
-                {
-                    $this->current_element = $this->level . '_' . $name;
-                    $this->current_data = '';
-                    break;
-                }
+                $this->current_element = $this->level . '_' . $name;
+                $this->current_data = '';
+                break;
         }
     }
 
@@ -217,56 +205,46 @@ class XMLQuestionImporter
         $name = strtolower($name);
         switch ($name) {
             case 'module':
-                {
-                    $this->addModule();
-                    $this->level = '';
-                    break;
-                }
+                $this->addModule();
+                $this->level = '';
+                break;
             case 'subject':
-                {
-                    $this->addSubject();
-                    $this->level = 'module';
-                    break;
-                }
+                $this->addSubject();
+                $this->level = 'module';
+                break;
             case 'question':
-                {
-                    $this->addQuestion();
-                    $this->level = 'subject';
-                    break;
-                }
+                $this->addQuestion();
+                $this->level = 'subject';
+                break;
             case 'answer':
-                {
-                    $this->addAnswer();
-                    $this->level = 'question';
-                    break;
-                }
+                $this->addAnswer();
+                $this->level = 'question';
+                break;
             default:
-                {
-                    $elname = $this->level . '_' . $name;
-                    if ($this->current_element === $elname) {
-                        // convert XML special chars
-                        $this->level_data[$this->level][$this->current_element] = f_xml_to_text(utrim($this->current_data));
-                        if (
-                            $this->current_element == 'question_description'
-                            || $this->current_element == 'answer_description'
-                        ) {
-                            // normalize UTF-8 string based on settings
-                            $this->level_data[$this->level][$this->current_element] = f_utf8_normalizer(
-                                $this->level_data[$this->level][$this->current_element],
-                                K_UTF8_NORMALIZATION_MODE,
-                            );
-                        }
-
-                        // escape for SQL
-                        $this->level_data[$this->level][$this->current_element] = F_escape_sql(
-                            $db,
+                $elname = $this->level . '_' . $name;
+                if ($this->current_element === $elname) {
+                    // convert XML special chars
+                    $this->level_data[$this->level][$this->current_element] = f_xml_to_text(utrim($this->current_data));
+                    if (
+                        $this->current_element == 'question_description'
+                        || $this->current_element == 'answer_description'
+                    ) {
+                        // normalize UTF-8 string based on settings
+                        $this->level_data[$this->level][$this->current_element] = f_utf8_normalizer(
                             $this->level_data[$this->level][$this->current_element],
-                            false,
+                            K_UTF8_NORMALIZATION_MODE,
                         );
                     }
 
-                    break;
+                    // escape for SQL
+                    $this->level_data[$this->level][$this->current_element] = F_escape_sql(
+                        $db,
+                        $this->level_data[$this->level][$this->current_element],
+                        false,
+                    );
                 }
+
+                break;
         }
     }
 
