@@ -760,7 +760,7 @@ function f_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
  * @param $matches (string) array containing matches: $matches[0] is the complete match, $matches[1] the match for the first subpattern enclosed in '(...)' and so on
  * @return string replacement string by file extension
  */
-function F_objects_callback(mixed $matches): string
+function f_objects_callback(mixed $matches): string
 {
     $width = 0;
     $height = 0;
