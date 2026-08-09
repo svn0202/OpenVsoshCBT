@@ -663,7 +663,7 @@ function get_data_tsv($data): string
  * @param $str (string) HTML string to convert.
  * @return string TSV
  */
-function f_html_to_tsv($str): mixed
+function f_html_to_tsv(mixed $str): mixed
 {
     $dollar_replacement = ':.dlr.:'; //string replacement for dollar symbol
     //tags conversion table
@@ -790,7 +790,7 @@ function f_is_url(mixed $str): bool
  * @param $mode (int) Normalization type: NONE=None; C=Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition; D=Normalization Form D (NFD) - Canonical Decomposition; KC=Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition; KD=Normalization Form KD (NFKD) - Compatibility Decomposition; CUSTOM=Custom normalization using user defined function 'user_utf8_custom_normalizer'.
  * @return normalized string using the specified algorithm.
  */
-function f_utf8_normalizer($str, $mode = 'NONE'): mixed
+function f_utf8_normalizer(mixed $str, mixed $mode = 'NONE'): mixed
 {
     switch ($mode) {
         case 'CUSTOM':
