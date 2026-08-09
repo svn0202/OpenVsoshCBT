@@ -23,13 +23,13 @@ if (isset($_GET['download']) && $_GET['download'] === 'template') {
 // "confirm" is specific to this two-step importer and is not one of the
 // standard actions recognized by tce_functions_form_admin.php.
 if (isset($_POST['confirm'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
         exit();
     }
     $menu_mode = 'confirm';
 }
 if (isset($_POST['cancelpreview'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
         exit();
     }
     $menu_mode = 'cancelpreview';

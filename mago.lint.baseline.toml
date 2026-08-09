@@ -31,12 +31,6 @@ message = "Function name `F_sendSecurityHeaders` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/TCExamSessionHandler.php"
-code = "function-name"
-message = "Function name `checkCSRFToken` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_altauth.php"
 code = "function-name"
 message = "Function name `F_altLogin` should be in snake case."
