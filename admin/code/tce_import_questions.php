@@ -33,7 +33,7 @@ require_once '../../shared/code/tce_functions_auth_sql.php';
 
 $type = !isset($_REQUEST['type']) || empty($_REQUEST['type']) ? 1 : (int) $_REQUEST['type'];
 
-if (isset($menu_mode) && $menu_mode == 'upload' && $_FILES['userfile']['name']) {
+if (isset($menu_mode) && $menu_mode === 'upload' && $_FILES['userfile']['name']) {
     require_once '../code/tce_functions_upload.php';
     // upload file
     $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
