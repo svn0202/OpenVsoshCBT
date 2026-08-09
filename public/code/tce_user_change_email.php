@@ -130,7 +130,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_email',
         $l['w_new_email'],
         $l['h_email'],
@@ -148,7 +148,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_email_repeat',
         $l['w_new_email'],
         $l['h_email'],
@@ -166,7 +166,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'currentpassword',
         $l['w_password'],
         $l['h_password'],

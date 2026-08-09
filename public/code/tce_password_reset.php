@@ -104,7 +104,7 @@ echo
 echo '<p>' . $l['d_reset_password'] . '</p>' . K_NEWLINE;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_email',
         $l['w_email'],
         $l['h_usered_email'],

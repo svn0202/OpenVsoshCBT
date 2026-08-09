@@ -1078,7 +1078,7 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
 }
 
 echo get_form_row_checkbox('answer_isright', $l['w_right'], $l['h_answer_isright'], '', 1, $answer_isright, false, '');
-echo getFormRowTextInput(
+echo get_form_row_text_input(
     'answer_weight',
     'Вес ответа (%)',
     'Доля максимального балла за выбор или точное совпадение; пусто — стандартное оценивание',

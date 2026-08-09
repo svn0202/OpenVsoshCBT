@@ -206,7 +206,7 @@ echo
 // -----------------------------------------------------------------------------
 // date
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'date',
         $l['w_date'],
         $l['w_date'] . ' ' . $l['w_datetime_format'],

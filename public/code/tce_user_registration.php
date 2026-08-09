@@ -367,7 +367,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_name',
         $l['w_username'],
         $l['h_login_name'],
@@ -385,7 +385,7 @@ echo
 ;
 if (K_USRREG_EMAIL_CONFIRM || $regfields['user_email']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_email',
             $l['w_email'],
             $l['h_usered_email'],
@@ -405,7 +405,7 @@ if (K_USRREG_EMAIL_CONFIRM || $regfields['user_email']) {
 }
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword',
         $l['w_password'],
         $l['h_password'],
@@ -422,7 +422,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword_repeat',
         $l['w_password'],
         $l['h_password_repeat'],
@@ -440,7 +440,7 @@ echo
 ;
 if ($regfields['user_regnumber']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_regnumber',
             $l['w_regcode'],
             $l['h_regcode'],
@@ -459,7 +459,7 @@ if ($regfields['user_regnumber']) {
 
 if ($regfields['user_firstname']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_firstname',
             $l['w_firstname'],
             $l['h_firstname'],
@@ -479,7 +479,7 @@ if ($regfields['user_firstname']) {
 
 if ($regfields['user_lastname']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_lastname',
             $l['w_lastname'],
             $l['h_lastname'],
@@ -499,7 +499,7 @@ if ($regfields['user_lastname']) {
 
 if ($regfields['user_birthdate']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_birthdate',
             $l['w_birth_date'],
             $l['h_birth_date'] . ' ' . $l['w_date_format'],
@@ -519,7 +519,7 @@ if ($regfields['user_birthdate']) {
 
 if ($regfields['user_birthplace']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_birthplace',
             $l['w_birth_place'],
             $l['h_birth_place'],
@@ -538,7 +538,7 @@ if ($regfields['user_birthplace']) {
 
 if ($regfields['user_ssn']) {
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'user_ssn',
             $l['w_fiscal_code'],
             $l['h_fiscal_code'],

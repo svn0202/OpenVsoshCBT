@@ -703,7 +703,7 @@ echo get_form_noscript_select('selectrecord');
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_name',
         $l['w_username'],
         $l['h_login_name'],
@@ -719,7 +719,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_email',
         $l['w_email'],
         $l['h_usered_email'],
@@ -737,7 +737,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword',
         $l['w_password'],
         $l['h_password'],
@@ -754,7 +754,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword_repeat',
         $l['w_password'],
         $l['h_password_repeat'],
@@ -786,7 +786,7 @@ echo get_form_row_select_box('user_level', (string) $l['w_level'], (string) $l['
     10,
 ]);
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_regnumber',
         $l['w_regcode'],
         $l['h_regcode'],
@@ -800,7 +800,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_firstname',
         $l['w_firstname'],
         $l['h_firstname'],
@@ -814,7 +814,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_lastname',
         $l['w_lastname'],
         $l['h_lastname'],
@@ -828,7 +828,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_birthdate',
         $l['w_birth_date'],
         $l['h_birth_date'] . ' ' . $l['w_date_format'],
@@ -842,7 +842,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_birthplace',
         $l['w_birth_place'],
         $l['h_birth_place'],
@@ -856,7 +856,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'user_ssn',
         $l['w_fiscal_code'],
         $l['h_fiscal_code'],
@@ -914,7 +914,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowTextInput('user_otpkey', $l['w_otpkey'], $l['h_otpkey'], '', $user_otpkey, '', 255, false, false, false);
+echo get_form_row_text_input('user_otpkey', $l['w_otpkey'], $l['h_otpkey'], '', $user_otpkey, '', 255, false, false, false);
 
 // display QR-Code for Google authenticator
 if (!empty($user_otpkey)) {

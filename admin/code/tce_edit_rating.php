@@ -513,7 +513,7 @@ echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'testlog_score',
         $l['w_score'],
         $l['h_score'],
