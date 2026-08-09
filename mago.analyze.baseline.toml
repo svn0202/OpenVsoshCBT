@@ -13166,12 +13166,6 @@ count = 45
 
 [[issues]]
 file = "public/code/tce_test_review.php"
-code = "array-to-string-conversion"
-message = "Potentially casting `array` to `string`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_review.php"
 code = "imprecise-type"
 message = "Type `array` in parameter `$payload` is imprecise, equivalent to `array<array-key, mixed>`."
 count = 1

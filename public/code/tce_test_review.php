@@ -36,7 +36,7 @@ if (
 
 $test_id = isset($_POST['testid']) && is_numeric($_POST['testid']) ? (int) $_POST['testid'] : 0;
 $testlog_id = isset($_POST['testlogid']) && is_numeric($_POST['testlogid']) ? (int) $_POST['testlogid'] : 0;
-$reviewed = isset($_POST['reviewed']) && (string) $_POST['reviewed'] === '1' ? 1 : 0;
+$reviewed = f_tmf_review_value($_POST['reviewed'] ?? null);
 
 if (
     $test_id <= 0
