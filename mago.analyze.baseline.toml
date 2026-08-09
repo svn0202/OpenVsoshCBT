@@ -18957,55 +18957,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "missing-return-type"
-message = "Function `F_isRandomSecurityConfigured` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
 message = "Function `F_session_string_to_array` is missing a return type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "missing-return-type"
-message = "Function `checkCSRFTokenForScript` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
 message = "Function `checkCSRFToken` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `checkPassword` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `getClientFingerprint` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `getNewSessionID` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `getPasswordHash` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `getPlainCSRFTokenForScript` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -19060,12 +19018,6 @@ count = 1
 file = "shared/code/tce_functions_session.php"
 code = "mixed-return-statement"
 message = "Could not infer a precise return type for function `TCExamSessionHandler::read`. Saw type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `getPlainCSRFToken`. Saw type `mixed`."
 count = 1
 
 [[issues]]
