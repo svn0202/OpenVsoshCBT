@@ -116,8 +116,9 @@ function F_check_required_fields(array $formfields): string|false
     $required = $formfields['ff_required'];
     $missing_fields = '';
     $required_fields = explode(',', $required);
-    $labels = $formfields['ff_required_labels'] ?? '';
-    $required_fields_labels = is_string($labels) ? explode(',', $labels) : [];
+    $required_fields_labels = isset($formfields['ff_required_labels']) && is_string($formfields['ff_required_labels'])
+        ? explode(',', $formfields['ff_required_labels'])
+        : [];
     // form fields labels
     foreach ($required_fields as $i => $required_field) { //for each required field
         $fieldname = preg_replace('/[^a-z0-9_\[\]]/i', '', trim($required_field)) ?? '';

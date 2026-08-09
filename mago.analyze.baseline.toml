@@ -16225,12 +16225,6 @@ message = "Redundant `&&` operation: left operand is always falsy and right oper
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "mixed-assignment"
-message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "array-to-string-conversion"
 message = "Potential array in right operand of string concatenation."
