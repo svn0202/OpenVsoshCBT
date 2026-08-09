@@ -78,7 +78,7 @@ function F_getOTP(string $otpkey, int|float $mtime = 0): int
     // get binary key
     $binkey = F_decodeBase32($otpkey);
     // get the current timestamp (the one time password changes every 30 seconds)
-    if ($mtime == 0) {
+    if ($mtime === 0 || $mtime === 0.0) {
         $mtime = microtime(true);
     }
 
