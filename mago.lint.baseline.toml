@@ -3073,12 +3073,6 @@ message = "Function name `F_tmf_user_photo_store` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_user_registration.php"
-code = "function-name"
-message = "Function name `F_send_user_reg_email` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"
 code = "function-name"
 message = "Function name `F_tmf_users_xlsx_import` should be in snake case."
