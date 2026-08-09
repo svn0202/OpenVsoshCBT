@@ -210,6 +210,18 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testRowVerticalSpacePreservesExactMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $this->assertSame(
+            '<div class="row" style="margin-bottom:5px;"><hr class="dashed"/></div>' . K_NEWLINE,
+            \getFormRowVertSpace(),
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
