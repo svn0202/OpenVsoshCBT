@@ -76,6 +76,11 @@ final class FormValidationTest extends TestCase
         $this->assertTrue(\checkCSRFToken($token));
     }
 
+    public function testOptionalFieldHasNoRequiredMarker(): void
+    {
+        $this->assertSame('', \getRequiredMark(false));
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
