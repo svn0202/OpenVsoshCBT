@@ -49,18 +49,6 @@ message = "This pragma was not used and may be removed."
 count = 3
 
 [[issues]]
-file = "test/RegradeTest.php"
-code = "imprecise-type"
-message = "Type `array` in property `$test` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/RegradeTest.php"
-code = "less-specific-argument"
-message = "Argument type mismatch for argument #1 of `F_tmf_recorded_answer_score`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
-count = 4
-
-[[issues]]
 file = "test/ResultPublicationTest.php"
 code = "possibly-false-argument"
 message = "Argument #2 of function `F_tmf_results_are_published` is possibly `false`, but parameter type `int|null` does not accept it."
