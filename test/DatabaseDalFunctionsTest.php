@@ -6,6 +6,45 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseCloseBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['value' => true],
+            'mysqli' => ['value' => true],
+            'oracle' => ['value' => true],
+            'postgresql' => ['exception' => 'Error'],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_close($link) { return $link === "connection"; } ',
+                'oracle' => 'function oci_close($link) { return $link === "connection"; } ',
+                default => '',
+            };
+            $link = match ($driver) {
+                'mysqli' => 'mysqli_init()',
+                'postgresql' => 'null',
+                default => '"connection"',
+            };
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'error_reporting(E_ALL & ~E_DEPRECATED); ' . $prelude
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_close.*?\\n\\}/s", $source, $match); eval($match[0]); '
+                        . 'try { echo json_encode(["value" => F_db_close(' . $link . ')]); } '
+                        . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseErrorBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
