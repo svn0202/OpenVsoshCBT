@@ -753,12 +753,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_monitoring.php"
 code = "function-name"
-message = "Function name `F_tmf_focus_event_is_valid` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_monitoring.php"
-code = "function-name"
 message = "Function name `F_tmf_monitor_action_is_valid` should be in snake case."
 count = 1
 
