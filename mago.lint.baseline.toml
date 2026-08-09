@@ -1588,7 +1588,7 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 10
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
