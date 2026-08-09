@@ -5600,12 +5600,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_users_online.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_list_online_users`: expected `false`, but found `true`."
 count = 1
@@ -18921,12 +18915,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "missing-parameter-type"
-message = "Parameter `$sd` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-parameter-type"
 message = "Parameter `$secret` is missing a type hint."
 count = 1
 
@@ -18958,12 +18946,6 @@ count = 1
 file = "shared/code/tce_functions_session.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `password_verify`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `preg_split`: expected `string`, but found `mixed`."
 count = 1
 
 [[issues]]
