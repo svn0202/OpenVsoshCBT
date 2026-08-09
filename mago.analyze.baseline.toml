@@ -14595,12 +14595,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$current_order_field` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$data` is missing a type hint."
 count = 3
 
@@ -14637,12 +14631,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$filter` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$ip` is missing a type hint."
 count = 3
 
@@ -14667,26 +14655,8 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$name` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$num` is missing a type hint."
 count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
-message = "Parameter `$order_field` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
-message = "Parameter `$orderdir` is missing a type hint."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -14741,12 +14711,6 @@ file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
 message = "Parameter `$timezone` is missing a type hint."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
-message = "Parameter `$title` is missing a type hint."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
