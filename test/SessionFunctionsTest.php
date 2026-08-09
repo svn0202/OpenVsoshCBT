@@ -46,9 +46,9 @@ final class SessionFunctionsTest extends TestCase
     {
         $headers = \F_getSecurityHeaders();
 
-        $this->assertSame('nosniff', $headers['X-Content-Type-Options'] ?? null);
-        $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options'] ?? null);
-        $this->assertSame("frame-ancestors 'self'", $headers['Content-Security-Policy'] ?? null);
+        $this->assertSame('nosniff', $headers['X-Content-Type-Options']);
+        $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options']);
+        $this->assertSame("frame-ancestors 'self'", $headers['Content-Security-Policy']);
         $this->assertSame('max-age=31536000', $headers['Strict-Transport-Security'] ?? null);
     }
 
@@ -82,6 +82,7 @@ final class SessionFunctionsTest extends TestCase
         $this->assertFalse(\F_isRandomSecurityConfigured('mkTzxf8WwUxwvj6w'));
     }
 
+    /** @throws \Random\RandomException */
     public function testRandomSecurityAcceptsConfiguredSecret(): void
     {
         $this->assertTrue(\F_isRandomSecurityConfigured(\bin2hex(\random_bytes(16))));
