@@ -2059,12 +2059,6 @@ message = "Redundant block around statements."
 count = 6
 
 [[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "function-name"
-message = "Function name `F_html_to_text` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_language.php"
 code = "function-name"
 message = "Function name `F_sync_tmx_translations` should be in snake case."
