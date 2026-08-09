@@ -1745,9 +1745,3 @@ file = "shared/code/tce_functions_xlsx.php"
 code = "function-name"
 message = "Function name `F_tmf_xlsx_xml` should be in snake case."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
-code = "file-name"
-message = "Class `TcePdfReport` should be in a file named `TcePdfReport.php`, found `tce_pdf_report.php`."
-count = 1
