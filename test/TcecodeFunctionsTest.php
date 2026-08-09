@@ -7,6 +7,22 @@ use PHPUnit\Framework\TestCase;
 
 final class TcecodeFunctionsTest extends TestCase
 {
+    public function testDecoderReturnsEmptyStringForEmptyInput(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_tcecode.php"; '
+                    . 'echo json_encode(F_decode_tcecode(""));',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('""', $output);
+    }
+
     public function testStringTransformersPreserveTcecodeRendering(): void
     {
         $this->assertSame(
