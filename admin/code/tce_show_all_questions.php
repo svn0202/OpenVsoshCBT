@@ -808,7 +808,23 @@ function F_show_select_questions(
             echo '<label for="checkall0">' . $l['w_uncheck_all'] . '</label>';
             echo '</span>' . K_NEWLINE;
             echo '&nbsp;';
-            $arr = $l['a_meta_dir'] == 'rtl' ? '&larr;' : '&rarr;';
+            // @mago-expect analysis:mixed-operand -- locale metadata is loaded dynamically as a scalar
+            $arr = (($l['a_meta_dir'] <=> 'rtl') === 0) ? '&larr;' : '&rarr;';
+            /**
+             * @var array{
+             *     m_with_selected: string,
+             *     w_enable: string,
+             *     w_disable: string,
+             *     w_delete: string,
+             *     w_copy: string,
+             *     w_move: string,
+             *     h_subject: string,
+             *     w_subject: string,
+             *     a_meta_charset: string,
+             *     w_update: string,
+             *     h_update: string
+             * } $l
+             */
 
             // action options
             echo '<select name="menu_action" id="menu_action">' . K_NEWLINE;
