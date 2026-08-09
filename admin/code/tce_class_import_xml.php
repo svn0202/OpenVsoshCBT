@@ -128,12 +128,12 @@ class XMLQuestionImporter
 
     /**
      * Sets the start element handler function for the XML parser parser.start_element_handler.
-     * @param $parser (resource) The first parameter, parser, is a reference to the XML parser calling the handler.
+     * @param XMLParser $_parser XML parser calling the handler.
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
-     * @param $attribs (array) The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
+     * @param array<string, string> $_attribs Element attributes keyed by attribute name.
      * @private
      */
-    private function startElementHandler(mixed $parser, mixed $name, mixed $attribs): void
+    private function startElementHandler(XMLParser $_parser, string $name, array $_attribs): void
     {
         $name = strtolower($name);
         switch ($name) {
@@ -200,7 +200,7 @@ class XMLQuestionImporter
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler(mixed $parser, mixed $name): void
+    private function endElementHandler(XMLParser $_parser, string $name): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -256,7 +256,7 @@ class XMLQuestionImporter
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler(mixed $parser, mixed $data): void
+    private function segContentHandler(XMLParser $_parser, string $data): void
     {
         if (strlen($this->current_element) > 0) {
             // we are inside an element
