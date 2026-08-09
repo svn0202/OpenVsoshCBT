@@ -58,6 +58,38 @@ final class AuthorizationFunctionsTest extends TestCase
         self::assertSame(md5('ABITuser1'), $output);
     }
 
+    public function testSslCertificateHashPreservesParsedFieldOrderAndEndDate(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TIMESTAMP_FORMAT", "fmt"); '
+                    . 'function openssl_x509_parse($cert) { return ["serialNumber" => "255", '
+                    . '"issuer" => ["C" => "IT", "CN" => "CA"], '
+                    . '"subject" => ["CN" => "user"], "validTo_time_t" => 1]; } '
+                    . 'function bcdechex($serial) { return "ff"; } '
+                    . 'function date($format, $time) { return $format . ":" . $time; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getSSLCertificateHash|f_get_ssl_certificate_hash)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode($qualified("certificate"));',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [md5('ffITCAuser1'), 'fmt:1'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testLogoutPageSetsTitleRendersFormAndTerminates(): void
     {
         [$status, $output] = \F_tcecode_run_process(
