@@ -27,7 +27,7 @@
  * @param $h (int) Graph height.
  * @return string Converted SVG document.
  */
-function f_get_svg_graph_code($p, $w = '', $h = ''): string
+function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
 {
     // points to graph (values between 0 and 100)
     $points = explode('x', $p);
@@ -154,7 +154,7 @@ function f_get_svg_graph_code($p, $w = '', $h = ''): string
  * @param $h (int) Graph height.
  * @return void
  */
-function f_get_svg_graph($p, $w = '', $h = ''): void
+function f_get_svg_graph(mixed $p, mixed $w = '', mixed $h = ''): void
 {
     // send headers
     header('Content-Description: SVG Data');
