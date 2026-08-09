@@ -92,7 +92,7 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_score'], ENT_COMPAT, $l
 
 switch ($menu_mode) {
     case 'update':
-        { // Update
+        // Update
             if (($formstatus = F_check_form_fields()) && (isset($testlog_score) && isset($max_score))) {
                 // score cannot be greater than max_score
                 $testlog_score = (float) $testlog_score;
@@ -155,11 +155,8 @@ switch ($menu_mode) {
             }
 
             break;
-        }
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
@@ -186,24 +183,18 @@ if (!isset($sqlordermode)) {
 
 switch ($sqlordermode) {
     case 2:
-        {
             // ordered by test and question creation time
             $sqlorder = 'ORDER BY testuser_test_id, testlog_id';
             break;
-        }
     case 1:
-        {
             // ordered by test and question
             $sqlorder = 'ORDER BY testuser_test_id, testlog_question_id, testlog_testuser_id';
             break;
-        }
     default:
     case 0:
-        {
             // ordered by test and users
             $sqlorder = 'ORDER BY testuser_test_id, testlog_testuser_id, testlog_id';
             break;
-        }
 }
 
 if (!isset($test_id) || $test_id === 0) {
