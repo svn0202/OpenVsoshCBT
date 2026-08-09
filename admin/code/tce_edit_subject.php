@@ -92,7 +92,6 @@ if ($subject_id > 0) {
 
 switch ($menu_mode) {
     case 'delete':
-        {
             // check if this record is used (test_log)
             if (!F_check_unique(K_TABLE_SUBJECT_SET, 'subjset_subject_id=' . $subject_id . '')) {
                 //this record will be only disabled and not deleted because it's used
@@ -133,10 +132,8 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'forcedelete':
-        {
             if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_SUBJECTS . ' WHERE subject_id=' . $subject_id . '';
                 if (!($r = F_db_query($sql, $db))) {
@@ -148,10 +145,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'update':
-        { // Update
+        // Update
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -239,10 +235,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'add':
-        { // Add
+        // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if name is unique
                 if (!F_check_unique(
@@ -293,20 +288,16 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $subject_name = '';
             $subject_description = '';
             $subject_enabled = true;
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // select default module (if not specified)
