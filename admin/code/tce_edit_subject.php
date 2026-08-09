@@ -69,7 +69,7 @@ $subject_name = isset($_REQUEST['subject_name']) ? utrim($_REQUEST['subject_name
 $subject_description = isset($_REQUEST['subject_description']) ? utrim($_REQUEST['subject_description']) : '';
 
 if ($subject_id > 0) {
-    if ($changecategory == 0) {
+    if ($changecategory === 0) {
         $sql = 'SELECT subject_module_id FROM ' . K_TABLE_SUBJECTS . ' WHERE subject_id=' . $subject_id . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
