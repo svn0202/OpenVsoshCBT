@@ -97,7 +97,7 @@ $pdf->setLanguageArray($l);
 // page header content (title, description, logo)
 $pdf->setReportHeader(PDF_HEADER_TITLE, PDF_HEADER_STRING, PDF_HEADER_LOGO, (float) PDF_HEADER_LOGO_WIDTH);
 
-$rtl = $l['a_meta_dir'] == 'rtl';
+$rtl = $l['a_meta_dir'] === 'rtl';
 
 // ---- module
 $andmodwhere = '';
