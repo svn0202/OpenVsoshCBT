@@ -3711,7 +3711,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_user_group_select`: expected `unknown-ref(table)`, but found `truthy-string`."
+message = "Invalid return type for function `f_user_group_select`: expected `unknown-ref(table)`, but found `truthy-string`."
 count = 1
 
 [[issues]]
@@ -3855,7 +3855,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "missing-return-type"
-message = "Function `F_user_group_select` is missing a return type hint."
+message = "Function `f_user_group_select` is missing a return type hint."
 count = 1
 
 [[issues]]

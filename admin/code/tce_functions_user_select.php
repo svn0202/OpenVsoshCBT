@@ -1012,7 +1012,7 @@ function f_user_group_select_sql($where = '')
  * @param $name (string) name of the select field
  * @return table header element string
  */
-function F_user_group_select($name = 'group_id')
+function f_user_group_select($name = 'group_id')
 {
     global $l, $db;
     require_once '../config/tce_config.php';
