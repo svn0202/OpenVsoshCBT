@@ -32,10 +32,10 @@ final class XlsxTest extends TestCase
                 unlink($file);
             }
         }
-        self::assertSame('student-1', $rows[1][0]);
-        self::assertSame('12.5', $rows[1][1]);
-        self::assertSame('=HYPERLINK("https://bad.test")', $rows[1][2]);
-        self::assertSame('  пробелы  ', $rows[2][0]);
+        self::assertSame('student-1', $rows[1][0] ?? null);
+        self::assertSame('12.5', $rows[1][1] ?? null);
+        self::assertSame('=HYPERLINK("https://bad.test")', $rows[1][2] ?? null);
+        self::assertSame('  пробелы  ', $rows[2][0] ?? null);
     }
 
     public function testReaderRejectsWorkbookFormulaCells(): void
@@ -95,10 +95,10 @@ final class XlsxTest extends TestCase
         self::assertArrayHasKey(2, $result['records']);
         self::assertArrayHasKey(3, $result['errors']);
         self::assertArrayHasKey(4, $result['errors']);
-        self::assertStringContainsString('повторяется', implode(' ', $result['errors'][3]));
-        self::assertStringContainsString('Неизвестная группа', implode(' ', $result['errors'][3]));
-        self::assertStringContainsString('уже существует', implode(' ', $result['errors'][4]));
-        self::assertStringStartsWith('$', $result['records'][2]['password_hash']);
-        self::assertSame('2010-02-03', $result['records'][2]['birth_date']);
+        self::assertStringContainsString('повторяется', implode(' ', $result['errors'][3] ?? []));
+        self::assertStringContainsString('Неизвестная группа', implode(' ', $result['errors'][3] ?? []));
+        self::assertStringContainsString('уже существует', implode(' ', $result['errors'][4] ?? []));
+        self::assertStringStartsWith('$', (string) ($result['records'][2]['password_hash'] ?? ''));
+        self::assertSame('2010-02-03', $result['records'][2]['birth_date'] ?? null);
     }
 }
