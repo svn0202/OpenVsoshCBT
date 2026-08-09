@@ -22,9 +22,9 @@
 
 /**
  * Return a random One Time Password Secret Key (Base32 encoded).
- * @return Base32 encoded key.
+ * @return string Base32 encoded key.
  */
-function F_getRandomOTPkey()
+function F_getRandomOTPkey(): string
 {
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
