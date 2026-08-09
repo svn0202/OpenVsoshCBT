@@ -6,6 +6,56 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testGroupMembershipLookupsRemainUnchanged(): void
+    {
+        $expectations = [
+            'test' => [
+                'old' => 'F_isTestOnGroup',
+                'new' => 'f_is_test_on_group',
+                'query' => 'SELECT tstgrp_test_id FROM tce_testgroups '
+                    . 'WHERE tstgrp_test_id=12 AND tstgrp_group_id=3 LIMIT 1',
+            ],
+            'user' => [
+                'old' => 'F_isUserOnGroup',
+                'new' => 'f_is_user_on_group',
+                'query' => 'SELECT usrgrp_user_id FROM tce_usrgroups '
+                    . 'WHERE usrgrp_user_id=12 AND usrgrp_group_id=3 LIMIT 1',
+            ],
+        ];
+
+        foreach ($expectations as $kind => $expected) {
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["query"] = ""; '
+                        . 'function F_db_query($query, $db) { '
+                        . '$GLOBALS["query"] = preg_replace("/\\s+/", " ", trim($query)); return "result"; } '
+                        . 'function F_db_fetch_array($result) { return ["matched" => true]; } '
+                        . '$source = file_get_contents($argv[1]); $old = $argv[2]; $new = $argv[3]; '
+                        . 'preg_match("/function (" . $old . "|" . $new . ")\\(/", '
+                        . '$source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$name = $match[1][0]; $start = $match[0][1]; '
+                        . '$end = strpos($source, "\\n/**", $start); '
+                        . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                        . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; $result = $qualifiedName("12x", "3x"); '
+                        . 'echo json_encode(["result" => $result, "query" => $GLOBALS["query"]]);',
+                    dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+                    $expected['old'],
+                    $expected['new'],
+                ],
+                dirname(__DIR__) . '/admin/code',
+            );
+
+            self::assertSame(0, $status, $kind . ': ' . $output);
+            self::assertSame(
+                ['result' => true, 'query' => $expected['query']],
+                json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+                $kind,
+            );
+        }
+    }
+
     public function testUserIdLookupByRegistrationNumberRemainsUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
