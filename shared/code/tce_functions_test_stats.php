@@ -224,7 +224,7 @@ function F_getRawTestStat(
     }
 
     // check if a specific test is selected or not
-    if ($test_id == 0) {
+    if ($test_id === 0) {
         $test_ids = [];
         $sqlt =
             'SELECT testuser_test_id FROM '
@@ -1399,7 +1399,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
             . '" title="'
             . $l['w_select']
             . '"';
-        if (isset($_REQUEST['checkall']) && $_REQUEST['checkall'] == 1) {
+        if (isset($_REQUEST['checkall']) && f_legacy_int_equals($_REQUEST['checkall'], 1)) {
             $ret .= ' checked="checked"';
         }
 
@@ -1545,7 +1545,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
         $colspan -= 3;
     }
 
-    if ($stats == 0) {
+    if (f_legacy_int_equals($stats, 0)) {
         $colspan -= 5;
     }
 
