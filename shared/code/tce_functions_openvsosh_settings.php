@@ -147,7 +147,7 @@ function openvsosh_save_access_settings($registration_enabled, $password_reset_e
     $values = [
         'registration_enabled' => $registration_enabled ? '1' : '0',
         'password_reset_enabled' => $password_reset_enabled ? '1' : '0',
-        'access_help' => trim((string) $access_help),
+        'access_help' => trim($access_help),
     ];
 
     foreach ($values as $key => $value) {

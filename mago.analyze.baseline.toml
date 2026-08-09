@@ -15044,12 +15044,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_openvsosh_settings.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_openvsosh_settings.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is evaluated and right operand is always falsy."
 count = 2
