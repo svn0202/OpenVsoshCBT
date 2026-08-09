@@ -6,6 +6,26 @@ use PHPUnit\Framework\TestCase;
 
 final class TcecodeFunctionsTest extends TestCase
 {
+    public function testRendererProcessDoesNotInterpretShellMetacharacters(): void
+    {
+        $argument = 'literal;$(touch should-not-exist)';
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', 'echo $argv[1];', $argument],
+            sys_get_temp_dir(),
+        );
+
+        $this->assertSame(0, $status);
+        $this->assertSame($argument, $output);
+    }
+
+    public function testLatexRendererExplicitlyDisablesShellEscape(): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__) . '/shared/code/tce_functions_tcecode.php');
+
+        $this->assertStringContainsString("'-no-shell-escape'", $source);
+        $this->assertStringNotContainsString("exec(\$cmd", $source);
+    }
+
     public function testDetectsImportedHtmlWithoutMistakingComparisonForMarkup(): void
     {
         $this->assertTrue(\F_has_html_markup('<p><strong>Question</strong></p>'));
