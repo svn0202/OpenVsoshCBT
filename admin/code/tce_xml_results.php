@@ -139,7 +139,7 @@ function F_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate 
         false,
         $display_mode,
     );
-    $xml .= getDataXML($data);
+    $xml .= get_data_xml($data);
 
     $xml .= K_TAB . '</body>' . K_NEWLINE;
 
