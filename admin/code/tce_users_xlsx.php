@@ -18,7 +18,7 @@ function f_tmf_users_xlsx_send(string $bytes, string $name): never
     exit();
 }
 
-function F_tmf_users_xlsx_groups_for_user(int $user_id): string
+function f_tmf_users_xlsx_groups_for_user(int $user_id): string
 {
     global $db;
     $groups = [];
