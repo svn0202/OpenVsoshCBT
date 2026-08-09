@@ -6076,7 +6076,7 @@ count = 15
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 12
+count = 11
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
@@ -6088,13 +6088,13 @@ count = 1
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
 message = "Left operand in `==` comparison has `mixed` type."
-count = 4
+count = 2
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 4
+count = 3
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
@@ -6148,7 +6148,7 @@ count = 2
 file = "admin/code/tce_pdf_testgen.php"
 code = "possibly-null-operand"
 message = "Possibly null middle operand used in string concatenation (type `non-empty-string|null`)."
-count = 3
+count = 2
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
@@ -6178,12 +6178,6 @@ count = 1
 file = "admin/code/tce_pdf_testgen.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(2)` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_pdf_testgen.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int` accessed on `array<int, non-empty-string>`."
 count = 1
 
 [[issues]]
