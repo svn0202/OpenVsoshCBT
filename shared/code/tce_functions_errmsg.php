@@ -177,13 +177,13 @@ function F_url_exists(string $url): bool
  * Wrapper for file_exists.
  * Checks whether a file or directory exists.
  * Only allows some protocols and local files.
- * @param mixed $filename Path to the file or directory.
+ * @param string $filename Path to the file or directory.
  * Returns true if the file or directory exists; false otherwise.
  */
-function F_file_exists(mixed $filename): bool
+function F_file_exists(string $filename): bool
 {
     if (preg_match('|^https?://|', $filename) === 1) {
-        return F_url_exists((string) $filename);
+        return F_url_exists($filename);
     }
 
     if (strpos($filename, '://')) {

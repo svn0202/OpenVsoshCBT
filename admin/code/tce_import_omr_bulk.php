@@ -46,6 +46,7 @@ if (isset($_REQUEST['date'])) {
 }
 
 if (isset($_REQUEST['omrdir']) && str_starts_with($_REQUEST['omrdir'], K_PATH_CACHE . 'OMR')) {
+    /** @var string $omrdir */
     $omrdir = $_REQUEST['omrdir'];
     // Confirm the requested directory is safely contained within an allowed root.
     // tc-lib-file's isValidFile() rejects parent-directory traversal ('..'), stream wrappers

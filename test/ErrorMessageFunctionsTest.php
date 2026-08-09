@@ -55,6 +55,7 @@ final class ErrorMessageFunctionsTest extends TestCase
                     . 'F_file_exists($argv[1] . ".missing"), '
                     . 'F_file_exists("ftp://example.test/file"), '
                     . 'F_file_exists(""), '
+                    . 'F_file_exists(12345), '
                     . 'F_url_exists("http://127.0.0.1:1")]);',
                 __FILE__,
             ],
@@ -62,6 +63,6 @@ final class ErrorMessageFunctionsTest extends TestCase
         );
 
         self::assertSame(0, $status);
-        self::assertSame('[true,false,false,false,false]', $output);
+        self::assertSame('[true,false,false,false,false,false]', $output);
     }
 }
