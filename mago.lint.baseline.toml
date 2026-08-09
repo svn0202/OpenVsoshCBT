@@ -2102,12 +2102,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 3
