@@ -168,7 +168,7 @@ function F_url_exists($url)
     curl_exec($crs);
     $code = curl_getinfo($crs, CURLINFO_HTTP_CODE);
     unset($crs);
-    return $code == 200;
+    return $code === 200;
 }
 
 /**
@@ -180,7 +180,7 @@ function F_url_exists($url)
  */
 function F_file_exists($filename)
 {
-    if (preg_match('|^https?://|', $filename) == 1) {
+    if (preg_match('|^https?://|', $filename) === 1) {
         return F_url_exists($filename);
     }
 

@@ -15248,21 +15248,9 @@ count = 8
 
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `Returns`."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "possibly-false-operand"
-message = "Left operand in `==` comparison might be `false` (type `false|int`)."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
