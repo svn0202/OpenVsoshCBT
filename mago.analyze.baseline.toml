@@ -17403,7 +17403,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "less-specific-nested-return-statement"
-message = "Returned type `array{}|list<array<int, mixed>>` is less specific than the declared return type `array<int, array<int, string>>` for function `F_tmf_xlsx_read` due to nested 'mixed'."
+message = "Returned type `array{}|list<array<int, mixed>>` is less specific than the declared return type `array<int, array<int, string>>` for function `f_tmf_xlsx_read` due to nested 'mixed'."
 count = 1
 
 [[issues]]
@@ -17493,7 +17493,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `RuntimeException` in `F_tmf_xlsx_read`."
+message = "Potentially unhandled exception `RuntimeException` in `f_tmf_xlsx_read`."
 count = 1
 
 [[issues]]
