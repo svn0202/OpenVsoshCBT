@@ -16389,24 +16389,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "missing-return-type"
-message = "Function `getFormRowSelectBox` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowTextBox` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowTextInput` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
 message = "Function `getFormRowVertDiv` is missing a return type hint."
 count = 1
 
