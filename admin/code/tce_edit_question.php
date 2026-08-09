@@ -848,7 +848,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem == 1) {
+    if ($countitem === 1) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -899,7 +899,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem == 1) {
+    if ($countitem === 1) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -970,7 +970,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem == 1) {
+    if ($countitem === 1) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
