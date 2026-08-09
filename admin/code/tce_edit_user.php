@@ -898,7 +898,7 @@ if ($r = F_db_query($sql, $db)) {
             echo ' style="text-decoration:line-through;"';
         }
 
-        if (F_isUserOnGroup($user_id, $m['group_id'])) {
+        if (f_is_user_on_group($user_id, $m['group_id'])) {
             echo ' selected="selected"';
             $m['group_name'] = '* ' . $m['group_name'];
         }

@@ -908,7 +908,7 @@ function f_is_test_on_group($test_id, $group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function F_isUserOnGroup($user_id, $group_id)
+function f_is_user_on_group($user_id, $group_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -938,7 +938,7 @@ function F_isAuthorizedEditorForGroup($group_id)
         return true;
     }
 
-    return F_isUserOnGroup($_SESSION['session_user_id'], $group_id);
+    return f_is_user_on_group($_SESSION['session_user_id'], $group_id);
 }
 
 /**
