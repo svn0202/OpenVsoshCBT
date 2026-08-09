@@ -59,7 +59,7 @@ function F_getArrayStatistics($data)
             $stats['range'][$set] = (float) $stats['maximum'][$set] - (float) $stats['minimum'][$set];
             $stats['mean'][$set] = $stats['sum'][$set] / $stats['number'][$set];
             $nsdiv = (int) ($stats['number'][$set] / 2);
-            if ($nsdiv > 0 && ($stats['number'][$set] % 2) == 0) {
+            if ($nsdiv > 0 && ($stats['number'][$set] % 2) === 0) {
                 $stats['median'][$set] = ((float) $dataset[$nsdiv] + (float) $dataset[$nsdiv - 1]) / 2;
             } else {
                 $stats['median'][$set] = (float) $dataset[($stats['number'][$set] - 1) / 2];
@@ -79,7 +79,7 @@ function F_getArrayStatistics($data)
             $stats['standard_deviation'][$set] = sqrt($stats['variance'][$set]);
             $stats['skewness'][$set] = 0;
             $stats['kurtosi'][$set] = 0;
-            if ($stats['standard_deviation'][$set] != 0) {
+            if ($stats['standard_deviation'][$set] !== 0.0) {
                 foreach ($dataset as $num => $value) {
                     $tmpval = ($value - $stats['mean'][$set]) / $stats['standard_deviation'][$set];
                     $stats['skewness'][$set] += $tmpval ** 3;
