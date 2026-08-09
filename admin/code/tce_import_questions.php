@@ -188,7 +188,7 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     $module_enabled = (int) $qdata[1];
-                    $module_name = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
+                    $module_name = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
                     // check if this module already exist
                     $sql = 'SELECT module_id
 					FROM ' . K_TABLE_MODULES . '
@@ -248,10 +248,10 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     $subject_enabled = (int) $qdata[1];
-                    $subject_name = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
+                    $subject_name = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
                     $subject_description = '';
                     if (isset($qdata[3])) {
-                        $subject_description = F_empty_to_null(F_tsv_to_text($qdata[3]));
+                        $subject_description = F_empty_to_null(f_tsv_to_text($qdata[3]));
                     }
 
                     // check if this subject already exist
@@ -324,8 +324,8 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     $question_enabled = (int) $qdata[1];
-                    $question_description = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
-                    $question_explanation = F_empty_to_null(F_tsv_to_text($qdata[3]));
+                    $question_description = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
+                    $question_explanation = F_empty_to_null(f_tsv_to_text($qdata[3]));
                     $question_type = $qtype[$qdata[4]];
                     $question_difficulty = (int) $qdata[5];
                     $question_position = isset($qdata[6]) ? F_zero_to_null($qdata[6]) : F_zero_to_null(0);
@@ -483,13 +483,13 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     $answer_enabled = (int) $qdata[1];
-                    $answer_description = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
-                    $answer_explanation = F_empty_to_null(F_tsv_to_text($qdata[3]));
+                    $answer_description = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
+                    $answer_explanation = F_empty_to_null(f_tsv_to_text($qdata[3]));
                     $answer_isright = (int) $qdata[4];
                     $answer_position = isset($qdata[5]) ? F_zero_to_null($qdata[5]) : F_zero_to_null(0);
 
                     $answer_keyboard_key = isset($qdata[6])
-                        ? F_empty_to_null(F_tsv_to_text($qdata[6]))
+                        ? F_empty_to_null(f_tsv_to_text($qdata[6]))
                         : F_empty_to_null('');
                     $answer_weight = isset($qdata[7]) && $qdata[7] !== ''
                         ? (string) max(0, min(100, (int) $qdata[7]))
