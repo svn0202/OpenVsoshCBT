@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 if (
     !isset($_POST['csrf_token'])
     || !is_string($_POST['csrf_token'])
-    || !checkCSRFTokenForScript($_POST['csrf_token'], __DIR__ . '/tce_test_execute.php')
+    || !check_csrf_token_for_script($_POST['csrf_token'], __DIR__ . '/tce_test_execute.php')
 ) {
     F_tmf_review_json(403, ['status' => 'csrf_failed']);
 }
