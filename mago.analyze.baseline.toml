@@ -11361,18 +11361,6 @@ count = 1
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
 code = "imprecise-type"
-message = "Type `array` in return type of `parseTemplateBlocks` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `parse` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "imprecise-type"
 message = "Type `array` in return type of `readBodyBlocks` is imprecise, equivalent to `array<array-key, mixed>`."
 count = 1
 
@@ -11452,7 +11440,7 @@ count = 1
 file = "admin/code/tmf_word_import_lib.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `count`: expected `Countable|array<array-key, mixed>`, but found `mixed`."
-count = 3
+count = 2
 
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"

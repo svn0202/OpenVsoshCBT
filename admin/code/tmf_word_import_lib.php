@@ -217,6 +217,33 @@ class TmfWordImporter
         $this->media_url = rtrim($media_url, '/');
     }
 
+    /**
+     * @return array{
+     *     module: string,
+     *     topic: string,
+     *     questions: list<array{
+     *         source_number: int,
+     *         description: string,
+     *         answers: list<array{key: string, description: string, weight: int|null}>,
+     *         right_keys: list<string>,
+     *         difficulty: int,
+     *         timer: int,
+     *         auto_next: int,
+     *         fullscreen: int,
+     *         inline_answers: int,
+     *         mcma_checkbox: bool,
+     *         mcma_header: list<string>,
+     *         max_sel: int,
+     *         similarity_threshold: int,
+     *         audio_play_limit: int,
+     *         short_answer: bool,
+     *         matching: bool,
+     *         type: int
+     *     }>,
+     *     warnings: list<string>,
+     *     statistics: array{blocks: int, questions: int, images: int}
+     * }
+     */
     public function parse(): array
     {
         $this->openArchive();
@@ -803,6 +830,31 @@ class TmfWordImporter
         return $node;
     }
 
+    /**
+     * @return array{
+     *     module: string,
+     *     topic: string,
+     *     questions: list<array{
+     *         source_number: int,
+     *         description: string,
+     *         answers: list<array{key: string, description: string, weight: int|null}>,
+     *         right_keys: list<string>,
+     *         difficulty: int,
+     *         timer: int,
+     *         auto_next: int,
+     *         fullscreen: int,
+     *         inline_answers: int,
+     *         mcma_checkbox: bool,
+     *         mcma_header: list<string>,
+     *         max_sel: int,
+     *         similarity_threshold: int,
+     *         audio_play_limit: int,
+     *         short_answer: bool,
+     *         matching: bool,
+     *         type: int
+     *     }>
+     * }
+     */
     private function parseTemplateBlocks(array $blocks): array
     {
         $result = [
@@ -894,6 +946,31 @@ class TmfWordImporter
         if (empty($result['questions'])) {
             throw new TmfWordImportException('No Q:n) question markers were found.');
         }
+        /**
+         * @var array{
+         *     module: string,
+         *     topic: string,
+         *     questions: list<array{
+         *         source_number: int,
+         *         description: string,
+         *         answers: list<array{key: string, description: string, weight: int|null}>,
+         *         right_keys: list<string>,
+         *         difficulty: int,
+         *         timer: int,
+         *         auto_next: int,
+         *         fullscreen: int,
+         *         inline_answers: int,
+         *         mcma_checkbox: bool,
+         *         mcma_header: list<string>,
+         *         max_sel: int,
+         *         similarity_threshold: int,
+         *         audio_play_limit: int,
+         *         short_answer: bool,
+         *         matching: bool,
+         *         type: int
+         *     }>
+         * } $result
+         */
         return $result;
     }
 

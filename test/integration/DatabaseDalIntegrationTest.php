@@ -408,7 +408,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         }
         $this->assertSame($moduleName, $parsed['module']);
         $this->assertSame($rollbackTopic, $parsed['topic']);
-        $this->assertSame(['A'], $parsed['questions'][0]['right_keys']);
+        $this->assertSame(['A'], $parsed['questions'][0]['right_keys'] ?? null);
 
         $rolledBack = \F_tmf_import_word_questions($parsed, false);
         $this->assertFalse($rolledBack['committed']);

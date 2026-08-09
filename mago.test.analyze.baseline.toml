@@ -1,114 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "test/WordImportTest.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 3
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_question_options`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `array_column`: expected `array<array-key, array<string('key'), ('V.array_column() extends mixed)>|object>|list<array<string('key'), ('V.array_column() extends mixed)>|object>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `array_column`: expected `array<array-key, array<string('type'), ('V.array_column() extends mixed)>|object>|list<array<string('type'), ('V.array_column() extends mixed)>|object>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `count`: expected `Countable|array<array-key, mixed>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strip_tags`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertCount`: expected `Countable|iterable<mixed, mixed>`, but found `mixed`.'
-count = 4
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringNotContainsString`: expected `string`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `array_map`: expected `array<('K.array_map() extends array-key), array<array-key, mixed>>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 30
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 3
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('description')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('module')` accessed on `array<array-key, mixed>`."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('questions')` accessed on `array<array-key, mixed>`."
-count = 15
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('statistics')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('topic')` accessed on `array<array-key, mixed>`."
-count = 2
-
-[[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
@@ -376,7 +268,7 @@ count = 1
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 4
+count = 2
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
@@ -443,24 +335,6 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key 2 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
 count = 4
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('module')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('questions')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('topic')` accessed on `array<array-key, mixed>`."
-count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
