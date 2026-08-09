@@ -976,7 +976,10 @@ function F_isRightTestlogUser($test_id, $testlog_id)
 			AND testlog_id=' . $testlog_id . '';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            if ($m['testuser_user_id'] != $_SESSION['session_user_id'] || $m['testuser_test_id'] != $test_id) {
+            if (
+                !f_legacy_int_equals($m['testuser_user_id'], (int) $_SESSION['session_user_id'])
+                || !f_legacy_int_equals($m['testuser_test_id'], $test_id)
+            ) {
                 return false;
             }
         } else {
