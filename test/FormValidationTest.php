@@ -53,6 +53,29 @@ final class FormValidationTest extends TestCase
         ]));
     }
 
+    public function testSubmitButtonPrintsExistingMarkup(): void
+    {
+        ob_start();
+        \F_submit_button('save', 'Save', 'Save item', 'disabled ');
+        $markup = ob_get_clean();
+
+        $this->assertSame(
+            '<input type="submit" name="save" id="save" value="Save" title="Save item" disabled />',
+            $markup,
+        );
+    }
+
+    public function testCsrfFieldContainsAValidToken(): void
+    {
+        $markup = \F_getCSRFTokenField();
+        $matches = [];
+
+        $this->assertSame(1, preg_match('/ value="([^"]+)"/', $markup, $matches));
+        $token = $matches[1] ?? '';
+        $this->assertNotSame('', $token);
+        $this->assertTrue(\checkCSRFToken($token));
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
