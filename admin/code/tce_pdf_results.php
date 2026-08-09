@@ -220,8 +220,8 @@ if ($pubmode) {
 // document metadata
 $pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
 $pdf->setAuthor(PDF_AUTHOR);
-$pdf->setTitle((string) $doc_title);
-$pdf->setSubject((string) $doc_description);
+$pdf->setTitle($doc_title);
+$pdf->setSubject($doc_description);
 $pdf->setKeywords('TCExam, ' . $doc_title);
 $pdf->setLanguageArray($l);
 
@@ -231,7 +231,7 @@ $pdf->setReportHeader(PDF_HEADER_TITLE, PDF_HEADER_STRING, PDF_HEADER_LOGO, (flo
 if ($mode != 3) {
     $pdf->addReportPage();
     $pdf->writeReportHTML(
-        '<h1 style="text-align:center;font-size:13pt;">' . htmlspecialchars((string) $doc_title) . '</h1>',
+        '<h1 style="text-align:center;font-size:13pt;">' . htmlspecialchars($doc_title) . '</h1>',
     );
     $pdf->printTestResultStat($ts, $pubmode, $display_mode);
     if ($show_graph !== 0) {
