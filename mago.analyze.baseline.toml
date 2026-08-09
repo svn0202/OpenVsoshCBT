@@ -111,7 +111,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_attempt_archive.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -183,7 +183,7 @@ count = 4
 [[issues]]
 file = "admin/code/XMLQuestionImporter.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -363,7 +363,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_answer.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 14
 
 [[issues]]
@@ -663,7 +663,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_group.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -819,7 +819,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_edit_module.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -987,7 +987,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_question.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 9
 
 [[issues]]
@@ -1203,7 +1203,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_edit_rating.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -1395,7 +1395,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -1545,7 +1545,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_subject.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -1761,7 +1761,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 12
 
 [[issues]]
@@ -2019,7 +2019,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_user.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -2805,7 +2805,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -3057,7 +3057,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -3213,7 +3213,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -3483,7 +3483,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_test_select.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 7
 
 [[issues]]
@@ -3939,7 +3939,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 12
 
 [[issues]]
@@ -4005,7 +4005,7 @@ count = 6
 [[issues]]
 file = "admin/code/tce_functions_users_online.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -4071,7 +4071,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -4371,7 +4371,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_import_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -4671,7 +4671,7 @@ count = 2
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 6
 
 [[issues]]
@@ -4917,7 +4917,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_monitor.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 6
 
 [[issues]]
@@ -5127,7 +5127,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_offline.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -5235,7 +5235,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -5421,7 +5421,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_pdf_all_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -5715,7 +5715,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 9
 
 [[issues]]
@@ -5961,7 +5961,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_pregenerate.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -6519,7 +6519,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_select_users.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -6633,7 +6633,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_select_users_popup.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -6759,7 +6759,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_self_profile.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -6999,7 +6999,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 8
 
 [[issues]]
@@ -7167,7 +7167,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_show_result_allusers.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -7383,7 +7383,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_show_result_user.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -7545,7 +7545,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_test_access_rules.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -7677,7 +7677,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_tsv_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -7803,7 +7803,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_tsv_users.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -7881,7 +7881,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_users_xlsx.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -8163,7 +8163,7 @@ count = 7
 [[issues]]
 file = "admin/code/tce_xml_question_stats.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -8283,7 +8283,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_xml_questions.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -8565,7 +8565,7 @@ count = 30
 [[issues]]
 file = "admin/code/tce_xml_user_results.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -8709,7 +8709,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_xml_users.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -9405,7 +9405,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_page_header.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -9537,7 +9537,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_password_reset.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -10011,7 +10011,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_test_allresults.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -10395,7 +10395,7 @@ count = 13
 [[issues]]
 file = "public/code/tce_test_results.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -10761,7 +10761,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_user_change_email.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -10851,7 +10851,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_user_change_password.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -10971,7 +10971,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_user_registration.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -11109,7 +11109,7 @@ count = 2
 [[issues]]
 file = "public/code/tce_user_verification.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -11625,7 +11625,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_authorization.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -11973,7 +11973,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "falsable-return-statement"
-message = "Function `F_db_fetch_array` is declared to return `unknown-ref(Returns)` but possibly returns 'false' (inferred as `array<string, string>|false`)."
+message = "Function `f_db_fetch_array` is declared to return `unknown-ref(Returns)` but possibly returns 'false' (inferred as `array<string, string>|false`)."
 count = 1
 
 [[issues]]
@@ -12009,7 +12009,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_db_fetch_array`: expected `unknown-ref(Returns)`, but found `array<string, string>|false`."
+message = "Invalid return type for function `f_db_fetch_array`: expected `unknown-ref(Returns)`, but found `array<string, string>|false`."
 count = 1
 
 [[issues]]
@@ -12147,7 +12147,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "missing-return-type"
-message = "Function `F_db_fetch_array` is missing a return type hint."
+message = "Function `f_db_fetch_array` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -12555,7 +12555,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_answer_save.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -12687,7 +12687,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_attachments.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -13071,7 +13071,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -13575,7 +13575,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -13875,7 +13875,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_monitoring.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -14043,7 +14043,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 6
 
 [[issues]]
@@ -14139,7 +14139,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_onboarding.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -14451,7 +14451,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_pregeneration.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -14517,7 +14517,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 3
 
 [[issues]]
@@ -14625,7 +14625,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_roles.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -14685,7 +14685,7 @@ count = 1
 [[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -15945,7 +15945,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 33
 
 [[issues]]
@@ -16347,7 +16347,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 5
 
 [[issues]]
@@ -16719,7 +16719,7 @@ count = 96
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 6
 
 [[issues]]
@@ -18435,7 +18435,7 @@ count = 1
 [[issues]]
 file = "shared/code/TcePdfReport.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
