@@ -197,7 +197,7 @@ function f_db_num_rows($result)
  * @param $fieldname (string) Field name (column name).
  * @return int ID generated from the last INSERT operation.
  */
-function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     $query = 'SELECT ' . $tablename . '_seq.currval FROM dual';
     set_error_handler(static fn (): bool => true);
