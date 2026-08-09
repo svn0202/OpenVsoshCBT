@@ -90,7 +90,7 @@ function f_select_module_subjects_sql(mixed $andwhere = ''): string
  * @since 2006-03-12
  * @return string sql statement
  */
-function F_select_tests_sql(): string
+function f_select_tests_sql(): string
 {
     global $l;
     require_once '../config/tce_config.php';
