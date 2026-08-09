@@ -1039,12 +1039,6 @@ message = "Function name `F_tmf_unanswered_question_numbers` should be in snake 
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_test_access.php"
-code = "function-name"
-message = "Function name `F_tmf_user_has_passed_test` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "function-name"
 message = "Function name `F_getAllUsersTestStat` should be in snake case."

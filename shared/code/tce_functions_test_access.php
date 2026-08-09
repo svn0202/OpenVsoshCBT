@@ -63,7 +63,7 @@ function f_tmf_test_access_status(int $test_id, int $user_id): array
     return ['allowed' => true, 'reason' => 'allowed'];
 }
 
-function F_tmf_user_has_passed_test(int $test_id, int $user_id): bool
+function f_tmf_user_has_passed_test(int $test_id, int $user_id): bool
 {
     global $db;
     $test_result = F_db_query(
