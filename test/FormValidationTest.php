@@ -43,6 +43,16 @@ final class FormValidationTest extends TestCase
         }
     }
 
+    public function testRequiredFieldCheckPreservesNoRulesAndCompleteFormResults(): void
+    {
+        $this->assertFalse(\F_check_required_fields([]));
+        $this->assertSame('', \F_check_required_fields([
+            'ff_required' => 'user_email',
+            'ff_required_labels' => 'Email',
+            'user_email' => 'student@example.com',
+        ]));
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
