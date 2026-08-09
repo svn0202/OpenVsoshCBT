@@ -315,6 +315,34 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testSelectBoxRowPreservesSelectionRequiredStateAndTip(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
+                    . '"a_meta_charset" => "UTF-8"]; '
+                    . '$name = function_exists("getFormRowSelectBox") '
+                    . '? "getFormRowSelectBox" : "get_form_row_select_box"; '
+                    . 'echo $name("level", "Level", "User level", "Choose", "01", '
+                    . '[0 => "Zero", 1 => "One", 2 => ["invalid"]], "PREFIX", true);',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringContainsString(
+            'name="level" id="level" title="User level" aria-required="true" '
+                . 'aria-describedby="desc_level"',
+            $markup,
+        );
+        $this->assertStringContainsString('<option value="1" selected="selected">One</option>', $markup);
+        $this->assertStringContainsString('<option value="2"></option>', $markup);
+        $this->assertStringContainsString('<span class="labeldesc" id="desc_level">Choose</span>', $markup);
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
