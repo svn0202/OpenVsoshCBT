@@ -340,7 +340,7 @@ function f_bbcode_to_tcecode(string $text): string
  * @param string $text
  * @return string
  */
-function F_tcecode_url(string $text): string
+function f_tcecode_url(string $text): string
 {
     if (empty($text)) {
         return '';
