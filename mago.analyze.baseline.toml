@@ -11889,7 +11889,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_mysql.php"
 code = "duplicate-definition"
-message = "Function `F_db_num_rows` is already defined elsewhere."
+message = "Function `f_db_num_rows` is already defined elsewhere."
 count = 1
 
 [[issues]]

@@ -131,7 +131,7 @@ function F_db_affected_rows($link_identifier, $result)
  * @param $result (resource) result resource to the query result.
  * @return Number of affected rows.
  */
-function F_db_num_rows($result)
+function f_db_num_rows($result)
 {
     return mysql_num_rows($result);
 }
