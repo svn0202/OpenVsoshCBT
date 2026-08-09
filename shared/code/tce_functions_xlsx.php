@@ -24,7 +24,7 @@ function f_tmf_xlsx_column_name(int $index): string
     return $name;
 }
 
-function F_tmf_xlsx_safe_sheet_name(string $name, int $fallback): string
+function f_tmf_xlsx_safe_sheet_name(string $name, int $fallback): string
 {
     $name = preg_replace('/[\\\\\\/\\?\\*\\[\\]:]+/u', ' ', trim($name));
     $name = mb_substr((string) $name, 0, 31);
