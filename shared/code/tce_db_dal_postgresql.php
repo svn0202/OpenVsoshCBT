@@ -101,7 +101,7 @@ function F_db_query($query, $link_identifier)
  * @param PgSql\Result $result result resource to the query result.
  * @return array<int|string, mixed>|false row data, or false if there are no more rows.
  */
-function F_db_fetch_array($result)
+function f_db_fetch_array($result)
 {
     return pg_fetch_array($result);
 }
