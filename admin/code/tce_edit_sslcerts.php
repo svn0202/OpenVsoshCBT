@@ -177,7 +177,7 @@ switch ($menu_mode) {
 
     case 'add':
         // Add
-            if (($formstatus = F_check_form_fields()) && strlen($ssl_hash) == 32) {
+            if (($formstatus = F_check_form_fields()) && strlen($ssl_hash) === 32) {
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_SSLCERTS, "ssl_name='" . F_escape_sql($db, $ssl_name) . "'")) {
                     F_print_error('WARNING', $l['m_duplicate_name']);
