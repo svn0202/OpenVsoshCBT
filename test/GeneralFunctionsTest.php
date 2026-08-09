@@ -113,10 +113,10 @@ final class GeneralFunctionsTest extends TestCase
     public function testTextXmlRoundTrip(): void
     {
         $text = 'a<b> & c';
-        $xml = \F_text_to_xml($text);
+        $xml = \f_text_to_xml($text);
         $this->assertSame('a&lt;b&gt; &amp; c', $xml);
         $this->assertSame($text, \f_xml_to_text($xml));
-        $this->assertSame('', \F_text_to_xml(''));
+        $this->assertSame('', \f_text_to_xml(''));
     }
 
     public function testTextTsvRoundTrip(): void

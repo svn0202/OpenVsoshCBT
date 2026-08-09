@@ -212,7 +212,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                                         : '';
                                     $apos = $ma['answer_position'] > 0 ? $ma['answer_position'] : '';
                                     $akey = $ma['answer_keyboard_key'] > 0
-                                        ? F_text_to_xml(chr($ma['answer_keyboard_key']))
+                                        ? f_text_to_xml(chr($ma['answer_keyboard_key']))
                                         : '';
                                     $html .= '<tr style="' . $astyle . '">';
                                     $html .= '<td style="text-align:center;">' . $idx . '</td>';

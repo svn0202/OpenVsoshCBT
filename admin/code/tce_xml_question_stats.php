@@ -169,7 +169,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<description>'
-                . F_text_to_xml($question_description)
+                . f_text_to_xml($question_description)
                 . '</description>'
                 . K_NEWLINE;
             $xml .= K_TAB . K_TAB . K_TAB . '<recurrence>' . $mr['recurrence'] . '</recurrence>' . K_NEWLINE;
@@ -271,7 +271,7 @@ function F_xml_export_question_stats($test_id)
                         . K_TAB
                         . K_TAB
                         . '<description>'
-                        . F_text_to_xml($ma['answer_description'])
+                        . f_text_to_xml($ma['answer_description'])
                         . '</description>'
                         . K_NEWLINE;
 

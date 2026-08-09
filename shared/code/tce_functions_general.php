@@ -278,7 +278,7 @@ function f_substr_utf8($str, $start, $length): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function F_text_to_xml($str): string
+function f_text_to_xml($str): string
 {
     if (empty($str)) {
         return '';
@@ -610,7 +610,7 @@ function get_data_xml($data, $level = 1): string
         if (is_array($value)) {
             $xml .= "\n" . get_data_xml($value, $level + 1);
         } else {
-            $xml .= F_text_to_xml($value);
+            $xml .= f_text_to_xml($value);
         }
 
         $xml .= '</' . $key . '>' . "\n";

@@ -1364,12 +1364,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "function-name"
-message = "Function name `F_text_to_xml` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 7
