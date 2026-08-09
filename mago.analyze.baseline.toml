@@ -14481,7 +14481,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `F_tmf_short_answer_score`: expected `array<int, array{'answer_description': string, 'answer_weight'?: int|null|string}>`, but found `non-empty-list<unknown-ref(Returns)>`."
+message = "Invalid argument type for argument #2 of `f_tmf_short_answer_score`: expected `array<int, array{'answer_description': string, 'answer_weight'?: int|null|string}>`, but found `non-empty-list<unknown-ref(Returns)>`."
 count = 1
 
 [[issues]]
@@ -15729,7 +15729,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_short_answer_score`: expected `string`, but found `mixed`."
+message = "Invalid argument type for argument #1 of `f_tmf_short_answer_score`: expected `string`, but found `mixed`."
 count = 1
 
 [[issues]]
