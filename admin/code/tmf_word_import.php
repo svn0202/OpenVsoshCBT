@@ -77,7 +77,7 @@ try {
         chmod($preview_file, 0640);
     } elseif (isset($menu_mode) && in_array($menu_mode, array('confirm', 'cancelpreview'), true)) {
         $batch_id = isset($_POST['batch_id']) ? $_POST['batch_id'] : '';
-        if (!F_tmf_word_import_is_batch_id($batch_id)) {
+        if (!f_tmf_word_import_is_batch_id($batch_id)) {
             throw new TmfWordImportException('Некорректный идентификатор импорта.');
         }
         if ($menu_mode === 'cancelpreview') {
@@ -118,7 +118,7 @@ try {
         }
     }
 } catch (Exception $exception) {
-    if (isset($menu_mode) && $menu_mode === 'upload' && F_tmf_word_import_is_batch_id($batch_id)) {
+    if (isset($menu_mode) && $menu_mode === 'upload' && f_tmf_word_import_is_batch_id($batch_id)) {
         F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
     }
     $error = $exception->getMessage();

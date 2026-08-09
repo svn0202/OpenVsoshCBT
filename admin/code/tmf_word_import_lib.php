@@ -99,7 +99,7 @@ function F_tmf_word_import_template(): string
     }
 }
 
-function F_tmf_word_import_is_batch_id(string $batch_id): bool
+function f_tmf_word_import_is_batch_id(string $batch_id): bool
 {
     return preg_match('/^[a-f0-9]{32}$/', $batch_id) === 1;
 }
@@ -110,7 +110,7 @@ function F_tmf_word_import_is_batch_id(string $batch_id): bool
  */
 function F_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_id, bool $remove_media = true): bool
 {
-    if (!F_tmf_word_import_is_batch_id($batch_id)) {
+    if (!f_tmf_word_import_is_batch_id($batch_id)) {
         return false;
     }
 
