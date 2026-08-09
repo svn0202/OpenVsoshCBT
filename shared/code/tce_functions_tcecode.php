@@ -291,7 +291,7 @@ function f_is_safe_html_url(string $url, bool $image = false): bool
  * @param $style (string) style declaration
  * @return string safe style declaration
  */
-function F_sanitize_html_style(string $style): string
+function f_sanitize_html_style(string $style): string
 {
     $allowed = [
         'font-style' => ['italic', 'normal'],
