@@ -11,3 +11,6 @@
 //    Copyright (C) 2004-2026 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE file for more information.
 //============================================================+
+
+// Preserve the standard return value of an otherwise empty included PHP file.
+return 1;
