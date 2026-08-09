@@ -486,11 +486,11 @@ function F_syncUserGroups($usrid, $grpids)
 
 /**
  * Check if the client has a valid SSL certificate.
- * @return true if the client has a valid SSL certificate, false otherwise.
+ * @return bool True if the client has a valid SSL certificate, false otherwise.
  * @author Nicola Asuni
  * @since 2013-03-26
  */
-function F_isSslCertificateValid()
+function f_is_ssl_certificate_valid(): bool
 {
     if (
         !isset($_SERVER['SSL_CLIENT_M_SERIAL'])

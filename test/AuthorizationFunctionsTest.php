@@ -13,7 +13,7 @@ final class AuthorizationFunctionsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_isSslCertificateValid|f_is_ssl_certificate_valid)\\(/", '
+                    . 'preg_match("/function (f_is_ssl_certificate_valid)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
