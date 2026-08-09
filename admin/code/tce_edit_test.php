@@ -569,7 +569,7 @@ switch ($menu_mode) {
 
     case 'forcedelete':
             // Delete
-            if ($forcedelete == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+            if ($forcedelete === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 // delete test
                 $sql = 'DELETE FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . '';
                 if (!($r = F_db_query($sql, $db))) {

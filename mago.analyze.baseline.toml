@@ -362,12 +362,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_answer.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_answer.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 14
@@ -663,12 +657,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_edit_group.php"
 code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_group.php"
-code = "mixed-operand"
 message = "Right operand in `>=` comparison has `mixed` type."
 count = 1
 
@@ -827,12 +815,6 @@ file = "admin/code/tce_edit_module.php"
 code = "mixed-operand"
 message = "Left operand in `>=` comparison has `mixed` type."
 count = 3
-
-[[issues]]
-file = "admin/code/tce_edit_module.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_module.php"
@@ -1000,12 +982,6 @@ count = 3
 file = "admin/code/tce_edit_question.php"
 code = "mixed-operand"
 message = "Right operand in `<=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_question.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
 count = 1
 
 [[issues]]
@@ -1418,12 +1394,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
@@ -1570,12 +1540,6 @@ count = 1
 file = "admin/code/tce_edit_subject.php"
 code = "mixed-operand"
 message = "Left operand in `&&` operation has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_subject.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
 count = 1
 
 [[issues]]
@@ -1810,7 +1774,7 @@ count = 1
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Right operand in `==` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -2128,7 +2092,7 @@ count = 3
 file = "admin/code/tce_edit_user.php"
 code = "mixed-operand"
 message = "Right operand in `==` comparison has `mixed` type."
-count = 5
+count = 4
 
 [[issues]]
 file = "admin/code/tce_edit_user.php"

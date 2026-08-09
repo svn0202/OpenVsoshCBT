@@ -135,7 +135,7 @@ switch ($menu_mode) { // process submitted data
                 break;
             }
 
-            if ($forcedelete == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+            if ($forcedelete === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 if ($user_id == 1) { //can't delete anonymous user
                     F_print_error('WARNING', $l['m_delete_anonymous']);
                 } else {

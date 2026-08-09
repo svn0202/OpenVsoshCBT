@@ -102,7 +102,7 @@ switch ($menu_mode) { // process submitted data
                 break;
             }
 
-            if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+            if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_GROUPS . ' WHERE group_id=' . $group_id . '';
                 if (!($r = F_db_query($sql, $db))) {
                     F_display_db_error(false);
