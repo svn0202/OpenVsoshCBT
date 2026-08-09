@@ -389,7 +389,7 @@ function utrim($txt): mixed
  * @return string|false IPv6 address in expanded notation or false in case of invalid input.
  * @since 7.1.000 (2009-02-13)
  */
-function get_normalized_ip($ip): string|false
+function get_normalized_ip(mixed $ip): string|false
 {
     $ip = strtolower($ip ?? '');
     if ($ip === '0000:0000:0000:0000:0000:0000:0000:0001' || $ip === '::1') {
