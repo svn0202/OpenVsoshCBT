@@ -652,7 +652,7 @@ count = 12
 file = "admin/code/tce_pdf_all_questions.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_pdf_results.php"
