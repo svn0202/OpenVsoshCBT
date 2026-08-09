@@ -12639,7 +12639,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_attachments.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_attachment_path`: expected `array<array-key, mixed>`, but found `mixed`."
+message = "Invalid argument type for argument #1 of `f_tmf_attachment_path`: expected `array<array-key, mixed>`, but found `mixed`."
 count = 1
 
 [[issues]]

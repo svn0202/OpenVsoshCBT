@@ -234,7 +234,7 @@ function f_tmf_attachment_find(int $attachment_id): array|false
     return is_array($row) ? $row : false;
 }
 
-function F_tmf_attachment_path(array $attachment): string
+function f_tmf_attachment_path(array $attachment): string
 {
     $stored_name = (string) ($attachment['attachment_stored_name'] ?? '');
     if (preg_match('/^[a-f0-9]{64}$/', $stored_name) !== 1) {
