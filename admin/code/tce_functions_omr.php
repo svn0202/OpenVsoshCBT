@@ -473,7 +473,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                             . ' LIMIT 1';
                         if ($ra = F_db_query($sqla, $db)) {
                             if ($ma = F_db_fetch_array($ra)) {
-                                $answer_isright = F_getBoolean($ma['answer_isright']);
+                                $answer_isright = f_get_boolean($ma['answer_isright']);
                                 switch ($mq['question_type']) {
                                     case 1:
                                         { // MCSA - Multiple Choice Single Answer
@@ -527,7 +527,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                 // end for each answer
                 if ($mq['question_type'] == 2) { // MCMA
                     // normalize score
-                    if (F_getBoolean($testdata['test_mcma_partial_score'])) {
+                    if (f_get_boolean($testdata['test_mcma_partial_score'])) {
                         // use partial scoring for MCMA and ORDER questions
                         $qscore = round($qscore / $num_answers, 3);
                     } elseif ($qscore >= ($question_right_score * $num_answers)) {

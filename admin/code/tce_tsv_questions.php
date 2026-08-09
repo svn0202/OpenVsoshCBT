@@ -137,7 +137,7 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
     if ($rm = F_db_query($sqlm, $db)) {
         while ($mm = F_db_fetch_array($rm)) {
             $tsv .= 'M'; // MODULE
-            $tsv .= K_TAB . (int) F_getBoolean($mm['module_enabled']);
+            $tsv .= K_TAB . (int) f_get_boolean($mm['module_enabled']);
             $tsv .= K_TAB . f_text_to_tsv($mm['module_name']);
             $tsv .= K_NEWLINE;
             // ---- topic
@@ -150,7 +150,7 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
             if ($rs = F_db_query($sqls, $db)) {
                 while ($ms = F_db_fetch_array($rs)) {
                     $tsv .= 'S'; // SUBJECT
-                    $tsv .= K_TAB . (int) F_getBoolean($ms['subject_enabled']);
+                    $tsv .= K_TAB . (int) f_get_boolean($ms['subject_enabled']);
                     $tsv .= K_TAB . f_text_to_tsv($ms['subject_name']);
                     $tsv .= K_TAB . f_text_to_tsv($ms['subject_description']);
                     $tsv .= K_NEWLINE;
@@ -167,17 +167,17 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
                     if ($r = F_db_query($sql, $db)) {
                         while ($m = F_db_fetch_array($r)) {
                             $tsv .= 'Q'; // QUESTION
-                            $tsv .= K_TAB . (int) F_getBoolean($m['question_enabled']);
+                            $tsv .= K_TAB . (int) f_get_boolean($m['question_enabled']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_description']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_explanation']);
                             $tsv .= K_TAB . $qtype[$m['question_type'] - 1];
                             $tsv .= K_TAB . $m['question_difficulty'];
                             $tsv .= K_TAB . $m['question_position'];
                             $tsv .= K_TAB . $m['question_timer'];
-                            $tsv .= K_TAB . (int) F_getBoolean($m['question_fullscreen']);
-                            $tsv .= K_TAB . (int) F_getBoolean($m['question_inline_answers']);
-                            $tsv .= K_TAB . (int) F_getBoolean($m['question_auto_next']);
-                            $tsv .= K_TAB . (int) F_getBoolean($m['question_shuffle_answers']);
+                            $tsv .= K_TAB . (int) f_get_boolean($m['question_fullscreen']);
+                            $tsv .= K_TAB . (int) f_get_boolean($m['question_inline_answers']);
+                            $tsv .= K_TAB . (int) f_get_boolean($m['question_auto_next']);
+                            $tsv .= K_TAB . (int) f_get_boolean($m['question_shuffle_answers']);
                             $tsv .= K_NEWLINE;
                             // display alternative answers
                             $sqla =
@@ -192,10 +192,10 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
                             if ($ra = F_db_query($sqla, $db)) {
                                 while ($ma = F_db_fetch_array($ra)) {
                                     $tsv .= 'A'; // ANSWER
-                                    $tsv .= K_TAB . (int) F_getBoolean($ma['answer_enabled']);
+                                    $tsv .= K_TAB . (int) f_get_boolean($ma['answer_enabled']);
                                     $tsv .= K_TAB . f_text_to_tsv($ma['answer_description']);
                                     $tsv .= K_TAB . f_text_to_tsv($ma['answer_explanation']);
-                                    $tsv .= K_TAB . (int) F_getBoolean($ma['answer_isright']);
+                                    $tsv .= K_TAB . (int) f_get_boolean($ma['answer_isright']);
                                     $tsv .= K_TAB . $ma['answer_position'];
                                     $tsv .= K_TAB . $ma['answer_keyboard_key'];
                                     $tsv .= K_TAB . (string) $ma['answer_weight'];

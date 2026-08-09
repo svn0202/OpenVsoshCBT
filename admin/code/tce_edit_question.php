@@ -60,7 +60,7 @@ $question_difficulty = isset($_REQUEST['question_difficulty']) ? (int) $_REQUEST
 if (!isset($_REQUEST['question_enabled']) || empty($_REQUEST['question_enabled'])) {
     $question_enabled = false;
 } else {
-    $question_enabled = F_getBoolean($_REQUEST['question_enabled']);
+    $question_enabled = f_get_boolean($_REQUEST['question_enabled']);
 }
 
 if (isset($_REQUEST['changemodule']) && $_REQUEST['changemodule'] > 0) {
@@ -104,25 +104,25 @@ if (!isset($_REQUEST['question_timer']) || empty($_REQUEST['question_timer'])) {
 if (!isset($_REQUEST['question_fullscreen']) || empty($_REQUEST['question_fullscreen'])) {
     $question_fullscreen = false;
 } else {
-    $question_fullscreen = F_getBoolean($_REQUEST['question_fullscreen']);
+    $question_fullscreen = f_get_boolean($_REQUEST['question_fullscreen']);
 }
 
 if (!isset($_REQUEST['question_inline_answers']) || empty($_REQUEST['question_inline_answers'])) {
     $question_inline_answers = false;
 } else {
-    $question_inline_answers = F_getBoolean($_REQUEST['question_inline_answers']);
+    $question_inline_answers = f_get_boolean($_REQUEST['question_inline_answers']);
 }
 
 if (!isset($_REQUEST['question_auto_next']) || empty($_REQUEST['question_auto_next'])) {
     $question_auto_next = false;
 } else {
-    $question_auto_next = F_getBoolean($_REQUEST['question_auto_next']);
+    $question_auto_next = f_get_boolean($_REQUEST['question_auto_next']);
 }
 
 if (!isset($_REQUEST['question_shuffle_answers']) || empty($_REQUEST['question_shuffle_answers'])) {
     $question_shuffle_answers = false;
 } else {
-    $question_shuffle_answers = F_getBoolean($_REQUEST['question_shuffle_answers']);
+    $question_shuffle_answers = f_get_boolean($_REQUEST['question_shuffle_answers']);
 }
 
 $question_similarity_threshold = isset($_REQUEST['question_similarity_threshold'])
@@ -132,7 +132,7 @@ $question_matching_positions = isset($_REQUEST['question_matching_positions'])
     ? max(0, min(100, (int) $_REQUEST['question_matching_positions']))
     : 0;
 $question_matching_reuse_positions = isset($_REQUEST['question_matching_reuse_positions'])
-    && F_getBoolean($_REQUEST['question_matching_reuse_positions']);
+    && f_get_boolean($_REQUEST['question_matching_reuse_positions']);
 $question_audio_play_limit = isset($_REQUEST['question_audio_play_limit'])
     ? max(0, min(99, (int) $_REQUEST['question_audio_play_limit']))
     : 0;
@@ -744,13 +744,13 @@ if ($formstatus && $menu_mode != 'clear') {
                 $question_explanation = is_null($m['question_explanation']) ? '' : $m['question_explanation'];
                 $question_type = $m['question_type'];
                 $question_difficulty = $m['question_difficulty'];
-                $question_enabled = F_getBoolean($m['question_enabled']);
+                $question_enabled = f_get_boolean($m['question_enabled']);
                 $question_position = $m['question_position'];
                 $question_timer = $m['question_timer'];
-                $question_fullscreen = F_getBoolean($m['question_fullscreen']);
-                $question_inline_answers = F_getBoolean($m['question_inline_answers']);
-                $question_auto_next = F_getBoolean($m['question_auto_next']);
-                $question_shuffle_answers = F_getBoolean($m['question_shuffle_answers']);
+                $question_fullscreen = f_get_boolean($m['question_fullscreen']);
+                $question_inline_answers = f_get_boolean($m['question_inline_answers']);
+                $question_auto_next = f_get_boolean($m['question_auto_next']);
+                $question_shuffle_answers = f_get_boolean($m['question_shuffle_answers']);
                 $question_similarity_threshold = F_tmf_question_options(
                     (string) $question_description,
                 )['similarity_threshold'];
@@ -842,7 +842,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['module_enabled'])) {
+        if (f_get_boolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -893,7 +893,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['subject_enabled'])) {
+        if (f_get_boolean($m['subject_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -960,7 +960,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (!F_getBoolean($m['question_enabled'])) {
+        if (!f_get_boolean($m['question_enabled'])) {
             echo '-';
         } else {
             echo $qtype[$m['question_type'] - 1];

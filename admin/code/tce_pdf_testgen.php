@@ -92,11 +92,11 @@ $omr_line_style = ['lineWidth' => $line_width, 'lineColor' => $grid_hex];
 
 // get test data
 $testdata = F_getTestData($test_id);
-$test_random_questions_select = F_getBoolean($testdata['test_random_questions_select']);
-$test_random_questions_order = F_getBoolean($testdata['test_random_questions_order']);
+$test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
+$test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
 $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
-$test_random_answers_select = F_getBoolean($testdata['test_random_answers_select']);
-$test_random_answers_order = F_getBoolean($testdata['test_random_answers_order']);
+$test_random_answers_select = f_get_boolean($testdata['test_random_answers_select']);
+$test_random_answers_order = f_get_boolean($testdata['test_random_answers_order']);
 $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
 $random_questions = $test_random_questions_select || $test_random_questions_order;
 $sql_answer_position = '';
@@ -571,7 +571,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                             $rightanswer = '';
                             if (in_array((int) $q['type'], [4, 5], true)) {
                                 $rightanswer = $ma['answer_position'];
-                            } elseif (F_getBoolean($ma['answer_isright'])) {
+                            } elseif (f_get_boolean($ma['answer_isright'])) {
                                 $rightanswer = 'X';
                             }
                             // hidden white correct-answer marker + answer number + description

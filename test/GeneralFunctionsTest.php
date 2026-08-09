@@ -41,15 +41,15 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testGetBoolean(): void
     {
-        $this->assertTrue(\F_getBoolean(true));
-        $this->assertFalse(\F_getBoolean(false));
-        $this->assertTrue(\F_getBoolean('t'));    // PostgreSQL boolean text
-        $this->assertTrue(\F_getBoolean('true'));
-        $this->assertTrue(\F_getBoolean('1'));
-        $this->assertFalse(\F_getBoolean('f'));
-        $this->assertFalse(\F_getBoolean('0'));
-        $this->assertTrue(\F_getBoolean(1));
-        $this->assertFalse(\F_getBoolean(0));
+        $this->assertTrue(\f_get_boolean(true));
+        $this->assertFalse(\f_get_boolean(false));
+        $this->assertTrue(\f_get_boolean('t'));    // PostgreSQL boolean text
+        $this->assertTrue(\f_get_boolean('true'));
+        $this->assertTrue(\f_get_boolean('1'));
+        $this->assertFalse(\f_get_boolean('f'));
+        $this->assertFalse(\f_get_boolean('0'));
+        $this->assertTrue(\f_get_boolean(1));
+        $this->assertFalse(\f_get_boolean(0));
     }
 
     #[RunInSeparateProcess]

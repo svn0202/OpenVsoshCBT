@@ -7,7 +7,7 @@
  */
 function F_tmf_results_are_published(array $test, ?int $now = null): bool
 {
-    if (!F_getBoolean($test['test_results_to_users'] ?? false)) {
+    if (!f_get_boolean($test['test_results_to_users'] ?? false)) {
         return false;
     }
 

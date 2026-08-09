@@ -1405,7 +1405,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
 
         $ret .= ' />';
         $ret .= '</td>' . K_NEWLINE;
-        if (!$pubmode || F_getBoolean($tu['test']['test_report_to_users'])) {
+        if (!$pubmode || f_get_boolean($tu['test']['test_report_to_users'])) {
             $ret .=
                 '<td><a href="tce_show_result_user.php?testuser_id='
                 . $tu['id']
@@ -1751,7 +1751,7 @@ function F_printUserTestStat($testuser_id)
                                 $ret .= '<abbr title="' . $l['m_unanswered'] . '" class="offbox">&nbsp;</abbr>';
                             }
                         } elseif ($ma['logansw_selected'] > 0) {
-                            if (F_getBoolean($ma['answer_isright'])) {
+                            if (f_get_boolean($ma['answer_isright'])) {
                                 $ret .= '<abbr title="' . $l['h_answer_right'] . '" class="okbox">x</abbr>';
                             } else {
                                 $ret .= '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">x</abbr>';
@@ -1760,7 +1760,7 @@ function F_printUserTestStat($testuser_id)
                             // MCSA
                             $ret .= '<abbr title="-" class="offbox">&nbsp;</abbr>';
                         } elseif ($ma['logansw_selected'] == 0) {
-                            if (F_getBoolean($ma['answer_isright'])) {
+                            if (f_get_boolean($ma['answer_isright'])) {
                                 $ret .= '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">&nbsp;</abbr>';
                             } else {
                                 $ret .= '<abbr title="' . $l['h_answer_right'] . '" class="okbox">&nbsp;</abbr>';
@@ -1777,7 +1777,7 @@ function F_printUserTestStat($testuser_id)
                                 . '" class="onbox">'
                                 . $ma['answer_position']
                                 . '</abbr>';
-                        } elseif (F_getBoolean($ma['answer_isright'])) {
+                        } elseif (f_get_boolean($ma['answer_isright'])) {
                             $ret .= '<abbr title="' . $l['w_answers_right'] . '" class="onbox">&reg;</abbr>';
                         } else {
                             $ret .= '<abbr title="' . $l['w_answers_wrong'] . '" class="offbox">&nbsp;</abbr>';

@@ -57,13 +57,13 @@ $answer_list_firstrow = isset($_REQUEST['firstrow']) ? max(0, (int) $_REQUEST['f
 if (!isset($_REQUEST['answer_isright']) || empty($_REQUEST['answer_isright'])) {
     $answer_isright = false;
 } else {
-    $answer_isright = F_getBoolean($_REQUEST['answer_isright']);
+    $answer_isright = f_get_boolean($_REQUEST['answer_isright']);
 }
 
 if (!isset($_REQUEST['answer_enabled']) || empty($_REQUEST['answer_enabled'])) {
     $answer_enabled = false;
 } else {
-    $answer_enabled = F_getBoolean($_REQUEST['answer_enabled']);
+    $answer_enabled = f_get_boolean($_REQUEST['answer_enabled']);
 }
 
 if (isset($_REQUEST['changemodule']) && $_REQUEST['changemodule'] > 0) {
@@ -692,8 +692,8 @@ if ($formstatus && $menu_mode != 'clear') {
                 $answer_question_id = $m['answer_question_id'];
                 $answer_description = $m['answer_description'];
                 $answer_explanation = $m['answer_explanation'];
-                $answer_isright = F_getBoolean($m['answer_isright']);
-                $answer_enabled = F_getBoolean($m['answer_enabled']);
+                $answer_isright = f_get_boolean($m['answer_isright']);
+                $answer_enabled = f_get_boolean($m['answer_enabled']);
                 $answer_position = $m['answer_position'];
                 $answer_keyboard_key = $m['answer_keyboard_key'];
                 $answer_weight = $m['answer_weight'] === null ? null : (int) $m['answer_weight'];
@@ -762,7 +762,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['module_enabled'])) {
+        if (f_get_boolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -813,7 +813,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['subject_enabled'])) {
+        if (f_get_boolean($m['subject_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -875,7 +875,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (!F_getBoolean($m['question_enabled'])) {
+        if (!f_get_boolean($m['question_enabled'])) {
             echo '-';
         } else {
             echo $qtype[$m['question_type'] - 1];
@@ -945,9 +945,9 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (!F_getBoolean($m['answer_enabled'])) {
+        if (!f_get_boolean($m['answer_enabled'])) {
             echo '-';
-        } elseif (F_getBoolean($m['answer_isright'])) {
+        } elseif (f_get_boolean($m['answer_isright'])) {
             echo 'T';
         } else {
             echo 'F';

@@ -964,12 +964,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 $this->dbScalar('SELECT test_completion_message FROM tce_tests WHERE test_id=' . $testId),
             );
             foreach (['test_live_score', 'test_auto_fullscreen', 'test_hide_exam_info'] as $field) {
-                $this->assertTrue(\F_getBoolean(
+                $this->assertTrue(\f_get_boolean(
                     $this->dbScalar('SELECT ' . $field . ' FROM tce_tests WHERE test_id=' . $testId),
                 ));
             }
             foreach (['test_results_to_users', 'test_results_anonymized'] as $field) {
-                $this->assertTrue(\F_getBoolean(
+                $this->assertTrue(\f_get_boolean(
                     $this->dbScalar('SELECT ' . $field . ' FROM tce_tests WHERE test_id=' . $testId),
                 ));
             }

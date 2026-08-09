@@ -21,7 +21,7 @@ function F_tmf_recorded_answer_score(array $test, array $question, array $answer
             if ((int) $answer['logansw_selected'] === 1) {
                 return round(F_tmf_answer_score(
                     $answer['answer_weight'] ?? null,
-                    F_getBoolean($answer['answer_isright']),
+                    f_get_boolean($answer['answer_isright']),
                     $right,
                     $wrong,
                 ), 3);
@@ -37,8 +37,8 @@ function F_tmf_recorded_answer_score(array $test, array $question, array $answer
             if ($selected === -1) {
                 $total += $unanswered;
             } elseif (
-                F_getBoolean($answer['answer_isright']) && $selected === 1
-                || !F_getBoolean($answer['answer_isright']) && $selected === 0
+                f_get_boolean($answer['answer_isright']) && $selected === 1
+                || !f_get_boolean($answer['answer_isright']) && $selected === 0
             ) {
                 $total += $right;
             } else {
@@ -58,7 +58,7 @@ function F_tmf_recorded_answer_score(array $test, array $question, array $answer
     if ($count < 1) {
         return round($unanswered, 3);
     }
-    if (F_getBoolean($test['test_mcma_partial_score'])) {
+    if (f_get_boolean($test['test_mcma_partial_score'])) {
         return round($total / $count, 3);
     }
     if ($total >= ($right * $count)) {

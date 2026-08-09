@@ -184,7 +184,7 @@ if ($test_id > 0) {
     ] as $name => [$field, $label]) {
         echo '<div class="row"><span class="label"><label for="' . $name . '">' . $label
             . '</label></span><span class="formw"><input type="checkbox" name="' . $name
-            . '" id="' . $name . '" value="1"' . (F_getBoolean($rules[$field]) ? ' checked="checked"' : '')
+            . '" id="' . $name . '" value="1"' . (f_get_boolean($rules[$field]) ? ' checked="checked"' : '')
             . ' /></span></div>';
     }
     $datetime_value = static function (mixed $value): string {
