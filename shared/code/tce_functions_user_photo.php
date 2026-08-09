@@ -8,7 +8,9 @@ function F_tmf_user_photo_path(int $user_id): string
 /**
  * Validate, resize and re-encode a participant photo as a payload-free JPEG.
  *
+ * @param array<array-key, mixed> $upload
  * @return array{status:string,message:string}
+ * @throws Random\RandomException
  */
 function F_tmf_user_photo_store(array $upload, int $user_id): array
 {
@@ -24,7 +26,7 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     set_error_handler(static fn (): bool => true);
     try {
         $info = getimagesize($source);
-        $mime = is_array($info) ? (string) ($info['mime'] ?? '') : '';
+        $mime = is_array($info) ? $info['mime'] : '';
         $image = match ($mime) {
             'image/jpeg' => imagecreatefromjpeg($source),
             'image/png' => imagecreatefrompng($source),
