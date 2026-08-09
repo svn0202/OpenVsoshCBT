@@ -195,7 +195,7 @@ function F_getUserTests()
                             // 4 or greater = test can be repeated
                                 if (
                                     F_countUserTest($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable']
-                                    || $m['test_repeatable'] == 1
+                                    || f_legacy_int_equals($m['test_repeatable'], 1)
                                 ) {
                                     // print execute test link
                                     $str .= '<a href="';
@@ -697,9 +697,9 @@ function F_printTestInfo($test_id, $showip = false)
                 $l['h_report_to_users'],
                 $boolval[(int) f_get_boolean($m['test_report_to_users'])],
             );
-            $is_test_repeatable = $boolval[(int) ($m['test_repeatable'] != 0)];
+            $is_test_repeatable = $boolval[(int) !f_legacy_int_equals($m['test_repeatable'], 0)];
             $repeat_times = '';
-            if ($m['test_repeatable'] == 1) {
+            if (f_legacy_int_equals($m['test_repeatable'], 1)) {
                 $repeat_times = ' ( unlimited )';
             } elseif ($m['test_repeatable'] > 1) {
                 $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
@@ -928,7 +928,7 @@ function F_executeTest($test_id)
                 $test_status > 4
                 && (
                     F_countUserTest($_SESSION['session_user_id'], $test_id) < $m['test_repeatable']
-                    || $m['test_repeatable'] == 1
+                    || f_legacy_int_equals($m['test_repeatable'], 1)
                 )
             ) {
                 return F_createTest($test_id, $_SESSION['session_user_id']);
@@ -3242,6 +3242,7 @@ function F_getTestSSLCerts($test_id)
         . ' ORDER BY tstssl_ssl_id';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_assoc($r)) {
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches SSL certificate rows as arrays
             $ids .= ',' . $m['tstssl_ssl_id'];
         }
     } else {
