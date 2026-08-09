@@ -84,7 +84,7 @@ if ($rs = F_db_query($sqls, $db)) {
         $_SESSION['session_hash'] = $fingerprintkey;
         $_SESSION['session_user_id'] = 1;
         $_SESSION['session_user_name'] = '- [' . substr($PHPSESSID, 12, 8) . ']';
-        $_SESSION['session_user_ip'] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+        $_SESSION['session_user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
         $_SESSION['session_user_level'] = 0;
         $_SESSION['session_user_firstname'] = '';
         $_SESSION['session_user_lastname'] = '';
@@ -313,7 +313,7 @@ if (
                     // sets some user's session data
                     $_SESSION['session_user_id'] = $m['user_id'];
                     $_SESSION['session_user_name'] = $m['user_name'];
-                    $_SESSION['session_user_ip'] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+                    $_SESSION['session_user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
                     $_SESSION['session_user_level'] = $m['user_level'];
                     $_SESSION['session_user_firstname'] = urlencode((string) $m['user_firstname']);
                     $_SESSION['session_user_lastname'] = urlencode((string) $m['user_lastname']);
@@ -361,7 +361,7 @@ if (
                                 // sets some user's session data
                                 $_SESSION['session_user_id'] = $md['user_id'];
                                 $_SESSION['session_user_name'] = $md['user_name'];
-                                $_SESSION['session_user_ip'] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+                                $_SESSION['session_user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
                                 $_SESSION['session_user_level'] = $md['user_level'];
                                 $_SESSION['session_user_firstname'] = urlencode((string) $md['user_firstname']);
                                 $_SESSION['session_user_lastname'] = urlencode((string) $md['user_lastname']);
@@ -404,7 +404,7 @@ if (
                         . F_escape_sql($db, date(K_TIMESTAMP_FORMAT))
                         . '\',
 							\''
-                        . F_escape_sql($db, getNormalizedIP($_SERVER['REMOTE_ADDR']))
+                        . F_escape_sql($db, get_normalized_ip($_SERVER['REMOTE_ADDR']))
                         . '\',
 							\''
                         . F_escape_sql($db, $_POST['xuser_name'])
@@ -444,7 +444,7 @@ if (
                         // sets some user's session data
                         $_SESSION['session_user_id'] = $user_id;
                         $_SESSION['session_user_name'] = F_escape_sql($db, $_POST['xuser_name']);
-                        $_SESSION['session_user_ip'] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+                        $_SESSION['session_user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
                         $_SESSION['session_user_level'] = (int) $altusr['user_level'];
                         $_SESSION['session_user_firstname'] = urlencode((string) $altusr['user_firstname']);
                         $_SESSION['session_user_lastname'] = urlencode((string) $altusr['user_lastname']);

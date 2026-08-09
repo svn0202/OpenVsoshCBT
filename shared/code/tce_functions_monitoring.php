@@ -211,7 +211,7 @@ function F_tmf_monitor_apply_action(
         }
 
         $details_sql = $details === null ? 'NULL' : "'" . F_escape_sql($db, $details) . "'";
-        $ip = F_escape_sql($db, (string) getNormalizedIP($_SERVER['REMOTE_ADDR'] ?? ''));
+        $ip = F_escape_sql($db, (string) get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? ''));
         $audit_sql = 'INSERT INTO ' . F_tmf_monitor_audit_table() . ' (
                 monitor_audit_time,
                 monitor_actor_user_id,

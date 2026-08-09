@@ -191,7 +191,7 @@ function F_tmf_users_xlsx_import(array $records): int
         foreach ($records as $record) {
             $fields = [
                 'user_regdate' => date(K_TIMESTAMP_FORMAT),
-                'user_ip' => getNormalizedIP($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),
+                'user_ip' => get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),
                 'user_name' => $record['login'],
                 'user_email' => $record['email'],
                 'user_password' => $record['password_hash'],

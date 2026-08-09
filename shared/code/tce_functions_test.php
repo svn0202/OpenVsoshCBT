@@ -348,8 +348,8 @@ function F_isValidIP($user_ip, $test_ips)
             }
 
             // convert to IPv6 address range
-            $range_start = getNormalizedIP(implode('.', $ipv4_start));
-            $range_end = getNormalizedIP(implode('.', $ipv4_end));
+            $range_start = get_normalized_ip(implode('.', $ipv4_start));
+            $range_end = get_normalized_ip(implode('.', $ipv4_end));
             if ($range_start === false || $range_end === false) {
                 continue;
             }
@@ -2122,7 +2122,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
         $sqlu .= ' testlog_score=' . $answer_score . ',';
         $sqlu .= ' testlog_change_time=' . F_empty_to_null($change_time) . ',';
         $sqlu .= ' testlog_reaction_time=' . (int) $reaction_time . ',';
-        $sqlu .= " testlog_user_ip='" . (string) getNormalizedIP($_SERVER['REMOTE_ADDR']) . "'";
+        $sqlu .= " testlog_user_ip='" . (string) get_normalized_ip($_SERVER['REMOTE_ADDR']) . "'";
         $sqlu .= ' WHERE testlog_id=' . $testlog_id . '';
         if (!($ru = F_db_query($sqlu, $db))) {
             F_display_db_error();

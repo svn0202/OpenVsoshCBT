@@ -171,17 +171,17 @@ final class GeneralFunctionsTest extends TestCase
     public function testNormalizedIpInvariantsAndValidation(): void
     {
         // localhost forms collapse to the same normalized value
-        $this->assertSame(\getNormalizedIP('127.0.0.1'), \getNormalizedIP('::1'));
+        $this->assertSame(\get_normalized_ip('127.0.0.1'), \get_normalized_ip('::1'));
         $this->assertSame(
-            \getNormalizedIP('127.0.0.1'),
-            \getNormalizedIP('0000:0000:0000:0000:0000:0000:0000:0001'),
+            \get_normalized_ip('127.0.0.1'),
+            \get_normalized_ip('0000:0000:0000:0000:0000:0000:0000:0001'),
         );
         // an already-expanded IPv6 address normalizes to itself
         $ipv6 = '2001:0db8:0000:0000:0000:0000:0000:0001';
-        $this->assertSame($ipv6, \getNormalizedIP($ipv6));
+        $this->assertSame($ipv6, \get_normalized_ip($ipv6));
         // invalid inputs
-        $this->assertFalse(\getNormalizedIP('not-an-ip'));
-        $this->assertFalse(\getNormalizedIP('256.0.0.1'));
+        $this->assertFalse(\get_normalized_ip('not-an-ip'));
+        $this->assertFalse(\get_normalized_ip('256.0.0.1'));
     }
 
     public function testIpAsBytes(): void
