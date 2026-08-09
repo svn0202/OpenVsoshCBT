@@ -491,9 +491,9 @@ function getFormRowTextInput(
 /**
  * Print text box row form.
  * @param $field_name (string) Name of the form field.
- * @param $name (string) Label.
- * @param $description (string) Label description (tooltip).
- * @param $value (string) Initial value.
+ * @param string $name Label.
+ * @param string $description Label description (tooltip).
+ * @param string|null $value Initial value.
  * @param $disabled (boolean) If true disable the field.
  * @param $prefix (string) code to be displayed after label.
  * @param $required (boolean) If true the field is marked as required.
@@ -840,13 +840,16 @@ function getFormNoscriptSelect(string $name = 'selectrecord'): string
 
 /**
  * Print form row with label and description
- * @param $name (string) Label.
- * @param $description (string) Label description (tooltip).
- * @param $value (string) Initial value.
+ * @param mixed $name Label.
+ * @param mixed $description Label description (tooltip).
+ * @param mixed $value Initial value.
  * @return string
  */
-function getFormDescriptionLine($name, $description = '', $value = ''): string
+function getFormDescriptionLine(mixed $name, mixed $description = '', mixed $value = ''): string
 {
+    $name = is_scalar($name) ? (string) $name : '';
+    $description = is_scalar($description) ? (string) $description : '';
+    $value = is_scalar($value) ? (string) $value : '';
     if (strlen($description) == 0) {
         $description = $name;
     }

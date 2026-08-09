@@ -81,6 +81,18 @@ final class FormValidationTest extends TestCase
         $this->assertSame('', \getRequiredMark(false));
     }
 
+    public function testDescriptionLinePreservesExistingMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $markup = \getFormDescriptionLine('Score:', 'Total score', '42');
+
+        $this->assertStringContainsString('<span title="Total score">Score:</span>', $markup);
+        $this->assertStringContainsString('<span class="formw">' . K_NEWLINE . '42&nbsp;', $markup);
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
