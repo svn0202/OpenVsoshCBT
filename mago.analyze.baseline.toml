@@ -18932,12 +18932,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_otp.php"
-code = "possibly-false-operand"
-message = "Right operand in arithmetic operation might be `false` (type `false|non-negative-int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `strlen`: expected `string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
