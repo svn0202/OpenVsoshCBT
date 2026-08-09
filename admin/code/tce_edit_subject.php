@@ -524,7 +524,7 @@ echo
 
 echo '>' . htmlspecialchars($subject_description, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
-echo tcecodeEditorTagButtons('form_subjecteditor', 'subject_description');
+echo tcecode_editor_tag_buttons('form_subjecteditor', 'subject_description');
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

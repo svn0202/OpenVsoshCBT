@@ -1018,7 +1018,7 @@ echo
 ;
 echo '<br />' . K_NEWLINE;
 echo '<div class="tcecode-toolbar">';
-echo tcecodeEditorTagButtons('form_questioneditor', 'question_description');
+echo tcecode_editor_tag_buttons('form_questioneditor', 'question_description');
 echo '</div>';
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
@@ -1065,7 +1065,7 @@ if (K_ENABLE_QUESTION_EXPLANATION) {
     echo '>' . htmlspecialchars($question_explanation, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
     echo '<br />' . K_NEWLINE;
     echo '<div class="tcecode-toolbar">';
-    echo tcecodeEditorTagButtons('form_questioneditor', 'question_explanation');
+    echo tcecode_editor_tag_buttons('form_questioneditor', 'question_explanation');
     echo '</div>';
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
