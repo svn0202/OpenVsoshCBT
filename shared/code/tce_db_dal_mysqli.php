@@ -147,7 +147,7 @@ function f_db_num_rows($result)
  * @param $fieldname (string) Field name (column name). (unused here but required for other DAL).
  * @return int ID generated from the last INSERT operation.
  */
-function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     return mysqli_insert_id($link_identifier);
 }
