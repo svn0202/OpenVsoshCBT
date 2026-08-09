@@ -109,9 +109,9 @@ function F_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '
 
 /**
  * Print the database error message.
- * @param $exit (bool) if true output a message and terminate the current script [default = true].
+ * @param mixed $exit If truthy, output a message and terminate the current script.
  */
-function F_display_db_error($exit = true)
+function F_display_db_error(mixed $exit = true): void
 {
     global $db;
     $messagetype = 'ERROR';
