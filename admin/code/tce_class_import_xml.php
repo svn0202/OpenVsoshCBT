@@ -461,7 +461,7 @@ class XMLQuestionImporter
             // this section is to avoid the problems on MySQL string comparison
             $maxkey = 240;
             $strkeylimit = min($maxkey, strlen($this->level_data['question']['question_description']));
-            $stop = $maxkey / 3;
+            $stop = intdiv($maxkey, 3);
             while (
                 in_array(
                     md5(strtolower(substr(
@@ -481,7 +481,7 @@ class XMLQuestionImporter
                 --$stop; // variable used to avoid infinite loop
             }
 
-            if ($stop == 0) {
+            if ($stop === 0) {
                 F_print_error('ERROR', 'Unable to get unique question ID');
                 return;
             }
