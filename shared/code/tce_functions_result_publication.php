@@ -26,7 +26,7 @@ function F_tmf_results_are_published(array $test, ?int $now = null): bool
  *
  * @param array<string,mixed> $user
  */
-function F_tmf_result_identity(array $user, bool $anonymized): string
+function f_tmf_result_identity(array $user, bool $anonymized): string
 {
     if ($anonymized) {
         return 'Участник #' . (int) ($user['user_id'] ?? 0);

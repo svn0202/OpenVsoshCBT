@@ -9723,7 +9723,7 @@ count = 1
 [[issues]]
 file = "public/code/tce_show_result_user.php"
 code = "less-specific-argument"
-message = "Argument type mismatch for argument #1 of `F_tmf_result_identity`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
+message = "Argument type mismatch for argument #1 of `f_tmf_result_identity`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
 count = 1
 
 [[issues]]
@@ -10257,7 +10257,7 @@ count = 80
 [[issues]]
 file = "public/code/tce_test_results.php"
 code = "less-specific-argument"
-message = "Argument type mismatch for argument #1 of `F_tmf_result_identity`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
+message = "Argument type mismatch for argument #1 of `f_tmf_result_identity`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
 count = 1
 
 [[issues]]
