@@ -1402,7 +1402,7 @@ $sql = 'SELECT * FROM ' . K_TABLE_SSLCERTS . ' ORDER BY ssl_name';
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['ssl_id'] . '"';
-        if (isset($test_id) && $test_id > 0 && F_isTestOnSSLCerts($test_id, $m['ssl_id'])) {
+        if (isset($test_id) && $test_id > 0 && f_is_test_on_ssl_certs($test_id, $m['ssl_id'])) {
             echo ' selected="selected"';
         }
 
