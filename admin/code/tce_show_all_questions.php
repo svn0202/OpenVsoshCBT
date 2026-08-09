@@ -447,7 +447,7 @@ echo '<input type="hidden" name="orderdir" id="orderdir" value="' . $orderdir . 
 echo '<input type="hidden" name="submitted" id="submitted" value="0" />' . K_NEWLINE;
 echo '<input type="hidden" name="usersearch" id="usersearch" value="" />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;

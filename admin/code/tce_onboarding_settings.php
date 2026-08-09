@@ -244,7 +244,7 @@ echo '<div class="row"><label for="timer_critical_color">Критический 
     . htmlspecialchars((string) $runtime_config['timer_critical_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
 echo '</fieldset><div class="onboarding-admin-actions">'
     . '<button type="submit" name="save_site" value="1" class="button">Сохранить оформление</button></div>'
-    . F_getCSRFTokenField() . K_NEWLINE . '</form>' . K_NEWLINE;
+    . f_get_csrf_token_field() . K_NEWLINE . '</form>' . K_NEWLINE;
 echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">03</span> '
     . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])
@@ -274,7 +274,7 @@ echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_access" value="1" class="button">'
     . htmlspecialchars((string) ($l['ov_save'] ?? 'Сохранить'), ENT_QUOTES, $settings_charset)
     . '</button></div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '<p>Укажите, какие тесты считать инструкцией и демо. Они будут показаны участнику над основным каталогом, пока он их не завершит.</p>' . K_NEWLINE;
 echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
@@ -292,7 +292,7 @@ f_onboarding_test_select('demo_test_id', $config['demo_test_id'], $tests, $setti
 echo '<span class="form-help">Позволяет участнику проверить вход и интерфейс без риска.</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_onboarding" value="1" class="button">Сохранить</button></div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form></div>' . K_NEWLINE;
 
 $appearance_script = '../jscripts/appearance-preview.js';

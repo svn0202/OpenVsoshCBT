@@ -83,7 +83,7 @@ final class FormValidationTest extends TestCase
 
     public function testCsrfFieldContainsAValidToken(): void
     {
-        $markup = \F_getCSRFTokenField();
+        $markup = \f_get_csrf_token_field();
         $matches = [];
 
         $this->assertSame(1, preg_match('/ value="([^"]+)"/', $markup, $matches));

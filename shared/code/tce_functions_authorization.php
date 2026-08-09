@@ -146,7 +146,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     // the following field is used to check if the form has been submitted
     $str .= '<input type="hidden" name="logaction" id="logaction" value="login" />' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
-    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= f_get_csrf_token_field() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
     if ($access_settings['registration_enabled'] || $access_settings['password_reset_enabled']) {
         $str .= '<nav class="login-access-actions" aria-label="'
@@ -292,7 +292,7 @@ function f_logout_form()
     $str .= '<input type="hidden" name="logaction" id="logaction" value="" />' . K_NEWLINE;
     $str .= '<input type="submit" name="login" id="login" value="' . $l['w_logout'] . '" />' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
-    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= f_get_csrf_token_field() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
     return $str . ('</div>' . K_NEWLINE);
 }

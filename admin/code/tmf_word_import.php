@@ -190,7 +190,7 @@ if (is_array($preview)) {
             . '" />'
             . K_NEWLINE
     ;
-    echo F_getCSRFTokenField() . K_NEWLINE;
+    echo f_get_csrf_token_field() . K_NEWLINE;
     F_submit_button('confirm', 'Импортировать', 'Создать модуль, тему, вопросы и ответы');
     F_submit_button('cancelpreview', 'Отменить', 'Удалить предварительный просмотр и временные файлы');
     echo '</form>' . K_NEWLINE;
@@ -224,7 +224,7 @@ if (is_array($preview)) {
         '<span class="formw"><input type="file" name="userfile" id="userfile" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required="required" /></span></div>'
             . K_NEWLINE
     ;
-    echo F_getCSRFTokenField() . K_NEWLINE;
+    echo f_get_csrf_token_field() . K_NEWLINE;
     F_submit_button('upload', 'Проверить файл', 'Загрузить DOCX для предварительной проверки');
     echo '</form>' . K_NEWLINE;
 }

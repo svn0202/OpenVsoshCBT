@@ -71,7 +71,7 @@ final class AuthorizationFunctionsTest extends TestCase
                 'namespace Harness; require_once "../config/tce_config.php"; '
                     . '$GLOBALS["l"] = ["d_logout_desc" => "Leave now?", "w_logout" => "Logout"]; '
                     . '$_SERVER["SCRIPT_NAME"] = "/public/code/logout.php"; '
-                    . 'function F_getCSRFTokenField() { return "<input name=csrf />"; } '
+                    . 'function f_get_csrf_token_field() { return "<input name=csrf />"; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function [Ff]_logout_form\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
                     . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '

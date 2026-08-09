@@ -112,7 +112,7 @@ if ($test_id > 0) {
             . htmlspecialchars($display . ' (' . $attempt['user_name'] . ')', ENT_QUOTES, $l['a_meta_charset'])
             . '</option>';
     }
-    echo '</select>' . F_getCSRFTokenField()
+    echo '</select>' . f_get_csrf_token_field()
         . '<button type="submit" name="export_offline" value="1">Скачать автономный пакет</button>'
         . '</form></section>';
 }
@@ -122,7 +122,7 @@ echo '<section><h2>Импортировать результат</h2>'
     . '" method="post" enctype="multipart/form-data">'
     . '<label for="result_file">JSON-файл результата</label>'
     . '<input type="file" name="result_file" id="result_file" accept="application/json,.json" required="required" />'
-    . F_getCSRFTokenField()
+    . f_get_csrf_token_field()
     . '<button type="submit" name="import_offline" value="1">Проверить и импортировать</button>'
     . '</form></section>';
 

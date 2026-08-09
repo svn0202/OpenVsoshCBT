@@ -242,7 +242,7 @@ echo '<br />' . K_NEWLINE;
 // show upload button
 F_submit_button('upload', $l['w_upload'], $l['h_submit_file']);
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

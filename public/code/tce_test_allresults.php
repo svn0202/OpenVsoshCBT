@@ -398,7 +398,7 @@ if ($itemcount > 0) {
     echo '</div>' . K_NEWLINE;
 }
 
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;

@@ -142,7 +142,7 @@ echo getFormNoscriptSelect();
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 F_show_select_user_popup($order_field, $orderdir, $firstrow, $rowsperpage, $group_id, $wherequery, $searchterms, $cid);
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer_popup.php';

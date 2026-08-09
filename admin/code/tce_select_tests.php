@@ -135,7 +135,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 }
 
 F_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $wherequery, $searchterms);
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';

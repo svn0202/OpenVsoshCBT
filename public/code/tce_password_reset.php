@@ -127,7 +127,7 @@ echo '<div class="row">' . K_NEWLINE;
 F_submit_button('resetpassword', $l['w_submit'], $l['h_submit']);
 
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
