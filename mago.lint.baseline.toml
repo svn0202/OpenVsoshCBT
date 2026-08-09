@@ -949,12 +949,6 @@ message = "Redundant block around statements."
 count = 3
 
 [[issues]]
-file = "public/code/tce_show_result_user.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 1
-
-[[issues]]
 file = "public/code/tce_test_allresults.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
