@@ -801,7 +801,7 @@ function F_objects_replacement($name, $extension, $width = 0, $height = 0, $alt 
         case 'jpeg':
         case 'png':
         case 'svg':
-            { // images
+            // images
                 $htmlcode = '<img src="' . K_PATH_URL_CACHE . $filename . '"';
                 if (!empty($alt)) {
                     $htmlcode .= ' alt="' . $alt . '"';
@@ -856,9 +856,7 @@ function F_objects_replacement($name, $extension, $width = 0, $height = 0, $alt 
                 }
 
                 break;
-            }
         default:
-            {
                 include '../../shared/config/tce_mime.php';
                 if (isset($mime[$extension])) {
                     $htmlcode = '<object type="' . $mime[$extension] . '" data="' . K_PATH_URL_CACHE . $filename . '"';
@@ -902,7 +900,6 @@ function F_objects_replacement($name, $extension, $width = 0, $height = 0, $alt 
                 }
 
                 break;
-            }
     }
 
     return $htmlcode;
