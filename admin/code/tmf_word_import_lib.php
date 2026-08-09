@@ -121,7 +121,7 @@ function f_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_
     }
 
     if ($remove_media) {
-        F_tmf_word_import_remove_directory($cache_directory . '/wordimport/' . $batch_id);
+        f_tmf_word_import_remove_directory($cache_directory . '/wordimport/' . $batch_id);
     }
 
     return true;
@@ -163,7 +163,7 @@ function f_tmf_word_import_cleanup_stale(
     return $removed;
 }
 
-function F_tmf_word_import_remove_directory(string $directory): void
+function f_tmf_word_import_remove_directory(string $directory): void
 {
     if (is_link($directory)) {
         unlink($directory);
@@ -185,7 +185,7 @@ function F_tmf_word_import_remove_directory(string $directory): void
         if (is_link($path) || is_file($path)) {
             unlink($path);
         } elseif (is_dir($path)) {
-            F_tmf_word_import_remove_directory($path);
+            f_tmf_word_import_remove_directory($path);
         }
     }
     rmdir($directory);
