@@ -121,12 +121,12 @@ function F_display_db_error($exit = true)
 
 /**
  * Custom PHP error handler function.
- * @param $errno (int) The first parameter, errno, contains the level of the error raised, as an integer.
- * @param $errstr (string) The second parameter, errstr, contains the error message, as a string.
- * @param $errfile (string) The third parameter is optional, errfile, which contains the filename that the error was raised in, as a string.
- * @param $errline (int) The fourth parameter is optional, errline, which contains the line number the error was raised at, as an integer.
+ * @param int $errno Error level.
+ * @param string $errstr Error message.
+ * @param string $errfile File where the error was raised.
+ * @param int $errline Line where the error was raised.
  */
-function F_error_handler($errno, $errstr, $errfile, $errline)
+function F_error_handler(int $errno, string $errstr, string $errfile, int $errline): void
 {
     $error_reporting = ini_get('error_reporting');
     if ($error_reporting === false || (is_numeric($error_reporting) && (float) $error_reporting === 0.0)) {
