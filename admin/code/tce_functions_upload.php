@@ -25,9 +25,9 @@
  * @author Nicola Asuni
  * @since 2001-11-19
  * @param $filename (string) the filename
- * @return true in case of allowed file type, false otherwise
+ * @return bool whether the file type is allowed
  */
-function F_is_allowed_upload($filename)
+function f_is_allowed_upload(mixed $filename): bool
 {
     if (!defined('K_ALLOWED_UPLOAD_EXTENSIONS')) {
         return false;
@@ -59,7 +59,7 @@ function F_upload_file($fieldname, $uploaddir)
     }
 
     $filepath = $uploaddir . $filename;
-    if (F_is_allowed_upload($filename) && move_uploaded_file($_FILES[$fieldname]['tmp_name'], $filepath)) {
+    if (f_is_allowed_upload($filename) && move_uploaded_file($_FILES[$fieldname]['tmp_name'], $filepath)) {
         F_print_error('MESSAGE', htmlspecialchars($filename) . ': ' . $l['m_upload_yes']);
         return $filename;
     }
