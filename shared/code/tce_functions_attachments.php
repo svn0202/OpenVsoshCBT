@@ -243,7 +243,7 @@ function f_tmf_attachment_path(array $attachment): string
     return F_tmf_attachment_directory() . $stored_name;
 }
 
-function F_tmf_attachment_html(int $testlog_id): string
+function f_tmf_attachment_html(int $testlog_id): string
 {
     global $l;
     $attachments = F_tmf_attachment_list($testlog_id);
