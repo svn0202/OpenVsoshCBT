@@ -101,6 +101,7 @@ final class SessionFunctionsTest extends TestCase
         $this->assertTrue(\F_isRandomSecurityConfigured(\bin2hex(\random_bytes(16))));
         // the no-argument form reads the configured K_RANDOM_SECURITY from the test bootstrap
         $this->assertTrue(\F_isRandomSecurityConfigured());
+        $this->assertSame(\F_isRandomSecurityConfigured(), \F_isRandomSecurityConfigured(null));
     }
 
     public function testClientFingerprintIsStableAcrossDocumentAndFetchHeaders(): void
