@@ -596,6 +596,7 @@ function f_latex_callback(mixed $matches): mixed
                 if ($ret !== 0) {
                     $error = $output;
                 } else {
+                    // @mago-expect lint:no-error-control-operator -- renderer output validation handles an unreadable image as a failed render
                     $imsize = @getimagesize($imgpath . '.' . K_LATEX_IMG_FORMAT);
                     [$w, $h] = $imsize;
                     if (($w / $dr) > K_LATEX_MAX_WIDTH || ($h / $dr) > K_LATEX_MAX_HEIGHT) {
@@ -611,6 +612,7 @@ function f_latex_callback(mixed $matches): mixed
         $tmpext = ['tex', 'aux', 'log', 'pdf'];
         foreach ($tmpext as $ext) {
             if (F_file_exists($imgpath . '.' . $ext)) {
+                // @mago-expect lint:no-error-control-operator -- renderer temporary-file cleanup is best effort
                 @unlink($imgpath . '.' . $ext);
             }
         }
@@ -634,6 +636,7 @@ function f_latex_callback(mixed $matches): mixed
     ];
     $alt_latex = strtr($alt_latex, $replaceTable);
     // XHTML code for image
+    // @mago-expect lint:no-error-control-operator -- the generated image may disappear between rendering and response assembly
     $imsize = @getimagesize($imgpath . '.' . K_LATEX_IMG_FORMAT);
     [$w, $h] = $imsize;
 
@@ -809,6 +812,7 @@ function F_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                     $htmlcode .= ' alt="image:' . $filename . '"';
                 }
 
+                // @mago-expect lint:no-error-control-operator -- missing or invalid cached media falls back to caller-provided dimensions
                 $imsize = @getimagesize(K_PATH_CACHE . $filename);
                 if ($imsize !== false) {
                     [$pixw, $pixh] = $imsize;
