@@ -349,7 +349,7 @@ function f_get_csrf_token_field(): string
  * @param bool $required true if the field is required.
  * @return string XHTML code (empty string when the field is not required).
  */
-function getRequiredMark(bool $required = false): string
+function get_required_mark(bool $required = false): string
 {
     if (!$required) {
         return '';
@@ -444,7 +444,7 @@ function getFormRowTextInput(
         . $description
         . '">'
         . $name
-        . (empty($prefix) ? getRequiredMark($required) : '')
+        . (empty($prefix) ? get_required_mark($required) : '')
         . '</label>'
         . K_NEWLINE;
     if (!empty($prefix)) {
@@ -567,7 +567,7 @@ function getFormRowTextBox(
         . $description
         . '">'
         . $name
-        . getRequiredMark($required)
+        . get_required_mark($required)
         . '</label>'
         . K_NEWLINE;
     if (!empty($prefix)) {
@@ -647,7 +647,7 @@ function getFormRowSelectBox(
         . $description
         . '">'
         . $name
-        . getRequiredMark($required)
+        . get_required_mark($required)
         . '</label>'
         . K_NEWLINE;
     if (!empty($prefix)) {

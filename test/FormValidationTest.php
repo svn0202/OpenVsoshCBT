@@ -94,7 +94,7 @@ final class FormValidationTest extends TestCase
 
     public function testOptionalFieldHasNoRequiredMarker(): void
     {
-        $this->assertSame('', \getRequiredMark(false));
+        $this->assertSame('', \get_required_mark(false));
     }
 
     public function testRequiredFieldMarkerPreservesTranslatedAccessibleMarkup(): void
@@ -114,7 +114,7 @@ final class FormValidationTest extends TestCase
 
             $this->assertSame(
                 ' <abbr class="required" title="Required">*</abbr>',
-                \getRequiredMark(true),
+                \get_required_mark(true),
             );
         } finally {
             if ($original === null) {
