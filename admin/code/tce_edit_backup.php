@@ -53,114 +53,99 @@ function F_isValidbackupFile(mixed $file): bool
 $backup_file = $_REQUEST['backup_file'] ?? '';
 
 // check backup filename
-if (!is_string($backup_file) || ($backup_file !== '' && !F_isValidbackupFile($backup_file))) {
+if (!is_string($backup_file) || $backup_file !== '' && !F_isValidbackupFile($backup_file)) {
     F_print_error('ERROR', 'SECURITY ERROR', true);
 }
 
 switch ($menu_mode) { // process submitted data
     case 'restore':
-        {
-            if (isset($backup_file) && !empty($backup_file)) {
-                F_print_error('WARNING', $l['m_restore_confirm'] . ': ' . $backup_file);
-                echo '<div class="confirmbox">' . K_NEWLINE;
-                echo
-                    '<form action="'
-                        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
-                        . '" method="post" enctype="multipart/form-data" id="form_delete">'
-                        . K_NEWLINE
-                ;
-                echo '<div>' . K_NEWLINE;
-                echo
-                    '<input type="hidden" name="backup_file" id="backup_file" value="'
-                        . stripslashes($backup_file)
-                        . '" />'
-                        . K_NEWLINE
-                ;
-                F_submit_button('forcerestore', $l['w_restore'], $l['h_restore']);
-                F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
-                echo '</div>' . K_NEWLINE;
-                echo F_getCSRFTokenField() . K_NEWLINE;
-                echo '</form>' . K_NEWLINE;
-                echo '</div>' . K_NEWLINE;
-            }
-
-            break;
+        if (isset($backup_file) && !empty($backup_file)) {
+            F_print_error('WARNING', $l['m_restore_confirm'] . ': ' . $backup_file);
+            echo '<div class="confirmbox">' . K_NEWLINE;
+            echo
+                '<form action="'
+                    . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                    . '" method="post" enctype="multipart/form-data" id="form_delete">'
+                    . K_NEWLINE
+            ;
+            echo '<div>' . K_NEWLINE;
+            echo
+                '<input type="hidden" name="backup_file" id="backup_file" value="'
+                    . stripslashes($backup_file)
+                    . '" />'
+                    . K_NEWLINE
+            ;
+            F_submit_button('forcerestore', $l['w_restore'], $l['h_restore']);
+            F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
+            echo '</div>' . K_NEWLINE;
+            echo F_getCSRFTokenField() . K_NEWLINE;
+            echo '</form>' . K_NEWLINE;
+            echo '</div>' . K_NEWLINE;
         }
+
+        break;
 
     case 'forcerestore':
-        {
-            if (($_POST['forcerestore'] ?? '') === $l['w_restore'] && $backup_file !== '') {
-                try {
-                    $config = F_tmf_backup_config_from_constants();
-                    // Always take a checked safety backup immediately before restore.
-                    F_tmf_backup_create($config, K_PATH_BACKUP);
-                    $restore_path = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
-                    F_tmf_backup_restore($config, $restore_path);
-                    F_print_error('MESSAGE', $l['m_restore_completed'] . ': ' . $backup_file);
-                } catch (TmfBackupException $exception) {
-                    F_print_error(
-                        'ERROR',
-                        htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
-                    );
-                }
+        if (($_POST['forcerestore'] ?? '') === $l['w_restore'] && $backup_file !== '') {
+            try {
+                $config = F_tmf_backup_config_from_constants();
+                // Always take a checked safety backup immediately before restore.
+                F_tmf_backup_create($config, K_PATH_BACKUP);
+                $restore_path = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
+                F_tmf_backup_restore($config, $restore_path);
+                F_print_error('MESSAGE', $l['m_restore_completed'] . ': ' . $backup_file);
+            } catch (TmfBackupException $exception) {
+                F_print_error('ERROR', htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']));
             }
-
-            break;
         }
 
+        break;
+
     case 'backup':
-        { // backup
+        // backup
+        try {
+            F_tmf_backup_create(F_tmf_backup_config_from_constants(), K_PATH_BACKUP);
+            F_print_error('MESSAGE', $l['m_backup_completed']);
+        } catch (TmfBackupException $exception) {
+            F_print_error('ERROR', htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']));
+        }
+        break;
+
+    case 'download':
+        if (K_DOWNLOAD_BACKUPS && $backup_file !== '') {
+            $file_to_download = '';
             try {
-                F_tmf_backup_create(F_tmf_backup_config_from_constants(), K_PATH_BACKUP);
-                F_print_error('MESSAGE', $l['m_backup_completed']);
+                $file_to_download = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
             } catch (TmfBackupException $exception) {
                 F_print_error(
                     'ERROR',
                     htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
+                    true,
                 );
             }
-            break;
+            // send headers
+            header('Content-Description: File Transfer');
+            header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+            header('Pragma: public');
+            header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            // force download dialog
+            header('Content-Type: application/force-download');
+            header('Content-Type: application/octet-stream', false);
+            header('Content-Type: application/download', false);
+            header('Content-Type: application/x-gzip', false);
+            // use the Content-Disposition header to supply a recommended filename
+            header('Content-Disposition: attachment; filename=' . $backup_file . ';');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . filesize($file_to_download));
+            echo file_get_contents($file_to_download);
+            exit();
         }
 
-    case 'download':
-        {
-            if (K_DOWNLOAD_BACKUPS && $backup_file !== '') {
-                $file_to_download = '';
-                try {
-                    $file_to_download = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
-                } catch (TmfBackupException $exception) {
-                    F_print_error(
-                        'ERROR',
-                        htmlspecialchars($exception->getMessage(), ENT_QUOTES, $l['a_meta_charset']),
-                        true,
-                    );
-                }
-                // send headers
-                header('Content-Description: File Transfer');
-                header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-                header('Pragma: public');
-                header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-                // force download dialog
-                header('Content-Type: application/force-download');
-                header('Content-Type: application/octet-stream', false);
-                header('Content-Type: application/download', false);
-                header('Content-Type: application/x-gzip', false);
-                // use the Content-Disposition header to supply a recommended filename
-                header('Content-Disposition: attachment; filename=' . $backup_file . ';');
-                header('Content-Transfer-Encoding: binary');
-                header('Content-Length: ' . filesize($file_to_download));
-                echo file_get_contents($file_to_download);
-                exit();
-            }
-
-            break;
-        }
+        break;
 
     default:
-        {
-            break;
-        }
+        break;
 } //end of switch
 
 require_once '../code/tce_page_header.php';
