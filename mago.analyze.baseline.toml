@@ -13407,7 +13407,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_check_unique` is missing a return type hint."
+message = "Function `f_check_unique` is missing a return type hint."
 count = 1
 
 [[issues]]
