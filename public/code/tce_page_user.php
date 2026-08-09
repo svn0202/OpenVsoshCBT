@@ -25,6 +25,7 @@ require_once '../config/tce_config.php';
 $pagelevel = K_AUTH_PAGE_USER;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{w_user: string} $l Loaded language data. */
 $thispage_title = $l['w_user'];
 require_once '../code/tce_page_header.php';
 
@@ -32,6 +33,7 @@ echo '<div class="container">' . K_NEWLINE;
 
 // print submenu
 echo '<ul class="section-link-grid" aria-label="Настройки профиля">' . K_NEWLINE;
+/** @var array{'tce_page_user.php': array{sub: array<string, array<string, mixed>>}} $menu */
 foreach ($menu['tce_page_user.php']['sub'] as $link => $data) {
     echo F_menu_link($link, $data, 1);
 }

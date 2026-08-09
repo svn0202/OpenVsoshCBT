@@ -11605,36 +11605,6 @@ message = "Undefined variable: `$l`."
 count = 16
 
 [[issues]]
-file = "public/code/tce_page_user.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "public/code/tce_page_user.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 3
-
-[[issues]]
-file = "public/code/tce_page_user.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 3
-
-[[issues]]
-file = "public/code/tce_page_user.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_page_user.php"
-code = "undefined-variable"
-message = "Undefined variable: `$menu`."
-count = 1
-
-[[issues]]
 file = "public/code/tce_password_reset.php"
 code = "array-to-string-conversion"
 message = "Potentially casting `array` to `string`."
