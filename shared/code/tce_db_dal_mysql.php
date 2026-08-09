@@ -33,7 +33,7 @@
  * @param $database (string) Database name.
  * @return MySQL link identifier on success, or FALSE on failure.
  */
-function F_db_connect(
+function f_db_connect(
     $host = 'localhost',
     $port = '3306',
     $username = 'root',
