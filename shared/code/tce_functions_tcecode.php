@@ -325,7 +325,7 @@ function F_sanitize_html_style(string $style): string
  * @param string $text
  * @return string
  */
-function F_bbcode_to_tcecode(string $text): string
+function f_bbcode_to_tcecode(string $text): string
 {
     // [*]list item - convert to new [li] tag
     $text = preg_replace("'\[\*\](.*?)\n'i", "[li]\\1[/li]", $text) ?? $text;
