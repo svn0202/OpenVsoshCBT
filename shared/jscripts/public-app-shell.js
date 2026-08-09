@@ -122,4 +122,22 @@
     });
 
     syncState();
+
+    var resultFilters = Array.prototype.slice.call(document.querySelectorAll('[data-result-filter]'));
+    var resultQuestions = Array.prototype.slice.call(document.querySelectorAll('[data-result-state]'));
+    if (resultFilters.length && resultQuestions.length) {
+        resultFilters.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var filter = button.dataset.resultFilter;
+                resultFilters.forEach(function (candidate) {
+                    candidate.classList.toggle('active', candidate === button);
+                    candidate.setAttribute('aria-pressed', candidate === button ? 'true' : 'false');
+                });
+                resultQuestions.forEach(function (question) {
+                    question.hidden = filter !== 'all' && question.dataset.resultState !== filter;
+                });
+            });
+        });
+        resultFilters[0].setAttribute('aria-pressed', 'true');
+    }
 }());

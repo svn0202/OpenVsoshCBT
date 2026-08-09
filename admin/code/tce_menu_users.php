@@ -31,7 +31,7 @@ require_once '../code/tce_page_header.php';
 echo '<div class="container">' . K_NEWLINE;
 
 // print submenu
-echo '<ul>' . K_NEWLINE;
+echo '<ul class="section-link-grid" aria-label="Разделы пользователей">' . K_NEWLINE;
 foreach ($menu['tce_menu_users.php']['sub'] as $link => $data) {
     echo F_menu_link($link, $data, 1);
 }

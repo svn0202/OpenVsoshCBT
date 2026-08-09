@@ -79,6 +79,7 @@ if ($test_id > 0) {
 require_once 'tce_page_header.php';
 
 echo '<div class="monitor-panel">';
+echo f_openvsosh_admin_test_context($test_id, 'offline');
 echo '<p class="pagehelp">Экспорт создаёт самодостаточную HTML-страницу, которая не обращается к сети. '
     . 'Результат подписан, ограничен участником, попыткой и сроком и импортируется только один раз.</p>';
 if ($action_status !== '') {

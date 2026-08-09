@@ -31,16 +31,21 @@ function F_menu_link($link, $data, $level = 0)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    $level = (int) $level;
     if (!$data['enabled'] || $_SESSION['session_user_level'] < $data['level']) {
         // this item is disabled
         return;
     }
 
+    $description = '';
+    if ($level > 0 && !empty($data['title']) && trim((string) $data['title']) !== trim((string) $data['name'])) {
+        $description = '<small class="menu-description">' . $data['title'] . '</small>';
+    }
     $str = '<li>';
     if ($link != basename($_SERVER['SCRIPT_NAME'])) {
         $str .= '<a href="' . $data['link'] . '" title="' . $data['title'] . '"';
         if (!empty($data['key'])) {
-            $str .= ' accesskey="' . $data['key'] . '"';
+            $str .= ' accesskey="' . (string) $data['key'] . '"';
         }
 
         if (F_menu_isChildActive($data)) {
@@ -48,13 +53,13 @@ function F_menu_link($link, $data, $level = 0)
         }
 
         $str .= '>' . f_menu_icon_svg((string) ($data['icon'] ?? ''))
-            . '<span class="menu-label">' . $data['name'] . '</span></a>';
+            . '<span class="menu-label">' . $data['name'] . $description . '</span></a>';
     } else {
         // current page (active link): mark it for assistive technologies
         $str .= '<span class="active" data-menu-link="'
             . htmlspecialchars($data['link'], ENT_QUOTES, $l['a_meta_charset'])
             . '" aria-current="page">' . f_menu_icon_svg((string) ($data['icon'] ?? ''))
-            . '<span class="menu-label">' . $data['name'] . '</span></span>';
+            . '<span class="menu-label">' . $data['name'] . $description . '</span></span>';
     }
 
     if (isset($data['sub']) && !empty($data['sub'])) {

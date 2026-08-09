@@ -181,12 +181,13 @@ function F_show_select_user(
         if ($m = F_db_fetch_array($r)) {
             // -- Table structure with links:
             echo '<div class="container">';
-            echo '<table class="userselect">' . K_NEWLINE;
+            echo '<table class="userselect record-table">' . K_NEWLINE;
             echo '<caption class="sr-only">' . $l['w_users'] . '</caption>' . K_NEWLINE;
             // table header
             echo '<thead>' . K_NEWLINE;
             echo '<tr>' . K_NEWLINE;
-            echo '<th scope="col">&nbsp;</th>' . K_NEWLINE;
+            echo '<th scope="col" class="record-select"><input type="checkbox" data-select-all="userid" '
+                . 'aria-label="' . $l['w_check_all'] . '" /></th>' . K_NEWLINE;
             if (strlen($searchterms) > 0) {
                 $filter .= '&amp;searchterms=' . urlencode($searchterms);
             }
@@ -255,10 +256,12 @@ function F_show_select_user(
             echo '<th scope="col" title="' . $l['t_all_results_user'] . '">' . $l['w_tests'] . '</th>' . K_NEWLINE;
             echo '</tr>' . K_NEWLINE;
             echo '</thead>' . K_NEWLINE;
-            $itemcount = 0;
+            $itemcount = $firstrow;
             do {
                 ++$itemcount;
-                echo '<tr>' . K_NEWLINE;
+                $edit_url = 'tce_edit_user.php?user_id=' . (int) $m['user_id'];
+                echo '<tr class="record-row" data-record-href="'
+                    . htmlspecialchars($edit_url, ENT_QUOTES, $l['a_meta_charset']) . '">' . K_NEWLINE;
                 echo '<td>';
                 echo
                     '<input type="checkbox" name="userid'
@@ -278,10 +281,10 @@ function F_show_select_user(
                 echo ' />';
                 echo '</td>' . K_NEWLINE;
                 echo
-                    '<td style="text-align:'
+                    '<td class="record-title" style="text-align:'
                         . $txtalign
-                        . ';">&nbsp;<a href="tce_edit_user.php?user_id='
-                        . $m['user_id']
+                        . ';">&nbsp;<a href="'
+                        . $edit_url
                         . '" title="'
                         . $l['w_edit']
                         . '">'
@@ -356,7 +359,7 @@ function F_show_select_user(
                         . $m['user_id']
                         . '" class="xmlbutton" title="'
                         . $l['t_all_results_user']
-                        . '">...</a></td>'
+                        . '">Результаты</a></td>'
                         . K_NEWLINE
                 ;
 
@@ -372,20 +375,9 @@ function F_show_select_user(
             echo '<input type="hidden" name="firstrow" id="firstrow" value="' . $firstrow . '" />' . K_NEWLINE;
             echo '<input type="hidden" name="rowsperpage" id="rowsperpage" value="' . $rowsperpage . '" />' . K_NEWLINE;
 
-            // check/uncheck all options
-            echo '<span dir="' . $l['a_meta_dir'] . '">';
-            echo
-                '<input type="radio" name="checkall" id="checkall1" value="1" onchange="document.getElementById(\'form_userselect\').submit()" />'
-            ;
-            echo '<label for="checkall1">' . $l['w_check_all'] . '</label> ';
-            echo
-                '<input type="radio" name="checkall" id="checkall0" value="0" onchange="document.getElementById(\'form_userselect\').submit()" />'
-            ;
-            echo '<label for="checkall0">' . $l['w_uncheck_all'] . '</label>';
-            echo '</span>' . K_NEWLINE;
-            echo '<br />' . K_NEWLINE;
-            echo '<strong style="margin:5px">' . $l['m_with_selected'] . '</strong>' . K_NEWLINE;
-            echo '<ul style="margin:0">';
+            echo '<div class="record-bulk-toolbar" data-bulk-toolbar>' . K_NEWLINE;
+            echo '<strong><span data-selected-count>0</span> выбрано</strong>' . K_NEWLINE;
+            echo '<ul class="record-bulk-actions">';
             if ($_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS) {
                 // delete user
                 echo '<li>';
@@ -426,7 +418,7 @@ function F_show_select_user(
                 }
             }
 
-            echo '</ul>' . K_NEWLINE;
+            echo '</ul></div>' . K_NEWLINE;
             echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
             // ---------------------------------------------------------------
@@ -962,6 +954,7 @@ function F_user_group_select($name = 'group_id')
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    $charset = (string) $l['a_meta_charset'];
     $str = '';
     $str .=
         '<select name="'
@@ -981,7 +974,7 @@ function F_user_group_select($name = 'group_id')
             $str .= '<option value="' . $m['group_id'] . '">';
             $str .=
                 ' '
-                . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset'])
+                . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $charset)
                 . '&nbsp;</option>'
                 . K_NEWLINE;
         }

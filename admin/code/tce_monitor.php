@@ -46,6 +46,11 @@ if (isset($_POST['monitor_action'])) {
     $action = is_string($_POST['monitor_action']) ? $_POST['monitor_action'] : '';
     $testuser_id = isset($_POST['testuser_id']) ? (int) $_POST['testuser_id'] : 0;
     $extend_minutes = isset($_POST['extend_minutes']) ? (int) $_POST['extend_minutes'] : 0;
+    $extend_match = [];
+    if (preg_match('/^extend-(5|10|15)$/', $action, $extend_match) && isset($extend_match[1])) {
+        $extend_minutes = (int) $extend_match[1];
+        $action = 'extend';
+    }
     $result = F_tmf_monitor_apply_action($testuser_id, $action, $extend_minutes);
     $action_result = $result['status'];
     header(
@@ -197,6 +202,14 @@ $visible_participants = array_filter(
         return str_contains($haystack, strtolower($search));
     },
 );
+$status_priority = [
+    'connection_lost' => 0,
+    'blocked' => 1,
+    'timed_out' => 2,
+    'in_progress' => 3,
+    'not_started' => 4,
+    'completed' => 5,
+];
 
 if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     require_once '../../shared/code/tce_functions_xlsx.php';
@@ -282,6 +295,13 @@ function F_tmf_monitor_html(mixed $value): string
 }
 
 echo '<div class="monitor-panel">' . K_NEWLINE;
+echo f_openvsosh_admin_test_context($test_id, 'monitor');
+if ($test_id > 0) {
+    echo '<div class="monitor-live" data-monitor-refresh="30" role="status">'
+        . '<span aria-hidden="true"></span><strong>Данные обновляются автоматически</strong>'
+        . '<small data-refresh-countdown>Следующее обновление через 30 сек.</small>'
+        . '<button type="button" data-refresh-now>Обновить сейчас</button></div>' . K_NEWLINE;
+}
 echo '<p class="pagehelp">Техническое состояние участников без просмотра содержания ответов. '
     . 'Данные активности обновляются не реже одного раза в минуту.</p>' . K_NEWLINE;
 if ($action_result !== '') {
@@ -324,12 +344,12 @@ if ($test_id > 0) {
         . '</dd></div><div><dt>Токен теста</dt><dd><code>'
         . F_tmf_monitor_html($test_token === '' ? 'не установлен' : $test_token)
         . '</code></dd></div></dl>' . K_NEWLINE;
-    echo '<p><a class="xmlbutton" href="?test_id=' . $test_id . '&amp;status='
+    echo '<details class="monitor-export"><summary>Скачать данные</summary><div><a href="?test_id=' . $test_id . '&amp;status='
         . rawurlencode($status_filter) . '&amp;search=' . rawurlencode($search)
-        . '&amp;export=csv">Экспортировать CSV</a> '
-        . '<a class="xmlbutton" href="?test_id=' . $test_id . '&amp;status='
+        . '&amp;export=csv">CSV</a> '
+        . '<a href="?test_id=' . $test_id . '&amp;status='
         . rawurlencode($status_filter) . '&amp;search=' . rawurlencode($search)
-        . '&amp;export=xlsx">Экспортировать XLSX</a></p>' . K_NEWLINE;
+        . '&amp;export=xlsx">XLSX</a></div></details>' . K_NEWLINE;
 
     echo '<div class="monitor-table-wrap"><table class="monitor-table"><thead><tr>'
         . '<th>Участник</th><th>Состояние</th><th>Прогресс</th><th>Осталось</th>'
@@ -339,19 +359,38 @@ if ($test_id > 0) {
         $user = $participant['user'];
         $attempt = $participant['attempt'];
         $full_name = trim((string) $user['user_lastname'] . ' ' . (string) $user['user_firstname']);
-        echo '<tr><td><strong>' . F_tmf_monitor_html($full_name === '' ? $user['user_name'] : $full_name)
+        echo '<tr data-monitor-priority="' . ($status_priority[$participant['status']] ?? 99) . '"><td><strong>'
+            . F_tmf_monitor_html($full_name === '' ? $user['user_name'] : $full_name)
             . '</strong><small>' . F_tmf_monitor_html($user['user_name']) . '</small></td>';
         echo '<td><span class="monitor-status monitor-status-' . $participant['status'] . '">'
             . $status_labels[$participant['status']] . '</span></td>';
-        echo '<td>' . $participant['questions_answered'] . ' / ' . $participant['questions_total'] . '</td>';
-        $remaining = $participant['remaining_seconds'];
+        $questions_total = (int) ($participant['questions_total'] ?? 0);
+        $questions_answered = (int) ($participant['questions_answered'] ?? 0);
+        $progress = $questions_total > 0
+            ? min(100, (int) round(100 * $questions_answered / $questions_total))
+            : 0;
+        echo '<td><span class="monitor-progress-label">' . $questions_answered . ' / '
+            . $questions_total . '</span><span class="monitor-progress" aria-hidden="true"><i style="width:'
+            . $progress . '%"></i></span></td>';
+        $remaining = $participant['remaining_seconds'] === null
+            ? null
+            : (int) $participant['remaining_seconds'];
         echo '<td>' . ($remaining === null ? '—' : sprintf('%02d:%02d', intdiv($remaining, 60), $remaining % 60))
             . '</td>';
         echo '<td><strong>' . (int) ($participant['focus_loss_count'] ?? 0) . '</strong></td>';
-        echo '<td>' . F_tmf_monitor_html($attempt['testuser_last_activity'] ?? '—') . '</td>';
-        echo '<td>' . F_tmf_monitor_html($participant['answer_saved_at'] ?? '—') . '</td><td>';
+        $last_activity = isset($attempt['testuser_last_activity'])
+            ? (string) $attempt['testuser_last_activity']
+            : '';
+        $last_saved = isset($participant['answer_saved_at']) ? (string) $participant['answer_saved_at'] : '';
+        echo '<td>' . ($last_activity
+            ? '<time datetime="' . F_tmf_monitor_html($last_activity) . '" data-relative-time>'
+                . F_tmf_monitor_html($last_activity) . '</time>' : '—') . '</td>';
+        echo '<td>' . ($last_saved
+            ? '<time datetime="' . F_tmf_monitor_html($last_saved) . '" data-relative-time>'
+                . F_tmf_monitor_html($last_saved) . '</time>' : '—') . '</td><td>';
         if (is_array($attempt)) {
-            echo '<form action="tce_monitor.php" method="post" class="monitor-actions">';
+            echo '<details class="monitor-action-menu"><summary>Действия</summary>'
+                . '<form action="tce_monitor.php" method="post" class="monitor-actions">';
             echo '<input type="hidden" name="test_id" value="' . $test_id . '" />';
             echo '<input type="hidden" name="testuser_id" value="' . (int) $attempt['testuser_id'] . '" />';
             echo F_getCSRFTokenField();
@@ -361,13 +400,14 @@ if ($test_id > 0) {
                 echo '<button name="monitor_action" value="block" type="submit">Заблокировать</button>';
             }
             if (!in_array($participant['status'], ['not_started', 'completed'], true)) {
-                echo '<label><span class="sr-only">Минуты</span><input type="number" name="extend_minutes" '
-                    . 'value="5" min="1" max="60" /></label>'
-                    . '<button name="monitor_action" value="extend" type="submit">Добавить время</button>';
+                echo '<span class="monitor-extend-label">Добавить время</span>'
+                    . '<button name="monitor_action" value="extend-5" type="submit">+5</button>'
+                    . '<button name="monitor_action" value="extend-10" type="submit">+10</button>'
+                    . '<button name="monitor_action" value="extend-15" type="submit">+15</button>';
             }
             echo '<button name="monitor_action" value="reset" type="submit" '
                 . 'onclick="return confirm(\'Создать новую попытку? Прежние ответы останутся в архиве.\')">'
-                . 'Сбросить попытку</button></form>';
+                . 'Сбросить попытку</button></form></details>';
         } else {
             echo '—';
         }

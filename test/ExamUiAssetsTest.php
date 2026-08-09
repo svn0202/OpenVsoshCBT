@@ -19,6 +19,7 @@ final class ExamUiAssetsTest extends TestCase
 
         self::assertStringContainsString('function f_menu_icon_svg', $menu);
         self::assertStringContainsString('class="menu-icon"', $menu);
+        self::assertStringContainsString('class="menu-description"', $menu);
         self::assertStringContainsString('class="admin-dashboard"', $dashboard);
         self::assertStringContainsString('class="settings-preview"', $settings);
         self::assertStringContainsString('name="admin_palette"', $settings);
@@ -27,6 +28,99 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('body.admin-palette-forest', $stylesheet);
         self::assertStringContainsString('.dashboard-stats {', $stylesheet);
         self::assertStringContainsString('--login-background-position', $publicStylesheet);
+    }
+
+    public function testAdministratorCataloguesExposeUsefulNavigationAndBulkSelection(): void
+    {
+        $tests = (string) file_get_contents(__DIR__ . '/../admin/code/tce_functions_test_select.php');
+        $users = (string) file_get_contents(__DIR__ . '/../admin/code/tce_functions_user_select.php');
+        $script = (string) file_get_contents(__DIR__ . '/../admin/jscripts/admin-navigation.js');
+        $stylesheet = (string) file_get_contents(__DIR__ . '/../admin/styles/admin-responsive.css');
+
+        foreach ([$tests, $users] as $catalogue) {
+            self::assertStringContainsString('class="userselect record-table"', $catalogue);
+            self::assertStringContainsString('data-record-href="', $catalogue);
+            self::assertStringContainsString('data-bulk-toolbar', $catalogue);
+            self::assertStringContainsString('$itemcount = $firstrow;', $catalogue);
+        }
+        self::assertStringContainsString('data-select-all="testid"', $tests);
+        self::assertStringContainsString("\$status_key = 'active'", $tests);
+        self::assertStringContainsString('data-select-all="userid"', $users);
+        self::assertStringContainsString('>Результаты</a>', $users);
+        self::assertStringContainsString("document.querySelectorAll('[data-record-href]')", $script);
+        self::assertStringContainsString("document.querySelectorAll('[data-select-all]')", $script);
+        self::assertStringContainsString('.record-bulk-toolbar.has-selection', $stylesheet);
+    }
+
+    public function testSectionLandingPagesUseNavigableTaskCards(): void
+    {
+        $pages = [
+            __DIR__ . '/../admin/code/tce_menu_tests.php',
+            __DIR__ . '/../admin/code/tce_menu_users.php',
+            __DIR__ . '/../admin/code/tce_menu_modules.php',
+            __DIR__ . '/../public/code/tce_page_user.php',
+        ];
+        foreach ($pages as $page) {
+            self::assertStringContainsString('class="section-link-grid"', (string) file_get_contents($page));
+        }
+
+        $adminStylesheet = (string) file_get_contents(__DIR__ . '/../admin/styles/admin-responsive.css');
+        $publicStylesheet = (string) file_get_contents(__DIR__ . '/../public/styles/tmf-reference.css');
+        self::assertStringContainsString('.admin-shell .section-link-grid {', $adminStylesheet);
+        self::assertStringContainsString('body.app-page .section-link-grid {', $publicStylesheet);
+    }
+
+    public function testTestWorkflowKeepsContextAcrossOperationalPages(): void
+    {
+        $helper = (string) file_get_contents(__DIR__ . '/../shared/code/tce_functions_test.php');
+        self::assertStringContainsString('function f_openvsosh_admin_test_context', $helper);
+        self::assertStringContainsString('class="test-context-nav"', $helper);
+        self::assertStringContainsString("'monitor' => ['tce_monitor.php'", $helper);
+        self::assertStringContainsString("'results' => ['tce_show_result_allusers.php'", $helper);
+
+        $pages = [
+            'tce_edit_test.php' => "'settings'",
+            'tce_test_access_rules.php' => "'access'",
+            'tce_monitor.php' => "'monitor'",
+            'tce_show_result_allusers.php' => "'results'",
+            'tce_pregenerate.php' => "'generation'",
+            'tce_offline.php' => "'offline'",
+        ];
+        foreach ($pages as $page => $section) {
+            $source = (string) file_get_contents(__DIR__ . '/../admin/code/' . $page);
+            self::assertStringContainsString('f_openvsosh_admin_test_context(', $source);
+            self::assertStringContainsString($section, $source);
+        }
+    }
+
+    public function testTestEditorAndMonitorSupportFocusedWorkflows(): void
+    {
+        $editor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_edit_test.php');
+        $monitor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_monitor.php');
+        $script = (string) file_get_contents(__DIR__ . '/../admin/jscripts/admin-navigation.js');
+
+        self::assertStringContainsString('class="editor-section-nav"', $editor);
+        self::assertStringContainsString('class="row editor-sticky-actions"', $editor);
+        self::assertStringContainsString('data-editor-save-state', $editor);
+        self::assertStringContainsString('data-monitor-refresh="30"', $monitor);
+        self::assertStringContainsString('data-relative-time', $monitor);
+        self::assertStringContainsString('class="monitor-progress"', $monitor);
+        self::assertStringContainsString('value="extend-15"', $monitor);
+        self::assertStringContainsString("window.addEventListener('beforeunload'", $script);
+        self::assertStringContainsString("document.querySelectorAll('[data-relative-time]')", $script);
+    }
+
+    public function testParticipantResultsHaveSummaryAndQuestionFilters(): void
+    {
+        $controller = (string) file_get_contents(__DIR__ . '/../public/code/tce_test_results.php');
+        $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/public-app-shell.js');
+        $stylesheet = (string) file_get_contents(__DIR__ . '/../public/styles/tmf-reference.css');
+
+        self::assertStringContainsString('class="result-hero"', $controller);
+        self::assertStringContainsString('data-result-filter="incorrect"', $controller);
+        self::assertStringContainsString('data-result-state="', $controller);
+        self::assertStringContainsString("document.querySelectorAll('[data-result-filter]')", $script);
+        self::assertStringContainsString('.result-question-list > .result-question-incorrect', $stylesheet);
     }
 
     public function testImagePreviewIsKeyboardAccessibleAndSurvivesAjaxNavigation(): void
