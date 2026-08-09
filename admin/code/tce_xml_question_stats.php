@@ -43,43 +43,40 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
     switch ($output_format) {
         case 'JSON':
-            {
-                header('Content-Description: JSON File Transfer');
-                header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-                header('Pragma: public');
-                header('Expires: Thu, 04 Jan 1973 00:00:00 GMT'); // Date in the past
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-                // force download dialog
-                header('Content-Type: application/force-download');
-                header('Content-Type: application/octet-stream', false);
-                header('Content-Type: application/download', false);
-                header('Content-Type: application/json', false);
-                // use the Content-Disposition header to supply a recommended filename
-                header('Content-Disposition: attachment; filename=' . $out_filename . '.json;');
-                header('Content-Transfer-Encoding: binary');
-                $xmlobj = new SimpleXMLElement($xml);
-                echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
-                break;
-            }
+            header('Content-Description: JSON File Transfer');
+            header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+            header('Pragma: public');
+            header('Expires: Thu, 04 Jan 1973 00:00:00 GMT'); // Date in the past
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            // force download dialog
+            header('Content-Type: application/force-download');
+            header('Content-Type: application/octet-stream', false);
+            header('Content-Type: application/download', false);
+            header('Content-Type: application/json', false);
+            // use the Content-Disposition header to supply a recommended filename
+            header('Content-Disposition: attachment; filename=' . $out_filename . '.json;');
+            header('Content-Transfer-Encoding: binary');
+            $xmlobj = new SimpleXMLElement($xml);
+            echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
+            break;
+
         case 'XML':
         default:
-            {
-                header('Content-Description: XML File Transfer');
-                header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-                header('Pragma: public');
-                header('Expires: Thu, 04 Jan 1973 00:00:00 GMT'); // Date in the past
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-                // force download dialog
-                header('Content-Type: application/force-download');
-                header('Content-Type: application/octet-stream', false);
-                header('Content-Type: application/download', false);
-                header('Content-Type: application/xml', false);
-                // use the Content-Disposition header to supply a recommended filename
-                header('Content-Disposition: attachment; filename=' . $out_filename . '.xml;');
-                header('Content-Transfer-Encoding: binary');
-                echo $xml;
-                break;
-            }
+            header('Content-Description: XML File Transfer');
+            header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+            header('Pragma: public');
+            header('Expires: Thu, 04 Jan 1973 00:00:00 GMT'); // Date in the past
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            // force download dialog
+            header('Content-Type: application/force-download');
+            header('Content-Type: application/octet-stream', false);
+            header('Content-Type: application/download', false);
+            header('Content-Type: application/xml', false);
+            // use the Content-Disposition header to supply a recommended filename
+            header('Content-Disposition: attachment; filename=' . $out_filename . '.xml;');
+            header('Content-Transfer-Encoding: binary');
+            echo $xml;
+            break;
     }
 } else {
     exit();
