@@ -595,7 +595,7 @@ function f_db_get_utc_offset(mixed $timezone): string
  * @param $level (int) Indentation level.
  * @return string XML data
  */
-function get_data_xml($data, $level = 1): string
+function get_data_xml(mixed $data, mixed $level = 1): string
 {
     $xml = '';
     $tb = str_repeat("\t", $level);
@@ -625,7 +625,7 @@ function get_data_xml($data, $level = 1): string
  * @param $prefix (string) Prefix to add to keys.
  * @return string data
  */
-function get_data_tsv_header($data, $prefix = ''): string
+function get_data_tsv_header(mixed $data, mixed $prefix = ''): string
 {
     $tsv = '';
     foreach ($data as $key => $value) {
@@ -644,7 +644,7 @@ function get_data_tsv_header($data, $prefix = ''): string
  * @param $data (array) Array of data.
  * @return string XML data
  */
-function get_data_tsv($data): string
+function get_data_tsv(mixed $data): string
 {
     $tsv = '';
     foreach ($data as $value) {
