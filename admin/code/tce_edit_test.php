@@ -1215,7 +1215,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($test_id == 0) {
+if (f_legacy_int_equals($test_id, 0)) {
     echo ' selected="selected"';
 }
 
@@ -1225,7 +1225,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['test_id'] . '"';
-        if ($m['test_id'] == $test_id) {
+        /** @var int|numeric-string $listed_test_id */
+        $listed_test_id = $m['test_id'];
+        if (f_legacy_int_equals($test_id, (int) $listed_test_id)) {
             echo ' selected="selected"';
             $test_fieldset_name =
                 ''
@@ -1692,8 +1694,11 @@ if (isset($test_id) && $test_id > 0) {
     if ($r = F_db_query($sql, $db)) {
         $prev_module_id = 0;
         while ($m = F_db_fetch_array($r)) {
-            if ($m['module_id'] != $prev_module_id) {
-                $prev_module_id = $m['module_id'];
+            /** @var int|numeric-string $raw_module_id */
+            $raw_module_id = $m['module_id'];
+            $module_id = (int) $raw_module_id;
+            if ($module_id !== $prev_module_id) {
+                $prev_module_id = $module_id;
                 echo
                     '<option value="#'
                         . $m['module_id']
