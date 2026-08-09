@@ -62,7 +62,7 @@ $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
     ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
     : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
 
-$rtl_doc = $l['a_meta_dir'] == 'rtl';
+$rtl_doc = $l['a_meta_dir'] === 'rtl';
 $dirlabel = $rtl_doc ? 'left' : 'right';
 $dirvalue = $rtl_doc ? 'right' : 'left';
 
