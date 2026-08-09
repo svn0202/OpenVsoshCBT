@@ -2747,7 +2747,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     . '" value="'
                     . $i
                     . '" title="'
-                    . F_tcecodeToTitle($m['question_description'])
+                    . f_tcecode_to_title($m['question_description'])
                     . '" /> ';
                 if (f_legacy_int_equals($testlog_id_last, (int) $testlog_id)) {
                     $testlog_id_next = $m['testlog_id'];
@@ -2769,7 +2769,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     . $i
                     . '" title="'
                     // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
-                    . F_tcecodeToTitle($m['question_description'])
+                    . f_tcecode_to_title($m['question_description'])
                     . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
                 // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays

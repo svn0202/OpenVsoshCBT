@@ -32,7 +32,7 @@ final class TcecodeFunctionsTest extends TestCase
                 'require_once "../config/tce_config.php"; require_once "tce_functions_general.php"; '
                     . 'require_once "tce_functions_tcecode.php"; '
                     . '$GLOBALS["l"] = ["a_meta_charset" => "UTF-8"]; '
-                    . 'echo json_encode(F_tcecodeToTitle("[b]A & B[/b]"));',
+                    . 'echo json_encode(f_tcecode_to_title("[b]A & B[/b]"));',
             ],
             dirname(__DIR__) . '/shared/code',
         );
