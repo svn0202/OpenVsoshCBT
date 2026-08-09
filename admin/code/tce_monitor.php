@@ -288,7 +288,7 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'csv') {
 
 require_once 'tce_page_header.php';
 
-function F_tmf_monitor_html(mixed $value): string
+function f_tmf_monitor_html(mixed $value): string
 {
     global $l;
     return htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
