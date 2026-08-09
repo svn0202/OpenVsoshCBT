@@ -128,7 +128,8 @@ function F_display_db_error($exit = true)
  */
 function F_error_handler($errno, $errstr, $errfile, $errline)
 {
-    if (ini_get('error_reporting') == 0) {
+    $error_reporting = ini_get('error_reporting');
+    if ($error_reporting === false || (is_numeric($error_reporting) && (float) $error_reporting === 0.0)) {
         // this is required to ignore supressed error messages with '@'
         return;
     }
@@ -156,7 +157,8 @@ function F_url_exists($url)
     curl_setopt($crs, CURLOPT_URL, $url);
     curl_setopt($crs, CURLOPT_NOBODY, true);
     curl_setopt($crs, CURLOPT_FAILONERROR, true);
-    if (ini_get('open_basedir') == '' && !ini_get('safe_mode')) {
+    $open_basedir = ini_get('open_basedir');
+    if (($open_basedir === false || $open_basedir === '') && !ini_get('safe_mode')) {
         curl_setopt($crs, CURLOPT_FOLLOWLOCATION, true);
     }
 
