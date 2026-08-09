@@ -73,9 +73,9 @@ function F_upload_file($fieldname, $uploaddir)
  * @author Nicola Asuni
  * @since 2001-11-19
  * @param $filetocheck (string) file to check (local path or URL)
- * @return mixed file size in bytes or false in case of error
+ * @return int|false file size in bytes, or false in case of error
  */
-function F_read_file_size($filetocheck)
+function f_read_file_size(mixed $filetocheck): int|false
 {
     global $l;
     require_once '../config/tce_config.php';

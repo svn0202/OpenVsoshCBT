@@ -279,12 +279,6 @@ count = 7
 [[issues]]
 file = "admin/code/tce_functions_upload.php"
 code = "function-name"
-message = "Function name `F_read_file_size` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_upload.php"
-code = "function-name"
 message = "Function name `F_upload_file` should be in snake case."
 count = 1
 
