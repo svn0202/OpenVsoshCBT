@@ -161,7 +161,7 @@ switch ($menu_mode) {
 
         if (f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')) {
             // check if this record is used (test_log)
-            if (F_isUsedMediaFile($file)) {
+            if (f_is_used_media_file($file)) {
                 F_print_error('WARNING', $l['m_used_file']);
             } elseif (f_delete_media_file($file)) {
                 $file = '';
@@ -190,7 +190,7 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_form_missing_fields']);
         } elseif (F_file_exists($dir . $newname)) {
             F_print_error('WARNING', $l['m_file_already_exist']);
-        } elseif (F_isUsedMediaFile($file)) {
+        } elseif (f_is_used_media_file($file)) {
             F_print_error('WARNING', $l['m_used_file']);
         } elseif (isset($_REQUEST['newname'])) {
             if (f_rename_media_file($file, $dir . $newname)) {
