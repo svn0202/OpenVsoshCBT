@@ -134,7 +134,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
     }
 
     $sql = 'SELECT * FROM ' . K_TABLE_TESTS . $wherequery . ' ORDER BY ' . $full_order_field;
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql =
             'SELECT * FROM ('
             . $sql
@@ -449,7 +449,7 @@ function F_show_select_test_popup(
     }
 
     $sql = 'SELECT * FROM ' . K_TABLE_TESTS . $wherequery . ' ORDER BY ' . $full_order_field;
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql =
             'SELECT * FROM ('
             . $sql
