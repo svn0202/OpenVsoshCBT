@@ -1053,7 +1053,7 @@ function F_selectAnswers(
     }
 
     if ($limit > 0) {
-        if (K_DATABASE_TYPE == 'ORACLE') {
+        if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
             $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . $limit . '';
         } else {
             $sql .= ' LIMIT ' . $limit . '';
@@ -1557,7 +1557,7 @@ function F_createTest($test_id, $user_id)
                     $sqlq .= $sql_questions_order_by;
                 }
 
-                if (K_DATABASE_TYPE == 'ORACLE') {
+                if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $sqlq = 'SELECT * FROM (' . $sqlq . ') WHERE rownum <= ' . $m['tsubset_quantity'] . '';
                 } else {
                     $sqlq .= ' LIMIT ' . $m['tsubset_quantity'] . '';
