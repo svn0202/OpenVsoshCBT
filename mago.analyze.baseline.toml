@@ -18789,12 +18789,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_openvsosh_settings.php"
 code = "missing-return-type"
-message = "Function `openvsosh_access_setting_defaults` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_openvsosh_settings.php"
-code = "missing-return-type"
 message = "Function `openvsosh_ensure_settings_table` is missing a return type hint."
 count = 1
 

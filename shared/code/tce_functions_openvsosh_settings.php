@@ -18,7 +18,7 @@ if (!defined('K_TABLE_OPENVSOSH_SETTINGS')) {
  *
  * @return array{registration_enabled: bool, password_reset_enabled: bool, access_help: string}
  */
-function openvsosh_access_setting_defaults()
+function openvsosh_access_setting_defaults(): array
 {
     return [
         'registration_enabled' => defined('K_USRREG_ENABLED') && K_USRREG_ENABLED,
