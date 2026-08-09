@@ -945,7 +945,7 @@ function F_tcecodeToLine($str)
     $str = (string) $str;
     if (F_has_html_markup($str)) {
         $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $str = F_compact_string($str);
+        $str = f_compact_string($str);
         $str = htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         if (strlen($str) > K_QUESTION_LINE_MAX_LENGTH) {
             return F_substrHTML($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
@@ -963,9 +963,9 @@ function F_tcecodeToLine($str)
     $str = preg_replace("'\[olist([^\]]*?)\](.*?)\[/olist\]'si", '\2', $str);
     $str = preg_replace("'\[url([^\]]*?)\](.*?)\[/url\]'si", '\2', $str);
     $str = preg_replace("'\[tex\](.*?)\[/tex\]'si", '[TEX]', $str);
-    $str = F_compact_string($str);
+    $str = f_compact_string($str);
     $str = F_decode_tcecode($str);
-    $str = F_compact_string($str);
+    $str = f_compact_string($str);
     if (strlen($str) > K_QUESTION_LINE_MAX_LENGTH) {
         return F_substrHTML($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
     }
@@ -988,7 +988,7 @@ function F_tcecodeToTitle($str)
     } else {
         $str = F_remove_tcecode($str);
     }
-    $str = F_compact_string($str);
+    $str = f_compact_string($str);
     return htmlspecialchars($str, ENT_QUOTES | ENT_COMPAT, $l['a_meta_charset']);
 }
 

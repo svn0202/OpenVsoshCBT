@@ -55,7 +55,7 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
 $test_num = isset($_REQUEST['num']) ? (int) $_REQUEST['num'] : 1;
 
 $doc_title = unhtmlentities($l['w_test']);
-$doc_description = F_compact_string(unhtmlentities($l['h_test']));
+$doc_description = f_compact_string(unhtmlentities($l['h_test']));
 $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
 $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'

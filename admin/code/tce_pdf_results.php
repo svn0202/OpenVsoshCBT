@@ -189,14 +189,14 @@ switch ($mode) {
     case 1:
         // all users results
         $doc_title = unhtmlentities($l['t_result_all_users']);
-        $doc_description = F_compact_string(unhtmlentities($l['hp_result_alluser']));
+        $doc_description = f_compact_string(unhtmlentities($l['hp_result_alluser']));
         break;
     case 3: // detailed report for specific user
     case 4: // detailed report for all users
     case 5:
         // detailed report for all users with only open questions
         $doc_title = unhtmlentities($l['t_result_user']);
-        $doc_description = F_compact_string(unhtmlentities($l['hp_result_user']));
+        $doc_description = f_compact_string(unhtmlentities($l['hp_result_user']));
         break;
     default:
         echo $l['m_authorization_denied'];
