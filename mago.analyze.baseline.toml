@@ -5661,12 +5661,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_users_online.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `urldecode`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `urldecode`: expected `string`, but found `truthy-mixed`."
 count = 2
 
@@ -5698,7 +5692,7 @@ count = 1
 file = "admin/code/tce_functions_users_online.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 10
+count = 7
 
 [[issues]]
 file = "admin/code/tce_functions_users_online.php"
@@ -5710,12 +5704,6 @@ count = 2
 file = "admin/code/tce_functions_users_online.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_lastname')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
@@ -18947,12 +18935,6 @@ file = "shared/code/tce_functions_session.php"
 code = "missing-parameter-type"
 message = "Parameter `$token` is missing a type hint."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `F_session_string_to_array` is missing a return type hint."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"

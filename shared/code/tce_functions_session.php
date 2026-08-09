@@ -249,9 +249,9 @@ class TCExamSessionHandler implements SessionHandlerInterface
  * @author Nicola Asuni
  * @since 2001-10-18
  * @param $sd (string) input data string
- * @return array
+ * @return array<string, mixed>
  */
-function F_session_string_to_array($sd)
+function F_session_string_to_array($sd): array
 {
     $sess_array = [];
     $vars = preg_split('/[;}]/', $sd);

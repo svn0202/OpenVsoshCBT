@@ -24,6 +24,14 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testSessionStringDecoderPreservesKeysAndValueTypes(): void
+    {
+        self::assertSame(
+            ['name' => 'Alice', 'attempts' => 2, 'enabled' => true],
+            \F_session_string_to_array('name|s:5:"Alice";attempts|i:2;enabled|b:1;'),
+        );
+    }
+
     public function testPasswordHashRoundTrip(): void
     {
         $hash = \getPasswordHash('s3cr3t-passphrase');
