@@ -291,7 +291,7 @@ count = 4
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_num_rows` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_num_rows` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
