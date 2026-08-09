@@ -168,7 +168,7 @@ function f_db_fetch_assoc($result)
  * @param $result (resource) result resource to the query result.
  * @return Number of rows.
  */
-function F_db_affected_rows($link_identifier, $result)
+function f_db_affected_rows($link_identifier, $result)
 {
     return oci_num_rows($result);
 }
