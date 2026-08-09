@@ -305,7 +305,7 @@ class XMLUserImporter
                             $this->user_data['user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
                         }
 
-                        if (!isset($this->user_data['user_level']) || strlen($this->user_data['user_level']) == 0) {
+                        if (!isset($this->user_data['user_level']) || strlen($this->user_data['user_level']) === 0) {
                             $this->user_data['user_level'] = 1;
                         }
 
@@ -595,7 +595,7 @@ function F_import_tsv_users($tsvfile)
         }
 
         // user level
-        if (!isset($userdata[12]) || strlen($userdata[12]) == 0) {
+        if (!isset($userdata[12]) || strlen($userdata[12]) === 0) {
             $userdata[12] = 1;
         }
 
