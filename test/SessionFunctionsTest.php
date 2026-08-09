@@ -61,7 +61,7 @@ final class SessionFunctionsTest extends TestCase
         /** @var non-empty-list<non-empty-string> $included_files */
         self::assertSame(
             $included_files[0] . (string) session_id() . K_RANDOM_SECURITY . \get_client_fingerprint(),
-            \getPlainCSRFToken(),
+            \get_plain_csrf_token(),
         );
     }
 
@@ -187,7 +187,7 @@ final class SessionFunctionsTest extends TestCase
 
     public function testDefaultCsrfTokenRoundTrips(): void
     {
-        $plain = \getPlainCSRFToken();
+        $plain = \get_plain_csrf_token();
         $token = \F_getCSRFToken();
 
         self::assertNotSame('', $plain);
