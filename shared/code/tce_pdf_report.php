@@ -906,7 +906,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 foreach ([
                     $itemcount . ' ' . $qtype[$m['question_type'] - 1],
                     $m['testlog_score'],
-                    getIpAsString($m['testlog_user_ip']),
+                    get_ip_as_string($m['testlog_user_ip']),
                     $display_time,
                     $change_time,
                     $diff_time,

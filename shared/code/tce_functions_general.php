@@ -485,7 +485,7 @@ function getIpAsBytes($ip): string|false
  * @return string IP address as a readable string.
  * @since 9.0.033 (2009-11-03)
  */
-function getIpAsString($ip): string
+function get_ip_as_string($ip): string
 {
     $norm = getNormalizedIP($ip);
     if ($norm === false || $norm === '') {

@@ -267,7 +267,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                 // display question stats
                 echo '<strong>[' . $m['testlog_score'] . ']' . K_NEWLINE;
                 echo ' (';
-                echo 'IP:' . getIpAsString($m['testlog_user_ip']) . K_NEWLINE;
+                echo 'IP:' . get_ip_as_string($m['testlog_user_ip']) . K_NEWLINE;
                 if (isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0) {
                     echo ' | ' . substr($m['testlog_display_time'], 11, 8) . K_NEWLINE;
                 } else {
