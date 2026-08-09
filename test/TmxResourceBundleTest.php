@@ -33,16 +33,16 @@ final class TmxResourceBundleTest extends TestCase
     {
         $bundle = new TMXResourceBundle($this->fixture(), 'IT', '');
         $res = $bundle->getResource();
-        $this->assertSame('Ciao', $res['greeting']);
-        $this->assertSame('Mondo', $res['world']);
+        $this->assertSame('Ciao', $res['greeting'] ?? null);
+        $this->assertSame('Mondo', $res['world'] ?? null);
     }
 
     public function testLanguageMatchIsCaseInsensitive(): void
     {
         $bundle = new TMXResourceBundle($this->fixture(), 'en', '');
         $res = $bundle->getResource();
-        $this->assertSame('Hello', $res['greeting']);
-        $this->assertSame('World', $res['world']);
+        $this->assertSame('Hello', $res['greeting'] ?? null);
+        $this->assertSame('World', $res['world'] ?? null);
     }
 
     public function testMissingLanguageFallsBackToEnglish(): void
@@ -50,7 +50,7 @@ final class TmxResourceBundleTest extends TestCase
         $bundle = new TMXResourceBundle($this->fixture(), 'XX', '');
         $res = $bundle->getResource();
         $this->assertArrayHasKey('greeting', $res);
-        $this->assertSame('Hello', $res['greeting']);
+        $this->assertSame('Hello', $res['greeting'] ?? null);
     }
 
     public function testParsesEntitiesAndAccents(): void
@@ -58,9 +58,10 @@ final class TmxResourceBundleTest extends TestCase
         $bundle = new TMXResourceBundle($this->fixture(), 'IT', '');
         $res = $bundle->getResource();
         // the XML parser decodes &amp; to & and preserves the accented UTF-8 characters
-        $this->assertSame('Caffè & Tè', $res['special']);
+        $this->assertSame('Caffè & Tè', $res['special'] ?? null);
     }
 
+    /** @throws \Random\RandomException */
     public function testRebuildsStaleCacheAfterSourceUpdate(): void
     {
         $dir = sys_get_temp_dir() . '/openvsosh-tmx-' . bin2hex(random_bytes(6));
@@ -71,7 +72,7 @@ final class TmxResourceBundleTest extends TestCase
 
         try {
             $first = new TMXResourceBundle($source, 'IT', $cache);
-            $this->assertSame('Ciao', $first->getResource()['greeting']);
+            $this->assertSame('Ciao', $first->getResource()['greeting'] ?? null);
 
             $updated = str_replace('<seg>Ciao</seg>', '<seg>Salve</seg>', (string) file_get_contents($source));
             file_put_contents($source, $updated);
@@ -80,7 +81,7 @@ final class TmxResourceBundleTest extends TestCase
             clearstatcache(true, $cache);
 
             $second = new TMXResourceBundle($source, 'IT', $cache);
-            $this->assertSame('Salve', $second->getResource()['greeting']);
+            $this->assertSame('Salve', $second->getResource()['greeting'] ?? null);
         } finally {
             if (is_file($cache)) {
                 unlink($cache);
@@ -92,6 +93,7 @@ final class TmxResourceBundleTest extends TestCase
         }
     }
 
+    /** @throws \Random\RandomException */
     public function testRebuildsCacheWhenUpdatedSourceKeepsAnOlderTimestamp(): void
     {
         $dir = sys_get_temp_dir() . '/openvsosh-tmx-' . bin2hex(random_bytes(6));
@@ -102,7 +104,7 @@ final class TmxResourceBundleTest extends TestCase
 
         try {
             $first = new TMXResourceBundle($source, 'IT', $cache);
-            $this->assertSame('Ciao', $first->getResource()['greeting']);
+            $this->assertSame('Ciao', $first->getResource()['greeting'] ?? null);
 
             $updated = str_replace('<seg>Ciao</seg>', '<seg>Buongiorno</seg>', (string) file_get_contents($source));
             file_put_contents($source, $updated);
@@ -112,7 +114,7 @@ final class TmxResourceBundleTest extends TestCase
             clearstatcache(true, $cache);
 
             $second = new TMXResourceBundle($source, 'IT', $cache);
-            $this->assertSame('Buongiorno', $second->getResource()['greeting']);
+            $this->assertSame('Buongiorno', $second->getResource()['greeting'] ?? null);
         } finally {
             if (is_file($cache)) {
                 unlink($cache);

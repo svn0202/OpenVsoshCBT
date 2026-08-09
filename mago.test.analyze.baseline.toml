@@ -1,36 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('greeting')` accessed on `array<array-key, mixed>`."
-count = 7
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('special')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('world')` accessed on `array<array-key, mixed>`."
-count = 2
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\TmxResourceBundleTest::testRebuildsCacheWhenUpdatedSourceKeepsAnOlderTimestamp`.'
-count = 1
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\TmxResourceBundleTest::testRebuildsStaleCacheAfterSourceUpdate`.'
-count = 1
-
-[[issues]]
 file = "test/WordImportTest.php"
 code = "imprecise-type"
 message = "Type `array` in parameter `$expectedTypes` is imprecise, equivalent to `array<array-key, mixed>`."
