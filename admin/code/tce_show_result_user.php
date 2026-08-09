@@ -116,108 +116,91 @@ if (isset($_POST['lock'])) {
 
 switch ($menu_mode) {
     case 'delete':
-        {
-            // ask confirmation
-            F_print_error('WARNING', $l['m_delete_confirm']);
-            echo '<div class="confirmbox">' . K_NEWLINE;
-            echo
-                '<form action="'
-                    . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
-                    . '" method="post" enctype="multipart/form-data" id="form_delete">'
-                    . K_NEWLINE
-            ;
-            echo '<div>' . K_NEWLINE;
-            echo '<input type="hidden" name="testuser_id" id="testuser_id" value="' . $testuser_id . '" />' . K_NEWLINE;
-            F_submit_button('forcedelete', $l['w_delete'], $l['h_delete']);
-            F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
-            echo '</div>' . K_NEWLINE;
-            echo F_getCSRFTokenField() . K_NEWLINE;
-            echo '</form>' . K_NEWLINE;
-            echo '</div>' . K_NEWLINE;
-            break;
-        }
+        // ask confirmation
+        F_print_error('WARNING', $l['m_delete_confirm']);
+        echo '<div class="confirmbox">' . K_NEWLINE;
+        echo
+            '<form action="'
+                . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                . '" method="post" enctype="multipart/form-data" id="form_delete">'
+                . K_NEWLINE
+        ;
+        echo '<div>' . K_NEWLINE;
+        echo '<input type="hidden" name="testuser_id" id="testuser_id" value="' . $testuser_id . '" />' . K_NEWLINE;
+        F_submit_button('forcedelete', $l['w_delete'], $l['h_delete']);
+        F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
+        echo '</div>' . K_NEWLINE;
+        echo F_getCSRFTokenField() . K_NEWLINE;
+        echo '</form>' . K_NEWLINE;
+        echo '</div>' . K_NEWLINE;
+        break;
 
     case 'forcedelete':
-        {
-            // Delete
-            if (
-                f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')
-            ) { //check if delete button has been pushed (redundant check)
-                require_once '../../shared/code/tce_functions_attachments.php';
-                F_tmf_attachment_delete_attempt((int) $testuser_id);
-                $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
+        // Delete
+        if (f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')) { //check if delete button has been pushed (redundant check)
+            require_once '../../shared/code/tce_functions_attachments.php';
+            F_tmf_attachment_delete_attempt((int) $testuser_id);
+            $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 					WHERE testuser_id=' . $testuser_id . '';
-                if (!($r = F_db_query($sql, $db))) {
-                    F_display_db_error();
-                } else {
-                    $testuser_id = false;
-                    F_print_error('MESSAGE', $l['m_deleted']);
-                }
+            if (!($r = F_db_query($sql, $db))) {
+                F_display_db_error();
+            } else {
+                $testuser_id = false;
+                F_print_error('MESSAGE', $l['m_deleted']);
             }
-
-            break;
         }
+
+        break;
 
     case 'extendtime':
-        {
-            // extend the test time by 5 minutes
-            // this time extension is obtained moving forward the test starting time
-            $sqlu =
-                'UPDATE '
-                . K_TABLE_TEST_USER
-                . '
+        // extend the test time by 5 minutes
+        // this time extension is obtained moving forward the test starting time
+        $sqlu =
+            'UPDATE '
+            . K_TABLE_TEST_USER
+            . '
 			SET testuser_creation_time=\''
-                . date(
-                    K_TIMESTAMP_FORMAT,
-                    F_getTestStartTime($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE),
-                )
-                . '\'
+            . date(K_TIMESTAMP_FORMAT, F_getTestStartTime($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE))
+            . '\'
 			WHERE testuser_id='
-                . $testuser_id
-                . '';
-            if (!($ru = F_db_query($sqlu, $db))) {
-                F_display_db_error();
-            } else {
-                F_print_error('MESSAGE', $l['m_updated']);
-            }
-
-            break;
+            . $testuser_id
+            . '';
+        if (!($ru = F_db_query($sqlu, $db))) {
+            F_display_db_error();
+        } else {
+            F_print_error('MESSAGE', $l['m_updated']);
         }
+
+        break;
 
     case 'lock':
-        {
-            // update test mode to 4 = test locked
-            $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
+        // update test mode to 4 = test locked
+        $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 			SET testuser_status=4
 			WHERE testuser_id=' . $testuser_id . '';
-            if (!($ru = F_db_query($sqlu, $db))) {
-                F_display_db_error();
-            } else {
-                F_print_error('MESSAGE', $l['m_updated']);
-            }
-
-            break;
+        if (!($ru = F_db_query($sqlu, $db))) {
+            F_display_db_error();
+        } else {
+            F_print_error('MESSAGE', $l['m_updated']);
         }
+
+        break;
 
     case 'unlock':
-        {
-            // update test mode to 1 = test unlocked
-            $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
+        // update test mode to 1 = test unlocked
+        $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 			SET testuser_status=1
 			WHERE testuser_id=' . $testuser_id . '';
-            if (!($ru = F_db_query($sqlu, $db))) {
-                F_display_db_error();
-            } else {
-                F_print_error('MESSAGE', $l['m_updated']);
-            }
-
-            break;
+        if (!($ru = F_db_query($sqlu, $db))) {
+            F_display_db_error();
+        } else {
+            F_print_error('MESSAGE', $l['m_updated']);
         }
+
+        break;
 
     default:
-        {
-            break;
-        }
+        break;
 } //end of switch
 
 // --- Initialize variables
