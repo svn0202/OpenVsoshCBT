@@ -73,7 +73,7 @@ if (strlen($searchterms) > 0) {
         $wherequery .= ' AND (';
         $wherequery .= " (test_name LIKE '%" . $word . "%')";
         $wherequery .= " OR (test_description LIKE '%" . $word . "%')";
-        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) == 1 && checkdate($wd[2], $wd[3], $wd[1])) {
+        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) === 1 && checkdate($wd[2], $wd[3], $wd[1])) {
             $wherequery .= " OR ((test_begin_time <= '" . $word . "')";
             $wherequery .= " AND (test_end_time >= '" . $word . "'))";
         }
@@ -98,38 +98,34 @@ if (isset($menu_mode) && !empty($menu_mode)) {
             $test_id = (int) $_POST[$keyname];
             if (F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
                 switch ($menu_mode) {
-                    case 'lock':
-                        { // lock test by changing end date (subtract 1000 years)
-                            $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
+                    case 'lock': // lock test by changing end date (subtract 1000 years)
+                        $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
 							test_end_time=test_end_time-10000000000000
 							WHERE test_id=' . $test_id . '';
-                            if (!($r = F_db_query($sql, $db))) {
-                                F_display_db_error(false);
-                            }
-
-                            break;
+                        if (!($r = F_db_query($sql, $db))) {
+                            F_display_db_error(false);
                         }
-                    case 'unlock':
-                        { // unlock test by restoring original end date (add 1000 years)
-                            $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
+
+                        break;
+
+                    case 'unlock': // unlock test by restoring original end date (add 1000 years)
+                        $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
 							test_end_time=test_end_time+10000000000000
 							WHERE test_id=' . $test_id . '';
-                            if (!($r = F_db_query($sql, $db))) {
-                                F_display_db_error(false);
-                            }
-
-                            break;
+                        if (!($r = F_db_query($sql, $db))) {
+                            F_display_db_error(false);
                         }
+
+                        break;
+
                     case 'delete':
-                        {
-                            $sql = 'DELETE FROM ' . K_TABLE_TESTS . '
+                        $sql = 'DELETE FROM ' . K_TABLE_TESTS . '
 							WHERE test_id=' . $test_id . '';
-                            if (!($r = F_db_query($sql, $db))) {
-                                F_display_db_error();
-                            }
-
-                            break;
+                        if (!($r = F_db_query($sql, $db))) {
+                            F_display_db_error();
                         }
+
+                        break;
                 } // end of switch
             }
         }

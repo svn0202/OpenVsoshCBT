@@ -7910,12 +7910,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_select_tests.php"
-code = "possibly-false-operand"
-message = "Left operand in `==` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_select_tests.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `htmlspecialchars`: expected `string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string`."
 count = 1
