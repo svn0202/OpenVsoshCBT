@@ -10,6 +10,7 @@ final class BackupTest extends TestCase
 {
     private string $temporaryDirectory;
 
+    /** @throws \Random\RandomException */
     protected function setUp(): void
     {
         $this->temporaryDirectory = sys_get_temp_dir() . '/openvsosh-backup-' . bin2hex(random_bytes(8));
@@ -62,9 +63,11 @@ final class BackupTest extends TestCase
             'password' => 'secret with shell characters $()`',
         ];
         $command = \F_tmf_backup_dump_command($config);
+        $environment = \F_tmf_backup_environment($config);
 
         self::assertNotContains($config['password'], $command);
-        self::assertSame($config['password'], \F_tmf_backup_environment($config)['PGPASSWORD']);
+        self::assertArrayHasKey('PGPASSWORD', $environment);
+        self::assertSame($config['password'], $environment['PGPASSWORD'] ?? null);
     }
 
     public function testOnlyHarmlessPostgresqlVersionMismatchDiagnosticIsIgnored(): void

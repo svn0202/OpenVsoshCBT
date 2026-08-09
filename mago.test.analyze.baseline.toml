@@ -1,18 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "test/BackupTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('PGPASSWORD')` accessed on `array<string, string>`."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\BackupTest::setUp`.'
-count = 1
-
-[[issues]]
 file = "test/DeploymentSecurityTest.php"
 code = "possibly-null-argument"
 message = "Argument #2 of function `password_verify` is possibly `null`, but parameter type `string` does not accept it."
