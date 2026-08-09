@@ -21,21 +21,21 @@
  */
 
 /**
- * Display online users form using F_list_online_users function.
+ * Display online users form using f_list_online_users function.
  * @author Nicola Asuni
  * @since 2001-10-18
- * @param $wherequery (string) users selection query
- * @param $order_field (string) order by column name
- * @param $orderdir (string) oreder direction
- * @param $firstrow (string) number of first row to display
- * @param $rowsperpage (string) number of rows per page
- * @return false in case of empty database, true otherwise
+ * @param string $wherequery users selection query
+ * @param string $order_field order by column name
+ * @param int $orderdir order direction
+ * @param int $firstrow number of first row to display
+ * @param int $rowsperpage number of rows per page
+ * @return bool true after rendering
  */
-function F_show_online_users($wherequery, $order_field, $orderdir, $firstrow, $rowsperpage)
+function f_show_online_users(string $wherequery, string $order_field, int $orderdir, int $firstrow, int $rowsperpage): bool
 {
     global $l;
     require_once '../config/tce_config.php';
-    F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $rowsperpage);
+    f_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $rowsperpage);
     return true;
 }
 
@@ -43,31 +43,26 @@ function F_show_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
  * Display online users.
  * @author Nicola Asuni
  * @since 2001-10-18
- * @param $wherequery (string) users selection query
- * @param $order_field (string) order by column name
- * @param $orderdir (int) oreder direction
- * @param $firstrow (int) number of first row to display
- * @param $rowsperpage (int) number of rows per page
- * @return false in case of empty database, true otherwise
+ * @param string $wherequery users selection query
+ * @param string $order_field order by column name
+ * @param int $orderdir order direction
+ * @param int $firstrow number of first row to display
+ * @param int $rowsperpage number of rows per page
+ * @return bool false for an empty database, true otherwise
  */
-function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $rowsperpage)
+function f_list_online_users(string $wherequery, string $order_field, int $orderdir, int $firstrow, int $rowsperpage): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once 'tce_functions_user_select.php';
 
-    //initialize variables
-    $orderdir = (int) $orderdir;
-    $firstrow = (int) $firstrow;
-    $rowsperpage = (int) $rowsperpage;
-
     // order fields for SQL query
     if (empty($order_field) || !in_array($order_field, ['cpsession_id', 'cpsession_data'])) {
         $order_field = 'cpsession_expiry';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {
@@ -87,7 +82,7 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
         $sql = 'SELECT * FROM ' . K_TABLE_SESSIONS . ' ' . $wherequery . ' ORDER BY ' . $full_order_field . '';
     }
 
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
         $sql =
             'SELECT * FROM ('
             . $sql

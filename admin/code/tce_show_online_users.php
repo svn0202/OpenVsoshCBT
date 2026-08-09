@@ -32,11 +32,13 @@ require_once '../code/tce_page_header.php';
 require_once 'tce_functions_users_online.php';
 
 // set values from the request (formerly provided by the register-globals emulation), with defaults
-$order_field = $_REQUEST['order_field'] ?? 'cpsession_expiry';
+$order_field = isset($_REQUEST['order_field']) && is_string($_REQUEST['order_field'])
+    ? $_REQUEST['order_field']
+    : 'cpsession_expiry';
 $orderdir = isset($_REQUEST['orderdir']) ? (int) $_REQUEST['orderdir'] : 0;
 $firstrow = isset($_REQUEST['firstrow']) ? (int) $_REQUEST['firstrow'] : 0;
-$rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] : K_MAX_ROWS_PER_PAGE;
+$rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] : (int) K_MAX_ROWS_PER_PAGE;
 
-F_show_online_users('', $order_field, $orderdir, $firstrow, $rowsperpage);
+f_show_online_users('', $order_field, $orderdir, $firstrow, $rowsperpage);
 
 require_once '../code/tce_page_footer.php';
