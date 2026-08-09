@@ -14625,12 +14625,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$length` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$level` is missing a type hint."
 count = 1
 
@@ -14667,14 +14661,8 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$start` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$str` is missing a type hint."
-count = 10
+count = 9
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
