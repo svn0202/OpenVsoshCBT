@@ -985,12 +985,6 @@ message = "Function name `F_select_table_header_element` should be in snake case
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "function-name"
 message = "Function name `F_menu_link` should be in snake case."

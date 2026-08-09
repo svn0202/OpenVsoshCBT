@@ -212,7 +212,7 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
         }
 
         if ($mc = F_db_fetch_array($rc)) {
-            if ($mc[$fieldname] == $fieldid) {
+            if (f_legacy_equals($mc[$fieldname], $fieldid)) {
                 return true; // the values are unchanged
             }
         } else {
