@@ -84,7 +84,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                 $matches = [];
                 if (!is_dir($filename) && preg_match('/OMR_([^_]+)_QR.([a-zA-Z]+)/', $file, $matches)) {
                     // read OMR DATA page
-                    $omr_testdata = F_decodeOMRTestDataQRCode($filename);
+                    $omr_testdata = f_decode_omr_test_data_qr_code($filename);
                     if ($omr_testdata === false) {
                         F_print_error('ERROR', $l['m_omr_wrong_test_data']);
                         file_put_contents($logfile, 'ERROR	' . $file . "\t" . 'UNABLE TO DECODE' . "\n", FILE_APPEND);
