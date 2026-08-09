@@ -3405,12 +3405,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
-message = "Parameter `$size` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
 message = "Parameter `$viewmode` is missing a type hint."
 count = 1
 
@@ -3430,12 +3424,6 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-return-type"
 message = "Function `F_deleteMediaFile` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_formatFileSize` is missing a return type hint."
 count = 1
 
 [[issues]]
