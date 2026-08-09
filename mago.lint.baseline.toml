@@ -985,12 +985,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 6
 
 [[issues]]
-file = "public/code/tce_test_answer_save.php"
-code = "function-name"
-message = "Function name `F_tmf_answer_json` should be in snake case."
-count = 1
-
-[[issues]]
 file = "public/code/tce_test_execute.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
