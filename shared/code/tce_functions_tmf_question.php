@@ -224,7 +224,7 @@ function f_tmf_text_similarity(string $left, string $right, bool $binary = false
  *
  * @param array<int,array{answer_description:string,answer_weight?:int|string|null}> $keys
  */
-function F_tmf_short_answer_score(
+function f_tmf_short_answer_score(
     string $submitted,
     array $keys,
     bool $binary,
