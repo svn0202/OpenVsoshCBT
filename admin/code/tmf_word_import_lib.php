@@ -293,6 +293,9 @@ class TmfWordImporter
         $total_size = 0;
         for ($i = 0; $i < $this->zip->numFiles; ++$i) {
             $stat = $this->zip->statIndex($i);
+            if ($stat === false) {
+                throw new TmfWordImportException('Unable to read a DOCX archive entry.');
+            }
             $name = str_replace('\\', '/', $stat['name']);
             if ($name === '' || $name[0] === '/' || preg_match('#(^|/)\.\.(/|$)#', $name)) {
                 throw new TmfWordImportException('DOCX contains an unsafe archive path.');

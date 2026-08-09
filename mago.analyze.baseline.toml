@@ -9494,12 +9494,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
-code = "possibly-false-array-access"
-message = "Cannot perform array access on possibly `false` value."
-count = 2
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
 code = "possibly-false-operand"
 message = "Left operand in `>` comparison might be `false` (type `false|non-negative-int`)."
 count = 1
