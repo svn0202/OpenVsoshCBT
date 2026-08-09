@@ -235,10 +235,14 @@ function F_altLogin()
                 sort($sorted_ldap_attr);
                 //var_export($rdn); // uncomment this to see the structure of the entries
                 if (
-                    ($search = @ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr)) && ($rdn =
-                        @ldap_get_entries($ldapconn, $search))
+                    // @mago-expect lint:no-error-control-operator -- an unavailable LDAP directory falls through to the other login methods
+                    ($search = @ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr))
+                    // @mago-expect lint:no-error-control-operator -- a failed LDAP result lookup is treated as an authentication miss
+                    && ($rdn = @ldap_get_entries($ldapconn, $search))
+                    // @mago-expect lint:no-error-control-operator -- invalid LDAP credentials are an expected authentication result
                     && (!empty($rdn[0]['dn']) && @ldap_bind($ldapconn, $rdn[0]['dn'], $ldappassword))
                 ) {
+                    // @mago-expect lint:no-error-control-operator -- disconnect cleanup must not turn a successful login into an error
                     @ldap_unbind($ldapconn);
                     $usr = [];
                     foreach ($ldap_attr as $k => $v) {
@@ -255,6 +259,7 @@ function F_altLogin()
                 }
             }
 
+            // @mago-expect lint:no-error-control-operator -- disconnect cleanup is best effort after an authentication miss
             @ldap_unbind($ldapconn);
         }
 
