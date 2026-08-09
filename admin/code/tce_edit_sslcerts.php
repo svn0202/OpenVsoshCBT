@@ -335,7 +335,7 @@ echo get_form_noscript_select('selectrecord');
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
-echo getFormRowTextInput('ssl_name', $l['w_name'], $l['w_name'], '', $ssl_name, '', 255, false, false, false, '');
+echo get_form_row_text_input('ssl_name', $l['w_name'], $l['w_name'], '', $ssl_name, '', 255, false, false, false, '');
 
 if ($ssl_id <= 0) {
     echo '<div class="row">' . K_NEWLINE;

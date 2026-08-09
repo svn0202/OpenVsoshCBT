@@ -197,7 +197,7 @@ echo '</div>' . K_NEWLINE;
 echo get_form_noscript_select('selectcategory');
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'startdate',
         $l['w_time_begin'],
         $l['w_time_begin'] . ' ' . $l['w_datetime_format'],
@@ -211,7 +211,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'enddate',
         $l['w_time_end'],
         $l['w_time_end'] . ' ' . $l['w_datetime_format'],

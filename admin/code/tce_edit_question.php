@@ -1198,7 +1198,7 @@ echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'question_timer',
         $l['w_timer'],
         $l['h_question_timer'],
@@ -1214,7 +1214,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'question_similarity_threshold',
         'Сходство краткого ответа',
         'Минимальный процент текстового сходства с одним из правильных ключей; 0 — только точное совпадение.',
@@ -1230,7 +1230,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'question_matching_positions',
         'Количество условий matching',
         'Число позиций в левой колонке; 0 — столько же, сколько вариантов ответа.',
@@ -1259,7 +1259,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'question_audio_play_limit',
         'Лимит запусков аудио',
         'Максимальное число запусков каждого аудиофайла в вопросе; 0 — без ограничения.',

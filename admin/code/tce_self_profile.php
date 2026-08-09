@@ -72,7 +72,7 @@ echo '<p><strong>Логин:</strong> '
 echo '<p><strong>Группы:</strong> '
     . htmlspecialchars($groups === [] ? '—' : implode(', ', $groups), ENT_QUOTES, $l['a_meta_charset'])
     . '</p>' . K_NEWLINE;
-echo getFormRowTextInput(
+echo get_form_row_text_input(
     'user_firstname',
     $l['w_firstname'],
     '',
@@ -81,7 +81,7 @@ echo getFormRowTextInput(
     '',
     255,
 );
-echo getFormRowTextInput(
+echo get_form_row_text_input(
     'user_lastname',
     $l['w_lastname'],
     '',
@@ -90,7 +90,7 @@ echo getFormRowTextInput(
     '',
     255,
 );
-echo getFormRowTextInput(
+echo get_form_row_text_input(
     'currentpassword',
     $l['w_current_password'],
     $l['h_password'],

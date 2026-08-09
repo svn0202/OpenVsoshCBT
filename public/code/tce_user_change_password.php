@@ -110,7 +110,7 @@ echo
 ;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'currentpassword',
         $l['w_current_password'],
         $l['h_password'],
@@ -127,7 +127,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword',
         $l['w_new_password'],
         $l['h_password'],
@@ -144,7 +144,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'newpassword_repeat',
         $l['w_new_password'],
         $l['h_password_repeat'],

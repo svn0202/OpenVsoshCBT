@@ -491,7 +491,7 @@ echo get_form_noscript_select('selectrecord');
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'subject_name',
         $l['w_name'],
         $l['h_subject_name'],

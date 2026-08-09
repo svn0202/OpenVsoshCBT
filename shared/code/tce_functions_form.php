@@ -385,7 +385,7 @@ function get_required_mark(bool $required = false): string
  * @param mixed $placeholder Optional short hint displayed inside an empty input.
  * @return string
  */
-function getFormRowTextInput(
+function get_form_row_text_input(
     string $field_name,
     mixed $name,
     mixed $description = '',

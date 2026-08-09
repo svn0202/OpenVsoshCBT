@@ -77,7 +77,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         . '">'
         . K_NEWLINE;
     // user name
-    $str .= getFormRowTextInput(
+    $str .= get_form_row_text_input(
         'xuser_name',
         $l['w_username'],
         $l['h_login_name'],
@@ -95,7 +95,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         $l['ov_username_placeholder'],
     );
     // password
-    $str .= getFormRowTextInput(
+    $str .= get_form_row_text_input(
         'xuser_password',
         $l['w_password'],
         $l['h_password'],
@@ -117,7 +117,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
         . 'aria-pressed="false">◉</button>' . K_NEWLINE;
     // One Time Password code (OTP)
     if (K_OTP_LOGIN) {
-        $str .= getFormRowTextInput(
+        $str .= get_form_row_text_input(
             'xuser_otpcode',
             $l['w_otpcode'],
             $l['h_otpcode'],

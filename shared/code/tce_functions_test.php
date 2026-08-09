@@ -3183,7 +3183,7 @@ function F_testLoginForm($faction, $fid, $fmethod, $fenctype, $test_id)
         . '">'
         . K_NEWLINE;
     // test password
-    $str .= getFormRowTextInput(
+    $str .= get_form_row_text_input(
         'xtest_password',
         $l['w_test_password'],
         $l['h_test_password'],

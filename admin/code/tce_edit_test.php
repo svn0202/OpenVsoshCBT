@@ -1277,7 +1277,7 @@ echo '<fieldset class="test-editor-main">' . K_NEWLINE;
 echo '<legend>' . $l['w_test'] . '</legend>' . K_NEWLINE;
 echo '<h2 class="editor-section-heading" id="editor-basics">Основное</h2>' . K_NEWLINE;
 
-echo getFormRowTextInput('test_name', $l['w_name'], $l['h_test_name'], '', $test_name, '', 255, false, false, false);
+echo get_form_row_text_input('test_name', $l['w_name'], $l['h_test_name'], '', $test_name, '', 255, false, false, false);
 echo
     get_form_row_text_box(
         'test_description',
@@ -1290,7 +1290,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_begin_time',
         $l['w_time_begin'],
         $l['w_time_begin'] . ' ' . $l['w_datetime_format'],
@@ -1304,7 +1304,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_end_time',
         $l['w_time_end'],
         $l['w_time_end'] . ' ' . $l['w_datetime_format'],
@@ -1318,7 +1318,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_duration_time',
         $l['w_test_time'],
         $l['h_test_time'],
@@ -1332,7 +1332,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_ip_range',
         $l['w_ip_range'],
         $l['h_ip_range'],
@@ -1417,7 +1417,7 @@ echo '</div>' . K_NEWLINE;
 
 echo '<h2 class="editor-section-heading" id="editor-scoring">Оценивание</h2>' . K_NEWLINE;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_score_right',
         $l['w_score_right'],
         $l['h_score_right'],
@@ -1431,7 +1431,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_score_wrong',
         $l['w_score_wrong'],
         $l['h_score_wrong'],
@@ -1445,7 +1445,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_score_unanswered',
         $l['w_score_unanswered'],
         $l['h_score_unanswered'],
@@ -1459,7 +1459,7 @@ echo
     )
 ;
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'test_score_threshold',
         $l['w_test_score_threshold'],
         $l['h_test_score_threshold'],
@@ -1597,7 +1597,7 @@ echo get_form_row_select_box('test_repeatable', (string) $l['w_repeatable'], '',
 echo get_form_row_checkbox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
 
 echo
-    getFormRowTextInput(
+    get_form_row_text_input(
         'new_test_password',
         $l['w_password'],
         $l['h_test_password'],
@@ -1818,7 +1818,7 @@ if (isset($test_id) && $test_id > 0) {
     echo '</div>' . K_NEWLINE;
 
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'tsubset_quantity',
             $l['w_num_questions'],
             $l['h_num_questions'],
@@ -1903,7 +1903,7 @@ if (isset($test_id) && $test_id > 0) {
     echo '</div>' . K_NEWLINE;
 
     echo
-        getFormRowTextInput(
+        get_form_row_text_input(
             'tsubset_answers',
             $l['w_num_answers'],
             $l['h_num_answers'],

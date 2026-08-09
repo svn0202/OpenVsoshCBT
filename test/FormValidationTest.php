@@ -351,8 +351,8 @@ final class FormValidationTest extends TestCase
                 '-r',
                 'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
                     . '"w_datetime_format" => "Date and time", "a_meta_charset" => "UTF-8"]; '
-                    . '$name = function_exists("getFormRowTextInput") '
-                    . '? "getFormRowTextInput" : "get_form_row_text_input"; '
+                    . '$name = function_exists("get_form_row_text_input") '
+                    . '? "get_form_row_text_input" : "get_form_row_text_input"; '
                     . 'echo $name("starts_at", "Starts", "Start time", "", "2026-08-10 12:34:56", '
                     . '"", 255, false, true, false, "", true, "off", "email", "Choose & confirm");',
                 dirname(__DIR__) . '/shared/code/tce_functions_form.php',
