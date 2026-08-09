@@ -14,7 +14,7 @@ const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
 /**
  * Build the canonical Word-import template offered by the admin interface.
  */
-function F_tmf_word_import_template(): string
+function f_tmf_word_import_template(): string
 {
     if (!class_exists(ZipArchive::class)) {
         throw new TmfWordImportException('Для создания шаблона требуется расширение ZIP.');
