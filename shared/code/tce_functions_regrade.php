@@ -74,7 +74,7 @@ function f_tmf_recorded_answer_score(array $test, array $question, array $answer
  * Regrade objective and keyed short answers. Essays without enabled correct keys are deliberately
  * excluded so manually assigned essay scores and comments remain untouched.
  */
-function F_tmf_regrade_test(int $test_id): int
+function f_tmf_regrade_test(int $test_id): int
 {
     global $db;
     $test_result = F_db_query(
