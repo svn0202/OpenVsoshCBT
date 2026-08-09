@@ -102,7 +102,7 @@ function f_tmf_catalog_test_status(int $test_status, bool $pregenerated): int
 /**
  * Delete unopened pre-generated attempts whose source inputs changed.
  */
-function F_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
+function f_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
 {
     require_once '../config/tce_config.php';
     global $db;
