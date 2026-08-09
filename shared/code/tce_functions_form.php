@@ -255,7 +255,7 @@ function f_check_fields_format(mixed $formfields): string
  * see: F_check_required_fields, F_check_fields_format
  * @return bool false in case of error, true otherwise
  */
-function F_check_form_fields(): bool
+function f_check_form_fields(): bool
 {
     require_once '../config/tce_config.php';
     $formfields = F_decode_form_fields(); //decode form fields
