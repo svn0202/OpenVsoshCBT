@@ -14049,7 +14049,7 @@ count = 6
 [[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_tmf_offline_scalar` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_tmf_offline_scalar` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
