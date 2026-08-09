@@ -143,7 +143,7 @@ if (isset($_REQUEST['question_description'])) {
         $question_description = f_utf8_normalizer($question_description, K_UTF8_NORMALIZATION_MODE);
     }
     $question_description = F_tmf_set_similarity_threshold(
-        $question_description,
+        (string) $question_description,
         $question_similarity_threshold,
     );
     $question_description = F_tmf_set_matching_positions(
