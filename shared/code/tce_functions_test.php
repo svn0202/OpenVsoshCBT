@@ -2272,12 +2272,12 @@ function F_questionForm($test_id, $testlog_id, $formname)
             }
             $question_description = F_tmf_question_editor_description($question_description);
             // display question description
-            if ($m['question_type'] == 3) {
+            if (f_legacy_int_equals($m['question_type'], 3)) {
                 $str .= '<label for="answertext">';
             }
 
             $str .= F_decode_tcecode($question_description) . K_NEWLINE;
-            if ($m['question_type'] == 3) {
+            if (f_legacy_int_equals($m['question_type'], 3)) {
                 $str .= '</label>';
             }
 
@@ -2285,7 +2285,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
             $str .= '<hr/>' . K_NEWLINE;
             $str .= '</div>' . K_NEWLINE;
             $str .= '<div class="rowl">' . K_NEWLINE;
-            if ($m['question_type'] == 3) {
+            if (f_legacy_int_equals($m['question_type'], 3)) {
                 // TEXT - free text question
                 $str .=
                     '<textarea cols="'
@@ -2552,7 +2552,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
                                     for ($pos = 1; $pos <= $max_position; ++$pos) {
                                         $str .= '<option value="' . $pos . '"';
-                                        if ($pos == $ma['logansw_position']) {
+                                        if (f_legacy_int_equals($ma['logansw_position'], $pos)) {
                                             $str .= ' selected="selected"';
                                         }
 
@@ -2579,7 +2579,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     F_display_db_error();
                 }
 
-                if ($m['question_type'] == 1) {
+                if (f_legacy_int_equals($m['question_type'], 1)) {
                     // display default "unanswered" option for MCSA
                     $str .= '<li' . $noanswer_hidden . '>';
                     $str .= '<input type="radio"' . $noanswer_disabled . ' name="answpos" id="answpos_0" value="0"';
@@ -2758,15 +2758,19 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     . '" data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="button" name="jumpquestion_'
+                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . $m['testlog_id']
                     . '" id="jumpquestion_'
+                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . $m['testlog_id']
                     . '" value="'
                     . $i
                     . '" title="'
+                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . F_tcecodeToTitle($m['question_description'])
                     . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 $question_timer = f_get_boolean($m['question_timer']);
                 $qsel = $i;
                 if ($qsel > 1) {
@@ -2801,18 +2805,22 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             $str .= '</abbr>';
             $str .= '&nbsp;';
             // show question score
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
             $n_question_score = $testdata['test_score_right'] * $m['question_difficulty'];
             $str .= '<abbr class="offbox" title="' . $l['w_max_score'] . ': ' . $n_question_score . '">';
             $str .= sprintf('% 5.1f', $n_question_score);
             $str .= '</abbr>';
             $str .= '&nbsp;';
             if ($testlog_id === 0) {
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 $testlog_id = $m['testlog_id'];
                 $testlog_id_last = $testlog_id;
             }
 
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
             $testlog_id_last = $m['testlog_id'];
             $str .= '<span class="exam-question-menu-description">'
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 . f_tcecode_to_line($m['question_description'])
                 . '</span>';
             $str .= '</li>' . K_NEWLINE;
@@ -3083,6 +3091,7 @@ function F_testComment($test_id)
 		LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches test comment rows as arrays
                 $comment = $m['testuser_comment'];
             }
         } else {
@@ -3225,6 +3234,7 @@ function F_getTestGroups($test_id)
         . ' ORDER BY tstgrp_group_id';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_assoc($r)) {
+            // @mago-expect analysis:invalid-array-access -- active DAL fetches test group rows as arrays
             $ids .= ',' . $m['tstgrp_group_id'];
         }
     } else {
