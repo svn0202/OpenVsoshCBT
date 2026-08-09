@@ -13904,12 +13904,6 @@ count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `utrim`: expected `string`, but found `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
 message = "Parameter `$dbtable` is missing a type hint."
 count = 1
@@ -14138,12 +14132,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "nullable-return-statement"
-message = "Function `utrim` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "possibly-false-operand"
 message = "Left operand in `>` comparison might be `false` (type `false|int`)."
 count = 1
@@ -14236,7 +14224,7 @@ count = 2
 file = "shared/code/tce_functions_general.php"
 code = "possibly-null-argument"
 message = "Argument #3 of function `preg_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 5
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
