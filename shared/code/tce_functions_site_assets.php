@@ -7,6 +7,9 @@ function openvsosh_site_asset_directory(): string
     return rtrim(K_PATH_CACHE, '/\\') . DIRECTORY_SEPARATOR . 'site-assets' . DIRECTORY_SEPARATOR;
 }
 
+/**
+ * @return array{stored: string, mime: string, sha256: string}|false
+ */
 function openvsosh_site_asset_metadata(string $type): array|false
 {
     if (!in_array($type, ['logo', 'background'], true)) {
