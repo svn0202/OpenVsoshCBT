@@ -2371,7 +2371,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
                         $str .= '<li>';
                         switch ($m['question_type']) {
                             case 1:
-                                {
                                     // MCSA - single-answer question
                                     $str .=
                                         '<input type="radio" name="answpos" id="answpos_'
@@ -2400,9 +2399,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     }
 
                                     break;
-                                }
                             case 2:
-                                {
                                     // MCMA - multiple-answer question
                                     if (f_get_boolean($testdata['test_mcma_radio']) && !$tmf_options['checkbox']) {
                                         // radiobuttons
@@ -2521,10 +2518,8 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     }
 
                                     break;
-                                }
                             case 4:
                             case 5:
-                                {
                                     // ORDER / MATCHING position questions
                                     $matching_class = (int) $m['question_type'] === 5
                                         ? ' class="matching-position"'
@@ -2563,7 +2558,6 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     $str .= F_decode_tcecode($ma['answer_description']);
                                     $str .= '</label>';
                                     break;
-                                }
                         }
 
                         // end of switch
