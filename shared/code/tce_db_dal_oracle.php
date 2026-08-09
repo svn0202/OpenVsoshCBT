@@ -84,7 +84,7 @@ function f_db_error($link_identifier = null)
  * @param $link_identifier (resource) database link identifier.
  * @return false in case of error, TRUE or resource-identifier in case of success.
  */
-function F_db_query($query, $link_identifier)
+function f_db_query($query, $link_identifier)
 {
     static $transactions = [];
     $connection_id = is_object($link_identifier)
