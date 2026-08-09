@@ -356,7 +356,7 @@ function f_tsv_to_text($str): string
  * @param $mode (int) field mode: 1=not required; 2=required.
  * @return string HTML marker.
  */
-function showRequiredField($mode = 1): string
+function show_required_field($mode = 1): string
 {
     global $l;
     $str = '';

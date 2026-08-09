@@ -377,7 +377,7 @@ echo
         false,
         false,
         false,
-        showRequiredField($regfields['user_name']),
+        show_required_field($regfields['user_name']),
         $regfields['user_name'] == 2,
         'username',
     )
@@ -395,7 +395,7 @@ if (K_USRREG_EMAIL_CONFIRM || $regfields['user_email']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_email']),
+            show_required_field($regfields['user_email']),
             $regfields['user_email'] == 2,
             'email',
             'email',
@@ -415,7 +415,7 @@ echo
         false,
         false,
         true,
-        showRequiredField(2),
+        show_required_field(2),
         true,
         'new-password',
     )
@@ -432,7 +432,7 @@ echo
         false,
         false,
         true,
-        showRequiredField(2),
+        show_required_field(2),
         true,
         'new-password',
     )
@@ -450,7 +450,7 @@ if ($regfields['user_regnumber']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_regnumber']),
+            show_required_field($regfields['user_regnumber']),
             $regfields['user_regnumber'] == 2,
         )
     ;
@@ -469,7 +469,7 @@ if ($regfields['user_firstname']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_firstname']),
+            show_required_field($regfields['user_firstname']),
             $regfields['user_firstname'] == 2,
             'given-name',
         )
@@ -489,7 +489,7 @@ if ($regfields['user_lastname']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_lastname']),
+            show_required_field($regfields['user_lastname']),
             $regfields['user_lastname'] == 2,
             'family-name',
         )
@@ -509,7 +509,7 @@ if ($regfields['user_birthdate']) {
             true,
             false,
             false,
-            showRequiredField($regfields['user_birthdate']),
+            show_required_field($regfields['user_birthdate']),
             $regfields['user_birthdate'] == 2,
             'bday',
         )
@@ -529,7 +529,7 @@ if ($regfields['user_birthplace']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_birthplace']),
+            show_required_field($regfields['user_birthplace']),
             $regfields['user_birthplace'] == 2,
         )
     ;
@@ -548,7 +548,7 @@ if ($regfields['user_ssn']) {
             false,
             false,
             false,
-            showRequiredField($regfields['user_ssn']),
+            show_required_field($regfields['user_ssn']),
             $regfields['user_ssn'] == 2,
         )
     ;
@@ -558,7 +558,7 @@ if ($regfields['user_groups']) {
     echo '<div class="row">' . K_NEWLINE;
     echo '<span class="label">' . K_NEWLINE;
     echo '<label for="user_groups">' . $l['w_groups'] . '</label>' . K_NEWLINE;
-    echo showRequiredField($regfields['user_groups']);
+    echo show_required_field($regfields['user_groups']);
     echo '</span>' . K_NEWLINE;
     echo '<span class="formw">' . K_NEWLINE;
     echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple">' . K_NEWLINE;
