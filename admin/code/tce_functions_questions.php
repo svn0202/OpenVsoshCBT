@@ -83,7 +83,7 @@ function f_question_get_position(mixed $question_id): mixed
  * @param $question_id (int) question ID
  * @return array containing selected question data, false in case of error
  */
-function F_question_get_data($question_id)
+function f_question_get_data($question_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

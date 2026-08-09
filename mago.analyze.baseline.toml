@@ -3171,13 +3171,13 @@ count = 9
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_question_get_data`: expected `array<array-key, mixed>`, but found `false`."
+message = "Invalid return type for function `f_question_get_data`: expected `array<array-key, mixed>`, but found `false`."
 count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_question_get_data`: expected `array<array-key, mixed>`, but found `unknown-ref(Returns)`."
+message = "Invalid return type for function `f_question_get_data`: expected `array<array-key, mixed>`, but found `unknown-ref(Returns)`."
 count = 1
 
 [[issues]]
@@ -3189,7 +3189,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
 code = "missing-return-type"
-message = "Function `F_question_get_data` is missing a return type hint."
+message = "Function `f_question_get_data` is missing a return type hint."
 count = 1
 
 [[issues]]
