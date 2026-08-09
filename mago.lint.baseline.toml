@@ -244,7 +244,7 @@ count = 1
 file = "admin/code/tce_functions_user_select.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 6
+count = 5
 
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
