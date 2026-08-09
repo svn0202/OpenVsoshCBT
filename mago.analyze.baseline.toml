@@ -17131,12 +17131,6 @@ message = "Unreachable else clause"
 count = 3
 
 [[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "useless-control-flow"
-message = "This control flow is unnecessary"
-count = 3
-
-[[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "impossible-condition"
 message = "Redundant ternary operator: condition is always falsy."
