@@ -750,7 +750,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
             );
             $x += $align_mark_length;
             if ($current_question <= $num_questions) {
-                if (($rr % 2) != 0) {
+                if (($rr % 2) !== 0) {
                     // row background
                     $out .= $pdf->graph->getRect(
                         $x,
