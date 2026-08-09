@@ -940,7 +940,7 @@ function f_remove_tcecode($str): mixed
  * @param $str (string) text to process
  * return string
  */
-function F_tcecodeToLine($str): mixed
+function f_tcecode_to_line($str): mixed
 {
     $str = (string) $str;
     if (F_has_html_markup($str)) {
