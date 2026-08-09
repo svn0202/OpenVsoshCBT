@@ -283,7 +283,7 @@ function f_check_form_fields(): bool
  * @param string $onclick additional javascript code to execute before closing the window.
  * @return string XHTML code
  */
-function F_close_button(string $onclick = ''): string
+function f_close_button(string $onclick = ''): string
 {
     require_once '../config/tce_config.php';
     $str = '';
