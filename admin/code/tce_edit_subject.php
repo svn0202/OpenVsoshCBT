@@ -304,7 +304,13 @@ switch ($menu_mode) {
 if ($subject_module_id <= 0) {
     $sql = F_select_modules_sql() . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        $subject_module_id = ($m = F_db_fetch_array($r)) ? $m['module_id'] : 0;
+        if ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $default_module_id */
+            $default_module_id = $m['module_id'];
+            $subject_module_id = (int) $default_module_id;
+        } else {
+            $subject_module_id = 0;
+        }
     } else {
         F_display_db_error();
     }
@@ -323,11 +329,15 @@ if ($formstatus && $menu_mode != 'clear') {
             . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $subject_id = $m['subject_id'];
+                /** @var int|numeric-string $stored_subject_id */
+                $stored_subject_id = $m['subject_id'];
+                /** @var int|numeric-string $stored_module_id */
+                $stored_module_id = $m['subject_module_id'];
+                $subject_id = (int) $stored_subject_id;
                 $subject_name = $m['subject_name'];
                 $subject_description = $m['subject_description'];
                 $subject_enabled = f_get_boolean($m['subject_enabled']);
-                $subject_module_id = $m['subject_module_id'];
+                $subject_module_id = (int) $stored_module_id;
             } else {
                 $subject_name = '';
                 $subject_description = '';
@@ -384,7 +394,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['module_id'] . '"';
-        if ($m['module_id'] == $subject_module_id) {
+        /** @var int|numeric-string $listed_module_id */
+        $listed_module_id = $m['module_id'];
+        if ((int) $listed_module_id === $subject_module_id) {
             echo ' selected="selected"';
         }
 
@@ -430,7 +442,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($subject_id == 0) {
+if ($subject_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -440,7 +452,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['subject_id'] . '"';
-        if ($m['subject_id'] == $subject_id) {
+        /** @var int|numeric-string $listed_subject_id */
+        $listed_subject_id = $m['subject_id'];
+        if ((int) $listed_subject_id === $subject_id) {
             echo ' selected="selected"';
         }
 
@@ -524,7 +538,7 @@ echo getFormRowCheckBox('subject_enabled', $l['w_enabled'], $l['h_enabled'], '',
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if (isset($subject_id) && $subject_id > 0) {
+if ($subject_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -568,7 +582,7 @@ if ($subject_module_id > 0) {
 echo '</span>' . K_NEWLINE;
 echo '<span class="right">' . K_NEWLINE;
 
-if (isset($subject_id) && $subject_id > 0) {
+if ($subject_id > 0) {
     echo
         '<a href="tce_edit_question.php?subject_module_id='
             . $subject_module_id
