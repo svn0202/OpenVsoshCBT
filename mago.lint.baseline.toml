@@ -553,12 +553,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 3
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 4
-
-[[issues]]
 file = "shared/code/tce_db_connect.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."

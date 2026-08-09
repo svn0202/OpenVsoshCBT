@@ -563,31 +563,23 @@ if ($logged) { //if user is just logged in: reloads page
     $htmlredir .= '</html>' . K_NEWLINE;
     switch (K_REDIRECT_LOGIN_MODE) {
         case 1:
-            {
                 // relative redirect
                 header('Location: ' . $redirect_page);
                 break;
-            }
         case 2:
-            {
                 // absolute redirect
                 header('Location: ' . K_PATH_HOST . $redirect_page);
                 break;
-            }
         case 3:
-            {
                 // html redirect
                 echo $htmlredir;
                 break;
-            }
         case 4:
         default:
-            {
                 // full redirect
                 header('Location: ' . K_PATH_HOST . $redirect_page);
                 echo $htmlredir;
                 break;
-            }
     }
 
     exit();
