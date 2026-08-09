@@ -1123,7 +1123,7 @@ class TmfWordImporter
         }
         // The marker can be split across Word runs. In that case, removing it
         // from the plain representation is safer than leaving a visible token.
-        return preg_replace('/' . preg_quote($marker, '/') . '/iu', '', $html);
+        return preg_replace('/' . preg_quote($marker, '/') . '/iu', '', $html) ?? $html;
     }
 
     private function loadHtmlFragment(string $html): DOMDocument
@@ -1193,7 +1193,7 @@ class TmfWordImporter
             '/ {2,}/',
             static fn($match): string => str_repeat('&nbsp;', strlen($match[0]) - 1) . ' ',
             $escaped,
-        );
+        ) ?? $escaped;
     }
 
     private function wordAttribute(DOMElement $element, string $name): string
