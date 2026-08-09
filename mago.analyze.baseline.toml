@@ -3213,18 +3213,6 @@ count = 6
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getAuthorizedDirs`: expected `unknown-ref(a)`, but found `string('[^/]*')`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_getAuthorizedDirs`: expected `unknown-ref(a)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_getDirTable`: expected `unknown-ref(html)`, but found `truthy-string`."
 count = 1
 
@@ -3340,12 +3328,6 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-return-type"
 message = "Function `F_deleteMediaFile` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_getAuthorizedDirs` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3587,12 +3569,6 @@ file = "admin/code/tce_functions_filemanager.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `a`."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
