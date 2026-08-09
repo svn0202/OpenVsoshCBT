@@ -22,7 +22,7 @@ final class SvgGraphTest extends TestCase
     public function testOutputsGeneratedGraph(): void
     {
         ob_start();
-        F_getSVGGraph('10v20x30v40', 100, 250);
+        f_get_svg_graph('10v20x30v40', 100, 250);
         $svg = (string) ob_get_clean();
 
         self::assertStringContainsString('<svg width="100" height="250"', $svg);
