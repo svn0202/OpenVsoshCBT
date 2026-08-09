@@ -53,7 +53,7 @@ function f_select_modules_sql(mixed $andwhere = ''): string
  * @param $andwhere (string) additional WHERE statements (e.g.: "subject_enabled='1'")
  * @return string sql statement
  */
-function F_select_subjects_sql(mixed $andwhere = ''): string
+function f_select_subjects_sql(mixed $andwhere = ''): string
 {
     return F_select_module_subjects_sql($andwhere);
 }
