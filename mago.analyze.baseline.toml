@@ -14415,7 +14415,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_pregeneration.php"
 code = "imprecise-type"
-message = "Type `array` in return type of `F_tmf_pregeneration_hash_rows` is imprecise, equivalent to `array<array-key, mixed>`."
+message = "Type `array` in return type of `f_tmf_pregeneration_hash_rows` is imprecise, equivalent to `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
