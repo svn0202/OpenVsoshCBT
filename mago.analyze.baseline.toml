@@ -194,12 +194,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_class_import_xml.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtolower`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 41
@@ -226,7 +220,7 @@ count = 32
 file = "admin/code/tce_class_import_xml.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 3
+count = 2
 
 [[issues]]
 file = "admin/code/tce_class_import_xml.php"
@@ -299,18 +293,6 @@ file = "admin/code/tce_class_import_xml.php"
 code = "unreachable-else-clause"
 message = "Unreachable else clause"
 count = 4
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "unused-parameter"
-message = "Parameter `$attribs` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "unused-parameter"
-message = "Parameter `$parser` is never used."
-count = 3
 
 [[issues]]
 file = "admin/code/tce_edit_answer.php"

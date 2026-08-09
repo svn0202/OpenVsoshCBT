@@ -51,8 +51,9 @@ final class XmlQuestionImporterTest extends TestCase
         $unusedPath = sys_get_temp_dir() . '/tce-unused-import-' . hrtime(true) . '.xml';
         $class->getProperty('xmlfile')->setValue($importer, $unusedPath);
         $handler = $class->getMethod('startElementHandler');
+        $parser = xml_parser_create();
 
-        self::assertNull($handler->invoke($importer, null, 'metadata', []));
+        self::assertNull($handler->invoke($importer, $parser, 'metadata', []));
     }
 
     public function testSegmentContentHandlerAccumulatesDataAndReturnsNothing(): void
@@ -63,9 +64,10 @@ final class XmlQuestionImporterTest extends TestCase
         $class->getProperty('xmlfile')->setValue($importer, $unusedPath);
         $class->getProperty('current_element')->setValue($importer, 'question_description');
         $handler = $class->getMethod('segContentHandler');
+        $parser = xml_parser_create();
 
-        self::assertNull($handler->invoke($importer, null, 'first'));
-        self::assertNull($handler->invoke($importer, null, ' second'));
+        self::assertNull($handler->invoke($importer, $parser, 'first'));
+        self::assertNull($handler->invoke($importer, $parser, ' second'));
         self::assertSame('first second', $class->getProperty('current_data')->getValue($importer));
     }
 
@@ -81,7 +83,8 @@ final class XmlQuestionImporterTest extends TestCase
                     . '$path = tempnam(sys_get_temp_dir(), "tce-import-"); '
                     . '$class->getProperty("xmlfile")->setValue($importer, $path); '
                     . '$handler = $class->getMethod("endElementHandler"); '
-                    . 'echo json_encode($handler->invoke($importer, null, "metadata"));',
+                    . '$parser = xml_parser_create(); '
+                    . 'echo json_encode($handler->invoke($importer, $parser, "metadata"));',
             ],
             dirname(__DIR__) . '/admin/code',
         );
@@ -106,7 +109,8 @@ final class XmlQuestionImporterTest extends TestCase
                     . '$class->getProperty("level")->setValue($importer, "question"); '
                     . '$class->getProperty("current_element")->setValue($importer, "question_description"); '
                     . '$class->getProperty("current_data")->setValue($importer, " description "); '
-                    . '$class->getMethod("endElementHandler")->invoke($importer, null, "description"); '
+                    . '$parser = xml_parser_create(); '
+                    . '$class->getMethod("endElementHandler")->invoke($importer, $parser, "description"); '
                     . '$data = $class->getProperty("level_data")->getValue($importer); '
                     . 'echo json_encode($data["question"]["question_description"]);',
             ],
