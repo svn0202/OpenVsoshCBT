@@ -756,7 +756,7 @@ function F_select_table_header_element(mixed $order_field, mixed $orderdir, mixe
  * @param $color (string) color in HEX format.
  * @return (string) Color.
  */
-function get_contrast_color($color): string
+function get_contrast_color(mixed $color): string
 {
     $r = hexdec(substr($color, 0, 2));
     $g = hexdec(substr($color, 2, 2));
