@@ -1963,12 +1963,6 @@ message = "Function name `F_getRandomOTPkey` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_page.php"
 code = "function-name"
 message = "Function name `F_show_page_navigator` should be in snake case."
