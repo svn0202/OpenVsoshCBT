@@ -997,12 +997,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 4
 
 [[issues]]
-file = "public/code/tce_test_review.php"
-code = "function-name"
-message = "Function name `F_tmf_review_json` should be in snake case."
-count = 1
-
-[[issues]]
 file = "public/code/tce_user_change_email.php"
 code = "no-redundant-block"
 message = "Redundant block around statements."
