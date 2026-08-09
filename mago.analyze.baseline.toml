@@ -6088,7 +6088,7 @@ count = 1
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
 message = "Left operand in `==` comparison has `mixed` type."
-count = 5
+count = 4
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
