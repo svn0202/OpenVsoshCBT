@@ -1984,13 +1984,19 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                 // selected
                                 $unanswered = false;
                                 $answer_id[$m['logansw_answer_id']] = (int) $answer_id[$m['logansw_answer_id']];
-                                if ($answer_id[$m['logansw_answer_id']] == $m['answer_position']) {
+                                if (f_legacy_int_equals(
+                                    $m['answer_position'],
+                                    $answer_id[$m['logansw_answer_id']],
+                                )) {
                                     $answer_score += $question_right_score;
                                 } else {
                                     $answer_score += $question_wrong_score;
                                 }
 
-                                if ($answer_id[$m['logansw_answer_id']] != $m['logansw_position']) {
+                                if (!f_legacy_int_equals(
+                                    $m['logansw_position'],
+                                    $answer_id[$m['logansw_answer_id']],
+                                )) {
                                     $answer_changed = true;
                                 }
 
