@@ -1092,7 +1092,7 @@ if (!isset($test_num) || !empty($test_num)) {
     $test_num = 1; // default number of PDF tests to generate
 }
 
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if (!isset($test_id) || $test_id === 0) {
         $test_id = 0;
         $test_name = '';

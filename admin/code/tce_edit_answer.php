@@ -680,7 +680,7 @@ if ($changesubject > 0 || $changemodule > 0 || $answer_question_id <= 0) {
 }
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if ($changemodule > 0 || $changesubject > 0 || $changecategory > 0 || $answer_id === 0) {
         $answer_id = 0;
         $answer_description = '';

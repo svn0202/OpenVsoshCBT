@@ -716,7 +716,7 @@ if ($changemodule > 0 || $question_subject_id <= 0) {
 }
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if ($changemodule > 0 || $changecategory > 0 || $question_id === 0) {
         $question_id = 0;
         $question_description = '';
