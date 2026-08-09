@@ -23,6 +23,12 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    public function testPreviewInputPreservesLiteralPlusAndRejectsArrays(): void
+    {
+        $this->assertSame('A+B C', \f_tcecode_preview_input('A+B%20C'));
+        $this->assertSame('', \f_tcecode_preview_input(['A+B']));
+    }
+
     public function testHtmlSubstringStopsAfterClosingTag(): void
     {
         $this->assertSame(
