@@ -257,7 +257,7 @@ switch ($menu_mode) {
                 . K_TABLE_TESTS
                 . ' SET
 			test_end_time='
-                . F_empty_to_null('' . ((int) substr($test_end_time, 0, 1) - 1) . substr($test_end_time, 1))
+                . f_empty_to_null('' . ((int) substr($test_end_time, 0, 1) - 1) . substr($test_end_time, 1))
                 . '
 			WHERE test_id='
                 . $test_id
@@ -278,7 +278,7 @@ switch ($menu_mode) {
                 . K_TABLE_TESTS
                 . ' SET
 			test_end_time='
-                . F_empty_to_null('' . ((int) substr($test_end_time, 0, 1) + 1) . substr($test_end_time, 1))
+                . f_empty_to_null('' . ((int) substr($test_end_time, 0, 1) + 1) . substr($test_end_time, 1))
                 . '
 			WHERE test_id='
                 . $test_id
@@ -644,10 +644,10 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $test_description)
                     . '\',
 				test_begin_time='
-                    . F_empty_to_null($test_begin_time)
+                    . f_empty_to_null($test_begin_time)
                     . ',
 				test_end_time='
-                    . F_empty_to_null($test_end_time)
+                    . f_empty_to_null($test_end_time)
                     . ',
 				test_duration_time=\''
                     . $test_duration_time
@@ -716,7 +716,7 @@ switch ($menu_mode) {
                     . (int) $test_logout_on_timeout
                     . '\',
 				test_password='
-                    . F_empty_to_null($test_password)
+                    . f_empty_to_null($test_password)
                     . '
 				WHERE test_id='
                     . $test_id
@@ -851,10 +851,10 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $test_description)
                     . '\',
 				'
-                    . F_empty_to_null($test_begin_time)
+                    . f_empty_to_null($test_begin_time)
                     . ',
 				'
-                    . F_empty_to_null($test_end_time)
+                    . f_empty_to_null($test_end_time)
                     . ',
 				\''
                     . $test_duration_time
@@ -926,7 +926,7 @@ switch ($menu_mode) {
                     . (int) $test_logout_on_timeout
                     . '\',
 				'
-                    . F_empty_to_null($test_password)
+                    . f_empty_to_null($test_password)
                     . '
 				)';
                 if (!($r = F_db_query($sql, $db))) {

@@ -2118,9 +2118,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
         $change_time = $unanswered ? '' : date(K_TIMESTAMP_FORMAT);
 
         $sqlu = 'UPDATE ' . K_TABLE_TESTS_LOGS . ' SET';
-        $sqlu .= ' testlog_answer_text=' . F_empty_to_null($answer_text) . ',';
+        $sqlu .= ' testlog_answer_text=' . f_empty_to_null($answer_text) . ',';
         $sqlu .= ' testlog_score=' . $answer_score . ',';
-        $sqlu .= ' testlog_change_time=' . F_empty_to_null($change_time) . ',';
+        $sqlu .= ' testlog_change_time=' . f_empty_to_null($change_time) . ',';
         $sqlu .= ' testlog_reaction_time=' . (int) $reaction_time . ',';
         $sqlu .= " testlog_user_ip='" . (string) get_normalized_ip($_SERVER['REMOTE_ADDR']) . "'";
         $sqlu .= ' WHERE testlog_id=' . $testlog_id . '';

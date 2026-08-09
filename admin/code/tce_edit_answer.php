@@ -468,7 +468,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $answer_description)
                     . '\',
 				answer_explanation='
-                    . F_empty_to_null($answer_explanation)
+                    . f_empty_to_null($answer_explanation)
                     . ',
 				answer_isright=\''
                     . (int) $answer_isright
@@ -480,7 +480,7 @@ switch ($menu_mode) {
                     . f_zero_to_null($answer_position)
                     . ',
 					answer_keyboard_key='
-                    . F_empty_to_null($answer_keyboard_key)
+                    . f_empty_to_null($answer_keyboard_key)
                     . ',
 					answer_weight='
                     . ($answer_weight === null ? 'NULL' : (string) $answer_weight)
@@ -578,7 +578,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $answer_description)
                     . '\',
 				'
-                    . F_empty_to_null($answer_explanation)
+                    . f_empty_to_null($answer_explanation)
                     . ',
 				\''
                     . (int) $answer_isright
@@ -590,7 +590,7 @@ switch ($menu_mode) {
                     . f_zero_to_null($answer_position)
                     . ',
 				'
-                    . F_empty_to_null($answer_keyboard_key)
+                    . f_empty_to_null($answer_keyboard_key)
                     . ',
 					'
                     . ($answer_weight === null ? 'NULL' : (string) $answer_weight)

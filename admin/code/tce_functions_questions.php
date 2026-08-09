@@ -328,7 +328,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
                         . f_zero_to_null($m['answer_position'])
                         . ',
 						'
-                        . F_empty_to_null($m['answer_keyboard_key'])
+                        . f_empty_to_null($m['answer_keyboard_key'])
                         . ',
 							'
                         . ($m['answer_weight'] === null ? 'NULL' : (string) (int) $m['answer_weight'])

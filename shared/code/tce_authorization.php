@@ -410,28 +410,28 @@ if (
                         . F_escape_sql($db, $_POST['xuser_name'])
                         . '\',
 							'
-                        . F_empty_to_null($altusr['user_email'])
+                        . f_empty_to_null($altusr['user_email'])
                         . ',
 							\''
                         . F_escape_sql($db, $xuser_password)
                         . '\',
 							'
-                        . F_empty_to_null($altusr['user_regnumber'])
+                        . f_empty_to_null($altusr['user_regnumber'])
                         . ',
 							'
-                        . F_empty_to_null($altusr['user_firstname'])
+                        . f_empty_to_null($altusr['user_firstname'])
                         . ',
 							'
-                        . F_empty_to_null($altusr['user_lastname'])
+                        . f_empty_to_null($altusr['user_lastname'])
                         . ',
 							'
-                        . F_empty_to_null($altusr['user_birthdate'])
+                        . f_empty_to_null($altusr['user_birthdate'])
                         . ',
 							'
-                        . F_empty_to_null($altusr['user_birthplace'])
+                        . f_empty_to_null($altusr['user_birthplace'])
                         . ',
 							'
-                        . F_empty_to_null($altusr['user_ssn'])
+                        . f_empty_to_null($altusr['user_ssn'])
                         . ',
 							\''
                         . (int) $altusr['user_level']

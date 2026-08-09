@@ -554,7 +554,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                     . $qscore
                     . ',
 					testlog_change_time='
-                    . F_empty_to_null($change_time)
+                    . f_empty_to_null($change_time)
                     . ',
 					testlog_reaction_time=1000
 					WHERE testlog_id='

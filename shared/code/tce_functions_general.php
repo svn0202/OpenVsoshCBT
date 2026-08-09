@@ -49,7 +49,7 @@ function F_count_rows($dbtable, $where = '')
  * @param $str (string) string to check.
  * @return string $str quoted if not empty, NULL otherwise
  */
-function F_empty_to_null($str): mixed
+function f_empty_to_null($str): mixed
 {
     global $db;
     require_once '../../shared/code/tce_db_dal.php';
