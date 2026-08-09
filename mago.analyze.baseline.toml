@@ -14109,7 +14109,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `F_tmf_offline_issue`.'
+message = 'Potentially unhandled exception `Random\RandomException` in `f_tmf_offline_issue`.'
 count = 1
 
 [[issues]]

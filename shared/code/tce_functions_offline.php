@@ -54,7 +54,7 @@ function f_tmf_offline_scalar(mixed $value): string
  *
  * @return array{status:string,envelope?:array{format:string,payload_b64:string,signature:string},filename?:string}
  */
-function F_tmf_offline_issue(int $testuser_id): array
+function f_tmf_offline_issue(int $testuser_id): array
 {
     require_once '../config/tce_config.php';
     require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
