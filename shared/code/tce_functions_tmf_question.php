@@ -99,7 +99,7 @@ function f_tmf_set_matching_positions(string $description, int $positions): stri
  *
  * @return array{description: string, labels: list<string>}
  */
-function F_tmf_matching_presentation(string $description, int $positions): array
+function f_tmf_matching_presentation(string $description, int $positions): array
 {
     $result = ['description' => $description, 'labels' => []];
     if ($positions < 1) {
