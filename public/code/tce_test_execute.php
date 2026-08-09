@@ -62,7 +62,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         exit(); //break page here
     }
 
-    if (isset($_REQUEST['repeat']) && $_REQUEST['repeat'] == 1) {
+    if (isset($_REQUEST['repeat']) && $_REQUEST['repeat'] === '1') {
         // mark previous test attempts as repeated
         F_repeatTest($test_id);
     }
@@ -96,7 +96,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         }
 
         if (!empty($_REQUEST['forceterminate']) && F_isRightTestlogUser($test_id, $testlog_id)) {
-            if ($_REQUEST['forceterminate'] == 'lasttimedquestion') {
+            if ($_REQUEST['forceterminate'] === 'lasttimedquestion') {
                 // update last question
                 if (isset($_REQUEST['answer_version'])) {
                     F_tmf_save_question_answer(
@@ -211,7 +211,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             if (
                 $answer_saved
                 &&
-                (isset($_REQUEST['nextquestion']) || isset($_REQUEST['autonext']) && $_REQUEST['autonext'] == 1)
+                (isset($_REQUEST['nextquestion']) || isset($_REQUEST['autonext']) && $_REQUEST['autonext'] === '1')
                 && $_REQUEST['nextquestionid'] > 0
             ) {
                 // go to next question
