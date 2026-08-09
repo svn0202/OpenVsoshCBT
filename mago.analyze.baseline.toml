@@ -13940,12 +13940,6 @@ count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_backup.php"
 code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `Throwable` in `F_tmf_backup_create`."
 count = 1

@@ -361,7 +361,7 @@ function F_tmf_backup_config_from_constants(): array
     return [
         'type' => K_DATABASE_TYPE,
         'host' => K_DATABASE_HOST,
-        'port' => (string) K_DATABASE_PORT,
+        'port' => K_DATABASE_PORT,
         'name' => K_DATABASE_NAME,
         'user' => K_DATABASE_USER_NAME,
         'password' => K_DATABASE_USER_PASSWORD,

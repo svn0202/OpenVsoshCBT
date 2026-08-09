@@ -70,6 +70,25 @@ final class BackupTest extends TestCase
         self::assertSame($config['password'], $environment['PGPASSWORD'] ?? null);
     }
 
+    public function testBackupConfigPreservesDatabaseConstants(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_db_config.php"; '
+                    . 'require_once "tce_functions_backup.php"; '
+                    . '$config = F_tmf_backup_config_from_constants(); '
+                    . 'echo gettype($config["port"]) . ":" '
+                    . '. ($config["port"] === K_DATABASE_PORT ? "same" : "different");',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('string:same', $output);
+    }
+
     public function testOnlyHarmlessPostgresqlVersionMismatchDiagnosticIsIgnored(): void
     {
         $diagnostic = 'pg_restore: error: could not execute query: ERROR:  '
