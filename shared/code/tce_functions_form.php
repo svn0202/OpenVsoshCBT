@@ -193,12 +193,14 @@ function F_check_fields_format(mixed $formfields): string
     $wrongfields = '';
     foreach (F_get_field_format_registry() as $fieldname => $pattern) {
         // only validate fields that were actually submitted with a non-empty scalar value
-        $raw = $formfields[$fieldname] ?? null;
-        if (!is_scalar($raw) || strlen((string) $raw) === 0) {
+        if (!array_key_exists($fieldname, $formfields) || !is_scalar($formfields[$fieldname])) {
             continue;
         }
 
-        $value = (string) $raw;
+        $value = (string) $formfields[$fieldname];
+        if ($value === '') {
+            continue;
+        }
         // an over-long value is treated as invalid rather than risk a costly match. Patterns are
         // server-authored constants, so preg_match needs no error suppression.
         $matches = strlen($value) <= $maxvaluelen ? preg_match('~' . $pattern . '~i', $value) : 0;
@@ -237,17 +239,24 @@ function F_check_form_fields(): bool
 {
     require_once '../config/tce_config.php';
     global $l;
+    $translations = is_array($l) ? $l : [];
     $formfields = F_decode_form_fields(); //decode form fields
     //check missing fields
     if ($missing_fields = F_check_required_fields($formfields)) {
-        F_print_error('WARNING', $l['m_form_missing_fields'] . ': ' . $missing_fields);
+        $message = isset($translations['m_form_missing_fields']) && is_scalar($translations['m_form_missing_fields'])
+            ? (string) $translations['m_form_missing_fields']
+            : '';
+        F_print_error('WARNING', $message . ': ' . $missing_fields);
 
         return false;
     }
 
     //check fields format
     if ($wrong_fields = F_check_fields_format($formfields)) {
-        F_print_error('WARNING', $l['m_form_wrong_fields'] . ': ' . $wrong_fields);
+        $message = isset($translations['m_form_wrong_fields']) && is_scalar($translations['m_form_wrong_fields'])
+            ? (string) $translations['m_form_wrong_fields']
+            : '';
+        F_print_error('WARNING', $message . ': ' . $wrong_fields);
 
         return false;
     }
