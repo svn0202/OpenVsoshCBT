@@ -6,6 +6,28 @@ use PHPUnit\Framework\TestCase;
 
 final class XmlUserImporterTest extends TestCase
 {
+    public function testHeaderOnlyTsvImportSucceeds(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_import_tsv_users/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . 'eval(substr($source, $match[0][1])); '
+                    . '$file = tempnam(sys_get_temp_dir(), "openvsosh-users-tsv-"); '
+                    . 'file_put_contents($file, "header\\n"); '
+                    . '$result = F_import_tsv_users($file); unlink($file); '
+                    . 'echo json_encode(["result" => $result]);',
+                dirname(__DIR__) . '/admin/code/XMLUserImporter.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(['result' => true], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
     public function testDestructionIgnoresAnAlreadyRemovedTemporaryFile(): void
     {
         [$status, $output] = \F_tcecode_run_process(
