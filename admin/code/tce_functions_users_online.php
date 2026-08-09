@@ -117,27 +117,28 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
             echo '<tr>';
             echo '<td align="left">';
             $user_str = '';
-            if ($this_session['session_user_lastname']) {
+            if (!empty($this_session['session_user_lastname'])) {
                 $user_str .= urldecode($this_session['session_user_lastname']) . ', ';
             }
 
-            if ($this_session['session_user_firstname']) {
+            if (!empty($this_session['session_user_firstname'])) {
                 $user_str .= urldecode($this_session['session_user_firstname']) . '';
             }
 
-            $user_str .= ' (' . urldecode($this_session['session_user_name']) . ')';
+            $user_str .= ' (' . urldecode((string) ($this_session['session_user_name'] ?? '')) . ')';
             $user_str = unhtmlentities(strip_tags($user_str));
-            if (F_isAuthorizedEditorForUser($this_session['session_user_id'])) {
+            $session_user_id = (int) ($this_session['session_user_id'] ?? 0);
+            if (F_isAuthorizedEditorForUser($session_user_id)) {
                 echo
-                    '<a href="tce_edit_user.php?user_id=' . $this_session['session_user_id'] . '">' . $user_str . '</a>'
+                    '<a href="tce_edit_user.php?user_id=' . $session_user_id . '">' . $user_str . '</a>'
                 ;
             } else {
                 echo $user_str;
             }
 
             echo '</td>';
-            echo '<td>' . $this_session['session_user_level'] . '</td>';
-            echo '<td>' . $this_session['session_user_ip'] . '</td>';
+            echo '<td>' . (is_scalar($this_session['session_user_level'] ?? null) ? (string) $this_session['session_user_level'] : '') . '</td>';
+            echo '<td>' . (is_scalar($this_session['session_user_ip'] ?? null) ? (string) $this_session['session_user_ip'] : '') . '</td>';
             echo '</tr>' . K_NEWLINE;
         }
     } else {
