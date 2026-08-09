@@ -68,7 +68,7 @@ if (isset($_POST['answpos'])) {
 if (
     $test_id <= 0
     || $testlog_id <= 0
-    || !F_tmf_answer_operation_is_valid($operation_id)
+    || !f_tmf_answer_operation_is_valid($operation_id)
     || !F_isRightTestlogUser($test_id, $testlog_id)
     || !F_executeTest($test_id)
 ) {

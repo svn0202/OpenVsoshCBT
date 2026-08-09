@@ -6,7 +6,7 @@
 
 const TMF_ANSWER_OPERATION_PATTERN = '/^[a-f0-9]{32}$/';
 
-function F_tmf_answer_operation_is_valid(string $operation_id): bool
+function f_tmf_answer_operation_is_valid(string $operation_id): bool
 {
     return preg_match(TMF_ANSWER_OPERATION_PATTERN, $operation_id) === 1;
 }
@@ -20,7 +20,7 @@ function F_tmf_answer_save_decision(
     int $expected_version,
     string $operation_id,
 ): string {
-    if ($expected_version < 0 || !F_tmf_answer_operation_is_valid($operation_id)) {
+    if ($expected_version < 0 || !f_tmf_answer_operation_is_valid($operation_id)) {
         return 'invalid';
     }
     if ($current_operation !== null && hash_equals($current_operation, $operation_id)) {
@@ -49,7 +49,7 @@ function F_tmf_save_question_answer(
     require_once '../config/tce_config.php';
     global $db;
 
-    if (!F_tmf_answer_operation_is_valid($operation_id) || $expected_version < 0) {
+    if (!f_tmf_answer_operation_is_valid($operation_id) || $expected_version < 0) {
         return ['status' => 'invalid', 'version' => $expected_version];
     }
     if (!F_db_query('START TRANSACTION', $db)) {
