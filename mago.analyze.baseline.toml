@@ -12807,7 +12807,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_attachments.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `RuntimeException` in `F_tmf_attempt_archive`."
+message = "Potentially unhandled exception `RuntimeException` in `f_tmf_attempt_archive`."
 count = 1
 
 [[issues]]
