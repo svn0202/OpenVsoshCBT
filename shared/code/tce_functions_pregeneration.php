@@ -35,7 +35,7 @@ function f_tmf_pregeneration_hash_rows(string $sql): array
 /**
  * Hash every input that can affect a generated participant variant.
  */
-function F_tmf_pregeneration_hash(int $test_id, int $user_id): string
+function f_tmf_pregeneration_hash(int $test_id, int $user_id): string
 {
     $test_id = max(0, $test_id);
     $user_id = max(0, $user_id);
