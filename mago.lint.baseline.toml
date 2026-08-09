@@ -673,12 +673,6 @@ message = "Redundant block around statements."
 count = 10
 
 [[issues]]
-file = "admin/code/tce_show_result_allusers.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 4
-
-[[issues]]
 file = "admin/code/tce_show_result_user.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
