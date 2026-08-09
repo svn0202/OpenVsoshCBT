@@ -186,7 +186,7 @@ function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
 /**
  * Generate one unopened attempt using the standard server-side generator.
  */
-function F_tmf_pregenerate_user(int $test_id, int $user_id): string
+function f_tmf_pregenerate_user(int $test_id, int $user_id): string
 {
     require_once '../config/tce_config.php';
     global $db;
