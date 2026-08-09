@@ -4904,18 +4904,6 @@ count = 4
 
 [[issues]]
 file = "admin/code/tce_import_users.php"
-code = "deprecated-function"
-message = "Call to deprecated function: `xml_parser_free`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "deprecated-function"
-message = "Call to deprecated function: `xml_set_object`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 6
@@ -5044,48 +5032,6 @@ count = 2
 file = "admin/code/tce_import_users.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `unlink`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_get_current_line_number`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_get_error_code`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_parse`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_parser_free`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_parser_set_option`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_set_character_data_handler`: expected `XMLParser`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `xml_set_element_handler`: expected `XMLParser`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -5276,24 +5222,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_import_users.php"
-code = "unused-method"
-message = "Method `endelementhandler()` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-method"
-message = "Method `segcontenthandler()` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-method"
-message = "Method `startelementhandler()` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
 code = "unused-parameter"
 message = "Parameter `$attribs` is never used."
 count = 1
@@ -5303,30 +5231,6 @@ file = "admin/code/tce_import_users.php"
 code = "unused-parameter"
 message = "Parameter `$parser` is never used."
 count = 3
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-property"
-message = "Property `$current_data` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-property"
-message = "Property `$current_element` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-property"
-message = "Property `$group_data` is never used."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_users.php"
-code = "unused-property"
-message = "Property `$user_data` is never used."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_import_users.php"
