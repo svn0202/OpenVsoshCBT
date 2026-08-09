@@ -1320,7 +1320,7 @@ function F_createTest($test_id, $user_id)
         ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
         : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
     $sql_answer_position = '';
-    if (!$test_random_answers_order && $test_answers_order_mode == 0) {
+    if (!$test_random_answers_order && $test_answers_order_mode === 0) {
         $sql_answer_position = ' AND answer_position>0';
     }
 
