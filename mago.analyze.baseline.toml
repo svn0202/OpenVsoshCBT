@@ -19142,12 +19142,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `preg_replace_callback`: expected `(callable(array<array-key, string>): string)`, but found `(closure(mixed): null|string)`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-destructuring-source"
 message = "Invalid destructuring assignment: Cannot unpack type `array{0: int, 1: int, 2: int, 3: string, 'bits': int, 'channels': int, 'mime': string}|false` into variables."
 count = 2
@@ -19155,25 +19149,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_bbcode_to_tcecode`: expected `string`, but found `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_decode_tcecode`: expected `string`, but found `array<array-key, string>|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_remove_tcecode`: expected `string`, but found `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_tcecode_url`: expected `string`, but found `array<array-key, string>|null|string`."
 count = 1
 
 [[issues]]
@@ -19251,19 +19227,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$text` is missing a type hint."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$width` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_bbcode_to_tcecode` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -19322,24 +19286,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_tcecode_tag_arg` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_tcecode_tag` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_tcecode_url` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `min`: expected `float|non-empty-array<array-key, float>`, but found `mixed`."
 count = 1
@@ -19377,14 +19323,8 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `preg_replace_callback`: expected `array<array-key, string>|string`, but found `truthy-mixed`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `preg_replace`: expected `array<array-key, string>|string`, but found `mixed`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19454,32 +19394,8 @@ count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_tcecode_tag_arg`. Saw type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_tcecode_tag`. Saw type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "nullable-return-statement"
-message = "Function `F_bbcode_to_tcecode` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "nullable-return-statement"
 message = "Function `F_remove_tcecode` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "nullable-return-statement"
-message = "Function `F_tcecode_url` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
 count = 1
 
 [[issues]]
@@ -19508,18 +19424,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `preg_match`: expected `string`, but possibly received `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `str_replace`: expected `array<array-key, string>|string`, but possibly received `list{null|string, null|string}`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-null-argument"
 message = "Argument #1 of function `iterator_to_array` is possibly `null`, but parameter type `Traversable<string, DOMAttr>|array<string, DOMAttr>` does not accept it."
 count = 1
@@ -19533,38 +19437,8 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-null-argument"
-message = "Argument #2 of function `preg_match` is possibly `null`, but parameter type `string` does not accept it."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `str_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-null-argument"
-message = "Argument #3 of function `preg_replace_callback` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-null-argument"
 message = "Argument #3 of function `preg_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 31
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-null-argument"
-message = "Argument #3 of function `str_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-null-operand"
-message = "Possibly null middle operand used in string concatenation (type `null|string`)."
-count = 4
+count = 28
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19576,13 +19450,7 @@ count = 1
 file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(2)` accessed on `array<array-key, string>`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"

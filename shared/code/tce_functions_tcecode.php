@@ -57,28 +57,28 @@ function F_decode_tcecode($text_to_decode)
     $newtext = F_bbcode_to_tcecode($newtext);
 
     // [tex]LaTeX_code[/tex]
-    $newtext = preg_replace_callback("#\[tex\](.*?)\[/tex\]#si", 'F_latex_callback', $newtext);
+    $newtext = preg_replace_callback("#\[tex\](.*?)\[/tex\]#si", 'F_latex_callback', $newtext) ?? $newtext;
 
     // [mathml]MathML_code[/mathml]
-    $newtext = preg_replace_callback("#\[mathml\](.*?)\[/mathml\]#si", 'F_mathml_callback', $newtext);
+    $newtext = preg_replace_callback("#\[mathml\](.*?)\[/mathml\]#si", 'F_mathml_callback', $newtext) ?? $newtext;
 
     // [object]object_url[/object:width:height:alt]
     $newtext = preg_replace_callback(
         "#\[object\](.*?)\.(.*?)\[/object\:(.*?)\:(.*?)\:(.*?)\]#si",
         'F_objects_callback',
         $newtext,
-    );
+    ) ?? $newtext;
     // [object]object_url[/object:width:height]
     $newtext = preg_replace_callback(
         "#\[object\](.*?)\.(.*?)\[/object\:(.*?)\:(.*?)\]#si",
         'F_objects_callback',
         $newtext,
-    );
+    ) ?? $newtext;
     // [object]object_url[/object]
-    $newtext = preg_replace_callback("#\[object\](.*?)\.(.*?)\[/object\]#si", 'F_objects_callback', $newtext);
+    $newtext = preg_replace_callback("#\[object\](.*?)\.(.*?)\[/object\]#si", 'F_objects_callback', $newtext) ?? $newtext;
 
     while (preg_match("'\[code\](.*?) (.*?)\[/code\]'si", $newtext)) {
-        $newtext = preg_replace("'\[code\](.*?) (.*?)\[/code\]'si", "[code]\\1&nbsp;\\2[/code]", $newtext);
+        $newtext = preg_replace("'\[code\](.*?) (.*?)\[/code\]'si", "[code]\\1&nbsp;\\2[/code]", $newtext) ?? $newtext;
     }
 
     $newtext = F_tcecode_url($newtext);
@@ -102,7 +102,7 @@ function F_decode_tcecode($text_to_decode)
     }
 
     // line breaks
-    $newtext = preg_replace("'(\r\n|\n|\r)'", '<br />', $newtext);
+    $newtext = preg_replace("'(\r\n|\n|\r)'", '<br />', $newtext) ?? $newtext;
     $newtext = str_replace('<br /><li', '<li', $newtext);
     $newtext = str_replace('</li><br />', '</li>', $newtext);
     return str_replace('<br /><param', '<param', $newtext);
@@ -308,33 +308,33 @@ function F_sanitize_html_style(string $style): string
 
 /**
  * Convert some BBCode-style to TCECode.
- * @param mixed $text
+ * @param string $text
  * @return string
  */
-function F_bbcode_to_tcecode($text)
+function F_bbcode_to_tcecode(string $text): string
 {
     // [*]list item - convert to new [li] tag
-    $text = preg_replace("'\[\*\](.*?)\n'i", "[li]\\1[/li]", $text);
+    $text = preg_replace("'\[\*\](.*?)\n'i", "[li]\\1[/li]", $text) ?? $text;
     // [img]image[/img] - convert to new object tag
-    $text = preg_replace("'\[img\](.*?)\[/img\]'si", "[object]\\1[/object]", $text);
+    $text = preg_replace("'\[img\](.*?)\[/img\]'si", "[object]\\1[/object]", $text) ?? $text;
     // [img=WIDTHxHEIGHT]image[/img] - convert to new object tag
-    return preg_replace("'\[img=(.*?)x(.*?)\](.*?)\[/img\]'si", "[object]\\3[/object:\\1:\\2]", $text);
+    return preg_replace("'\[img=(.*?)x(.*?)\](.*?)\[/img\]'si", "[object]\\3[/object:\\1:\\2]", $text) ?? $text;
 }
 
 /**
  * Convert [url]...[/url] and [url=...]...[/url] to HTML anchor tags.
- * @param mixed $text
+ * @param string $text
  * @return string
  */
-function F_tcecode_url($text)
+function F_tcecode_url(string $text): string
 {
     if (empty($text)) {
         return '';
     }
     $text = preg_replace_callback(
         '#\[url\](.*?)\[/url\]#si',
-        function ($matches) {
-            $url = $matches[1];
+        static function (array $matches): string {
+            $url = $matches[1] ?? '';
             // Optionally validate URL
             if (!preg_match('/^https?:\/\//i', $url) || !filter_var($url, FILTER_VALIDATE_URL)) {
                 return $url;
@@ -342,12 +342,12 @@ function F_tcecode_url($text)
             return '<a class="tcecode" href="' . $url . '" rel="noopener noreferrer" target="_blank">' . $url . '</a>';
         },
         $text,
-    );
+    ) ?? $text;
     return preg_replace_callback(
         '#\[url=(.*?)\](.*?)\[/url\]#si',
-        function ($matches) {
-            $url = $matches[1];
-            $label = $matches[2];
+        static function (array $matches): string {
+            $url = $matches[1] ?? '';
+            $label = $matches[2] ?? '';
             if (!preg_match('/^https?:\/\//i', $url) || !filter_var($url, FILTER_VALIDATE_URL)) {
                 return $label;
             }
@@ -356,15 +356,15 @@ function F_tcecode_url($text)
             );
         },
         $text,
-    );
+    ) ?? $text;
 }
 
 /**
  * Convert TCECode simple tags to XHTML tags.
- * @param mixed $text
+ * @param string $text
  * @return string
  */
-function F_tcecode_tag($text)
+function F_tcecode_tag(string $text): string
 {
     // Patterns and replacements
     $tag = [
@@ -390,7 +390,11 @@ function F_tcecode_tag($text)
         if (empty($text)) {
             break;
         }
-        $text = preg_replace_callback($pattern, fn($matches) => str_replace('\1', $matches[1], $replacement), $text);
+        $text = preg_replace_callback(
+            $pattern,
+            static fn(array $matches): string => str_replace('\1', $matches[1] ?? '', $replacement),
+            $text,
+        ) ?? $text;
     }
 
     return $text;
@@ -398,10 +402,10 @@ function F_tcecode_tag($text)
 
 /**
  * Convert TCECode tags with arguments to XHTML tags.
- * @param mixed $text
+ * @param string $text
  * @return string
  */
-function F_tcecode_tag_arg($text)
+function F_tcecode_tag_arg(string $text): string
 {
     // Patterns and replacements
     $tag = [
@@ -422,9 +426,13 @@ function F_tcecode_tag_arg($text)
         }
         $text = preg_replace_callback(
             $pattern,
-            fn($matches) => str_replace(['\1', '\2'], [$matches[1], $matches[2]], $replacement),
+            static fn(array $matches): string => str_replace(
+                ['\1', '\2'],
+                [$matches[1] ?? '', $matches[2] ?? ''],
+                $replacement,
+            ),
             $text,
-        );
+        ) ?? $text;
     }
 
     return $text;
