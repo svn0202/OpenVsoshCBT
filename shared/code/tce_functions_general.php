@@ -756,7 +756,7 @@ function F_select_table_header_element($order_field, $orderdir, $title, $name, $
  * @param $color (string) color in HEX format.
  * @return (string) Color.
  */
-function getContrastColor($color): string
+function get_contrast_color($color): string
 {
     $r = hexdec(substr($color, 0, 2));
     $g = hexdec(substr($color, 2, 2));
