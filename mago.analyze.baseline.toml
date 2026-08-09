@@ -3375,12 +3375,6 @@ count = 5
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
 count = 1
 
