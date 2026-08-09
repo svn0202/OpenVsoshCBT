@@ -180,7 +180,7 @@ function f_send_report_emails(
                 . ': '
                 . f_format_float($tu['total_score'])
                 . ' '
-                . F_formatPercentage($tu['total_score_perc'], false)
+                . f_format_percentage($tu['total_score_perc'], false)
                 . $passmsg
                 . K_NEWLINE;
             if ($display_mode > 0) {
@@ -189,28 +189,28 @@ function f_send_report_emails(
                     . ': '
                     . $tu['right']
                     . '&nbsp;'
-                    . F_formatPercentage($tu['right_perc'], false)
+                    . f_format_percentage($tu['right_perc'], false)
                     . K_NEWLINE;
                 $mail->AltBody .=
                     $l['w_answers_wrong']
                     . ': '
                     . $tu['wrong']
                     . '&nbsp;'
-                    . F_formatPercentage($tu['wrong_perc'], false)
+                    . f_format_percentage($tu['wrong_perc'], false)
                     . K_NEWLINE;
                 $mail->AltBody .=
                     $l['w_questions_unanswered']
                     . ': '
                     . $tu['unanswered']
                     . '&nbsp;'
-                    . F_formatPercentage($tu['unanswered_perc'], false)
+                    . f_format_percentage($tu['unanswered_perc'], false)
                     . K_NEWLINE;
                 $mail->AltBody .=
                     $l['w_questions_undisplayed']
                     . ': '
                     . $tu['undisplayed']
                     . '&nbsp;'
-                    . F_formatPercentage($tu['undisplayed_perc'], false)
+                    . f_format_percentage($tu['undisplayed_perc'], false)
                     . K_NEWLINE;
             }
 

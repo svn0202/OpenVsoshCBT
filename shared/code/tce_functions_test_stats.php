@@ -886,7 +886,7 @@ function F_printTestStat(
         '<td class="numeric">'
         . $ts['qstats']['recurrence']
         . ' '
-        . F_formatPercentage($ts['qstats']['recurrence_perc'], false)
+        . f_format_percentage($ts['qstats']['recurrence_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .= '<td class="numeric">' . $ts['qstats']['average_score_perc'] . '%</td>' . K_NEWLINE;
@@ -895,35 +895,35 @@ function F_printTestStat(
         '<td class="numeric">'
         . $ts['qstats']['right']
         . ' '
-        . F_formatPercentage($ts['qstats']['right_perc'], false)
+        . f_format_percentage($ts['qstats']['right_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .=
         '<td class="numeric">'
         . $ts['qstats']['wrong']
         . ' '
-        . F_formatPercentage($ts['qstats']['wrong_perc'], false)
+        . f_format_percentage($ts['qstats']['wrong_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .=
         '<td class="numeric">'
         . $ts['qstats']['unanswered']
         . ' '
-        . F_formatPercentage($ts['qstats']['unanswered_perc'], false)
+        . f_format_percentage($ts['qstats']['unanswered_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .=
         '<td class="numeric">'
         . $ts['qstats']['undisplayed']
         . ' '
-        . F_formatPercentage($ts['qstats']['undisplayed_perc'], false)
+        . f_format_percentage($ts['qstats']['undisplayed_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .=
         '<td class="numeric">'
         . $ts['qstats']['unrated']
         . ' '
-        . F_formatPercentage($ts['qstats']['unrated_perc'], false)
+        . f_format_percentage($ts['qstats']['unrated_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .= '</tr>' . K_NEWLINE;
@@ -950,7 +950,7 @@ function F_printTestStat(
             '<td class="numeric">'
             . $module['recurrence']
             . ' '
-            . F_formatPercentage($module['recurrence_perc'], false)
+            . f_format_percentage($module['recurrence_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .= '<td class="numeric">' . $module['average_score_perc'] . '%</td>' . K_NEWLINE;
@@ -959,35 +959,35 @@ function F_printTestStat(
             '<td class="numeric">'
             . $module['right']
             . ' '
-            . F_formatPercentage($module['right_perc'], false)
+            . f_format_percentage($module['right_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .=
             '<td class="numeric">'
             . $module['wrong']
             . ' '
-            . F_formatPercentage($module['wrong_perc'], false)
+            . f_format_percentage($module['wrong_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .=
             '<td class="numeric">'
             . $module['unanswered']
             . ' '
-            . F_formatPercentage($module['unanswered_perc'], false)
+            . f_format_percentage($module['unanswered_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .=
             '<td class="numeric">'
             . $module['undisplayed']
             . ' '
-            . F_formatPercentage($module['undisplayed_perc'], false)
+            . f_format_percentage($module['undisplayed_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .=
             '<td class="numeric">'
             . $module['unrated']
             . ' '
-            . F_formatPercentage($module['unrated_perc'], false)
+            . f_format_percentage($module['unrated_perc'], false)
             . '</td>'
             . K_NEWLINE;
         $ret .= '</tr>' . K_NEWLINE;
@@ -1024,7 +1024,7 @@ function F_printTestStat(
                     '<td class="numeric">'
                     . $subject['recurrence']
                     . ' '
-                    . F_formatPercentage($subject['recurrence_perc'], false)
+                    . f_format_percentage($subject['recurrence_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .= '<td class="numeric">' . $subject['average_score_perc'] . '%</td>' . K_NEWLINE;
@@ -1034,35 +1034,35 @@ function F_printTestStat(
                     '<td class="numeric">'
                     . $subject['right']
                     . ' '
-                    . F_formatPercentage($subject['right_perc'], false)
+                    . f_format_percentage($subject['right_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .=
                     '<td class="numeric">'
                     . $subject['wrong']
                     . ' '
-                    . F_formatPercentage($subject['wrong_perc'], false)
+                    . f_format_percentage($subject['wrong_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .=
                     '<td class="numeric">'
                     . $subject['unanswered']
                     . ' '
-                    . F_formatPercentage($subject['unanswered_perc'], false)
+                    . f_format_percentage($subject['unanswered_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .=
                     '<td class="numeric">'
                     . $subject['undisplayed']
                     . ' '
-                    . F_formatPercentage($subject['undisplayed_perc'], false)
+                    . f_format_percentage($subject['undisplayed_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .=
                     '<td class="numeric">'
                     . $subject['unrated']
                     . ' '
-                    . F_formatPercentage($subject['unrated_perc'], false)
+                    . f_format_percentage($subject['unrated_perc'], false)
                     . '</td>'
                     . K_NEWLINE;
                 $ret .= '</tr>' . K_NEWLINE;
@@ -1110,7 +1110,7 @@ function F_printTestStat(
                             '<td class="numeric">'
                             . $question['recurrence']
                             . ' '
-                            . F_formatPercentage($question['recurrence_perc'], false)
+                            . f_format_percentage($question['recurrence_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .= '<td class="numeric">' . $question['average_score_perc'] . '%</td>' . K_NEWLINE;
@@ -1123,35 +1123,35 @@ function F_printTestStat(
                             '<td class="numeric">'
                             . $question['right']
                             . ' '
-                            . F_formatPercentage($question['right_perc'], false)
+                            . f_format_percentage($question['right_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .=
                             '<td class="numeric">'
                             . $question['wrong']
                             . ' '
-                            . F_formatPercentage($question['wrong_perc'], false)
+                            . f_format_percentage($question['wrong_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .=
                             '<td class="numeric">'
                             . $question['unanswered']
                             . ' '
-                            . F_formatPercentage($question['unanswered_perc'], false)
+                            . f_format_percentage($question['unanswered_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .=
                             '<td class="numeric">'
                             . $question['undisplayed']
                             . ' '
-                            . F_formatPercentage($question['undisplayed_perc'], false)
+                            . f_format_percentage($question['undisplayed_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .=
                             '<td class="numeric">'
                             . $question['unrated']
                             . ' '
-                            . F_formatPercentage($question['unrated_perc'], false)
+                            . f_format_percentage($question['unrated_perc'], false)
                             . '</td>'
                             . K_NEWLINE;
                         $ret .= '</tr>' . K_NEWLINE;
@@ -1205,7 +1205,7 @@ function F_printTestStat(
                                     '<td class="numeric">'
                                     . $answer['recurrence']
                                     . ' '
-                                    . F_formatPercentage($answer['recurrence_perc'], false)
+                                    . f_format_percentage($answer['recurrence_perc'], false)
                                     . '</td>'
                                     . K_NEWLINE;
                                 $ret .= '<td class="numeric">&nbsp;</td>' . K_NEWLINE;
@@ -1214,21 +1214,21 @@ function F_printTestStat(
                                     '<td class="numeric">'
                                     . $answer['right']
                                     . ' '
-                                    . F_formatPercentage($answer['right_perc'], false)
+                                    . f_format_percentage($answer['right_perc'], false)
                                     . '</td>'
                                     . K_NEWLINE;
                                 $ret .=
                                     '<td class="numeric">'
                                     . $answer['wrong']
                                     . ' '
-                                    . F_formatPercentage($answer['wrong_perc'], false)
+                                    . f_format_percentage($answer['wrong_perc'], false)
                                     . '</td>'
                                     . K_NEWLINE;
                                 $ret .=
                                     '<td class="numeric">'
                                     . $answer['unanswered']
                                     . ' '
-                                    . F_formatPercentage($answer['unanswered_perc'], false)
+                                    . f_format_percentage($answer['unanswered_perc'], false)
                                     . '</td>'
                                     . K_NEWLINE;
                                 $ret .= '<td class="numeric">&nbsp;</td>' . K_NEWLINE;
@@ -1468,7 +1468,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
             . $passlabel
             . f_format_float($tu['total_score'])
             . '&nbsp;'
-            . F_formatPercentage($tu['total_score_perc'], false)
+            . f_format_percentage($tu['total_score_perc'], false)
             . '</td>'
             . K_NEWLINE;
         if ($stats > 0) {
@@ -1476,35 +1476,35 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
                 '<td class="numeric">'
                 . $tu['right']
                 . '&nbsp;'
-                . F_formatPercentage($tu['right_perc'], false)
+                . f_format_percentage($tu['right_perc'], false)
                 . '</td>'
                 . K_NEWLINE;
             $ret .=
                 '<td class="numeric">'
                 . $tu['wrong']
                 . '&nbsp;'
-                . F_formatPercentage($tu['wrong_perc'], false)
+                . f_format_percentage($tu['wrong_perc'], false)
                 . '</td>'
                 . K_NEWLINE;
             $ret .=
                 '<td class="numeric">'
                 . $tu['unanswered']
                 . '&nbsp;'
-                . F_formatPercentage($tu['unanswered_perc'], false)
+                . f_format_percentage($tu['unanswered_perc'], false)
                 . '</td>'
                 . K_NEWLINE;
             $ret .=
                 '<td class="numeric">'
                 . $tu['undisplayed']
                 . '&nbsp;'
-                . F_formatPercentage($tu['undisplayed_perc'], false)
+                . f_format_percentage($tu['undisplayed_perc'], false)
                 . '</td>'
                 . K_NEWLINE;
             $ret .=
                 '<td class="numeric">'
                 . $tu['unrated']
                 . '&nbsp;'
-                . F_formatPercentage($tu['unrated_perc'], false)
+                . f_format_percentage($tu['unrated_perc'], false)
                 . '</td>'
                 . K_NEWLINE;
         }
@@ -1570,7 +1570,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
         . ': '
         . $data['passed']
         . ' '
-        . F_formatPercentage($data['passed_perc'], false)
+        . f_format_percentage($data['passed_perc'], false)
         . '</td>'
         . K_NEWLINE;
     $ret .= '</tr>';
