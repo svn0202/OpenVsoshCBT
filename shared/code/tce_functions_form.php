@@ -628,28 +628,33 @@ function getFormRowSelectBox(
 
 /**
  * Print check box row form.
- * @param $field_name (string) Name of the form field.
- * @param $name (string) Label.
- * @param $description (string) Label description (tooltip).
- * @param $tip (string) Help to be displayed on the right of the input field.
- * @param $value (string) Initial value.
- * @param $selected (boolean) set to true if selected.
- * @param $disabled (boolean) set to true to disable the field
- * @param $prefix (string) code to be displayed after label.
+ * @param string $field_name Name of the form field.
+ * @param mixed $name Label.
+ * @param mixed $description Label description (tooltip).
+ * @param mixed $tip Help to be displayed on the right of the input field.
+ * @param mixed $value Initial value.
+ * @param mixed $selected set to true if selected.
+ * @param bool $disabled set to true to disable the field
+ * @param mixed $prefix code to be displayed after label.
  * @return string
  */
 function getFormRowCheckBox(
-    $field_name,
-    $name,
-    $description = '',
-    $tip = '',
-    $value = '',
-    $selected = false,
-    $disabled = false,
-    $prefix = '',
+    string $field_name,
+    mixed $name,
+    mixed $description = '',
+    mixed $tip = '',
+    mixed $value = '',
+    mixed $selected = false,
+    bool $disabled = false,
+    mixed $prefix = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
+    $name = is_scalar($name) ? (string) $name : '';
+    $description = is_scalar($description) ? (string) $description : '';
+    $tip = is_scalar($tip) ? (string) $tip : '';
+    $value = is_scalar($value) ? (string) $value : '';
+    $prefix = is_scalar($prefix) ? (string) $prefix : '';
     if (strlen($description) == 0) {
         $description = $name;
     }
