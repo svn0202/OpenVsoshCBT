@@ -77,4 +77,22 @@ final class RegradeTest extends TestCase
         );
         self::assertSame(4.0, $score);
     }
+
+    public function testAllUnansweredUsesConfiguredUnansweredScore(): void
+    {
+        $test = $this->test;
+        $test['test_score_unanswered'] = 2;
+        $test['test_mcma_partial_score'] = 0;
+
+        $score = \F_tmf_recorded_answer_score(
+            $test,
+            ['question_type' => 2, 'question_difficulty' => 1],
+            [
+                ['logansw_selected' => -1, 'answer_isright' => 1],
+                ['logansw_selected' => -1, 'answer_isright' => 0],
+            ],
+        );
+
+        self::assertSame(2.0, $score);
+    }
 }

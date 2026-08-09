@@ -64,7 +64,7 @@ function F_tmf_recorded_answer_score(array $test, array $question, array $answer
     if ($total >= ($right * $count)) {
         return round($right, 3);
     }
-    if ($total == ($unanswered * $count)) {
+    if ($total === ($unanswered * $count)) {
         return round($unanswered, 3);
     }
     return round($wrong, 3);
