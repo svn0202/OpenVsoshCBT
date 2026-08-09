@@ -97,6 +97,19 @@ function F_getBoolean($str): bool
 }
 
 /**
+ * Normalize an untrusted request value to a positive integer identifier.
+ */
+function f_positive_request_int(mixed $value): int
+{
+    if (!is_numeric($value)) {
+        return 0;
+    }
+
+    $value = (int) $value;
+    return $value > 0 ? $value : 0;
+}
+
+/**
  * Remove duplicate positive positions from a matching answer.
  * The first occurrence is retained and later duplicates become unanswered.
  *
