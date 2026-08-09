@@ -7,12 +7,6 @@ message = "Class `XMLQuestionImporter` should be in a file named `XMLQuestionImp
 count = 1
 
 [[issues]]
-file = "admin/code/tce_edit_group.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."

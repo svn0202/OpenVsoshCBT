@@ -275,7 +275,7 @@ if ($group_id > 0) {
 if ($group_searchterms !== '') {
     $where = "group_name LIKE '%" . F_escape_sql($db, $group_searchterms) . "%'";
     $sql = F_user_group_select_sql($where);
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . K_MAX_ROWS_PER_PAGE;
     } else {
         $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
