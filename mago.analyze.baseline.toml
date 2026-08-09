@@ -16533,12 +16533,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-return-type"
-message = "Function `F_mathml_callback` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
 message = "Function `F_objects_callback` is missing a return type hint."
 count = 1
 
