@@ -23,6 +23,14 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    public function testHtmlSubstringStopsAfterClosingTag(): void
+    {
+        $this->assertSame(
+            '<strong>Hello world</strong>',
+            \F_substrHTML('<strong>Hello world</strong> again', 8, 2),
+        );
+    }
+
     public function testRendererProcessDoesNotInterpretShellMetacharacters(): void
     {
         $argument = 'literal;$(touch should-not-exist)';

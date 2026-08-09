@@ -19173,12 +19173,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$htmltext` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$matches` is missing a type hint."
 count = 3
 
@@ -19197,19 +19191,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$min_length` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$name` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
-message = "Parameter `$offset_length` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -19269,12 +19251,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-return-type"
-message = "Function `F_substrHTML` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
 message = "Function `F_tcecodeToLine` is missing a return type hint."
 count = 1
 
@@ -19299,20 +19275,8 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strtolower`: expected `string`, but found `mixed`."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19342,7 +19306,7 @@ count = 12
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Invalid left operand: type `mixed` cannot be reliably used in string concatenation."
-count = 6
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19378,19 +19342,19 @@ count = 20
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 12
+count = 11
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Right operand in `>` comparison has `mixed` type."
-count = 4
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
-count = 4
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
