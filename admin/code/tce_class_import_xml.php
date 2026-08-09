@@ -397,7 +397,7 @@ class XMLQuestionImporter
                     . $this->level_data['subject']['subject_name']
                     . '\',
 					'
-                    . F_empty_to_null($this->level_data['subject']['subject_description'])
+                    . f_empty_to_null($this->level_data['subject']['subject_description'])
                     . ',
 					\''
                     . $this->boolval[$this->level_data['subject']['subject_enabled']]
@@ -533,7 +533,7 @@ class XMLQuestionImporter
             . $this->level_data['question']['question_description']
             . '\',
 			'
-            . F_empty_to_null($this->level_data['question']['question_explanation'])
+            . f_empty_to_null($this->level_data['question']['question_explanation'])
             . ',
 			\''
             . $this->qtype[$this->level_data['question']['question_type']]
@@ -651,7 +651,7 @@ class XMLQuestionImporter
                     . $this->level_data['answer']['answer_description']
                     . '\',
 					'
-                    . F_empty_to_null($this->level_data['answer']['answer_explanation'])
+                    . f_empty_to_null($this->level_data['answer']['answer_explanation'])
                     . ',
 					\''
                     . $this->boolval[$this->level_data['answer']['answer_isright']]
@@ -663,10 +663,10 @@ class XMLQuestionImporter
                     . f_zero_to_null((int) $this->level_data['answer']['answer_position'])
                     . ',
 					'
-                    . F_empty_to_null($this->level_data['answer']['answer_keyboard_key'])
+                    . f_empty_to_null($this->level_data['answer']['answer_keyboard_key'])
                     . ',
 						'
-                    . F_empty_to_null($this->level_data['answer']['answer_weight'])
+                    . f_empty_to_null($this->level_data['answer']['answer_weight'])
                     . '
 						)';
                 if (!($r = F_db_query($sql, $db))) {

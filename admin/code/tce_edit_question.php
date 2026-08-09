@@ -496,7 +496,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $question_description)
                     . '\',
 				question_explanation='
-                    . F_empty_to_null($question_explanation)
+                    . f_empty_to_null($question_explanation)
                     . ',
 				question_type=\''
                     . $question_type
@@ -620,7 +620,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $question_description)
                     . '\',
 				'
-                    . F_empty_to_null($question_explanation)
+                    . f_empty_to_null($question_explanation)
                     . ',
 				\''
                     . $question_type

@@ -227,7 +227,7 @@ final class ExamUiAssetsTest extends TestCase
         $editor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_edit_test.php');
 
         self::assertStringContainsString("is_string(\$_POST['test_password'])", $editor);
-        self::assertStringContainsString('F_empty_to_null($test_password)', $editor);
+        self::assertStringContainsString('f_empty_to_null($test_password)', $editor);
     }
 
     public function testExamRendererRemovesQuestionMetadataBeforeDisplay(): void

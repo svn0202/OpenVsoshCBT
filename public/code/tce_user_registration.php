@@ -198,28 +198,28 @@ if ($menu_mode == 'add') { // process submitted data
                 . F_escape_sql($db, $user_name)
                 . '\',
 				'
-                . F_empty_to_null($user_email)
+                . f_empty_to_null($user_email)
                 . ',
 				\''
                 . F_escape_sql($db, $user_password)
                 . '\',
 				'
-                . F_empty_to_null($user_regnumber)
+                . f_empty_to_null($user_regnumber)
                 . ',
 				'
-                . F_empty_to_null($user_firstname)
+                . f_empty_to_null($user_firstname)
                 . ',
 				'
-                . F_empty_to_null($user_lastname)
+                . f_empty_to_null($user_lastname)
                 . ',
 				'
-                . F_empty_to_null($user_birthdate)
+                . f_empty_to_null($user_birthdate)
                 . ',
 				'
-                . F_empty_to_null($user_birthplace)
+                . f_empty_to_null($user_birthplace)
                 . ',
 				'
-                . F_empty_to_null($user_ssn)
+                . f_empty_to_null($user_ssn)
                 . ',
 				\''
                 . $usrlevel
@@ -228,7 +228,7 @@ if ($menu_mode == 'add') { // process submitted data
                 . $user_verifycode
                 . '\',
 				'
-                . F_empty_to_null($user_otpkey)
+                . f_empty_to_null($user_otpkey)
                 . '
 				)';
             if (!($r = F_db_query($sql, $db))) {

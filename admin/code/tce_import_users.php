@@ -397,7 +397,7 @@ class XMLUserImporter
                                         . $this->user_data['user_name']
                                         . '\',
 									user_email='
-                                        . F_empty_to_null($this->user_data['user_email'])
+                                        . f_empty_to_null($this->user_data['user_email'])
                                         . ',';
                                     // update password only if it is specified
                                     if (!empty($this->user_data['user_password'])) {
@@ -410,31 +410,31 @@ class XMLUserImporter
                                     $sqlu .=
                                         '
 									user_regnumber='
-                                        . F_empty_to_null($this->user_data['user_regnumber'])
+                                        . f_empty_to_null($this->user_data['user_regnumber'])
                                         . ',
 									user_firstname='
-                                        . F_empty_to_null($this->user_data['user_firstname'])
+                                        . f_empty_to_null($this->user_data['user_firstname'])
                                         . ',
 									user_lastname='
-                                        . F_empty_to_null($this->user_data['user_lastname'])
+                                        . f_empty_to_null($this->user_data['user_lastname'])
                                         . ',
 									user_birthdate='
-                                        . F_empty_to_null($this->user_data['user_birthdate'])
+                                        . f_empty_to_null($this->user_data['user_birthdate'])
                                         . ',
 									user_birthplace='
-                                        . F_empty_to_null($this->user_data['user_birthplace'])
+                                        . f_empty_to_null($this->user_data['user_birthplace'])
                                         . ',
 									user_ssn='
-                                        . F_empty_to_null($this->user_data['user_ssn'])
+                                        . f_empty_to_null($this->user_data['user_ssn'])
                                         . ',
 									user_level=\''
                                         . $this->user_data['user_level']
                                         . '\',
 									user_verifycode='
-                                        . F_empty_to_null($this->user_data['user_verifycode'])
+                                        . f_empty_to_null($this->user_data['user_verifycode'])
                                         . ',
 									user_otpkey='
-                                        . F_empty_to_null($this->user_data['user_otpkey'])
+                                        . f_empty_to_null($this->user_data['user_otpkey'])
                                         . '
 									WHERE user_id='
                                         . $user_id
@@ -469,7 +469,7 @@ class XMLUserImporter
 								user_otpkey
 								) VALUES (
 								'
-                                    . F_empty_to_null($this->user_data['user_regdate'])
+                                    . f_empty_to_null($this->user_data['user_regdate'])
                                     . ',
 								\''
                                     . $this->user_data['user_ip']
@@ -478,37 +478,37 @@ class XMLUserImporter
                                     . $this->user_data['user_name']
                                     . '\',
 								'
-                                    . F_empty_to_null($this->user_data['user_email'])
+                                    . f_empty_to_null($this->user_data['user_email'])
                                     . ',
 								\''
                                     . F_escape_sql($db, getPasswordHash((string) $this->user_data['user_password']))
                                     . '\',
 								'
-                                    . F_empty_to_null($this->user_data['user_regnumber'])
+                                    . f_empty_to_null($this->user_data['user_regnumber'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_firstname'])
+                                    . f_empty_to_null($this->user_data['user_firstname'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_lastname'])
+                                    . f_empty_to_null($this->user_data['user_lastname'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_birthdate'])
+                                    . f_empty_to_null($this->user_data['user_birthdate'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_birthplace'])
+                                    . f_empty_to_null($this->user_data['user_birthplace'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_ssn'])
+                                    . f_empty_to_null($this->user_data['user_ssn'])
                                     . ',
 								\''
                                     . $this->user_data['user_level']
                                     . '\',
 								'
-                                    . F_empty_to_null($this->user_data['user_verifycode'])
+                                    . f_empty_to_null($this->user_data['user_verifycode'])
                                     . ',
 								'
-                                    . F_empty_to_null($this->user_data['user_otpkey'])
+                                    . f_empty_to_null($this->user_data['user_otpkey'])
                                     . '
 								)';
                                 if (!($ru = F_db_query($sqlu, $db))) {
@@ -656,10 +656,10 @@ function F_import_tsv_users($tsvfile)
             . F_escape_sql($db, $userdata[1])
             . '\'
 				OR user_regnumber='
-            . F_empty_to_null($userdata[10])
+            . f_empty_to_null($userdata[10])
             . '
 				OR user_ssn='
-            . F_empty_to_null($userdata[11])
+            . f_empty_to_null($userdata[11])
             . '
 			LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
@@ -681,7 +681,7 @@ function F_import_tsv_users($tsvfile)
                     $sqlu .=
                         '
 						user_email='
-                        . F_empty_to_null($userdata[3])
+                        . f_empty_to_null($userdata[3])
                         . ',
 						user_regdate=\''
                         . F_escape_sql($db, $userdata[4])
@@ -690,31 +690,31 @@ function F_import_tsv_users($tsvfile)
                         . F_escape_sql($db, $userdata[5])
                         . '\',
 						user_firstname='
-                        . F_empty_to_null($userdata[6])
+                        . f_empty_to_null($userdata[6])
                         . ',
 						user_lastname='
-                        . F_empty_to_null($userdata[7])
+                        . f_empty_to_null($userdata[7])
                         . ',
 						user_birthdate='
-                        . F_empty_to_null($userdata[8])
+                        . f_empty_to_null($userdata[8])
                         . ',
 						user_birthplace='
-                        . F_empty_to_null($userdata[9])
+                        . f_empty_to_null($userdata[9])
                         . ',
 						user_regnumber='
-                        . F_empty_to_null($userdata[10])
+                        . f_empty_to_null($userdata[10])
                         . ',
 						user_ssn='
-                        . F_empty_to_null($userdata[11])
+                        . f_empty_to_null($userdata[11])
                         . ',
 						user_level=\''
                         . (int) $userdata[12]
                         . '\',
 						user_verifycode='
-                        . F_empty_to_null($userdata[13])
+                        . f_empty_to_null($userdata[13])
                         . ',
 						user_otpkey='
-                        . F_empty_to_null($userdata[14])
+                        . f_empty_to_null($userdata[14])
                         . '
 						WHERE user_id='
                         . $user_id
@@ -755,7 +755,7 @@ function F_import_tsv_users($tsvfile)
                     . F_escape_sql($db, getPasswordHash((string) $userdata[2]))
                     . '\',
 					'
-                    . F_empty_to_null($userdata[3])
+                    . f_empty_to_null($userdata[3])
                     . ',
 					\''
                     . F_escape_sql($db, $userdata[4])
@@ -764,31 +764,31 @@ function F_import_tsv_users($tsvfile)
                     . F_escape_sql($db, $userdata[5])
                     . '\',
 					'
-                    . F_empty_to_null($userdata[6])
+                    . f_empty_to_null($userdata[6])
                     . ',
 					'
-                    . F_empty_to_null($userdata[7])
+                    . f_empty_to_null($userdata[7])
                     . ',
 					'
-                    . F_empty_to_null($userdata[8])
+                    . f_empty_to_null($userdata[8])
                     . ',
 					'
-                    . F_empty_to_null($userdata[9])
+                    . f_empty_to_null($userdata[9])
                     . ',
 					'
-                    . F_empty_to_null($userdata[10])
+                    . f_empty_to_null($userdata[10])
                     . ',
 					'
-                    . F_empty_to_null($userdata[11])
+                    . f_empty_to_null($userdata[11])
                     . ',
 					\''
                     . (int) $userdata[12]
                     . '\',
 					'
-                    . F_empty_to_null($userdata[13])
+                    . f_empty_to_null($userdata[13])
                     . ',
 					'
-                    . F_empty_to_null($userdata[14])
+                    . f_empty_to_null($userdata[14])
                     . '
 					)';
                 if (!($ru = F_db_query($sqlu, $db))) {

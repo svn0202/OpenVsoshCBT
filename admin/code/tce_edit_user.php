@@ -248,40 +248,40 @@ switch ($menu_mode) { // process submitted data
                     . F_escape_sql($db, $user_name)
                     . '\',
 				user_email='
-                    . F_empty_to_null($user_email)
+                    . f_empty_to_null($user_email)
                     . ',
 				user_password=\''
                     . F_escape_sql($db, $user_password)
                     . '\',
 				user_regnumber='
-                    . F_empty_to_null($user_regnumber)
+                    . f_empty_to_null($user_regnumber)
                     . ',
 				user_firstname='
-                    . F_empty_to_null($user_firstname)
+                    . f_empty_to_null($user_firstname)
                     . ',
 				user_lastname='
-                    . F_empty_to_null($user_lastname)
+                    . f_empty_to_null($user_lastname)
                     . ',
 				user_birthdate='
-                    . F_empty_to_null($user_birthdate)
+                    . f_empty_to_null($user_birthdate)
                     . ',
 				user_birthplace='
-                    . F_empty_to_null($user_birthplace)
+                    . f_empty_to_null($user_birthplace)
                     . ',
 				user_ssn='
-                    . F_empty_to_null($user_ssn)
+                    . f_empty_to_null($user_ssn)
                     . ',
 				user_note='
-                    . F_empty_to_null($user_note)
+                    . f_empty_to_null($user_note)
                     . ',
 				user_schedule='
-                    . F_empty_to_null($user_schedule)
+                    . f_empty_to_null($user_schedule)
                     . ',
 				user_level=\''
                     . $user_level
                     . '\',
 				user_otpkey='
-                    . F_empty_to_null($user_otpkey)
+                    . f_empty_to_null($user_otpkey)
                     . '
 				WHERE user_id='
                     . $user_id
@@ -431,40 +431,40 @@ switch ($menu_mode) { // process submitted data
                     . F_escape_sql($db, $user_name)
                     . '\',
 				'
-                    . F_empty_to_null($user_email)
+                    . f_empty_to_null($user_email)
                     . ',
 				\''
                     . F_escape_sql($db, $user_password)
                     . '\',
 				'
-                    . F_empty_to_null($user_regnumber)
+                    . f_empty_to_null($user_regnumber)
                     . ',
 				'
-                    . F_empty_to_null($user_firstname)
+                    . f_empty_to_null($user_firstname)
                     . ',
 				'
-                    . F_empty_to_null($user_lastname)
+                    . f_empty_to_null($user_lastname)
                     . ',
 				'
-                    . F_empty_to_null($user_birthdate)
+                    . f_empty_to_null($user_birthdate)
                     . ',
 				'
-                    . F_empty_to_null($user_birthplace)
+                    . f_empty_to_null($user_birthplace)
                     . ',
 				'
-                    . F_empty_to_null($user_ssn)
+                    . f_empty_to_null($user_ssn)
                     . ',
 				'
-                    . F_empty_to_null($user_note)
+                    . f_empty_to_null($user_note)
                     . ',
 				'
-                    . F_empty_to_null($user_schedule)
+                    . f_empty_to_null($user_schedule)
                     . ',
 				\''
                     . $user_level
                     . '\',
 				'
-                    . F_empty_to_null($user_otpkey)
+                    . f_empty_to_null($user_otpkey)
                     . '
 				)';
                 if (!($r = F_db_query($sql, $db))) {

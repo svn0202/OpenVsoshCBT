@@ -220,7 +220,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $subject_name)
                     . '\',
 				subject_description='
-                    . F_empty_to_null($subject_description)
+                    . f_empty_to_null($subject_description)
                     . ',
 				subject_enabled=\''
                     . (int) $subject_enabled
@@ -273,7 +273,7 @@ switch ($menu_mode) {
                     . F_escape_sql($db, $subject_name)
                     . '\',
 				'
-                    . F_empty_to_null($subject_description)
+                    . f_empty_to_null($subject_description)
                     . ',
 				\''
                     . (int) $subject_enabled
