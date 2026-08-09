@@ -218,7 +218,7 @@ final class FormValidationTest extends TestCase
 
         $this->assertSame(
             '<div class="row" style="margin-bottom:5px;"><hr class="dashed"/></div>' . K_NEWLINE,
-            \getFormRowVertSpace(),
+            \get_form_row_vert_space(),
         );
     }
 
