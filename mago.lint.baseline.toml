@@ -1442,12 +1442,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 1
