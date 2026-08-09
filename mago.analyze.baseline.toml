@@ -18128,12 +18128,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_html2txt.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_html_to_text`: expected `unknown-ref(text)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
 code = "missing-parameter-type"
 message = "Parameter `$display_links` is missing a type hint."
 count = 1
@@ -18152,20 +18146,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_html2txt.php"
-code = "missing-return-type"
-message = "Function `F_html_to_text` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `text`."
 count = 1
 
 [[issues]]

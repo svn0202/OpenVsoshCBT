@@ -25,9 +25,9 @@
  * @param $str (string) HTML code string to convert.
  * @param $preserve_newlines (boolean) If true convert newline characters to HTML line breaks.
  * @param $display_links (boolean) If true gives a textual representation of links and images.
- * @return text string
+ * @return string Plain-text representation.
  */
-function F_html_to_text($str, $preserve_newlines = false, $display_links = false)
+function F_html_to_text($str, $preserve_newlines = false, $display_links = false): string
 {
     require_once '../../shared/code/tce_functions_general.php';
 
