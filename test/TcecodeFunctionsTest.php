@@ -92,7 +92,7 @@ final class TcecodeFunctionsTest extends TestCase
 
     public function testMathmlRemovesEventHandlersAndForeignMarkup(): void
     {
-        $rendered = \F_mathml_callback([
+        $rendered = \f_mathml_callback([
             '',
             '<math onclick="alert(1)"><mtext mathvariant="bold" onmouseover="alert(2)">Safe</mtext>'
                 . '<img src="x" onerror="alert(3)"></math>',
@@ -105,11 +105,18 @@ final class TcecodeFunctionsTest extends TestCase
 
     public function testMathmlRejectsExecutableAttributeValues(): void
     {
-        $rendered = \F_mathml_callback([
+        $rendered = \f_mathml_callback([
             '',
             '<math><mtext mathcolor="url(javascript:alert(1))">Safe</mtext></math>',
         ]);
 
         $this->assertSame('<math><mtext>Safe</mtext></math>', $rendered);
+    }
+
+    public function testDecoderWiresMathmlCallback(): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__) . '/shared/code/tce_functions_tcecode.php');
+
+        self::assertStringContainsString("'f_mathml_callback'", $source);
     }
 }
