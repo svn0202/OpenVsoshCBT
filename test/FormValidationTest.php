@@ -89,7 +89,7 @@ final class FormValidationTest extends TestCase
         $this->assertSame(1, preg_match('/ value="([^"]+)"/', $markup, $matches));
         $token = $matches[1] ?? '';
         $this->assertNotSame('', $token);
-        $this->assertTrue(\checkCSRFToken($token));
+        $this->assertTrue(\check_csrf_token($token));
     }
 
     public function testOptionalFieldHasNoRequiredMarker(): void

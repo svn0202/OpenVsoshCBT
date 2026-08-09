@@ -11,7 +11,7 @@ require_once 'tce_page_header.php';
 
 $user_id = (int) $_SESSION['session_user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken((string) $_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !check_csrf_token((string) $_POST['csrf_token'])) {
         http_response_code(403);
         exit();
     }

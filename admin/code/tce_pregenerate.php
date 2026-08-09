@@ -26,7 +26,7 @@ if (isset($_POST['pregenerate'])) {
     if (
         empty($_POST['csrf_token'])
         || !is_string($_POST['csrf_token'])
-        || !checkCSRFToken($_POST['csrf_token'])
+        || !check_csrf_token($_POST['csrf_token'])
         || $test_id <= 0
     ) {
         http_response_code(403);

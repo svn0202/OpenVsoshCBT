@@ -191,6 +191,6 @@ final class SessionFunctionsTest extends TestCase
         $token = \F_getCSRFToken();
 
         self::assertNotSame('', $plain);
-        self::assertTrue(\checkCSRFToken($token));
+        self::assertTrue(\check_csrf_token($token));
     }
 }

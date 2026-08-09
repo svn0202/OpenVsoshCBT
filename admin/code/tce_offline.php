@@ -25,7 +25,7 @@ if (isset($_POST['export_offline']) || isset($_POST['import_offline'])) {
     if (
         empty($_POST['csrf_token'])
         || !is_string($_POST['csrf_token'])
-        || !checkCSRFToken($_POST['csrf_token'])
+        || !check_csrf_token($_POST['csrf_token'])
     ) {
         http_response_code(403);
         exit();
