@@ -9716,27 +9716,9 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_tsv_users.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_tsv_users.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 15
-
-[[issues]]
-file = "admin/code/tce_tsv_users.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_tsv_export_users`: expected `unknown-ref(TSV)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_tsv_users.php"
-code = "missing-return-type"
-message = "Function `F_tsv_export_users` is missing a return type hint."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_tsv_users.php"
@@ -9773,12 +9755,6 @@ file = "admin/code/tce_tsv_users.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_tsv_users.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `TSV`."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_tsv_users.php"

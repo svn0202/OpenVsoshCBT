@@ -41,15 +41,15 @@ header('Content-Type: text/tab-separated-values', false);
 header('Content-Disposition: attachment; filename=tcexam_users_' . date('YmdHis') . '.tsv;');
 header('Content-Transfer-Encoding: binary');
 
-echo F_tsv_export_users();
+echo f_tsv_export_users();
 
 /**
  * Export all users to TSV grouped by users' groups.
  * @author Nicola Asuni
  * @since 2006-03-30
- * @return TSV data
+ * @return string TSV data
  */
-function F_tsv_export_users()
+function f_tsv_export_users(): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
