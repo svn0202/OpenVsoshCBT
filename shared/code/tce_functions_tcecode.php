@@ -774,7 +774,7 @@ function f_objects_callback(mixed $matches): string
     }
 
     if (isset($matches[5]) && !empty($matches[5])) {
-        $alt = F_tcecodeToTitle($matches[5]);
+        $alt = f_tcecode_to_title($matches[5]);
     }
 
     return F_objects_replacement($matches[1], $matches[2], $width, $height, $alt);
@@ -983,7 +983,7 @@ function f_tcecode_to_line(mixed $str): mixed
  * @param $str (string) text to process
  * return string
  */
-function F_tcecodeToTitle(mixed $str): string
+function f_tcecode_to_title(mixed $str): string
 {
     require_once '../config/tce_config.php';
     global $l;
