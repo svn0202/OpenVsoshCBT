@@ -138,7 +138,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                         // import answers
                         if (
                             $user_id > 0
-                            && F_isAuthorizedEditorForUser($user_id)
+                            && f_is_authorized_editor_for_user($user_id)
                             && F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $overwrite)
                         ) {
                             F_print_error(

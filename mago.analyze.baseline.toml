@@ -3813,7 +3813,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "missing-return-type"
-message = "Function `F_isAuthorizedEditorForUser` is missing a return type hint."
+message = "Function `f_is_authorized_editor_for_user` is missing a return type hint."
 count = 1
 
 [[issues]]
