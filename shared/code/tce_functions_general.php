@@ -356,7 +356,7 @@ function f_tsv_to_text(mixed $str): string
  * @param $mode (int) field mode: 1=not required; 2=required.
  * @return string HTML marker.
  */
-function show_required_field($mode = 1): string
+function show_required_field(mixed $mode = 1): string
 {
     global $l;
     $str = '';
@@ -831,7 +831,7 @@ function f_utf8_normalizer(mixed $str, mixed $mode = 'NONE'): mixed
  * @author Nicola Asuni
  * @since 2013-07-02
  */
-function bcdechex($dec): string
+function bcdechex(mixed $dec): string
 {
     $last = bcmod($dec, 16);
     $remain = bcdiv(bcsub($dec, $last), 16);
