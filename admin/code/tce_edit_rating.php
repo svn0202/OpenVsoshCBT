@@ -595,7 +595,7 @@ echo
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowTextBox('testlog_comment', (string) $l['w_comment'], (string) $l['w_comment'], $testlog_comment);
+echo get_form_row_text_box('testlog_comment', (string) $l['w_comment'], (string) $l['w_comment'], $testlog_comment);
 
 echo '<div class="row">' . K_NEWLINE;
 

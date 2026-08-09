@@ -294,8 +294,8 @@ final class FormValidationTest extends TestCase
                 '-r',
                 'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
                     . '"a_meta_charset" => "UTF-8"]; '
-                    . '$name = function_exists("getFormRowTextBox") '
-                    . '? "getFormRowTextBox" : "get_form_row_text_box"; '
+                    . '$name = function_exists("get_form_row_text_box") '
+                    . '? "get_form_row_text_box" : "get_form_row_text_box"; '
                     . 'echo $name("comment", "Comment", "Review comment", "<b>&", true, "PREFIX", true);',
                 dirname(__DIR__) . '/shared/code/tce_functions_form.php',
             ],

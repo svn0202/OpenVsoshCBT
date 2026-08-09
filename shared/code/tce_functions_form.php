@@ -542,7 +542,7 @@ function getFormRowTextInput(
  * @param $required (boolean) If true the field is marked as required.
  * @return string
  */
-function getFormRowTextBox(
+function get_form_row_text_box(
     string $field_name,
     string $name,
     string $description = '',

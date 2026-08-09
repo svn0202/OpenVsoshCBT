@@ -1279,7 +1279,7 @@ echo '<h2 class="editor-section-heading" id="editor-basics">Основное</h2
 
 echo getFormRowTextInput('test_name', $l['w_name'], $l['h_test_name'], '', $test_name, '', 255, false, false, false);
 echo
-    getFormRowTextBox(
+    get_form_row_text_box(
         'test_description',
         (string) $l['w_description'],
         (string) $l['h_test_description'],
