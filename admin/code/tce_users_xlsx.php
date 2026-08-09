@@ -184,7 +184,7 @@ if (isset($_POST['xlsx_action'])) {
 $thispage_title = 'Импорт и экспорт пользователей XLSX';
 require_once 'tce_page_header.php';
 
-function F_tmf_users_xlsx_html(mixed $value): string
+function f_tmf_users_xlsx_html(mixed $value): string
 {
     global $l;
     return htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
