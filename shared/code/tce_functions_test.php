@@ -877,7 +877,7 @@ function F_twoColRow($label = '', $description = '', $value = '')
  * Returns true if the current user is authorized to execute the selected test.<br>
  * Generates the test if it's not already generated.
  * @param $test_id (int) test ID.
- * @return true if user is authorized, false otherwise.
+ * @return bool True if the user is authorized, false otherwise.
  */
 function F_executeTest($test_id)
 {
