@@ -6,6 +6,39 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testUserGroupSelectionSqlRemainsRoleSpecific(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_user_group_select_sql/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval(substr($source, $start, $end - $start)); '
+                    . 'require_once "../config/tce_config.php"; '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR; '
+                    . '$admin = F_user_group_select_sql("group_id>2"); '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR - 1; '
+                    . '$_SESSION["session_user_id"] = 17; '
+                    . '$user = F_user_group_select_sql("group_id>2"); '
+                    . 'echo json_encode(["admin" => $admin, "user" => $user]);',
+                dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'admin' => 'SELECT * FROM tce_user_groups WHERE group_id>2 ORDER BY group_name',
+                'user' => 'SELECT group_id,group_name FROM tce_user_groups, tce_usrgroups '
+                    . 'WHERE group_id=usrgrp_group_id AND usrgrp_user_id=17 AND group_id>2 ORDER BY group_name',
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testUserGroupsQueryAndResultRemainUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
