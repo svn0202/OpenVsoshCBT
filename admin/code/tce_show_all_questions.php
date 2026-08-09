@@ -150,37 +150,27 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
             $question_id = (int) $_POST[$keyname];
             switch ($menu_action) {
                 case 'move':
-                    {
                         if (isset($new_subject_id) && $new_subject_id > 0) {
                             f_question_copy($question_id, $new_subject_id);
                             f_question_delete($question_id, $subject_id);
                         }
 
                         break;
-                    }
                 case 'copy':
-                    {
                         if (isset($new_subject_id) && $new_subject_id > 0) {
                             f_question_copy($question_id, $new_subject_id);
                         }
 
                         break;
-                    }
                 case 'delete':
-                    {
                         f_question_delete($question_id, $subject_id);
                         break;
-                    }
                 case 'disable':
-                    {
                         f_question_set_enabled($question_id, false);
                         break;
-                    }
                 case 'enable':
-                    {
                         f_question_set_enabled($question_id, true);
                         break;
-                    }
             } // end of switch
         }
     }
