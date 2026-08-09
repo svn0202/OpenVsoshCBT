@@ -27,14 +27,14 @@
  * @param $data (array) link data
  * @param $level (int) item level
  */
-function F_menu_link($link, $data, $level = 0)
+function F_menu_link($link, $data, $level = 0): ?string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
     $level = (int) $level;
     if (!$data['enabled'] || $_SESSION['session_user_level'] < $data['level']) {
         // this item is disabled
-        return;
+        return null;
     }
 
     $description = '';
@@ -68,7 +68,7 @@ function F_menu_link($link, $data, $level = 0)
         $str .= K_NEWLINE;
         $str .= '<ul>' . K_NEWLINE;
         foreach ($data['sub'] as $sublink => $subdata) {
-            $str .= F_menu_link($sublink, $subdata, $sublevel);
+            $str .= F_menu_link($sublink, $subdata, $sublevel) ?? '';
         }
 
         $str .= '</ul>' . K_NEWLINE;

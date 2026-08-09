@@ -96,7 +96,7 @@ echo '<span id="menusection"></span>' . K_NEWLINE;
 
 $menudata = '';
 foreach ($menu as $link => $data) {
-    $menudata .= F_menu_link($link, $data, 0);
+    $menudata .= F_menu_link($link, $data, 0) ?? '';
 }
 
 if ($menudata !== '') {

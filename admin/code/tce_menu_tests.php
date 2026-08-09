@@ -25,6 +25,7 @@ require_once '../config/tce_config.php';
 $pagelevel = 1;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{w_tests: string} $l Loaded language data. */
 $thispage_title = $l['w_tests'];
 require_once '../code/tce_page_header.php';
 
@@ -32,6 +33,7 @@ echo '<div class="container">' . K_NEWLINE;
 
 // print submenu
 echo '<ul class="section-link-grid" aria-label="Разделы испытаний">' . K_NEWLINE;
+/** @var array{'tce_menu_tests.php': array{sub: array<string, array<string, mixed>>}} $menu */
 foreach ($menu['tce_menu_tests.php']['sub'] as $link => $data) {
     echo F_menu_link($link, $data, 1);
 }
