@@ -71,7 +71,7 @@ define('K_EMAIL_RE_PATTERN', '^([a-zA-Z0-9_\.\-\+\%]+)@([a-zA-Z0-9\.\-]+)$');
  * Returns an array containing form fields.
  * @return array containing form fields
  */
-function F_decode_form_fields()
+function F_decode_form_fields(): array
 {
     return $_REQUEST;
 }
@@ -171,10 +171,10 @@ function F_get_field_format_registry(): array
  * 'x_<field>' value is ignored entirely, so a tampered/omitted/malicious pattern can neither bypass
  * validation nor be executed as a regular expression.
  *
- * @param $formfields (array) input array containing form fields
+ * @param mixed $formfields input value expected to contain form fields
  * @return string comma-separated list of wrong fields (empty when all valid)
  */
-function F_check_fields_format($formfields)
+function F_check_fields_format(mixed $formfields): string
 {
     global $l;
     if (!is_array($formfields) || empty($formfields)) {

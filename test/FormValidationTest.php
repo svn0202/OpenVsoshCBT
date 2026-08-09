@@ -23,6 +23,26 @@ use PHPUnit\Framework\TestCase;
  */
 final class FormValidationTest extends TestCase
 {
+    public function testFormFieldDecoderReturnsCurrentRequestData(): void
+    {
+        // @mago-expect lint:no-global -- legacy decoder reads the request superglobal directly
+        if (is_array($GLOBALS['_REQUEST'])) {
+            // @mago-expect lint:no-global -- type-checked snapshot of the request state
+            $original = $GLOBALS['_REQUEST'];
+        } else {
+            $original = [];
+        }
+        $request = ['user_email' => 'student@example.com', 'group_id' => '7'];
+        try {
+            // @mago-expect lint:no-global -- test setup for the legacy request decoder
+            $GLOBALS['_REQUEST'] = $request;
+            $this->assertSame($request, \F_decode_form_fields());
+        } finally {
+            // @mago-expect lint:no-global -- restore the request state after the test
+            $GLOBALS['_REQUEST'] = $original;
+        }
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
