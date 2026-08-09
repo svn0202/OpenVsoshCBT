@@ -6,6 +6,45 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseAffectedRowsBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['value' => 3],
+            'mysqli' => ['exception' => 'Error'],
+            'oracle' => ['value' => 5],
+            'postgresql' => ['exception' => 'TypeError'],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_affected_rows($link) { return $link === "connection" ? 3 : 0; } ',
+                'oracle' => 'function oci_num_rows($result) { return $result === "rows" ? 5 : 0; } ',
+                default => '',
+            };
+            $link = match ($driver) {
+                'mysqli' => 'mysqli_init()',
+                'postgresql' => 'null',
+                default => '"connection"',
+            };
+            $result = ($driver === 'mysql' || $driver === 'oracle') ? '"rows"' : 'null';
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    $prelude . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_affected_rows.*?\\n\\}/s", $source, $match); eval($match[0]); '
+                        . 'try { echo json_encode(["value" => F_db_affected_rows(' . $link . ', ' . $result . ')]); } '
+                        . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseFetchBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
