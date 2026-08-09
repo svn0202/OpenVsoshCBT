@@ -179,7 +179,6 @@ if ($answer_id > 0) {
 
 switch ($menu_mode) {
     case 'delete':
-        {
             // check if this record is used (test_log)
             if (!F_check_unique(K_TABLE_LOG_ANSWER, 'logansw_answer_id=' . $answer_id . '')) {
                 //this record will be only disabled and not deleted because it's used
@@ -229,10 +228,8 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'forcedelete':
-        {
             // Delete
             if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'START TRANSACTION';
@@ -291,10 +288,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'update':
-        { // Update
+        // Update
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -503,10 +499,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'add':
-        { // Add
+        // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if alternate key is unique
                 if (K_DATABASE_TYPE == 'ORACLE') {
@@ -611,10 +606,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $answer_description = '';
             $answer_explanation = '';
             $answer_isright = false;
@@ -623,12 +617,9 @@ switch ($menu_mode) {
             $answer_keyboard_key = '';
             $answer_weight = null;
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // select default module/subject (if not specified)
