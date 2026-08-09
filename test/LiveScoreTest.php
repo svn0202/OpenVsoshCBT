@@ -6,6 +6,35 @@ use PHPUnit\Framework\TestCase;
 
 final class LiveScoreTest extends TestCase
 {
+    public function testExecutedTestCounterNormalizesBoundsAndReturnsDalCount(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_TIMESTAMP_FORMAT", "Y-m-d H:i:s"); define("K_TABLE_TESTUSER_STAT", "test_stats"); '
+                    . '$GLOBALS["count_args"] = []; function F_count_rows($table, $where) '
+                    . '{ $GLOBALS["count_args"] = [$table, $where]; return 7; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_count_executed_tests/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = str_replace("    require_once \'../config/tce_config.php\';\\n", "", $function); '
+                    . 'eval($function); $count = F_count_executed_tests('
+                    . '"2024-02-03 04:05:06", "2024-02-04 05:06:07"); '
+                    . 'echo json_encode([$count, $GLOBALS["count_args"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [7, ['test_stats', "WHERE tus_date>='2024-02-03 04:05:06' AND tus_date<='2024-02-04 05:06:07'"]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testLiveScoreKeepsValidationFeatureFlagAndRoundingBehavior(): void
     {
         [$status, $output] = \F_tcecode_run_process(
