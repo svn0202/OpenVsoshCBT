@@ -50,7 +50,7 @@ function f_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhe
  * @param $searchterms (string) Search terms.
  * @return false in case of empty database, true otherwise
  */
-function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
+function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
 {
     global $l, $db;
     /**
