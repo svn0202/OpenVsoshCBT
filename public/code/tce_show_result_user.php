@@ -61,13 +61,13 @@ $sqlt =
     . ' AND testuser_status>3';
 if ($rt = F_db_query($sqlt, $db)) {
     if ($mt = F_db_fetch_assoc($rt)) {
-        $checkid = $mt['testuser_user_id'];
+        $checkid = (int) $mt['testuser_user_id'];
     }
 } else {
     F_display_db_error();
 }
 
-if ($user_id != $checkid) {
+if ($user_id !== $checkid) {
     header('Location: index.php'); //redirect browser to public main page
     exit();
 }
