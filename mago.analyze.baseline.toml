@@ -19952,12 +19952,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
-code = "missing-return-type"
-message = "Function `F_send_user_reg_email` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `PHPMailer\PHPMailer\PHPMailer::addAddress`: expected `string`, but found `mixed`.'
 count = 1
@@ -20129,12 +20123,6 @@ file = "shared/code/tce_functions_user_registration.php"
 code = "undefined-variable"
 message = "Undefined variable: `$emailcfg`."
 count = 22
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `PHPMailer\PHPMailer\Exception` in `F_send_user_reg_email`.'
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"

@@ -25,8 +25,9 @@
  * @param $user_id (int) User ID
  * @param $user_email (string) User email
  * @param $user_verifycode (string) user verification code
+ * @throws \PHPMailer\PHPMailer\Exception
  */
-function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
+function f_send_user_reg_email($user_id, $user_email, $user_verifycode): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';
