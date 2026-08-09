@@ -6,6 +6,32 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthorizationFunctionsTest extends TestCase
 {
+    public function testSslCertificateValidityRequiresSuccessfulUnexpiredClientCertificate(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isSslCertificateValid|f_is_ssl_certificate_valid)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval(substr($source, $start, $end - $start)); '
+                    . '$_SERVER = ["SSL_CLIENT_M_SERIAL" => "01", "SSL_CLIENT_I_DN" => "issuer", '
+                    . '"SSL_CLIENT_V_END" => "future", "SSL_CLIENT_VERIFY" => "SUCCESS", '
+                    . '"SSL_CLIENT_V_REMAIN" => 1]; $valid = $name(); '
+                    . '$_SERVER["SSL_CLIENT_V_REMAIN"] = 0; $expired = $name(); '
+                    . 'echo json_encode([$valid, $expired]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame([true, false], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
     public function testLogoutPageSetsTitleRendersFormAndTerminates(): void
     {
         [$status, $output] = \F_tcecode_run_process(
