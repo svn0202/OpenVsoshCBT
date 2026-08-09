@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
             $db,
         );
         $user = $result ? F_db_fetch_array($result) : false;
-        if (!$user || !checkPassword($password, (string) $user['user_password'])) {
+        if (!$user || !check_password($password, (string) $user['user_password'])) {
             F_print_error('WARNING', $l['m_login_wrong']);
         } else {
             $sql = 'UPDATE ' . K_TABLE_USERS . "

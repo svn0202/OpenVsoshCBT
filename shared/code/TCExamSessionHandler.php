@@ -375,7 +375,7 @@ function get_password_hash(#[\SensitiveParameter] string $password): string
  *
  * @return boolean
  */
-function checkPassword(#[\SensitiveParameter] string $password, string $hash): bool
+function check_password(#[\SensitiveParameter] string $password, string $hash): bool
 {
     return password_verify($password, $hash);
 }
@@ -454,7 +454,7 @@ function getPlainCSRFTokenForScript(string $script): string
  */
 function checkCSRFToken(#[\SensitiveParameter] string $token): bool
 {
-    return checkPassword(getPlainCSRFToken(), $token);
+    return check_password(getPlainCSRFToken(), $token);
 }
 
 /**
@@ -462,7 +462,7 @@ function checkCSRFToken(#[\SensitiveParameter] string $token): bool
  */
 function checkCSRFTokenForScript(#[\SensitiveParameter] string $token, string $script): bool
 {
-    return checkPassword(getPlainCSRFTokenForScript($script), $token);
+    return check_password(getPlainCSRFTokenForScript($script), $token);
 }
 
 /**

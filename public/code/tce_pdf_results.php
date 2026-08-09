@@ -55,7 +55,7 @@ if (
     && (
         !is_string($email_token)
         || !f_is_random_security_configured()
-        || !checkPassword(
+        || !check_password(
             date('Y') . $testuser_id . K_RANDOM_SECURITY . $test_id . date('m') . $user_id,
             $email_token,
         )
