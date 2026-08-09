@@ -9,6 +9,36 @@ require_once __DIR__ . '/../shared/code/tce_functions_users_xlsx.php';
 
 final class XlsxTest extends TestCase
 {
+    public function testAdminXlsxUserGroupsAreReturnedInQueryOrder(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'class FakeResult { public int $index = 0; public function __construct(public array $rows) {} } '
+                    . 'define("K_TABLE_GROUPS", "groups"); define("K_TABLE_USERGROUP", "user_groups"); '
+                    . '$GLOBALS["db"] = new stdClass(); $GLOBALS["query"] = ""; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["query"] = $sql; '
+                    . 'return new FakeResult([["group_name" => "alpha"], ["group_name" => "beta"]]); } '
+                    . 'function F_db_fetch_array($result) { return $result->rows[$result->index++] ?? false; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_tmf_users_xlsx_groups_for_user/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\nif (isset(\\$_GET[\'download\']", $start); '
+                    . 'eval(substr($source, $start, $end - $start)); '
+                    . 'echo json_encode([F_tmf_users_xlsx_groups_for_user(42), $GLOBALS["query"]]);',
+                dirname(__DIR__) . '/admin/code/tce_users_xlsx.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['alpha, beta', 'SELECT g.group_name FROM groups g INNER JOIN user_groups ug ON '
+                . 'ug.usrgrp_group_id=g.group_id WHERE ug.usrgrp_user_id=42 ORDER BY g.group_name'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testAdminXlsxSenderWritesBytesUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
