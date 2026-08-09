@@ -13,9 +13,6 @@ class TmfBackupException extends RuntimeException {}
 function F_tmf_backup_environment(array $config): array
 {
     $environment = getenv();
-    if (!is_array($environment)) {
-        $environment = [];
-    }
     if ($config['type'] === 'POSTGRESQL') {
         $environment['PGPASSWORD'] = $config['password'];
     } else {

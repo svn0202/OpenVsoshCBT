@@ -13850,12 +13850,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_backup.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_tmf_backup_dump_command`: expected `list<string>`, but found `list{string, string('--opt'), string('-h'), null|string, string('-P'), null|string, string('-u'), null|string, null|string}`."
 count = 1
@@ -13948,12 +13942,6 @@ count = 4
 file = "shared/code/tce_functions_backup.php"
 code = "redundant-cast"
 message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_backup.php"
-code = "redundant-type-comparison"
-message = "Redundant type assertion: `$environment` is already `array<string, string>`."
 count = 1
 
 [[issues]]
