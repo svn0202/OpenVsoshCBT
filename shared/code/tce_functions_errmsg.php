@@ -151,7 +151,7 @@ $old_error_handler = set_error_handler('F_error_handler', (int) K_ERROR_TYPES);
  * @param string $url URL to check.
  * @return bool True if the URL exists; false otherwise.
  */
-function F_url_exists(string $url): bool
+function f_url_exists(string $url): bool
 {
     $crs = curl_init();
     curl_setopt($crs, CURLOPT_URL, $url);

@@ -793,12 +793,6 @@ message = "Function name `F_error_handler` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "function-name"
-message = "Function name `F_url_exists` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
 message = "Function name `F_check_fields_format` should be in snake case."
