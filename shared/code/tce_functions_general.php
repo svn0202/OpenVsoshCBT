@@ -89,11 +89,11 @@ function F_getBoolean($str): bool
         return $str;
     }
 
-    if (is_string($str) && (strncasecmp($str, 't', 1) == 0 || strncasecmp($str, '1', 1) == 0)) {
+    if (is_string($str) && (strncasecmp($str, 't', 1) === 0 || strncasecmp($str, '1', 1) === 0)) {
         return true;
     }
 
-    return is_int($str) && $str == 1;
+    return is_int($str) && $str === 1;
 }
 
 /**
