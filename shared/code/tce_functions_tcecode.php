@@ -268,7 +268,7 @@ function F_sanitize_html_attributes(DOMElement $element, string $tag): void
  * @param $image (bool) true for an image source
  * @return bool true when safe to render
  */
-function F_is_safe_html_url(string $url, bool $image = false): bool
+function f_is_safe_html_url(string $url, bool $image = false): bool
 {
     $url = trim(html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     if ($url === '' || preg_match('/[\x00-\x20]/', $url) === 1) {
