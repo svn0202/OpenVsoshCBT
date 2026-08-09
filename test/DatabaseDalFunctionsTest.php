@@ -6,6 +6,52 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseInsertIdBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['value' => 17, 'query' => 'SELECT LAST_INSERT_ID() FROM users'],
+            'mysqli' => ['exception' => 'Error'],
+            'oracle' => ['value' => 23, 'query' => 'SELECT users_seq.currval FROM dual'],
+            'postgresql' => ['exception' => 'TypeError'],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => '$GLOBALS["query"] = ""; function mysql_query($query, $link) '
+                    . '{ $GLOBALS["query"] = $query; return "statement"; } '
+                    . 'function mysql_fetch_row($result) { return [17]; } ',
+                'oracle' => 'define("OCI_NUM", 1); $GLOBALS["query"] = ""; '
+                    . 'function F_db_query($query, $link) { $GLOBALS["query"] = $query; return "statement"; } '
+                    . 'function oci_fetch_array($result, $mode) { return [23]; } ',
+                default => '',
+            };
+            $invocation = match ($driver) {
+                'mysql', 'oracle' => '$value = F_db_insert_id("connection", "users", "id"); '
+                    . 'echo json_encode(["value" => $value, "query" => $GLOBALS["query"]]);',
+                'mysqli' => 'try { F_db_insert_id(mysqli_init(), "users", "id"); } '
+                    . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+                'postgresql' => 'try { F_db_insert_id(null, "users", "id"); } '
+                    . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+            };
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'error_reporting(E_ALL & ~E_DEPRECATED); ' . $prelude
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_insert_id/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval(substr($source, $start, $end - $start)); ' . $invocation,
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseQueryBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
