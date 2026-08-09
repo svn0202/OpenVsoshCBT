@@ -6087,12 +6087,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_pdf_testgen.php"
-code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
 count = 3
 
@@ -6100,7 +6094,7 @@ count = 3
 file = "admin/code/tce_pdf_testgen.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 5
+count = 4
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
