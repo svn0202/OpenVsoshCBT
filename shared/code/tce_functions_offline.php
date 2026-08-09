@@ -8,7 +8,7 @@ const TMF_OFFLINE_FORMAT = 'OpenVsoshCBT-offline-package-v1';
 const TMF_OFFLINE_RESULT_FORMAT = 'OpenVsoshCBT-offline-result-v1';
 const TMF_OFFLINE_MAX_RESULT_BYTES = 5_242_880;
 
-function F_tmf_offline_table(): string
+function f_tmf_offline_table(): string
 {
     return K_TABLE_PREFIX . 'offline_packages';
 }
