@@ -192,7 +192,7 @@ function f_tmf_offline_issue(int $testuser_id): array
  *
  * @return array{status:string,package_id?:string}
  */
-function F_tmf_offline_import(string $result_json): array
+function f_tmf_offline_import(string $result_json): array
 {
     require_once '../config/tce_config.php';
     require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
