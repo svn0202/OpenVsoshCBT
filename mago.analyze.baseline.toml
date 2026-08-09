@@ -18315,12 +18315,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "redundant-cast"
-message = "Redundant cast to `(array)`: the expression already has this type."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_xlsx.php"
-code = "redundant-cast"
 message = "Redundant cast to `(string)`: the expression already has this type."
 count = 1
 
