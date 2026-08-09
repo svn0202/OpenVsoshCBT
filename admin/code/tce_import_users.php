@@ -285,7 +285,7 @@ class XMLUserImporter
             case 'verifycode':
             case 'otpkey':
                 {
-                    $this->current_data = F_escape_sql($db, F_xml_to_text($this->current_data));
+                    $this->current_data = F_escape_sql($db, f_xml_to_text($this->current_data));
                     $this->user_data[$this->current_element] = $this->current_data;
                     $this->current_element = '';
                     $this->current_data = '';
@@ -293,7 +293,7 @@ class XMLUserImporter
                 }
             case 'group':
                 {
-                    $group_name = F_escape_sql($db, F_xml_to_text($this->current_data));
+                    $group_name = F_escape_sql($db, f_xml_to_text($this->current_data));
                     // check if group already exist
                     $sql = 'SELECT group_id
 					FROM ' . K_TABLE_GROUPS . '

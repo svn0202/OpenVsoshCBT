@@ -245,7 +245,7 @@ class XMLQuestionImporter
                     $elname = $this->level . '_' . $name;
                     if ($this->current_element === $elname) {
                         // convert XML special chars
-                        $this->level_data[$this->level][$this->current_element] = F_xml_to_text(utrim($this->current_data));
+                        $this->level_data[$this->level][$this->current_element] = f_xml_to_text(utrim($this->current_data));
                         if (
                             $this->current_element == 'question_description'
                             || $this->current_element == 'answer_description'

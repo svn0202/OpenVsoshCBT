@@ -298,7 +298,7 @@ function F_text_to_xml($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function F_xml_to_text($str): string
+function f_xml_to_text($str): string
 {
     if (empty($str)) {
         return '';
