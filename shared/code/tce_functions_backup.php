@@ -26,7 +26,7 @@ function f_tmf_backup_environment(array $config): array
  * @param array<string,string> $environment
  * @return resource
  */
-function F_tmf_backup_start_process(
+function f_tmf_backup_start_process(
     array $command,
     array $environment,
     mixed &$pipes,
