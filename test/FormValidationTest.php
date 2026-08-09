@@ -101,6 +101,11 @@ final class FormValidationTest extends TestCase
         $this->assertStringContainsString('<span class="formw">' . K_NEWLINE . '42&nbsp;', $markup);
     }
 
+    public function testFormCurrencyUsesMachineReadableDecimalFormat(): void
+    {
+        $this->assertSame('1234.50', \f_format_form_currency('1234.5', 2));
+    }
+
     public function testValidValuesPass(): void
     {
         $fields = [
