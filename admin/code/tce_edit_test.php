@@ -251,7 +251,7 @@ if (isset($_POST['lock'])) {
 
 switch ($menu_mode) {
     case 'lock':
-        { // lock test by changing end date (subtract 1000 years)
+        // lock test by changing end date (subtract 1000 years)
             $sql =
                 'UPDATE '
                 . K_TABLE_TESTS
@@ -269,10 +269,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'unlock':
-        { // unlock test by restoring original end date (add 1000 years)
+        // unlock test by restoring original end date (add 1000 years)
             $sql =
                 'UPDATE '
                 . K_TABLE_TESTS
@@ -290,10 +289,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'deletesubject':
-        { // delete subject
+        // delete subject
             // check referential integrity (NOTE: mysql do not support "ON UPDATE" constraint)
             if (!F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id=' . $test_id . '')) {
                 F_print_error('WARNING', $l['m_update_restrict']);
@@ -324,10 +322,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'addquestion':
-        { // Add question type
+        // Add question type
             // check referential integrity (NOTE: mysql do not support "ON UPDATE" constraint)
             if (!F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id=' . $test_id . '')) {
                 F_print_error('WARNING', $l['m_update_restrict']);
@@ -543,7 +540,6 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'delete':
         {
