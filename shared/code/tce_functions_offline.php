@@ -408,7 +408,7 @@ function F_tmf_offline_import(string $result_json): array
 /**
  * Build a self-contained, network-free HTML exam from a signed envelope.
  */
-function F_tmf_offline_html(array $envelope): string
+function f_tmf_offline_html(array $envelope): string
 {
     $nonce = bin2hex(random_bytes(16));
     $envelope_json = json_encode(
