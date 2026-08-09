@@ -7,6 +7,7 @@
  * missing language variants are copied from the shipped default file.
  *
  * @throws RuntimeException when either TMX document cannot be read or saved.
+ * @throws Random\RandomException when a secure temporary filename cannot be generated.
  */
 function F_sync_tmx_translations(string $default_file, string $runtime_file): bool
 {

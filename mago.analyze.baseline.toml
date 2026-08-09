@@ -18229,12 +18229,6 @@ message = "Argument #1 of method `DOMNode::appendChild` is possibly `false`, but
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_language.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `F_sync_tmx_translations`.'
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `truthy-mixed`, which is not iterable."
