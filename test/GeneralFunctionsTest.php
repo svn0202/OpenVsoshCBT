@@ -63,13 +63,13 @@ final class GeneralFunctionsTest extends TestCase
     {
         $this->assertSame(
             [10 => 2, 20 => 1, 30 => 0, 40 => 0],
-            \F_normalizeMatchingPositions([10 => '2', 20 => '1', 30 => '2', 40 => '0']),
+            \f_normalize_matching_positions([10 => '2', 20 => '1', 30 => '2', 40 => '0']),
         );
         $this->assertSame(
             [10 => 2, 20 => 1, 30 => 2, 40 => 0],
-            \F_normalizeMatchingPositions([10 => '2', 20 => '1', 30 => '2', 40 => '0'], true),
+            \f_normalize_matching_positions([10 => '2', 20 => '1', 30 => '2', 40 => '0'], true),
         );
-        $this->assertSame([], \F_normalizeMatchingPositions([]));
+        $this->assertSame([], \f_normalize_matching_positions([]));
     }
 
     public function testUnhtmlentities(): void

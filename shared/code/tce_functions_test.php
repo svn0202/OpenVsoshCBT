@@ -1876,7 +1876,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
 
     $tmf_options = F_tmf_question_options((string) $question_description);
     if ((int) $question_type === 5) {
-        $answpos = F_normalizeMatchingPositions(
+        $answpos = f_normalize_matching_positions(
             (array) $answpos,
             $tmf_options['matching_reuse_positions'],
         );
