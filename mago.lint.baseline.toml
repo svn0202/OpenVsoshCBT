@@ -627,12 +627,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
-message = "Function name `F_decode_form_fields` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "function-name"
 message = "Function name `F_getCSRFTokenField` should be in snake case."
 count = 1
 
