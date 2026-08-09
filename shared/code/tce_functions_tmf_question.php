@@ -169,7 +169,7 @@ function f_tmf_question_editor_description(string $description): string
 /**
  * Normalize a short answer for a language-independent similarity comparison.
  */
-function F_tmf_normalize_short_answer(string $value, bool $binary = false): string
+function f_tmf_normalize_short_answer(string $value, bool $binary = false): string
 {
     $value = trim($value);
     if (function_exists('normalizer_normalize')) {
