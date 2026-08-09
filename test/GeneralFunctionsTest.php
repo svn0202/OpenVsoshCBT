@@ -125,7 +125,7 @@ final class GeneralFunctionsTest extends TestCase
     public function testFormatPdfAndXmlPercentage(): void
     {
         $this->assertSame('( 50%)', \f_format_pdf_percentage(0.5));
-        $this->assertSame(' 50', \F_formatXMLPercentage(0.5));
+        $this->assertSame(' 50', \f_format_xml_percentage(0.5));
     }
 
     public function testUtcOffsets(): void

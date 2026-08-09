@@ -556,7 +556,7 @@ function f_format_pdf_percentage($num, $ratio = true): string
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string
  */
-function F_formatXMLPercentage($num, $ratio = true): string
+function f_format_xml_percentage($num, $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;

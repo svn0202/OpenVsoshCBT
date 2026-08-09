@@ -178,7 +178,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<recurrence_percent>'
-                . F_formatXMLPercentage($mr['recurrence'] / $num_questions)
+                . f_format_xml_percentage($mr['recurrence'] / $num_questions)
                 . '</recurrence_percent>'
                 . K_NEWLINE;
             $xml .=
@@ -194,7 +194,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<points_percent>'
-                . F_formatXMLPercentage($mr['average_score'] / $question_max_score)
+                . f_format_xml_percentage($mr['average_score'] / $question_max_score)
                 . '</points_percent>'
                 . K_NEWLINE;
             if (stripos($mr['average_time'], ':') !== false) {
@@ -209,7 +209,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<correct_percent>'
-                . F_formatXMLPercentage($qsttestdata['right'] / $qsttestdata['num'])
+                . f_format_xml_percentage($qsttestdata['right'] / $qsttestdata['num'])
                 . '</correct_percent>'
                 . K_NEWLINE;
             $xml .= K_TAB . K_TAB . K_TAB . '<wrong>' . $qsttestdata['wrong'] . '</wrong>' . K_NEWLINE;
@@ -218,7 +218,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<wrong_percent>'
-                . F_formatXMLPercentage($qsttestdata['wrong'] / $qsttestdata['num'])
+                . f_format_xml_percentage($qsttestdata['wrong'] / $qsttestdata['num'])
                 . '</wrong_percent>'
                 . K_NEWLINE;
             $xml .= K_TAB . K_TAB . K_TAB . '<unanswered>' . $qsttestdata['unanswered'] . '</unanswered>' . K_NEWLINE;
@@ -227,7 +227,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<unanswered_percent>'
-                . F_formatXMLPercentage($qsttestdata['unanswered'] / $qsttestdata['num'])
+                . f_format_xml_percentage($qsttestdata['unanswered'] / $qsttestdata['num'])
                 . '</unanswered_percent>'
                 . K_NEWLINE;
             $xml .=
@@ -237,7 +237,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<undisplayed_percent>'
-                . F_formatXMLPercentage($qsttestdata['undisplayed'] / $qsttestdata['num'])
+                . f_format_xml_percentage($qsttestdata['undisplayed'] / $qsttestdata['num'])
                 . '</undisplayed_percent>'
                 . K_NEWLINE;
             $xml .= K_TAB . K_TAB . K_TAB . '<unrated>' . $qsttestdata['unrated'] . '</unrated>' . K_NEWLINE;
@@ -246,7 +246,7 @@ function F_xml_export_question_stats($test_id)
                 . K_TAB
                 . K_TAB
                 . '<unrated_percent>'
-                . F_formatXMLPercentage($qsttestdata['unrated'] / $qsttestdata['num'])
+                . f_format_xml_percentage($qsttestdata['unrated'] / $qsttestdata['num'])
                 . '</unrated_percent>'
                 . K_NEWLINE;
 
@@ -366,7 +366,7 @@ function F_xml_export_question_stats($test_id)
                         . K_TAB
                         . K_TAB
                         . '<recurrence_percent>'
-                        . F_formatXMLPercentage($perc)
+                        . f_format_xml_percentage($perc)
                         . '</recurrence_percent>'
                         . K_NEWLINE;
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<correct>' . $right_answers . '</correct>' . K_NEWLINE;
@@ -381,7 +381,7 @@ function F_xml_export_question_stats($test_id)
                         . K_TAB
                         . K_TAB
                         . '<correct_percent>'
-                        . F_formatXMLPercentage($perc)
+                        . f_format_xml_percentage($perc)
                         . '</correct_percent>'
                         . K_NEWLINE;
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<wrong>' . $wrong_answers . '</wrong>' . K_NEWLINE;
@@ -396,7 +396,7 @@ function F_xml_export_question_stats($test_id)
                         . K_TAB
                         . K_TAB
                         . '<wrong_percent>'
-                        . F_formatXMLPercentage($perc)
+                        . f_format_xml_percentage($perc)
                         . '</wrong_percent>'
                         . K_NEWLINE;
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<unanswered>' . $unanswered . '</unanswered>' . K_NEWLINE;
@@ -411,7 +411,7 @@ function F_xml_export_question_stats($test_id)
                         . K_TAB
                         . K_TAB
                         . '<unanswered_percent>'
-                        . F_formatXMLPercentage($perc)
+                        . f_format_xml_percentage($perc)
                         . '</unanswered_percent>'
                         . K_NEWLINE;
                     $xml .= K_TAB . K_TAB . K_TAB . '</answer>' . K_NEWLINE;
