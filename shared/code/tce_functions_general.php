@@ -365,7 +365,11 @@ function show_required_field(mixed $mode = 1): string
 {
     global $l;
     $str = '';
-    if ($mode == 2) {
+    $is_required = $mode === 2
+        || $mode === 2.0
+        || $mode === true
+        || (is_string($mode) && is_numeric($mode) && (float) $mode === 2.0);
+    if ($is_required) {
         return ' <abbr class="requiredonbox" title="' . $l['w_required'] . '">+</abbr>';
     }
 
