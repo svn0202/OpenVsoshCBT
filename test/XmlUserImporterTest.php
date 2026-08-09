@@ -22,7 +22,7 @@ final class XmlUserImporterTest extends TestCase
                     . 'file_put_contents($file, "<users/>"); '
                     . '$importer = new XMLUserImporter($file); unlink($file); unset($importer); '
                     . 'echo "destroyed";',
-                dirname(__DIR__) . '/admin/code/tce_import_users.php',
+                dirname(__DIR__) . '/admin/code/XMLUserImporter.php',
             ],
             dirname(__DIR__) . '/admin/code',
         );
@@ -47,7 +47,7 @@ final class XmlUserImporterTest extends TestCase
                     . 'file_put_contents($file, "<users/>"); '
                     . '$importer = new XMLUserImporter($file); '
                     . 'echo $file;',
-                dirname(__DIR__) . '/admin/code/tce_import_users.php',
+                dirname(__DIR__) . '/admin/code/XMLUserImporter.php',
             ],
             dirname(__DIR__) . '/admin/code',
         );
