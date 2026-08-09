@@ -17,7 +17,7 @@ function F_tmf_monitor_audit_table(): string
     return K_TABLE_PREFIX . 'monitor_audit';
 }
 
-function F_tmf_monitor_action_is_valid(string $action): bool
+function f_tmf_monitor_action_is_valid(string $action): bool
 {
     return in_array($action, TMF_MONITOR_ACTIONS, true);
 }
