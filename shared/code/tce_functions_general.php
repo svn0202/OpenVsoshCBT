@@ -61,6 +61,30 @@ function f_empty_to_null(mixed $str): mixed
 }
 
 /**
+ * Compare a legacy scalar value with an integer without PHP's loose comparison operator.
+ */
+function f_legacy_int_equals(mixed $value, int $expected): bool
+{
+    if (is_int($value)) {
+        return $value === $expected;
+    }
+
+    if (is_float($value)) {
+        return $value === (float) $expected;
+    }
+
+    if (is_string($value)) {
+        return is_numeric($value) && (float) $value === (float) $expected;
+    }
+
+    if (is_bool($value)) {
+        return $value === ($expected !== 0);
+    }
+
+    return $value === null && $expected === 0;
+}
+
+/**
  * Prepare field value for SQL query.<br>
  * Returns the num if different from zero, NULL otherwise.
  * @param $num (string) string to check.
@@ -70,12 +94,7 @@ function f_zero_to_null(mixed $num): mixed
 {
     global $db;
     require_once '../../shared/code/tce_db_dal.php';
-    $is_zero = $num === 0
-        || $num === 0.0
-        || $num === false
-        || $num === null
-        || (is_string($num) && is_numeric($num) && (float) $num === 0.0);
-    if ($is_zero) {
+    if (f_legacy_int_equals($num, 0)) {
         return 'NULL';
     }
 
@@ -252,9 +271,9 @@ function f_substr_utf8(mixed $str, mixed $start, mixed $length): string
     $str_start = 0;
     $str_end = $bytelen;
     while ($i < $bytelen) {
-        if ($j == $start) {
+        if (f_legacy_int_equals($start, $j)) {
             $str_start = $i;
-        } elseif ($j == $length) {
+        } elseif (f_legacy_int_equals($length, $j)) {
             $str_end = $i;
             break;
         }
@@ -365,11 +384,7 @@ function show_required_field(mixed $mode = 1): string
 {
     global $l;
     $str = '';
-    $is_required = $mode === 2
-        || $mode === 2.0
-        || $mode === true
-        || (is_string($mode) && is_numeric($mode) && (float) $mode === 2.0);
-    if ($is_required) {
+    if (f_legacy_int_equals($mode, 2)) {
         return ' <abbr class="requiredonbox" title="' . $l['w_required'] . '">+</abbr>';
     }
 

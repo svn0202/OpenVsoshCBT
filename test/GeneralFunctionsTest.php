@@ -282,6 +282,8 @@ final class GeneralFunctionsTest extends TestCase
     {
         $this->assertSame('hel', \f_substr_utf8('hello', 0, 3));
         $this->assertSame('caf', \f_substr_utf8('café', 0, 3));
+        $this->assertSame('ell', \f_substr_utf8('hello', '1', '3'));
+        $this->assertSame('ell', \f_substr_utf8('hello', 1.0, 3.0));
     }
 
     public function testUtf8NormalizerModes(): void
