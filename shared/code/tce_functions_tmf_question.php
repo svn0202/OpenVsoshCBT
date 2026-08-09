@@ -54,7 +54,7 @@ function f_tmf_question_options(string $description): array
 /**
  * Enable or disable repeated use of a left-side matching position.
  */
-function F_tmf_set_matching_reuse_positions(string $description, bool $enabled): string
+function f_tmf_set_matching_reuse_positions(string $description, bool $enabled): string
 {
     $description = (string) preg_replace('/\s*<!--TMF_MATCH_REUSE-->/', '', $description);
     if ($enabled) {
