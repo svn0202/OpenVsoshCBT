@@ -74,7 +74,7 @@ switch ($output_format) {
  * @since 2006-03-17
  * @return XML data
  */
-function F_xml_export_users()
+function f_xml_export_users()
 {
     global $l, $db;
     require_once '../config/tce_config.php';
