@@ -16234,31 +16234,19 @@ count = 3
 file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `trim`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `mixed`."
-count = 2
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 8
+count = 7
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 16
+count = 15
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16294,36 +16282,6 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "non-existent-function"
 message = "Function `F_formatCurrency` could not be found."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `array_key_exists` is possibly `null`, but parameter type `bool|float|int|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `stripslashes` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `trim` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `non-empty-list<string>`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
 count = 1
 
 [[issues]]

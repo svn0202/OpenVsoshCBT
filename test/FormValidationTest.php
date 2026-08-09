@@ -53,6 +53,14 @@ final class FormValidationTest extends TestCase
         ]));
     }
 
+    public function testRequiredFieldCheckPreservesMissingFieldMessage(): void
+    {
+        $this->assertSame(' user_email', \F_check_required_fields([
+            'ff_required' => 'user_email',
+            'ff_required_labels' => '',
+        ]));
+    }
+
     public function testSubmitButtonPrintsExistingMarkup(): void
     {
         ob_start();
