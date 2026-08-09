@@ -27,7 +27,7 @@
  * @param bool $display_links If true gives a textual representation of links and images.
  * @return string Plain-text representation.
  */
-function F_html_to_text(string $str, bool $preserve_newlines = false, bool $display_links = false): string
+function f_html_to_text(string $str, bool $preserve_newlines = false, bool $display_links = false): string
 {
     require_once '../../shared/code/tce_functions_general.php';
 
