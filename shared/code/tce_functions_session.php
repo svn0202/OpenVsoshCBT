@@ -248,10 +248,10 @@ class TCExamSessionHandler implements SessionHandlerInterface
  * Convert encoded session string data to array.
  * @author Nicola Asuni
  * @since 2001-10-18
- * @param $sd (string) input data string
+ * @param string $sd input data string
  * @return array<string, mixed>
  */
-function F_session_string_to_array($sd): array
+function F_session_string_to_array(string $sd): array
 {
     $sess_array = [];
     $vars = preg_split('/[;}]/', $sd);

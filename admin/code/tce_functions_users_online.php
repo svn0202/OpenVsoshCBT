@@ -113,7 +113,7 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
 
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
-            $this_session = F_session_string_to_array($m['cpsession_data']);
+            $this_session = F_session_string_to_array((string) ($m['cpsession_data'] ?? ''));
             echo '<tr>';
             echo '<td align="left">';
             $user_str = '';
