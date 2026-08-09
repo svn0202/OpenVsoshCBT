@@ -783,12 +783,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
 code = "function-name"
-message = "Function name `F_display_db_error` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "function-name"
 message = "Function name `F_error_handler` should be in snake case."
 count = 1
 
