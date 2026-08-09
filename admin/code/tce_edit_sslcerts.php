@@ -54,7 +54,7 @@ $ssl_end_date = '';
 if (isset($_FILES['userfile']['name']) && !empty($_FILES['userfile']['name'])) {
     require_once '../code/tce_functions_upload.php';
     // upload file
-    $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
+    $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
     if ($uploadedfile !== false) {
         $cert = file_get_contents(K_PATH_CACHE . $uploadedfile);
         $pkcs12 = str_ends_with($uploadedfile, '.pfx');

@@ -46,7 +46,7 @@ function f_is_allowed_upload(mixed $filename): bool
  * @param $uploaddir (string) upload directory
  * @return mixed file name or false in case of error
  */
-function F_upload_file(mixed $fieldname, mixed $uploaddir): mixed
+function f_upload_file(mixed $fieldname, mixed $uploaddir): mixed
 {
     global $l;
     require_once '../config/tce_config.php';
