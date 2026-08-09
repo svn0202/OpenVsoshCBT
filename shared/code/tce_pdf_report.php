@@ -1043,19 +1043,28 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $right = f_get_boolean($ma['answer_isright']);
 
         if (in_array($qtype, [4, 5], true)) {
-            $marker = $ma['logansw_position'] > 0 ? (string) $ma['logansw_position'] : ' ';
-            $markfill = $ma['logansw_position'] > 0 && $ma['logansw_position'] == $ma['answer_position'];
-            $index = (string) $ma['answer_position'];
+            /** @var int|numeric-string $raw_log_position */
+            $raw_log_position = $ma['logansw_position'];
+            /** @var int|numeric-string $raw_answer_position */
+            $raw_answer_position = $ma['answer_position'];
+            $log_position = (int) $raw_log_position;
+            $answer_position = (int) $raw_answer_position;
+            $marker = $log_position > 0 ? (string) $log_position : ' ';
+            $markfill = $log_position > 0 && $log_position === $answer_position;
+            $index = (string) $answer_position;
             $idxfill = $markfill;
             return [$marker, $markfill, $index, $idxfill];
         }
 
-        if ($ma['logansw_selected'] > 0) {
+        /** @var int|numeric-string $raw_selected */
+        $raw_selected = $ma['logansw_selected'];
+        $selected = (int) $raw_selected;
+        if ($selected > 0) {
             $marker = $right ? '+' : '-';
             $markfill = true;
-        } elseif ($qtype == 1) {
+        } elseif ($qtype === 1) {
             $marker = ' ';
-        } elseif ($ma['logansw_selected'] == 0) {
+        } elseif ($selected === 0) {
             $marker = $right ? '-' : '+';
         }
 

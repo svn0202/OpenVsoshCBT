@@ -2104,7 +2104,7 @@ count = 1
 file = "shared/code/tce_pdf_report.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 4
+count = 1
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
