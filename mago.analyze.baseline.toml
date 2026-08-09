@@ -18951,25 +18951,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "missing-return-type"
-message = "Function `F_getCSRFToken` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
 message = "Function `F_session_string_to_array` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `checkCSRFToken` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-return-type"
-message = "Function `getPlainCSRFToken` is missing a return type hint."
 count = 1
 
 [[issues]]

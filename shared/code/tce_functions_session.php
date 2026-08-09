@@ -420,7 +420,7 @@ function F_isSafeLocalRedirectUri(string $uri): bool
  *
  * @return string
  */
-function getPlainCSRFToken()
+function getPlainCSRFToken(): string
 {
     $inc = get_included_files();
     return getPlainCSRFTokenForScript($inc[0]);
@@ -440,7 +440,7 @@ function getPlainCSRFTokenForScript(string $script): string
  *
  * @return boolean
  */
-function checkCSRFToken(#[\SensitiveParameter] $token)
+function checkCSRFToken(#[\SensitiveParameter] $token): bool
 {
     return checkPassword(getPlainCSRFToken(), $token);
 }
@@ -458,7 +458,7 @@ function checkCSRFTokenForScript(#[\SensitiveParameter] $token, string $script):
  *
  * @return string
  */
-function F_getCSRFToken()
+function F_getCSRFToken(): string
 {
     return getPasswordHash(getPlainCSRFToken());
 }
