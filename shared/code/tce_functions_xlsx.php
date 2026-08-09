@@ -140,7 +140,7 @@ function f_tmf_xlsx_styles_xml(): string
         . '</cellStyles></styleSheet>';
 }
 
-function F_tmf_xlsx_sheet_xml(array $rows, array $widths): string
+function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
 {
     $max_columns = 1;
     foreach ($rows as $row) {
