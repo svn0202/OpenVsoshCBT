@@ -260,7 +260,7 @@ function F_tmf_backup_create(array $config, string $backup_directory, ?string $t
     throw new TmfBackupException('Резервная копия с такой меткой времени уже существует.');
 }
 
-function F_tmf_backup_file_is_valid(string $filename): bool
+function f_tmf_backup_file_is_valid(string $filename): bool
 {
     return preg_match('/^\d{14}_tcexam_backup\.(?:sql|tar)\.gz$/D', $filename) === 1;
 }
