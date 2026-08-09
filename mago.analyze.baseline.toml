@@ -531,7 +531,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_backup.php"
 code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `F_tmf_backup_resolve_file`: expected `string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|non-empty-string`."
+message = "Possible argument type mismatch for argument #2 of `f_tmf_backup_resolve_file`: expected `string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|non-empty-string`."
 count = 2
 
 [[issues]]
@@ -13239,7 +13239,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `TmfBackupException` in `F_tmf_backup_resolve_file`."
+message = "Potentially unhandled exception `TmfBackupException` in `f_tmf_backup_resolve_file`."
 count = 1
 
 [[issues]]
