@@ -2067,7 +2067,7 @@ function F_getAllUsersTestStat(
     $data['num_records'] = $itemcount;
     if ($itemcount > 0) {
         // calculate statistics
-        $data['statistics'] = F_getArrayStatistics($statsdata);
+        $data['statistics'] = f_get_array_statistics($statsdata);
     }
 
     return $data;

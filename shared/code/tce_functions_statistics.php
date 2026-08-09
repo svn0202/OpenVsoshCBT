@@ -27,7 +27,7 @@
  * @param $data (array) input data as bidimesional array. The first dimension is a set of data, the second contains data.
  * @return array of statistical results. The keys of the input data are peserved.
  */
-function F_getArrayStatistics($data): mixed
+function f_get_array_statistics($data): mixed
 {
     $stats = [];
     $stats['number'] = []; // number of items

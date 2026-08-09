@@ -1657,12 +1657,6 @@ message = "ini_set should not be used."
 count = 7
 
 [[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "function-name"
-message = "Function name `F_getArrayStatistics` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_svg_graph.php"
 code = "function-name"
 message = "Function name `F_getSVGGraphCode` should be in snake case."
