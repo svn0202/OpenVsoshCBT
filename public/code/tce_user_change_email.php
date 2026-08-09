@@ -74,7 +74,7 @@ switch ($menu_mode) {
             }
 
             $current_level = (int) $_SESSION['session_user_level'];
-            $user_verifycode = getNewSessionID(); // verification code
+            $user_verifycode = get_new_session_id(); // verification code
             $requires_verification = $current_level < 5;
             $sql =
                 'UPDATE '

@@ -97,8 +97,8 @@ final class SessionFunctionsTest extends TestCase
 
     public function testNewSessionIdUsesSchemaCompatibleCSPRNGValue(): void
     {
-        $first = \getNewSessionID();
-        $second = \getNewSessionID();
+        $first = \get_new_session_id();
+        $second = \get_new_session_id();
 
         $this->assertMatchesRegularExpression('/\A[0-9a-f]{32}\z/', $first);
         $this->assertNotSame($first, $second);

@@ -345,7 +345,7 @@ function get_legacy_client_fingerprint(): string
  * @since 2010-10-04
  * @return string PHPSESSID
  */
-function getNewSessionID(): string
+function get_new_session_id(): string
 {
     // The database schema stores 32 characters. Sixteen CSPRNG bytes preserve that shape while
     // providing the full 128 bits of entropy directly, without timestamp- or hash-based mixing.
@@ -499,11 +499,11 @@ if (isset($_REQUEST['PHPSESSID'])) {
     $PHPSESSID = preg_replace('/[^0-9a-f]*/', '', $_REQUEST['PHPSESSID']);
     if (strlen($PHPSESSID) !== 32) {
         // generate new ID
-        $PHPSESSID = getNewSessionID();
+        $PHPSESSID = get_new_session_id();
     }
 } else {
     // create new PHPSESSID
-    $PHPSESSID = getNewSessionID();
+    $PHPSESSID = get_new_session_id();
 }
 
 if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] !== 'startlongprocess') {
