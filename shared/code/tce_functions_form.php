@@ -313,7 +313,7 @@ function F_close_button(string $onclick = ''): string
  *
  * @return void
  */
-function F_submit_button(mixed $name, mixed $value, mixed $title = '', mixed $extra = ''): void
+function f_submit_button(mixed $name, mixed $value, mixed $title = '', mixed $extra = ''): void
 {
     $name = is_scalar($name) ? (string) $name : '';
     $value = is_scalar($value) ? (string) $value : '';
