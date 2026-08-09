@@ -1691,7 +1691,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
 {
     require_once '../config/tce_config.php';
     global $db, $l;
-    if ($question_type == 3) {
+    if (f_legacy_int_equals($question_type, 3)) {
         // free text question
         return true;
     }
@@ -1709,7 +1709,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
     if (
         f_get_boolean($testdata['test_random_questions_select'])
         || f_get_boolean($testdata['test_random_answers_select'])
-        || $firsttest == 0
+        || f_legacy_int_equals($firsttest, 0)
     ) {
         $answers_ids = []; // array used to store answers IDs
         switch ($question_type) {
@@ -1719,7 +1719,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
                     $answers_ids += F_selectAnswers($question_id, 1, false, 1, 0, $randorder, $ordmode);
                     // select remaining answers
                     $answers_ids += F_selectAnswers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
-                    if ($ordmode == 1) {
+                    if (f_legacy_int_equals($ordmode, 1)) {
                         // reorder answers alphabetically
                         $sql =
                             'SELECT answer_id FROM '
