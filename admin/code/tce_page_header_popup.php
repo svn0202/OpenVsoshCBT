@@ -21,6 +21,8 @@
  */
 
 require_once 'tce_xhtml_header.php';
+/** @var string $thispage_title Set or normalized by tce_xhtml_header.php. */
+/** @var array{a_meta_charset: string} $l Loaded language data. */
 
 echo '<main id="maincontent" class="content">' . K_NEWLINE;
 echo '<h1>' . htmlspecialchars($thispage_title, ENT_NOQUOTES, $l['a_meta_charset']) . '</h1>' . K_NEWLINE;
