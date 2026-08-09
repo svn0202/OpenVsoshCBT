@@ -265,6 +265,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 
 echo '<div class="container">' . K_NEWLINE;
 
+echo f_openvsosh_admin_test_context((int) $test_id, 'results');
+
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'

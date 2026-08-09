@@ -75,6 +75,7 @@ $waiting_count = max(0, $eligible_count - $prepared_count - $started_count);
 require_once 'tce_page_header.php';
 
 echo '<div class="monitor-panel">' . K_NEWLINE;
+echo f_openvsosh_admin_test_context($test_id, 'generation');
 echo '<p class="pagehelp">Варианты создаются штатным серверным генератором пакетами не более '
     . TMF_PREGENERATION_BATCH_MAX . ' участников. Ключи правильных ответов клиенту не выдаются.</p>';
 echo '<form action="tce_pregenerate.php" method="get" class="monitor-filters">';

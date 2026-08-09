@@ -60,6 +60,7 @@ $userdata = F_getUserData($user_id);
 echo '<div class="container">' . K_NEWLINE;
 
 echo '<div class="tceformbox">' . K_NEWLINE;
+echo '<div class="result-meta">' . K_NEWLINE;
 
 $usr_all = htmlspecialchars(
     F_tmf_result_identity($userdata, F_getBoolean($testdata['test_results_anonymized'] ?? false)),
@@ -117,6 +118,40 @@ $score_right_all =
 echo getFormDescriptionLine($l['w_answers_right'] . ':', $l['h_answers_right'], $score_right_all);
 
 echo getFormDescriptionLine($l['w_comment'] . ':', $l['h_testcomment'], F_decode_tcecode($usrtestdata['comment']));
+echo '</div>' . K_NEWLINE;
+
+$result_charset = (string) $l['a_meta_charset'];
+$result_index_title = (string) $l['h_index'];
+$result_page_help = (string) $l['hp_result_user'];
+$result_pdf_title = (string) $l['h_pdf'];
+$result_pdf_label = (string) $l['w_pdf'];
+$result_score_label = (string) $l['w_score'];
+$result_right_label = (string) $l['w_answers_right'];
+$result_score = is_numeric($usrtestdata['score']) ? (float) $usrtestdata['score'] : 0.0;
+$result_max_score = is_numeric($usrtestdata['max_score']) ? (float) $usrtestdata['max_score'] : 0.0;
+$result_threshold = is_numeric($usrtestdata['score_threshold']) ? (float) $usrtestdata['score_threshold'] : 0.0;
+$result_right = (int) $usrtestdata['right'];
+$result_all = (int) $usrtestdata['all'];
+$score_percent = $result_max_score > 0
+    ? (int) round(100 * $result_score / $result_max_score)
+    : 0;
+$right_percent = $result_all > 0
+    ? (int) round(100 * $result_right / $result_all)
+    : 0;
+$result_passed = $result_threshold <= 0 || $result_score >= $result_threshold;
+echo '<section class="result-hero" aria-labelledby="result-summary-title">'
+    . '<div class="result-score"><span id="result-summary-title">Итоговый результат</span><strong>'
+    . $score_percent . '%</strong><small class="' . ($result_passed ? 'is-passed' : 'is-failed') . '">'
+    . ($result_passed ? $l['w_passed'] : $l['w_not_passed']) . '</small></div>'
+    . '<div class="result-kpis">'
+    . '<div><strong>' . htmlspecialchars((string) $usrtestdata['score'], ENT_QUOTES, $result_charset)
+    . ' / ' . htmlspecialchars((string) $usrtestdata['max_score'], ENT_QUOTES, $result_charset)
+    . '</strong><span>Баллы</span></div>'
+    . '<div><strong>' . $result_right . ' / ' . $result_all
+    . '</strong><span>Правильные ответы</span></div>'
+    . '<div><strong>' . $right_percent . '%</strong><span>Точность</span></div>'
+    . '<div><strong>' . htmlspecialchars($time_diff, ENT_QUOTES, $result_charset)
+    . '</strong><span>Время выполнения</span></div></div></section>' . K_NEWLINE;
 
 if (F_getBoolean($testdata['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
@@ -144,7 +179,13 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
 				AND subject_module_id=module_id
 			ORDER BY testlog_id';
         if ($r = F_db_query($sql, $db)) {
-            echo '<ol class="question">' . K_NEWLINE;
+            echo '<div class="result-question-toolbar" aria-label="Фильтр вопросов">'
+                . '<strong>Разбор ответов</strong><div role="group">'
+                . '<button type="button" class="active" data-result-filter="all">Все</button>'
+                . '<button type="button" data-result-filter="incorrect">С ошибками</button>'
+                . '<button type="button" data-result-filter="unanswered">Без ответа</button>'
+                . '</div></div>' . K_NEWLINE;
+            echo '<ol class="question result-question-list">' . K_NEWLINE;
             while ($m = F_db_fetch_array($r)) {
                 // create per-topic results array
                 if (!array_key_exists($m['module_id'], $topicresults)) {
@@ -213,7 +254,16 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                 $topicresults[$m['module_id']]['maxscore'] += $question_max_score;
                 $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['maxscore'] += $question_max_score;
 
-                echo '<li>' . K_NEWLINE;
+                $question_score = is_numeric($m['testlog_score']) ? (float) $m['testlog_score'] : 0.0;
+                if (strlen((string) $m['testlog_change_time']) <= 0) {
+                    $result_state = 'unanswered';
+                } elseif ($question_score > ((is_numeric($question_max_score) ? (float) $question_max_score : 0.0) / 2)) {
+                    $result_state = 'correct';
+                } else {
+                    $result_state = 'incorrect';
+                }
+                echo '<li class="result-question result-question-' . $result_state
+                    . '" data-result-state="' . $result_state . '">' . K_NEWLINE;
                 // display question stats
                 echo '<strong>[' . $m['testlog_score'] . ']' . K_NEWLINE;
                 echo ' (';
@@ -335,6 +385,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                                         . $ma['answer_position']
                                         . '</abbr>'
                                 ;
+                            // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
                             } elseif (F_getBoolean($ma['answer_isright'])) {
                                 echo '<abbr title="' . $l['w_answers_right'] . '" class="onbox">&reg;</abbr>';
                             } else {
@@ -342,6 +393,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                             }
 
                             echo ' ';
+                            // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
                             echo F_decode_tcecode($ma['answer_description']);
                             if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
                                 echo
@@ -389,7 +441,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
     foreach ($topicresults as $res_module) {
         echo '<li>';
         $score_percent = round((100 * $res_module['score']) / $res_module['maxscore']);
-        echo '<abbr title="' . $l['w_score'] . '" class="';
+        echo '<abbr title="' . $result_score_label . '" class="';
         if ($score_percent > 50) {
             echo 'okbox';
         } else {
@@ -398,7 +450,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
 
         echo '">' . $res_module['score'] . ' / ' . $res_module['maxscore'] . ' (' . $score_percent . '%)</abbr>';
         $score_percent = round((100 * $res_module['right']) / $res_module['num']);
-        echo ' <abbr title="' . $l['w_answers_right'] . '" class="';
+        echo ' <abbr title="' . $result_right_label . '" class="';
         if ($score_percent > 50) {
             echo 'okbox';
         } else {
@@ -411,7 +463,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
         foreach ($res_module['subjects'] as $res_subject) {
             echo '<li>';
             $score_percent = round((100 * $res_subject['score']) / $res_subject['maxscore']);
-            echo '<abbr title="' . $l['w_score'] . '" class="';
+            echo '<abbr title="' . $result_score_label . '" class="';
             if ($score_percent > 50) {
                 echo 'okbox';
             } else {
@@ -420,7 +472,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
 
             echo '">' . $res_subject['score'] . ' / ' . $res_subject['maxscore'] . ' (' . $score_percent . '%)</abbr>';
             $score_percent = round((100 * $res_subject['right']) / $res_subject['num']);
-            echo ' <abbr title="' . $l['w_answers_right'] . '" class="';
+            echo ' <abbr title="' . $result_right_label . '" class="';
             if ($score_percent > 50) {
                 echo 'okbox';
             } else {
@@ -447,9 +499,9 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
             '<a href="'
                 . pdfLink(3, $test_id, 0, $user_id, '', 0)
                 . '" class="xmlbutton" title="'
-                . $l['h_pdf']
+                . $result_pdf_title
                 . '">'
-                . $l['w_pdf']
+                . $result_pdf_label
                 . '</a> '
         ;
         echo '</div>' . K_NEWLINE;
@@ -458,9 +510,10 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
 
 echo '</div>' . K_NEWLINE;
 
-echo '<a href="index.php" title="' . $l['h_index'] . '">&lt; ' . $l['w_index'] . '</a>' . K_NEWLINE;
+echo '<div class="result-page-actions"><a href="index.php" title="' . $result_index_title
+    . '">← Вернуться к испытаниям</a></div>' . K_NEWLINE;
 
-echo '<div class="pagehelp">' . $l['hp_result_user'] . '</div>' . K_NEWLINE;
+echo '<div class="pagehelp">' . $result_page_help . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';

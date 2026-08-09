@@ -47,6 +47,7 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once 'tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
+require_once '../../shared/code/tce_functions_test.php';
 require_once 'tce_functions_user_select.php';
 require_once 'tce_functions_test_select.php';
 
@@ -1201,6 +1202,8 @@ $millennium = substr(date('Y'), 0, 1);
 
 echo '<div class="container">' . K_NEWLINE;
 
+echo f_openvsosh_admin_test_context((int) ($test_id ?? 0), 'settings');
+
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
@@ -1272,8 +1275,14 @@ echo '</div>' . K_NEWLINE;
 
 echo getFormNoscriptSelect('selectrecord');
 
-echo '<fieldset>' . K_NEWLINE;
+echo '<nav class="editor-section-nav" aria-label="Разделы настроек">'
+    . '<a href="#editor-basics">Основное</a><a href="#editor-audience">Участники и доступ</a>'
+    . '<a href="#editor-scoring">Оценивание</a><a href="#editor-behaviour">Проведение</a>'
+    . ($test_id > 0 ? '<a href="#editor-questions">Вопросы</a>' : '') . '</nav>' . K_NEWLINE;
+
+echo '<fieldset class="test-editor-main">' . K_NEWLINE;
 echo '<legend>' . $l['w_test'] . '</legend>' . K_NEWLINE;
+echo '<h2 class="editor-section-heading" id="editor-basics">Основное</h2>' . K_NEWLINE;
 
 echo getFormRowTextInput('test_name', $l['w_name'], $l['h_test_name'], '', $test_name, '', 255, false, false, false);
 echo
@@ -1344,6 +1353,7 @@ echo
     )
 ;
 
+echo '<h2 class="editor-section-heading" id="editor-audience">Участники и доступ</h2>' . K_NEWLINE;
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
 echo '<label for="user_groups">' . $l['w_groups'] . '</label>' . K_NEWLINE;
@@ -1412,6 +1422,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
+echo '<h2 class="editor-section-heading" id="editor-scoring">Оценивание</h2>' . K_NEWLINE;
 echo
     getFormRowTextInput(
         'test_score_right',
@@ -1469,6 +1480,7 @@ echo
     )
 ;
 
+echo '<h2 class="editor-section-heading" id="editor-behaviour">Проведение и отображение</h2>' . K_NEWLINE;
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
 echo '<label for="test_random_questions_select">' . $l['w_random_questions'] . ':</label>' . K_NEWLINE;
@@ -1606,7 +1618,7 @@ echo
     )
 ;
 
-echo '<div class="row">' . K_NEWLINE;
+echo '<div class="row editor-sticky-actions">' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
 echo
     '<input type="hidden" name="test_password" id="test_password" value="'
@@ -1618,7 +1630,7 @@ echo
 // show buttons by case
 
 if (isset($test_id) && $test_id > 0) {
-    echo '<span style="background-color:#999999;">';
+    echo '<span class="editor-confirm-update">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
             . $l['w_confirm']
@@ -1630,6 +1642,7 @@ if (isset($test_id) && $test_id > 0) {
             . $l['w_update']
             . '" />'
     ;
+    echo '<label for="confirmupdate">Подтвердить сохранение</label>';
     F_submit_button('update', $l['w_update'], $l['h_update']);
     echo '</span>';
 }
@@ -1645,6 +1658,7 @@ if (isset($test_id) && $test_id > 0) {
 }
 
 F_submit_button('clear', $l['w_clear'], $l['h_clear']);
+echo '<span class="editor-save-state" data-editor-save-state aria-live="polite">Изменений нет</span>';
 
 echo '<br /><br />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
@@ -1655,7 +1669,7 @@ echo '</fieldset>' . K_NEWLINE;
 if (isset($test_id) && $test_id > 0) {
     echo '<div class="row"><br /></div>' . K_NEWLINE;
 
-    echo '<fieldset>' . K_NEWLINE;
+    echo '<fieldset id="editor-questions">' . K_NEWLINE;
     echo '<legend>' . $l['w_questions'] . '</legend>' . K_NEWLINE;
 
     echo '<div class="row">' . K_NEWLINE;
@@ -2029,7 +2043,7 @@ if (isset($test_id) && $test_id > 0) {
 
     echo '<div class="row"><br /></div>' . K_NEWLINE;
 
-    if (isset($test_max_score_new) && $test_max_score_new > 0) {
+    if (isset($test_max_score_new) && is_numeric($test_max_score_new) && (float) $test_max_score_new > 0) {
         echo '<div class="row">' . K_NEWLINE;
         echo '<span class="label">' . K_NEWLINE;
         echo '<label for="test_num">' . $l['w_pdf_offline_test'] . '</label>' . K_NEWLINE;

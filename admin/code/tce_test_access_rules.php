@@ -6,6 +6,7 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once '../../shared/code/tce_functions_test_access.php';
+require_once '../../shared/code/tce_functions_test.php';
 
 $thispage_title = 'Условия доступа и завершения теста';
 $test_id = isset($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
@@ -143,6 +144,7 @@ $test_options = static function (int $selected) use ($tests, $test_id, $html): s
 };
 
 echo '<div class="container"><div class="tceformbox">';
+echo f_openvsosh_admin_test_context($test_id, 'access');
 echo '<p class="pagehelp">Все ограничения проверяются сервером. Изменение токена не выкидывает '
     . 'участников, уже вошедших в этот тест в текущей сессии.</p>';
 if ($message !== '') {

@@ -151,12 +151,13 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         if ($m = F_db_fetch_array($r)) {
             // -- Table structure with links:
             echo '<div class="container">';
-            echo '<table class="userselect">' . K_NEWLINE;
+            echo '<table class="userselect record-table">' . K_NEWLINE;
             echo '<caption class="sr-only">' . $l['w_tests'] . '</caption>' . K_NEWLINE;
             // table header
             echo '<thead>' . K_NEWLINE;
             echo '<tr>' . K_NEWLINE;
-            echo '<th scope="col">&nbsp;</th>' . K_NEWLINE;
+            echo '<th scope="col" class="record-select"><input type="checkbox" data-select-all="testid" '
+                . 'aria-label="' . $l['w_check_all'] . '" /></th>' . K_NEWLINE;
             if (strlen($searchterms) > 0) {
                 $filter .= '&amp;searchterms=' . urlencode($searchterms);
             }
@@ -201,12 +202,31 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                     $filter,
                 )
             ;
+            echo '<th scope="col">Статус</th>' . K_NEWLINE;
             echo '</tr>' . K_NEWLINE;
             echo '</thead>' . K_NEWLINE;
-            $itemcount = 0;
+            $itemcount = $firstrow;
             do {
                 ++$itemcount;
-                echo '<tr>' . K_NEWLINE;
+                $edit_url = 'tce_edit_test.php?test_id=' . (int) $m['test_id'];
+                $begin_time = strtotime((string) $m['test_begin_time']);
+                $end_time = strtotime((string) $m['test_end_time']);
+                $is_locked = substr((string) $m['test_end_time'], 0, 1) < substr(date('Y'), 0, 1);
+                if ($is_locked) {
+                    $status_key = 'locked';
+                    $status_label = 'Заблокировано';
+                } elseif ($begin_time !== false && $begin_time > time()) {
+                    $status_key = 'upcoming';
+                    $status_label = 'Запланировано';
+                } elseif ($end_time !== false && $end_time < time()) {
+                    $status_key = 'closed';
+                    $status_label = 'Завершено';
+                } else {
+                    $status_key = 'active';
+                    $status_label = 'Идёт сейчас';
+                }
+                echo '<tr class="record-row" data-record-href="'
+                    . htmlspecialchars($edit_url, ENT_QUOTES, $l['a_meta_charset']) . '">' . K_NEWLINE;
                 echo '<td>';
                 echo
                     '<input type="checkbox" name="testid'
@@ -242,10 +262,10 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                         . K_NEWLINE
                 ;
                 echo
-                    '<td style="text-align:'
+                    '<td class="record-title" style="text-align:'
                         . $txtalign
-                        . ';">&nbsp;<a href="tce_edit_test.php?test_id='
-                        . $m['test_id']
+                        . ';">&nbsp;<a href="'
+                        . $edit_url
                         . '" title="'
                         . $l['w_edit']
                         . '">'
@@ -261,6 +281,8 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                         . '</td>'
                         . K_NEWLINE
                 ;
+                echo '<td><span class="record-status record-status-' . $status_key . '">'
+                    . $status_label . '</span></td>' . K_NEWLINE;
                 echo '</tr>' . K_NEWLINE;
             } while ($m = F_db_fetch_array($r));
 
@@ -273,21 +295,10 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             echo '<input type="hidden" name="firstrow" id="firstrow" value="' . $firstrow . '" />' . K_NEWLINE;
             echo '<input type="hidden" name="rowsperpage" id="rowsperpage" value="' . $rowsperpage . '" />' . K_NEWLINE;
 
-            // check/uncheck all options
-            echo '<span dir="' . $l['a_meta_dir'] . '">';
-            echo
-                '<input type="radio" name="checkall" id="checkall1" value="1" onchange="document.getElementById(\'form_testselect\').submit()" />'
-            ;
-            echo '<label for="checkall1">' . $l['w_check_all'] . '</label> ';
-            echo
-                '<input type="radio" name="checkall" id="checkall0" value="0" onchange="document.getElementById(\'form_testselect\').submit()" />'
-            ;
-            echo '<label for="checkall0">' . $l['w_uncheck_all'] . '</label>';
-            echo '</span>' . K_NEWLINE;
-            echo '<br />' . K_NEWLINE;
-            echo '<strong style="margin:5px">' . $l['m_with_selected'] . '</strong>' . K_NEWLINE;
+            echo '<div class="record-bulk-toolbar" data-bulk-toolbar>' . K_NEWLINE;
+            echo '<strong><span data-selected-count>0</span> выбрано</strong>' . K_NEWLINE;
             // delete user
-            echo '<div>';
+            echo '<div class="record-bulk-actions">';
             F_submit_button(
                 'delete',
                 $l['w_delete'],
@@ -296,7 +307,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             );
             F_submit_button('lock', $l['w_lock'], $l['w_lock']);
             F_submit_button('unlock', $l['w_unlock'], $l['w_unlock']);
-            echo '</div>' . K_NEWLINE;
+            echo '</div></div>' . K_NEWLINE;
             echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
             // ---------------------------------------------------------------
@@ -523,6 +534,7 @@ function F_show_select_test_popup(
                         . '</td>'
                         . K_NEWLINE
                 ;
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
@@ -531,6 +543,7 @@ function F_show_select_test_popup(
                         . '</td>'
                         . K_NEWLINE
                 ;
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
@@ -543,11 +556,12 @@ function F_show_select_test_popup(
                         . '</button></td>'
                         . K_NEWLINE
                 ;
+                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['test_description'], ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($m['test_description'], ENT_NOQUOTES, (string) $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;

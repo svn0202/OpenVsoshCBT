@@ -3282,3 +3282,63 @@ function F_getTestSSLCerts($test_id)
 
     return $ids;
 }
+
+/**
+ * Build the compact administrator navigation shown while working with one test.
+ *
+ * @param int $test_id Selected test ID.
+ * @param string $active Current section key.
+ * @param array<string, mixed>|null $test_data Test row when the caller already loaded it.
+ */
+function f_openvsosh_admin_test_context(int $test_id, string $active, ?array $test_data = null): string
+{
+    global $l;
+    if ($test_id <= 0) {
+        return '';
+    }
+    if ($test_data === null) {
+        $test_data = F_getTestData($test_id);
+        if ($test_data === []) {
+            return '';
+        }
+    }
+
+    $charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
+    $name = htmlspecialchars((string) ($test_data['test_name'] ?? ''), ENT_QUOTES, $charset);
+    $begin = strtotime((string) ($test_data['test_begin_time'] ?? ''));
+    $end = strtotime((string) ($test_data['test_end_time'] ?? ''));
+    if ($begin !== false && $begin > time()) {
+        $status = 'Запланировано';
+        $status_key = 'upcoming';
+    } elseif ($end !== false && $end < time()) {
+        $status = 'Завершено';
+        $status_key = 'closed';
+    } else {
+        $status = 'Идёт сейчас';
+        $status_key = 'active';
+    }
+    /** @var array<string, array{string, string, int}> $links */
+    $links = [
+        'settings' => ['tce_edit_test.php', 'Настройки', K_AUTH_ADMIN_TESTS],
+        'access' => ['tce_test_access_rules.php', 'Доступ', K_AUTH_ADMIN_TESTS],
+        'monitor' => ['tce_monitor.php', 'Наблюдение', K_AUTH_OPERATOR],
+        'results' => ['tce_show_result_allusers.php', 'Результаты', K_AUTH_ADMIN_RESULTS],
+        'generation' => ['tce_pregenerate.php', 'Варианты', K_AUTH_ADMIN_TESTS],
+        'offline' => ['tce_offline.php', 'Автономно', K_AUTH_ADMIN_TESTS],
+    ];
+    $html = '<section class="test-context" aria-label="Работа с испытанием">'
+        . '<div class="test-context-heading"><div><span>Испытание</span><strong>' . $name . '</strong></div>'
+        . '<span class="record-status record-status-' . $status_key . '">' . $status . '</span></div>'
+        . '<nav class="test-context-nav" aria-label="Разделы испытания">';
+    foreach ($links as $key => [$href, $label, $level]) {
+        $required_level = function_exists('openvsosh_admin_required_level')
+            ? openvsosh_admin_required_level(basename($href), $level)
+            : $level;
+        if ((int) ($_SESSION['session_user_level'] ?? 0) < $required_level) {
+            continue;
+        }
+        $html .= '<a href="' . $href . '?test_id=' . $test_id . '"'
+            . ($key === $active ? ' class="active" aria-current="page"' : '') . '>' . $label . '</a>';
+    }
+    return $html . '</nav></section>' . K_NEWLINE;
+}
