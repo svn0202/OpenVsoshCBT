@@ -279,7 +279,7 @@ count = 4
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -387,7 +387,7 @@ count = 1
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
