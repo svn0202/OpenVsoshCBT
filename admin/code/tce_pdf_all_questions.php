@@ -58,7 +58,7 @@ if (isset($_REQUEST['hide_answers']) && $_REQUEST['hide_answers'] == 1) {
 }
 
 $doc_title = unhtmlentities($l['t_questions_list']);
-$doc_description = F_compact_string(unhtmlentities($l['hp_select_all_questions']));
+$doc_description = f_compact_string(unhtmlentities($l['hp_select_all_questions']));
 
 $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 $qright = [' ', '*']; // answer right marker

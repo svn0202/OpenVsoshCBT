@@ -1524,7 +1524,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
             $ret .=
                 '<td title="'
                 . substr(
-                    F_compact_string(htmlspecialchars($tu['user_comment'], ENT_NOQUOTES, $l['a_meta_charset'])),
+                    f_compact_string(htmlspecialchars($tu['user_comment'], ENT_NOQUOTES, $l['a_meta_charset'])),
                     0,
                     255,
                 )

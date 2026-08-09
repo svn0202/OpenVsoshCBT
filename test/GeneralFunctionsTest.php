@@ -101,8 +101,8 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testCompactString(): void
     {
-        $this->assertSame('a b c d', \F_compact_string("a\tb\nc\rd"));
-        $this->assertSame('say &quot;hi&quot;', \F_compact_string('say "hi"', true));
+        $this->assertSame('a b c d', \f_compact_string("a\tb\nc\rd"));
+        $this->assertSame('say &quot;hi&quot;', \f_compact_string('say "hi"', true));
     }
 
     public function testReplaceAngulars(): void

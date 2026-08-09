@@ -201,7 +201,7 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false): string
  * @param $dquotes (boolean) If true add slash in fron of double quotes;
  * @return string Converted string.
  */
-function F_compact_string($string, $dquotes = false): string
+function f_compact_string($string, $dquotes = false): string
 {
     $repTable = [
         "\t" => ' ',

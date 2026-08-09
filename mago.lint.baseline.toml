@@ -1341,12 +1341,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
-message = "Function name `F_compact_string` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "function-name"
 message = "Function name `F_count_rows` should be in snake case."
 count = 1
 
