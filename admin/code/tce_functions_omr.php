@@ -37,9 +37,9 @@ function f_encode_omr_test_data(mixed $data): string
 /**
  * Decode OMR test data string (read from QR-Code) as array.
  * @param $str (string) string to be decoded.
- * @return array with test data (0 => test_id, n => array(0 => question_n_ID, 1 => array(answers_IDs)), or false in case of error.
+ * @return array<array-key, mixed>|false decoded test data, or false in case of error.
  */
-function F_decodeOMRTestData($str)
+function f_decode_omr_test_data(mixed $str): array|false
 {
     $max_encoded_bytes = 1_048_576;
     $max_decompressed_bytes = 4_194_304;
@@ -102,9 +102,9 @@ function F_decodeOMRTestData($str)
  * Read QR-Code from OMR page and return Test data.
  * This function uses the external application zbarimg (http://zbar.sourceforge.net/).
  * @param $image (string) image file to be decoded (scanned OMR page).
- * @return array with test data or false in case o error
+ * @return array<array-key, mixed>|false test data, or false in case of error
  */
-function F_decodeOMRTestDataQRCode($image)
+function F_decodeOMRTestDataQRCode(mixed $image): array|false
 {
     require_once '../config/tce_config.php';
     if (empty($image)) {
@@ -113,7 +113,7 @@ function F_decodeOMRTestDataQRCode($image)
 
     $command = K_OMR_PATH_ZBARIMG . ' --raw -Sdisable -Sqrcode.enable -q ' . escapeshellarg($image);
     $str = exec($command);
-    return F_decodeOMRTestData($str);
+    return f_decode_omr_test_data($str);
 }
 
 /**
