@@ -2,6 +2,7 @@
 
 namespace Test;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 final class TcecodeFunctionsTest extends TestCase
@@ -63,6 +64,20 @@ final class TcecodeFunctionsTest extends TestCase
 
         $this->assertStringContainsString("'-no-shell-escape'", $source);
         $this->assertStringNotContainsString("exec(\$cmd", $source);
+    }
+
+    #[RunInSeparateProcess]
+    public function testLatexRendererRejectsInputCommandBeforeExecution(): void
+    {
+        $workingDirectory = getcwd();
+        self::assertIsString($workingDirectory);
+        chdir(dirname(__DIR__) . '/admin/code');
+
+        try {
+            self::assertSame('[LaTeX error]', \F_latex_callback(['', '\\input{secret}']));
+        } finally {
+            chdir($workingDirectory);
+        }
     }
 
     public function testDetectsImportedHtmlWithoutMistakingComparisonForMarkup(): void
