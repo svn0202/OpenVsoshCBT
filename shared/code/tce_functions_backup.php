@@ -356,7 +356,7 @@ function F_tmf_backup_restore(array $config, string $archive_path): void
 /**
  * @return array<string,string>
  */
-function F_tmf_backup_config_from_constants(): array
+function f_tmf_backup_config_from_constants(): array
 {
     return [
         'type' => K_DATABASE_TYPE,
