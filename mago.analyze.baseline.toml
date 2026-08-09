@@ -12385,12 +12385,6 @@ message = "Undefined variable: `$l`."
 count = 36
 
 [[issues]]
-file = "public/code/tce_site_asset.php"
-code = "array-to-string-conversion"
-message = "Potentially casting `array` to `string`."
-count = 1
-
-[[issues]]
 file = "public/code/tce_test_allresults.php"
 code = "array-to-string-conversion"
 message = "Potential array in left operand of string concatenation."

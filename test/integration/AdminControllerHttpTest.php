@@ -777,6 +777,8 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             [$logoStatus, $logo] = $this->http('GET', '/public/code/tce_site_asset.php?type=logo');
             $this->assertSame(200, $logoStatus);
             $this->assertSame($image, $logo);
+            [$invalidAssetStatus] = $this->http('GET', '/public/code/tce_site_asset.php?type[]=logo');
+            $this->assertSame(404, $invalidAssetStatus);
 
             $token = self::extractCsrfToken($body);
             $this->assertNotNull($token);
