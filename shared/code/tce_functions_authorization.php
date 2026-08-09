@@ -301,7 +301,7 @@ function f_logout_form()
  * Display logout page.
  * NOTE: This function calls exit() after execution.
  */
-function F_logout_page()
+function f_logout_page()
 {
     global $l, $thispage_title;
     require_once '../config/tce_config.php';

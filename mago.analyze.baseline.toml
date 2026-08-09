@@ -13011,7 +13011,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "missing-return-type"
-message = "Function `F_logout_page` is missing a return type hint."
+message = "Function `f_logout_page` is missing a return type hint."
 count = 1
 
 [[issues]]
