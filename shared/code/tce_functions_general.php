@@ -70,7 +70,12 @@ function f_zero_to_null(mixed $num): mixed
 {
     global $db;
     require_once '../../shared/code/tce_db_dal.php';
-    if ($num == 0) {
+    $is_zero = $num === 0
+        || $num === 0.0
+        || $num === false
+        || $num === null
+        || (is_string($num) && is_numeric($num) && (float) $num === 0.0);
+    if ($is_zero) {
         return 'NULL';
     }
 

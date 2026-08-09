@@ -110,6 +110,9 @@ final class GeneralFunctionsTest extends TestCase
             self::assertSame('NULL', \f_empty_to_null(''));
             self::assertSame('NULL', \f_zero_to_null(0));
             self::assertSame('NULL', \f_zero_to_null('0'));
+            self::assertSame('NULL', \f_zero_to_null('00'));
+            self::assertSame('NULL', \f_zero_to_null('0.0'));
+            self::assertSame('NULL', \f_zero_to_null('0e2'));
             self::assertSame('NULL', \f_zero_to_null(0.0));
             self::assertSame('NULL', \f_zero_to_null(null));
             self::assertSame('NULL', \f_zero_to_null(false));
