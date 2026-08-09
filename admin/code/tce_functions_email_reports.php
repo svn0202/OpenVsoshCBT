@@ -33,18 +33,19 @@
  * @param $mode (int) type of report to send: 0=detailed report; 1=summary report (without questions)
  * @param $display_mode display (int) mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question; 5 = answer.
  * @param $show_graph (boolean) If true display the score graph.
+ * @throws \PHPMailer\PHPMailer\Exception
  */
-function F_send_report_emails(
-    $test_id,
-    $user_id = 0,
-    $testuser_id = 0,
-    $group_id = 0,
-    $startdate = 0,
-    $enddate = 0,
-    $mode = 0,
-    $display_mode = 1,
-    $show_graph = false,
-) {
+function f_send_report_emails(
+    mixed $test_id,
+    mixed $user_id = 0,
+    mixed $testuser_id = 0,
+    mixed $group_id = 0,
+    mixed $startdate = 0,
+    mixed $enddate = 0,
+    mixed $mode = 0,
+    mixed $display_mode = 1,
+    mixed $show_graph = false,
+): void {
     global $l, $db;
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';
