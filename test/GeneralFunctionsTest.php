@@ -103,7 +103,7 @@ final class GeneralFunctionsTest extends TestCase
     public function testTextTsvRoundTrip(): void
     {
         $text = "col1\tcol2\nrow2";
-        $tsv = \F_text_to_tsv($text);
+        $tsv = \f_text_to_tsv($text);
         $this->assertSame('col1\tcol2\nrow2', $tsv); // tab/newline escaped to literal sequences
         $this->assertSame($text, \F_tsv_to_text($tsv));
     }
