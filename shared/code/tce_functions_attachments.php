@@ -298,7 +298,7 @@ function f_tmf_attachment_send(array $attachment, bool $inline): never
     exit();
 }
 
-function F_tmf_attachment_delete_attempt(int $testuser_id): void
+function f_tmf_attachment_delete_attempt(int $testuser_id): void
 {
     global $db;
     $result = F_db_query(
