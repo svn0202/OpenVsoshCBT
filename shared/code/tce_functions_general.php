@@ -391,12 +391,12 @@ function utrim($txt)
  */
 function getNormalizedIP($ip): string|false
 {
-    if ($ip == '0000:0000:0000:0000:0000:0000:0000:0001' || $ip == '::1') {
+    $ip = strtolower($ip ?? '');
+    if ($ip === '0000:0000:0000:0000:0000:0000:0000:0001' || $ip === '::1') {
         // fix localhost problem
         $ip = '127.0.0.1';
     }
 
-    $ip = strtolower($ip ?? '');
     // remove unsupported parts
     if (($pos = strrpos($ip, '%')) !== false) {
         $ip = substr($ip, 0, $pos);
