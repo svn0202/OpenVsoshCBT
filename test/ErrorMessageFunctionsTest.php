@@ -6,6 +6,26 @@ use PHPUnit\Framework\TestCase;
 
 final class ErrorMessageFunctionsTest extends TestCase
 {
+    public function testPrintErrorEscapesMessageAndUsesWarningRole(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; '
+                    . '$l = ["t_warning" => "Warning"]; '
+                    . 'F_print_error("WARNING", "<b>danger</b> & text", false);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(
+            '<div class="warning" role="alert">Warning: danger &amp; text</div>' . "\n",
+            $output,
+        );
+    }
+
     public function testErrorHandlerReturnsNothingWhenReportingIsDisabled(): void
     {
         [$status, $output] = \F_tcecode_run_process(

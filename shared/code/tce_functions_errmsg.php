@@ -34,11 +34,11 @@ define('K_ALLOWED_ERROR_TAGS', '<a><b><br><em><p><ol><ul><li><small><table><tr><
 /**
  * Handle error/warning/system messages.
  * Print a message
- * @param $messagetype (string) Type of message:  0=no message, message; warning; error.
- * @param $messagetoprint (string)  message to print.
- * @param $exit (bool) if true output a message and terminate the current script [default = false].
+ * @param mixed $messagetype Type of message: message, warning or error.
+ * @param mixed $messagetoprint Message to print.
+ * @param mixed $exit If truthy, output a message and terminate the current script.
  */
-function F_print_error($messagetype = 'MESSAGE', $messagetoprint = '', $exit = false)
+function F_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '', mixed $exit = false): void
 {
     require_once __DIR__ . '/../config/tce_config.php';
     require_once __DIR__ . '/tce_functions_general.php';
