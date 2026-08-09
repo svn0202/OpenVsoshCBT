@@ -5,8 +5,20 @@
 /**
  * Implement the custom authentication function.
  * Function name format "custom_auth_[auth method name]_check_login".
+ *
+ * @return array{
+ *     user_email: string,
+ *     user_firstname: string,
+ *     user_lastname: string,
+ *     user_birthdate: string,
+ *     user_birthplace: string,
+ *     user_regnumber: string,
+ *     user_ssn: string,
+ *     user_level: int,
+ *     usrgrp_group_id: int
+ * }|null
  */
-function custom_auth_basic_check_login()
+function custom_auth_basic_check_login(): ?array
 {
     // Do anything you want for the authentication here:
     // - It can be checking username and password from another database.
@@ -22,21 +34,25 @@ function custom_auth_basic_check_login()
         $password = $_POST['xuser_password'];
 
         if (
-            $username == K_CUSTOM_AUTH_BASIC_USERNAME
+            is_string($username)
+            && is_string($password)
+            && $username == K_CUSTOM_AUTH_BASIC_USERNAME
             && password_verify($password, K_CUSTOM_AUTH_BASIC_PASSWORD_HASH)
         ) {
             // Return the user data at least with the following minimum format.
-            $usr['user_email'] = '';
-            $usr['user_firstname'] = '';
-            $usr['user_lastname'] = '';
-            $usr['user_birthdate'] = '';
-            $usr['user_birthplace'] = '';
-            $usr['user_regnumber'] = '';
-            $usr['user_ssn'] = '';
-            $usr['user_level'] = K_CUSTOM_AUTH_BASIC_USER_LEVEL;
-            $usr['usrgrp_group_id'] = K_CUSTOM_AUTH_BASIC_USER_GROUP_ID;
-
-            return $usr;
+            return [
+                'user_email' => '',
+                'user_firstname' => '',
+                'user_lastname' => '',
+                'user_birthdate' => '',
+                'user_birthplace' => '',
+                'user_regnumber' => '',
+                'user_ssn' => '',
+                'user_level' => (int) K_CUSTOM_AUTH_BASIC_USER_LEVEL,
+                'usrgrp_group_id' => (int) K_CUSTOM_AUTH_BASIC_USER_GROUP_ID,
+            ];
         }
     }
+
+    return null;
 }
