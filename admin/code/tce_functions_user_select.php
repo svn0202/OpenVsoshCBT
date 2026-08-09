@@ -71,11 +71,47 @@ function F_show_select_user(
     $searchterms = '',
 ) {
     global $l, $db;
+    /**
+     * @var array{
+     *     a_meta_charset: string,
+     *     a_meta_dir: string,
+     *     h_delete: string,
+     *     h_firstname: string,
+     *     h_group_name: string,
+     *     h_lastname: string,
+     *     h_level: string,
+     *     h_login_name: string,
+     *     h_regcode: string,
+     *     h_regdate: string,
+     *     h_tsv_export: string,
+     *     h_xml_export: string,
+     *     hp_select_users: string,
+     *     m_databasempty: string,
+     *     m_delete_confirm: string,
+     *     m_search_void: string,
+     *     t_all_results_user: string,
+     *     w_add: string,
+     *     w_check_all: string,
+     *     w_delete: string,
+     *     w_edit: string,
+     *     w_firstname: string,
+     *     w_groups: string,
+     *     w_lastname: string,
+     *     w_level: string,
+     *     w_move: string,
+     *     w_regcode: string,
+     *     w_regdate: string,
+     *     w_select: string,
+     *     w_tests: string,
+     *     w_user: string,
+     *     w_users: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
     $filter = '';
-    if ($l['a_meta_dir'] == 'rtl') {
+    if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
         $numalign = 'left';
     } else {
@@ -408,7 +444,7 @@ function F_show_select_user(
                 if ($_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS) {
                     // move group
                     echo '<li>';
-                    $arr = $l['a_meta_dir'] == 'rtl' ? '&larr;' : '&rarr;';
+                    $arr = (($l['a_meta_dir'] <=> 'rtl') === 0) ? '&larr;' : '&rarr;';
 
                     echo F_user_group_select('from_group_id');
                     echo $arr;
@@ -489,11 +525,37 @@ function F_show_select_user_popup(
     $cid = 0,
 ) {
     global $l, $db;
+    /**
+     * @var array{
+     *     a_meta_charset: string,
+     *     a_meta_dir: string,
+     *     h_email: string,
+     *     h_firstname: string,
+     *     h_group_name: string,
+     *     h_lastname: string,
+     *     h_level: string,
+     *     h_login_name: string,
+     *     h_regcode: string,
+     *     h_regdate: string,
+     *     m_databasempty: string,
+     *     m_search_void: string,
+     *     w_email: string,
+     *     w_firstname: string,
+     *     w_groups: string,
+     *     w_lastname: string,
+     *     w_level: string,
+     *     w_regcode: string,
+     *     w_regdate: string,
+     *     w_select: string,
+     *     w_user: string,
+     *     w_users: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
     $filter = 'cid=' . $cid;
-    if ($l['a_meta_dir'] == 'rtl') {
+    if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
         $numalign = 'left';
     } else {

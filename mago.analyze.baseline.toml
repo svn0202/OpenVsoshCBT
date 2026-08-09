@@ -3890,21 +3890,15 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 13
-
-[[issues]]
-file = "admin/code/tce_functions_user_select.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 6
+count = 4
 
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 37
+count = 21
 
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
@@ -3923,12 +3917,6 @@ file = "admin/code/tce_functions_user_select.php"
 code = "mixed-operand"
 message = "Left operand in `<` comparison has `mixed` type."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_user_select.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 3
 
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
