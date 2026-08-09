@@ -27,7 +27,7 @@
  * @param $andwhere (string) additional WHERE statements (e.g.: "module_enabled='1'")
  * @return string sql statement
  */
-function F_select_modules_sql($andwhere = '')
+function F_select_modules_sql($andwhere = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -53,7 +53,7 @@ function F_select_modules_sql($andwhere = '')
  * @param $andwhere (string) additional WHERE statements (e.g.: "subject_enabled='1'")
  * @return string sql statement
  */
-function F_select_subjects_sql($andwhere = '')
+function F_select_subjects_sql($andwhere = ''): string
 {
     return F_select_module_subjects_sql($andwhere);
 }
@@ -65,7 +65,7 @@ function F_select_subjects_sql($andwhere = '')
  * @param $andwhere (string) additional WHERE statements (e.g.: "subject_enabled='1'")
  * @return string sql statement
  */
-function F_select_module_subjects_sql($andwhere = '')
+function F_select_module_subjects_sql($andwhere = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -90,7 +90,7 @@ function F_select_module_subjects_sql($andwhere = '')
  * @since 2006-03-12
  * @return string sql statement
  */
-function F_select_tests_sql()
+function F_select_tests_sql(): string
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -108,7 +108,7 @@ function F_select_tests_sql()
  * @since 2006-06-26
  * @return string sql statement
  */
-function F_select_executed_tests_sql()
+function F_select_executed_tests_sql(): string
 {
     global $l;
     require_once '../config/tce_config.php';
