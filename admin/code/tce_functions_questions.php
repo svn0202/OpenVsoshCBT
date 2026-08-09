@@ -168,7 +168,7 @@ function f_question_delete(mixed $question_id, mixed $subject_id): void
  * @param $question_id (int) question ID
  * @param $new_subject_id (int) new subject ID
  */
-function F_question_copy($question_id, $new_subject_id)
+function f_question_copy(mixed $question_id, mixed $new_subject_id): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';

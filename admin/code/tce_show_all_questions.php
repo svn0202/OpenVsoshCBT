@@ -152,7 +152,7 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
                 case 'move':
                     {
                         if (isset($new_subject_id) && $new_subject_id > 0) {
-                            F_question_copy($question_id, $new_subject_id);
+                            f_question_copy($question_id, $new_subject_id);
                             f_question_delete($question_id, $subject_id);
                         }
 
@@ -161,7 +161,7 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
                 case 'copy':
                     {
                         if (isset($new_subject_id) && $new_subject_id > 0) {
-                            F_question_copy($question_id, $new_subject_id);
+                            f_question_copy($question_id, $new_subject_id);
                         }
 
                         break;
