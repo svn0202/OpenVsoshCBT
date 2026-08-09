@@ -134,12 +134,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     {
         $opts = [];
         if (defined('K_PDF_ALLOWED_PATHS')) {
+            // @mago-expect lint:no-error-control-operator -- malformed optional configuration falls back to library defaults
             $paths = @unserialize((string) K_PDF_ALLOWED_PATHS, ['allowed_classes' => false]);
             if (is_array($paths) && $paths !== []) {
                 $opts['allowedPaths'] = array_values(array_filter(array_map('strval', $paths)));
             }
         }
         if (defined('K_PDF_ALLOWED_HOSTS')) {
+            // @mago-expect lint:no-error-control-operator -- malformed optional configuration keeps remote loading disabled
             $hosts = @unserialize((string) K_PDF_ALLOWED_HOSTS, ['allowed_classes' => false]);
             if (is_array($hosts)) {
                 // Empty list keeps remote loading disabled (SSRF-safe default).
@@ -341,6 +343,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             if (is_file($candidate)) {
                 $logoPath = $candidate;
                 $logoW = $this->headerLogoWidth > 0 ? $this->headerLogoWidth : 20.0;
+                // @mago-expect lint:no-error-control-operator -- an invalid optional logo falls back to the configured square size
                 $size = @getimagesize($logoPath);
                 $logoH = is_array($size) && (float) $size[0] > 0
                     ? $logoW * ((float) $size[1] / (float) $size[0])
