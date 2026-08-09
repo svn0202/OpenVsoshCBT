@@ -61,10 +61,8 @@ jobs:
             echo "Dependency installation failed; retrying ($attempt/3)…"
             sleep $((attempt * 5))
           done
-      # Linting is advisory until the codebase is made mago-clean (plan Stage 4),
-      # after which `continue-on-error` is removed and lint becomes a required gate.
+      # Baselines freeze reviewed legacy debt; any newly introduced lint or analysis error fails CI.
       - name: Lint and static analysis
-        continue-on-error: true
         run: make lint
       - name: Run unit tests
         run: make test

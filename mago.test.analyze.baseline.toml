@@ -1,129 +1,9 @@
 variant = "loose"
 
 [[issues]]
-file = "test/AnswerSaveTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_answer_save_decision` could not be found."
-count = 5
-
-[[issues]]
-file = "test/AttachmentsTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/AttachmentsTest.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 3
-
-[[issues]]
-file = "test/AttachmentsTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 1
-
-[[issues]]
-file = "test/AttachmentsTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_attachment_inspect` could not be found."
-count = 2
-
-[[issues]]
-file = "test/AttachmentsTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_attachment_normalize_uploads` could not be found."
-count = 1
-
-[[issues]]
 file = "test/BackupTest.php"
-code = "invalid-argument"
-message = '''Invalid argument type for argument #1 of `PHPUnit\Framework\TestCase::expectException`: expected `class-string<Throwable>`, but found `class-string('TmfBackupException')`.'''
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `basename`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `file_get_contents`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertNotContains`: expected `iterable<mixed, mixed>`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 3
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "no-valid-catch-type-found"
-message = "None of the types specified in the `catch` declaration are valid catchable exceptions."
-count = 2
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-catch-type"
-message = "Attempting to catch an undefined class or interface: `TmfBackupException`."
-count = 2
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-class-like"
-message = "Class, interface, enum, or trait `TmfBackupException` not found."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_create` could not be found."
-count = 4
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_dump_command` could not be found."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_environment` could not be found."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_file_is_valid` could not be found."
-count = 4
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_ignorable_postgresql_restore_diagnostic` could not be found."
-count = 3
-
-[[issues]]
-file = "test/BackupTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_resolve_file` could not be found."
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('PGPASSWORD')` accessed on `array<string, string>`."
 count = 1
 
 [[issues]]
@@ -152,183 +32,39 @@ count = 1
 
 [[issues]]
 file = "test/ExamUiAssetsTest.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 2
-
-[[issues]]
-file = "test/ExamUiAssetsTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('ov_audio_limit_exhausted')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
 file = "test/ExamUiAssetsTest.php"
-code = "non-existent-class"
-message = "Class `TMXResourceBundle` not found."
-count = 1
-
-[[issues]]
-file = "test/FormValidationTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertArrayHasKey`: expected `ArrayAccess<array-key, mixed>|array<array-key, mixed>`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/FormValidationTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringContainsString`: expected `string`, but found `mixed`.'
-count = 3
-
-[[issues]]
-file = "test/FormValidationTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 5
-
-[[issues]]
-file = "test/FormValidationTest.php"
-code = "non-existent-function"
-message = "Function `F_check_fields_format` could not be found."
-count = 18
-
-[[issues]]
-file = "test/FormValidationTest.php"
-code = "non-existent-function"
-message = "Function `F_get_field_format_registry` could not be found."
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('ov_audio_plays_left')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
 file = "test/GeneralFunctionsTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_compact_string` could not be found."
-count = 2
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_formatFloat` could not be found."
-count = 3
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_formatPdfPercentage` could not be found."
+code = "impossible-type-comparison"
+message = '''Impossible type assertion: `$tsv` of type `unknown-ref(converted)` can never be `string('col1\tcol2\nrow2')`.'''
 count = 1
 
 [[issues]]
 file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_formatPercentage` could not be found."
-count = 3
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_formatXMLPercentage` could not be found."
+code = "impossible-type-comparison"
+message = "Impossible type assertion: `$xml` of type `unknown-ref(converted)` can never be `string('a&lt;b&gt; &amp; c')`."
 count = 1
 
 [[issues]]
 file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_getBoolean` could not be found."
-count = 9
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_isURL` could not be found."
-count = 4
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_normalizeMatchingPositions` could not be found."
-count = 3
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_replace_angulars` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `F_tsv_to_text` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
 file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_substr_utf8` could not be found."
-count = 2
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_text_to_tsv` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `F_xml_to_text` has type `never`, meaning it cannot produce a value."
 count = 1
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_text_to_xml` could not be found."
-count = 2
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_tsv_to_text` could not be found."
-count = 1
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_xml_to_text` could not be found."
-count = 1
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `bcdechex` could not be found."
-count = 3
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getContrastColor` could not be found."
-count = 2
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getIpAsBytes` could not be found."
-count = 9
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getNormalizedIP` could not be found."
-count = 5
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `unhtmlentities` could not be found."
-count = 3
-
-[[issues]]
-file = "test/GeneralFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `utrim` could not be found."
-count = 2
-
-[[issues]]
-file = "test/IpAccessTest.php"
-code = "non-existent-function"
-message = "Function `F_isValidIP` could not be found."
-count = 4
 
 [[issues]]
 file = "test/LanguageSyncTest.php"
@@ -356,33 +92,21 @@ count = 2
 
 [[issues]]
 file = "test/LanguageSyncTest.php"
-code = "non-existent-function"
-message = "Function `F_sync_tmx_translations` could not be found."
-count = 2
-
-[[issues]]
-file = "test/LanguageSyncTest.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Random\RandomException` in `Test\LanguageSyncTest::testAddsMissingUnitsAndLanguagesWithoutReplacingRuntimeTranslations`.'
 count = 1
 
 [[issues]]
-file = "test/MigrationTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `array_key_last`: expected `array<('K.array_key_last() extends array-key), mixed>`, but found `mixed`."
+file = "test/LanguageSyncTest.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Test\LanguageSyncTest::testAddsMissingUnitsAndLanguagesWithoutReplacingRuntimeTranslations`.'
 count = 1
 
 [[issues]]
 file = "test/MigrationTest.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `basename`: expected `string`, but found `mixed`."
-count = 3
-
-[[issues]]
-file = "test/MigrationTest.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertCount`: expected `Countable|iterable<mixed, mixed>`, but found `mixed`.'
-count = 2
+count = 1
 
 [[issues]]
 file = "test/MigrationTest.php"
@@ -394,13 +118,13 @@ count = 1
 file = "test/MigrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 5
+count = 2
 
 [[issues]]
 file = "test/MigrationTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
+count = 1
 
 [[issues]]
 file = "test/MigrationTest.php"
@@ -415,100 +139,22 @@ message = "Function `F_tmf_migration_statements` could not be found."
 count = 2
 
 [[issues]]
-file = "test/MigrationTest.php"
-code = "possibly-null-array-index"
-message = "Possibly using `null` as an array index to access elementof variable $files."
-count = 1
-
-[[issues]]
 file = "test/MonitoringTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_monitor_action_is_valid` could not be found."
-count = 2
-
-[[issues]]
-file = "test/MonitoringTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_monitor_status` could not be found."
+code = "possibly-false-argument"
+message = "Argument #4 of function `F_tmf_monitor_status` is possibly `false`, but parameter type `int` does not accept it."
 count = 6
 
 [[issues]]
-file = "test/OfflinePackageTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringContainsString`: expected `string`, but found `mixed`.'
-count = 2
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringNotContainsString`: expected `string`, but found `mixed`.'
+file = "test/MonitoringTest.php"
+code = "unfulfilled-expect"
+message = "This pragma was not used and may be removed."
 count = 3
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 4
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "mixed-operand"
-message = "Invalid left operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "non-existent-constant"
-message = "Undefined constant: `TMF_OFFLINE_FORMAT`."
-count = 1
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_offline_html` could not be found."
-count = 1
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_offline_payload_encode` could not be found."
-count = 2
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_offline_sign` could not be found."
-count = 1
-
-[[issues]]
-file = "test/OfflinePackageTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_offline_signature_is_valid` could not be found."
-count = 3
-
-[[issues]]
-file = "test/OmrSecurityTest.php"
-code = "non-existent-function"
-message = "Function `F_decodeOMRTestData` could not be found."
-count = 4
-
-[[issues]]
-file = "test/OmrSecurityTest.php"
-code = "non-existent-function"
-message = "Function `F_encodeOMRTestData` could not be found."
-count = 1
 
 [[issues]]
 file = "test/OmrSecurityTest.php"
 code = "possibly-false-argument"
 message = "Argument #1 of function `base64_encode` is possibly `false`, but parameter type `string` does not accept it."
 count = 2
-
-[[issues]]
-file = "test/PregenerationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_catalog_test_status` could not be found."
-count = 4
 
 [[issues]]
 file = "test/RegradeTest.php"
@@ -518,26 +164,14 @@ count = 1
 
 [[issues]]
 file = "test/RegradeTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 4
-
-[[issues]]
-file = "test/RegradeTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_recorded_answer_score` could not be found."
+code = "less-specific-argument"
+message = "Argument type mismatch for argument #1 of `F_tmf_recorded_answer_score`: expected `array<string, mixed>`, but provided type `array<array-key, mixed>` is less specific."
 count = 4
 
 [[issues]]
 file = "test/ResultPublicationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_result_identity` could not be found."
-count = 2
-
-[[issues]]
-file = "test/ResultPublicationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_results_are_published` could not be found."
+code = "possibly-false-argument"
+message = "Argument #2 of function `F_tmf_results_are_published` is possibly `false`, but parameter type `int|null` does not accept it."
 count = 5
 
 [[issues]]
@@ -547,64 +181,16 @@ message = "Type `array` in return type of `controllerLevels` is imprecise, equiv
 count = 1
 
 [[issues]]
-file = "test/RolePolicyTest.php"
-code = "non-existent-function"
-message = "Function `openvsosh_admin_required_level` could not be found."
-count = 2
-
-[[issues]]
-file = "test/RuntimeSettingsTest.php"
-code = "non-existent-function"
-message = "Function `openvsosh_contrast_text` could not be found."
-count = 3
-
-[[issues]]
 file = "test/SessionFunctionsTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 4
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_isRandomSecurityConfigured` could not be found."
-count = 5
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `checkCSRFTokenForScript` could not be found."
-count = 2
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `checkPassword` could not be found."
-count = 2
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getClientFingerprint` could not be found."
-count = 2
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getLegacyClientFingerprint` could not be found."
-count = 2
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getPasswordHash` could not be found."
-count = 2
-
-[[issues]]
-file = "test/SessionFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `getPlainCSRFTokenForScript` could not be found."
 count = 1
+
+[[issues]]
+file = "test/SessionFunctionsTest.php"
+code = "redundant-null-coalesce"
+message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
+count = 3
 
 [[issues]]
 file = "test/SessionFunctionsTest.php"
@@ -613,100 +199,22 @@ message = 'Potentially unhandled exception `Random\RandomException` in `Test\Ses
 count = 1
 
 [[issues]]
-file = "test/ShortAnswerSimilarityTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 1
+file = "test/TmxResourceBundleTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('greeting')` accessed on `array<array-key, mixed>`."
+count = 7
 
 [[issues]]
-file = "test/ShortAnswerSimilarityTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_question_options` could not be found."
-count = 3
-
-[[issues]]
-file = "test/ShortAnswerSimilarityTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_set_similarity_threshold` could not be found."
-count = 3
-
-[[issues]]
-file = "test/ShortAnswerSimilarityTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_short_answer_score` could not be found."
-count = 4
-
-[[issues]]
-file = "test/ShortAnswerSimilarityTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_text_similarity` could not be found."
-count = 3
-
-[[issues]]
-file = "test/TcecodeFunctionsTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
-
-[[issues]]
-file = "test/TcecodeFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_has_html_markup` could not be found."
-count = 2
-
-[[issues]]
-file = "test/TcecodeFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_mathml_callback` could not be found."
-count = 2
-
-[[issues]]
-file = "test/TcecodeFunctionsTest.php"
-code = "non-existent-function"
-message = "Function `F_sanitize_html_content` could not be found."
-count = 2
-
-[[issues]]
-file = "test/TestAccessTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_test_session_is_unlocked` could not be found."
-count = 3
-
-[[issues]]
-file = "test/TestAccessTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_test_session_unlock` could not be found."
+file = "test/TmxResourceBundleTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('special')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
 file = "test/TmxResourceBundleTest.php"
-code = "impossible-assignment"
-message = "Invalid assignment: the right-hand side has type `never` and cannot produce a value."
-count = 8
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertArrayHasKey`: expected `ArrayAccess<array-key, mixed>|array<array-key, mixed>`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 6
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 4
-
-[[issues]]
-file = "test/TmxResourceBundleTest.php"
-code = "non-existent-class"
-message = "Class `TMXResourceBundle` not found."
-count = 8
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('world')` accessed on `array<array-key, mixed>`."
+count = 2
 
 [[issues]]
 file = "test/TmxResourceBundleTest.php"
@@ -718,12 +226,6 @@ count = 1
 file = "test/TmxResourceBundleTest.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Random\RandomException` in `Test\TmxResourceBundleTest::testRebuildsStaleCacheAfterSourceUpdate`.'
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "impossible-assignment"
-message = "Invalid assignment: the right-hand side has type `never` and cannot produce a value."
 count = 1
 
 [[issues]]
@@ -740,12 +242,6 @@ count = 1
 
 [[issues]]
 file = "test/WordImportTest.php"
-code = "invalid-argument"
-message = '''Invalid argument type for argument #1 of `PHPUnit\Framework\TestCase::expectException`: expected `class-string<Throwable>`, but found `class-string('TmfWordImportException')`.'''
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 3
@@ -755,6 +251,12 @@ file = "test/WordImportTest.php"
 code = "invalid-method-access"
 message = "Attempting to access a method on a non-object type (`string`)."
 count = 3
+
+[[issues]]
+file = "test/WordImportTest.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `F_tmf_question_options`: expected `string`, but found `mixed`."
+count = 2
 
 [[issues]]
 file = "test/WordImportTest.php"
@@ -801,14 +303,8 @@ count = 4
 [[issues]]
 file = "test/WordImportTest.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringContainsString`: expected `string`, but found `mixed`.'
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringNotContainsString`: expected `string`, but found `mixed`.'
-count = 2
+count = 1
 
 [[issues]]
 file = "test/WordImportTest.php"
@@ -820,13 +316,13 @@ count = 1
 file = "test/WordImportTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 57
+count = 30
 
 [[issues]]
 file = "test/WordImportTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 11
+count = 3
 
 [[issues]]
 file = "test/WordImportTest.php"
@@ -842,87 +338,33 @@ count = 2
 
 [[issues]]
 file = "test/WordImportTest.php"
-code = "non-existent-class"
-message = "Class `TmfWordImporter` not found."
-count = 5
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-class-like"
-message = "Class, interface, enum, or trait `TmfWordImportException` not found."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_answer_score` could not be found."
-count = 4
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_matching_presentation` could not be found."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_question_editor_description` could not be found."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_question_options` could not be found."
-count = 7
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_selection_limit_is_valid` could not be found."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_set_audio_play_limit` could not be found."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_set_matching_positions` could not be found."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_set_matching_reuse_positions` could not be found."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_word_import_cleanup_batch` could not be found."
-count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_word_import_cleanup_stale` could not be found."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_word_import_template` could not be found."
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('description')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
 file = "test/WordImportTest.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('description')` accessed on `array<array-key, mixed>`."
+message = "Possibly undefined array key `string('module')` accessed on `array<array-key, mixed>`."
+count = 2
+
+[[issues]]
+file = "test/WordImportTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('questions')` accessed on `array<array-key, mixed>`."
+count = 15
+
+[[issues]]
+file = "test/WordImportTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('statistics')` accessed on `array<array-key, mixed>`."
 count = 1
+
+[[issues]]
+file = "test/WordImportTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('topic')` accessed on `array<array-key, mixed>`."
+count = 2
 
 [[issues]]
 file = "test/WordImportTest.php"
@@ -933,73 +375,73 @@ count = 1
 [[issues]]
 file = "test/XlsxTest.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertArrayHasKey`: expected `ArrayAccess<array-key, mixed>|array<array-key, mixed>`, but found `mixed`.'
-count = 3
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringContainsString`: expected `string`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringNotContainsString`: expected `string`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertStringStartsWith`: expected `string`, but found `mixed`.'
 count = 1
 
 [[issues]]
 file = "test/XlsxTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but found `mixed`."
-count = 3
+code = "possibly-null-array-access"
+message = "Cannot perform array access on possibly `null` value."
+count = 4
 
 [[issues]]
 file = "test/XlsxTest.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 23
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 5
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "non-existent-constant"
-message = "Undefined constant: `TMF_USERS_XLSX_HEADERS`."
-count = 1
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_users_xlsx_validate` could not be found."
-count = 1
-
-[[issues]]
-file = "test/XlsxTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_xlsx_build` could not be found."
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(0)` accessed on `array<int, string>`."
 count = 2
 
 [[issues]]
 file = "test/XlsxTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_xlsx_read` could not be found."
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<int, array<int, string>>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<int, string>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(2)` accessed on `array<int, array<int, string>>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(2)` accessed on `array<int, array<string, mixed>>`."
 count = 2
 
 [[issues]]
 file = "test/XlsxTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_xlsx_sheet_xml` could not be found."
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(2)` accessed on `array<int, string>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(3)` accessed on `array<int, array<int, string>>`."
+count = 2
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(4)` accessed on `array<int, array<int, string>>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('birth_date')` accessed on `array<string, mixed>`."
+count = 1
+
+[[issues]]
+file = "test/XlsxTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('password_hash')` accessed on `array<string, mixed>`."
 count = 1
 
 [[issues]]
@@ -1012,6 +454,18 @@ count = 1
 file = "test/bootstrap.php"
 code = "missing-return-type"
 message = "Function `F_file_exists` is missing a return type hint."
+count = 1
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "impossible-condition"
+message = "This condition (type `false`) will always evaluate to false."
+count = 2
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "impossible-type-comparison"
+message = "Impossible type assertion: `$row` of type `unknown-ref(Returns)` can never be `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
@@ -1048,7 +502,7 @@ count = 67
 file = "test/integration/AdminControllerHttpTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 8
+count = 2
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -1060,42 +514,12 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 10
+count = 6
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_close` could not be found."
-count = 3
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_connect` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_fetch_assoc` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_query` could not be found."
-count = 3
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_getBoolean` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_xlsx_read` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `reset` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -1114,7 +538,7 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-null-array-access"
 message = "Cannot perform array access on possibly `null` value."
-count = 1
+count = 2
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -1137,8 +561,20 @@ count = 1
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(0)` accessed on `array<int, string>`."
+count = 1
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
 count = 5
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<int, array<int, string>>`."
+count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -1166,6 +602,18 @@ count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(5)` accessed on `array<int, string>`."
+count = 1
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(8)` accessed on `array<int, string>`."
+count = 1
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('payload_b64')` accessed on `array<array-key, mixed>`."
 count = 1
@@ -1181,6 +629,18 @@ file = "test/integration/AdminControllerHttpTest.php"
 code = "redundant-cast"
 message = "Redundant cast to `(string)`: the expression already has this type."
 count = 13
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "redundant-comparison"
+message = "Avoid direct comparison with boolean literals."
+count = 1
+
+[[issues]]
+file = "test/integration/AdminControllerHttpTest.php"
+code = "redundant-comparison"
+message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
+count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -1280,14 +740,44 @@ count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `PHPUnit\Framework\Assert::assertFileExists`: expected `string`, but found `mixed`.'
+code = "impossible-condition"
+message = "Redundant ternary operator: condition is always falsy."
 count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `filesize`: expected `string`, but found `mixed`."
+code = "impossible-condition"
+message = "This loop condition (type `false`) will always evaluate to false."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "impossible-type-comparison"
+message = "Impossible type assertion: `$row` of type `unknown-ref(Returns)` can never be `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "invalid-array-access"
+message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
+count = 8
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "invalid-operand"
+message = "Invalid type `unknown-ref(SQL)` for middle operand in string concatenation."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "mismatched-array-index"
+message = "Invalid array key type: `string('admin')` is not a valid key for this array."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "mismatched-array-index"
+message = "Invalid array key type: `string('anonymous')` is not a valid key for this array."
 count = 1
 
 [[issues]]
@@ -1300,120 +790,36 @@ count = 1
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 15
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mixed-array-assignment"
-message = "Unsafe array assignment on type `mixed`."
-count = 1
+count = 4
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 41
+count = 4
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 3
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-class"
-message = "Class `TmfWordImporter` not found."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-constant"
-message = "Undefined constant: `K_TABLE_GROUPS`."
-count = 5
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-constant"
-message = "Undefined constant: `K_TABLE_USERS`."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_affected_rows` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_close` could not be found."
-count = 5
+code = "no-value"
+message = "Argument #1 passed to function `F_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
+count = 4
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_connect` could not be found."
-count = 5
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_datetime_diff_seconds` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_fetch_array` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_fetch_assoc` could not be found."
-count = 6
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_insert_id` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `F_db_num_rows` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_num_rows` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_db_query` could not be found."
-count = 27
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_escape_sql` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_create` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_backup_restore` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "non-existent-function"
-message = "Function `F_tmf_import_word_questions` could not be found."
+code = "no-value"
+message = "Argument #2 passed to function `F_db_affected_rows` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
@@ -1455,13 +861,25 @@ count = 4
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('admin')` accessed on `array<array-key, int>`."
+message = "Possibly undefined array key `string('module')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('anonymous')` accessed on `array<array-key, int>`."
+message = "Possibly undefined array key `string('questions')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('topic')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "test/integration/DatabaseDalIntegrationTest.php"
+code = "redundant-comparison"
+message = "Redundant `===` comparison: left-hand side is never identical to right-hand side."
 count = 1
 
 [[issues]]
@@ -1484,6 +902,18 @@ count = 1
 
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
+code = "impossible-condition"
+message = "Redundant ternary operator: condition is always falsy."
+count = 1
+
+[[issues]]
+file = "test/integration/PregenerationLoadHttpTest.php"
+code = "impossible-type-comparison"
+message = "Impossible type assertion: `$row` of type `unknown-ref(Returns)` can never be `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "test/integration/PregenerationLoadHttpTest.php"
 code = "invalid-type-cast"
 message = "Casting `mixed` to `float`."
 count = 1
@@ -1496,39 +926,9 @@ count = 1
 
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_close` could not be found."
+code = "no-value"
+message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_connect` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_fetch_array` could not be found."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_db_query` could not be found."
-count = 2
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "non-existent-function"
-message = "Function `F_escape_sql` could not be found."
-count = 2
 
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
@@ -1546,12 +946,6 @@ count = 1
 file = "test/integration/PregenerationLoadHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array index accessed on `non-empty-list<float>`."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(0)` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]

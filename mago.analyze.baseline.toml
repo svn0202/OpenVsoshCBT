@@ -38,15 +38,9 @@ count = 6
 
 [[issues]]
 file = "admin/code/index.php"
-code = "mixed-argument"
-message = "The first value for `echo` is too general."
-count = 1
-
-[[issues]]
-file = "admin/code/index.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 27
+count = 26
 
 [[issues]]
 file = "admin/code/index.php"
@@ -100,7 +94,7 @@ count = 1
 file = "admin/code/index.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
-count = 27
+count = 26
 
 [[issues]]
 file = "admin/code/tce_attachment.php"
@@ -6982,7 +6976,7 @@ count = 31
 file = "admin/code/tce_monitor.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `nonnull`."
-count = 9
+count = 4
 
 [[issues]]
 file = "admin/code/tce_monitor.php"
@@ -7091,6 +7085,30 @@ file = "admin/code/tce_monitor.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('status')` accessed on `array<array-key, mixed>`."
 count = 7
+
+[[issues]]
+file = "admin/code/tce_monitor.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('testuser_creation_time')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "admin/code/tce_monitor.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('testuser_focus_loss_count')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "admin/code/tce_monitor.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('testuser_id')` accessed on `array<array-key, mixed>`."
+count = 3
+
+[[issues]]
+file = "admin/code/tce_monitor.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('testuser_pregenerated')` accessed on `array<array-key, mixed>`."
+count = 1
 
 [[issues]]
 file = "admin/code/tce_monitor.php"
@@ -7280,12 +7298,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
 code = "invalid-operand"
 message = "Invalid type `unknown-ref(XHTML)` for left operand in string concatenation."
 count = 2
@@ -7310,33 +7322,9 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
-code = "missing-parameter-type"
-message = "Parameter `$name` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "missing-parameter-type"
-message = "Parameter `$selected` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "missing-parameter-type"
-message = "Parameter `$tests` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "missing-return-type"
-message = "Function `F_onboardingTestSelect` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 8
+count = 7
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
@@ -7348,25 +7336,19 @@ count = 1
 file = "admin/code/tce_onboarding_settings.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 16
+count = 15
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 31
+count = 24
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 5
-
-[[issues]]
-file = "admin/code/tce_onboarding_settings.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 2
+count = 4
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
@@ -7408,37 +7390,13 @@ count = 1
 file = "admin/code/tce_onboarding_settings.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
-count = 26
+count = 24
 
 [[issues]]
 file = "admin/code/tce_page_footer.php"
 code = "possibly-false-operand"
 message = "Possibly false middle operand used in string concatenation (type `false|string`)."
 count = 1
-
-[[issues]]
-file = "admin/code/tce_page_header.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_page_header.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_page_header.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_page_header.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 3
 
 [[issues]]
 file = "admin/code/tce_page_header.php"
@@ -10599,12 +10557,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_xhtml_header.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_xhtml_header.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `truthy-mixed`."
 count = 6
 
@@ -10624,13 +10576,13 @@ count = 1
 file = "admin/code/tce_xhtml_header.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 10
+count = 9
 
 [[issues]]
 file = "admin/code/tce_xhtml_header.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 18
+count = 14
 
 [[issues]]
 file = "admin/code/tce_xhtml_header.php"
@@ -10648,7 +10600,7 @@ count = 1
 file = "admin/code/tce_xhtml_header.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 5
+count = 4
 
 [[issues]]
 file = "admin/code/tce_xhtml_header.php"
@@ -10676,15 +10628,9 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_xhtml_header.php"
-code = "possibly-false-operand"
-message = "Possibly false right operand used in string concatenation (type `false|int<1750595956, max>`)."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_xhtml_header.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
-count = 18
+count = 14
 
 [[issues]]
 file = "admin/code/tce_xlsx_result_allusers.php"
@@ -13205,6 +13151,36 @@ file = "public/code/tce_test_execute.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
 count = 29
+
+[[issues]]
+file = "public/code/tce_test_focus.php"
+code = "impossible-condition"
+message = "Redundant ternary operator: condition is always falsy."
+count = 3
+
+[[issues]]
+file = "public/code/tce_test_focus.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
+count = 2
+
+[[issues]]
+file = "public/code/tce_test_focus.php"
+code = "redundant-comparison"
+message = "Redundant `<=` comparison: left-hand side is always less than or equal to right-hand side."
+count = 1
+
+[[issues]]
+file = "public/code/tce_test_focus.php"
+code = "redundant-condition"
+message = "This condition (type `true`) will always evaluate to true."
+count = 3
+
+[[issues]]
+file = "public/code/tce_test_focus.php"
+code = "redundant-logical-operation"
+message = "Redundant `||` operation: left operand is evaluated and right operand is always falsy."
+count = 1
 
 [[issues]]
 file = "public/code/tce_test_heartbeat.php"
@@ -19724,12 +19700,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
-code = "possibly-false-operand"
-message = "Possibly false right operand used in string concatenation (type `false|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `session_id`: expected `null|string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
@@ -20457,19 +20427,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `exec`: expected `array<array-key, mixed>|null`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `preg_match`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `exec`: expected `int|int`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -20518,7 +20476,7 @@ count = 6
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 16
+count = 14
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -20709,12 +20667,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-undefined-variable"
-message = "Variable `$out` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "possibly-undefined-variable"
 message = "Variable `$pixh` might not have been defined on all execution paths leading to this point."
 count = 1
 
@@ -20746,18 +20698,6 @@ count = 1
 file = "shared/code/tce_functions_tcecode.php"
 code = "reference-to-undefined-variable"
 message = "Reference created from a previously undefined variable `$matches`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$out`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$ret`."
 count = 1
 
 [[issues]]

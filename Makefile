@@ -200,8 +200,10 @@ dockertestdown:
 dockerlint:
 	docker build -f mago.Dockerfile -t "$(OWNER)/$(PROJECT)-mago:local" .
 	docker run --rm -v "$(CURRENTDIR):/app" -w /app --entrypoint sh "$(OWNER)/$(PROJECT)-mago:local" -c '\
-		mago --config mago.src.toml lint; mago --config mago.src.toml analyze; \
-		mago --config mago.test.toml lint; mago --config mago.test.toml analyze'
+		mago --config mago.src.toml lint --baseline mago.lint.baseline.toml; \
+		mago --config mago.src.toml analyze --baseline mago.analyze.baseline.toml; \
+		mago --config mago.test.toml lint --baseline mago.test.lint.baseline.toml; \
+		mago --config mago.test.toml analyze --baseline mago.test.analyze.baseline.toml'
 
 ## Delete the vendor and target directories (keeps the app cache/ data)
 .PHONY: clean
