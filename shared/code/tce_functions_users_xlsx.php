@@ -38,7 +38,7 @@ function F_tmf_users_xlsx_validate(
         return ['records' => [], 'errors' => [1 => ['Файл пуст.']]];
     }
     $headers = array_map(
-        static fn (mixed $value): string => strtolower(trim((string) $value)),
+        static fn (mixed $value): string => strtolower(trim($value)),
         $rows[0],
     );
     if ($headers !== TMF_USERS_XLSX_HEADERS) {
@@ -56,7 +56,7 @@ function F_tmf_users_xlsx_validate(
         $sheet_row = $offset + 1;
         $row = array_pad(array_values($row), count(TMF_USERS_XLSX_HEADERS), '');
         $values = array_combine(TMF_USERS_XLSX_HEADERS, array_slice($row, 0, count(TMF_USERS_XLSX_HEADERS)));
-        if ($values === false || count(array_filter($values, static fn ($value): bool => trim((string) $value) !== '')) === 0) {
+        if ($values === false || count(array_filter($values, static fn ($value): bool => trim($value) !== '')) === 0) {
             continue;
         }
         $login = trim((string) $values['login']);
