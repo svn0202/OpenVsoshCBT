@@ -378,9 +378,10 @@ function utrim(mixed $txt): mixed
         return '';
     }
 
-    $txt = preg_replace('/\xA0/u', ' ', $txt);
-    $txt = preg_replace('/^([\s]+)/u', '', $txt);
-    return preg_replace('/([\s]+)$/u', '', $txt);
+    /** @var string $txt */
+    $txt = preg_replace('/\xA0/u', ' ', $txt) ?? $txt;
+    $txt = preg_replace('/^([\s]+)/u', '', $txt) ?? $txt;
+    return preg_replace('/([\s]+)$/u', '', $txt) ?? $txt;
 }
 
 /**
