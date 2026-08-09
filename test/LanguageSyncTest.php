@@ -6,6 +6,10 @@ use PHPUnit\Framework\TestCase;
 
 final class LanguageSyncTest extends TestCase
 {
+    /**
+     * @throws \Random\RandomException
+     * @throws \RuntimeException
+     */
     public function testAddsMissingUnitsAndLanguagesWithoutReplacingRuntimeTranslations(): void
     {
         $directory = sys_get_temp_dir() . '/openvsosh-language-' . bin2hex(random_bytes(6));
@@ -48,6 +52,7 @@ final class LanguageSyncTest extends TestCase
         }
     }
 
+    /** @param array<string, array<string, string>> $units */
     private function tmx(array $units): string
     {
         $body = '';
