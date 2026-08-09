@@ -475,46 +475,42 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                             if ($ma = F_db_fetch_array($ra)) {
                                 $answer_isright = f_get_boolean($ma['answer_isright']);
                                 switch ($mq['question_type']) {
-                                    case 1:
-                                        { // MCSA - Multiple Choice Single Answer
-                                            if ($answer_selected == 1) {
-                                                ++$numselected;
-                                                if ($numselected == 1) {
-                                                    $unanswered = false;
-                                                    $qscore = $answer_isright
-                                                        ? $question_right_score
-                                                        : $question_wrong_score;
-                                                } else {
-                                                    // multiple answer selected
-                                                    $unanswered = true;
-                                                    $qscore = $question_unanswered_score;
-                                                }
-                                            }
-
-                                            break;
-                                        }
-                                    case 2:
-                                        { // MCMA - Multiple Choice Multiple Answer
-                                            if ($answer_selected == -1) {
-                                                $qscore += $question_unanswered_score;
-                                            } elseif ($answer_selected == 0) {
+                                    case 1: // MCSA - Multiple Choice Single Answer
+                                        if ($answer_selected == 1) {
+                                            ++$numselected;
+                                            if ($numselected == 1) {
                                                 $unanswered = false;
-                                                if ($answer_isright) {
-                                                    $qscore += $question_wrong_score;
-                                                } else {
-                                                    $qscore += $question_right_score;
-                                                }
-                                            } elseif ($answer_selected == 1) {
-                                                $unanswered = false;
-                                                if ($answer_isright) {
-                                                    $qscore += $question_right_score;
-                                                } else {
-                                                    $qscore += $question_wrong_score;
-                                                }
+                                                $qscore = $answer_isright
+                                                    ? $question_right_score
+                                                    : $question_wrong_score;
+                                            } else {
+                                                // multiple answer selected
+                                                $unanswered = true;
+                                                $qscore = $question_unanswered_score;
                                             }
-
-                                            break;
                                         }
+
+                                        break;
+                                    case 2: // MCMA - Multiple Choice Multiple Answer
+                                        if ($answer_selected == -1) {
+                                            $qscore += $question_unanswered_score;
+                                        } elseif ($answer_selected == 0) {
+                                            $unanswered = false;
+                                            if ($answer_isright) {
+                                                $qscore += $question_wrong_score;
+                                            } else {
+                                                $qscore += $question_right_score;
+                                            }
+                                        } elseif ($answer_selected == 1) {
+                                            $unanswered = false;
+                                            if ($answer_isright) {
+                                                $qscore += $question_right_score;
+                                            } else {
+                                                $qscore += $question_wrong_score;
+                                            }
+                                        }
+
+                                        break;
                                 }
                             }
                         } else {
