@@ -1267,12 +1267,6 @@ message = "Function name `F_tcecode_url` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "no-error-control-operator"
-message = "Unsafe use of error control operator `@`."
-count = 4
-
-[[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "function-name"
 message = "Function name `F_addLogAnswers` should be in snake case."
