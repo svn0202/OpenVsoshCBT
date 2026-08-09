@@ -33,4 +33,25 @@ final class XmlQuestionImporterTest extends TestCase
         self::assertNull($handler->invoke($importer, null, ' second'));
         self::assertSame('first second', $class->getProperty('current_data')->getValue($importer));
     }
+
+    public function testEndElementHandlerIgnoresUnrelatedElement(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_class_import_xml.php"; '
+                    . '$class = new ReflectionClass(XMLQuestionImporter::class); '
+                    . '$importer = $class->newInstanceWithoutConstructor(); '
+                    . '$path = tempnam(sys_get_temp_dir(), "tce-import-"); '
+                    . '$class->getProperty("xmlfile")->setValue($importer, $path); '
+                    . '$handler = $class->getMethod("endElementHandler"); '
+                    . 'echo json_encode($handler->invoke($importer, null, "metadata"));',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('null', $output);
+    }
 }

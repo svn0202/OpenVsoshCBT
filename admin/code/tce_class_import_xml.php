@@ -210,7 +210,7 @@ class XMLQuestionImporter
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler($parser, $name)
+    private function endElementHandler(mixed $parser, mixed $name): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
