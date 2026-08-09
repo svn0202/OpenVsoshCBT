@@ -138,60 +138,101 @@ if (isset($menu_mode) && !empty($menu_mode)) {
             $user_id = (int) $_POST[$keyname];
             switch ($menu_mode) {
                 case 'delete':
-                    {
-                        if (
-                            $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
-                            && $user_id > 1
-                            && !f_form_option_is_selected($user_id, $_SESSION['session_user_id'])
-                            && F_isAuthorizedEditorForUser($user_id)
-                        ) {
-                            $sql = 'DELETE FROM ' . K_TABLE_USERS . '
+                    if (
+                        $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
+                        && $user_id > 1
+                        && !f_form_option_is_selected($user_id, $_SESSION['session_user_id'])
+                        && F_isAuthorizedEditorForUser($user_id)
+                    ) {
+                        $sql = 'DELETE FROM ' . K_TABLE_USERS . '
 							WHERE user_id=' . $user_id . '';
-                            if (!($r = F_db_query($sql, $db))) {
-                                F_display_db_error();
-                            }
+                        if (!($r = F_db_query($sql, $db))) {
+                            F_display_db_error();
                         }
-
-                        break;
                     }
+
+                    break;
                 case 'addgroup':
-                    {
-                        if (
-                            $_SESSION['session_user_level'] >= K_AUTH_ADMIN_GROUPS
-                            && $new_group_id > 0
-                            && F_isAuthorizedEditorForGroup($new_group_id)
-                        ) {
-                            $groups = F_get_user_groups($user_id);
-                            if (!in_array($new_group_id, $groups)) {
-                                $sql =
-                                    'INSERT INTO '
-                                    . K_TABLE_USERGROUP
-                                    . ' (
+                    if (
+                        $_SESSION['session_user_level'] >= K_AUTH_ADMIN_GROUPS
+                        && $new_group_id > 0
+                        && F_isAuthorizedEditorForGroup($new_group_id)
+                    ) {
+                        $groups = F_get_user_groups($user_id);
+                        if (!in_array($new_group_id, $groups)) {
+                            $sql =
+                                'INSERT INTO '
+                                . K_TABLE_USERGROUP
+                                . ' (
 								usrgrp_user_id,
 								usrgrp_group_id
 								) VALUES (
 								\''
-                                    . $user_id
-                                    . '\',
+                                . $user_id
+                                . '\',
 								\''
-                                    . $new_group_id
-                                    . '\'
+                                . $new_group_id
+                                . '\'
 								)';
-                                if (!($r = F_db_query($sql, $db))) {
-                                    F_display_db_error();
-                                }
+                            if (!($r = F_db_query($sql, $db))) {
+                                F_display_db_error();
                             }
                         }
-
-                        break;
                     }
+
+                    break;
                 case 'delgroup':
-                    {
-                        if (
-                            $_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS
-                            && $new_group_id > 0
-                            && F_isAuthorizedEditorForGroup($new_group_id)
-                        ) {
+                    if (
+                        $_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS
+                        && $new_group_id > 0
+                        && F_isAuthorizedEditorForGroup($new_group_id)
+                    ) {
+                        $sql =
+                            'DELETE FROM '
+                            . K_TABLE_USERGROUP
+                            . '
+							WHERE usrgrp_user_id='
+                            . $user_id
+                            . '
+								AND usrgrp_group_id='
+                            . $new_group_id
+                            . '';
+                        if (!($r = F_db_query($sql, $db))) {
+                            F_display_db_error();
+                        }
+                    }
+
+                    break;
+                case 'move':
+                    if (
+                        $_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS
+                        && isset($from_group_id)
+                        && $from_group_id > 0
+                        && F_isAuthorizedEditorForGroup($from_group_id)
+                        && isset($to_group_id)
+                        && $to_group_id > 0
+                        && F_isAuthorizedEditorForGroup($to_group_id)
+                    ) {
+                        $groups = F_get_user_groups($user_id);
+                        if (!in_array($to_group_id, $groups)) {
+                            $sql =
+                                'UPDATE '
+                                . K_TABLE_USERGROUP
+                                . ' SET
+								usrgrp_group_id='
+                                . $to_group_id
+                                . '
+								WHERE usrgrp_user_id='
+                                . $user_id
+                                . '
+									AND usrgrp_group_id='
+                                . $from_group_id
+                                . '
+								LIMIT 1';
+                            if (!($r = F_db_query($sql, $db))) {
+                                F_display_db_error();
+                            }
+                        } else {
                             $sql =
                                 'DELETE FROM '
                                 . K_TABLE_USERGROUP
@@ -200,64 +241,15 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                                 . $user_id
                                 . '
 								AND usrgrp_group_id='
-                                . $new_group_id
+                                . $from_group_id
                                 . '';
                             if (!($r = F_db_query($sql, $db))) {
                                 F_display_db_error();
                             }
                         }
-
-                        break;
                     }
-                case 'move':
-                    {
-                        if (
-                            $_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS
-                            && isset($from_group_id)
-                            && $from_group_id > 0
-                            && F_isAuthorizedEditorForGroup($from_group_id)
-                            && isset($to_group_id)
-                            && $to_group_id > 0
-                            && F_isAuthorizedEditorForGroup($to_group_id)
-                        ) {
-                            $groups = F_get_user_groups($user_id);
-                            if (!in_array($to_group_id, $groups)) {
-                                $sql =
-                                    'UPDATE '
-                                    . K_TABLE_USERGROUP
-                                    . ' SET
-								usrgrp_group_id='
-                                    . $to_group_id
-                                    . '
-								WHERE usrgrp_user_id='
-                                    . $user_id
-                                    . '
-									AND usrgrp_group_id='
-                                    . $from_group_id
-                                    . '
-								LIMIT 1';
-                                if (!($r = F_db_query($sql, $db))) {
-                                    F_display_db_error();
-                                }
-                            } else {
-                                $sql =
-                                    'DELETE FROM '
-                                    . K_TABLE_USERGROUP
-                                    . '
-							WHERE usrgrp_user_id='
-                                    . $user_id
-                                    . '
-								AND usrgrp_group_id='
-                                    . $from_group_id
-                                    . '';
-                                if (!($r = F_db_query($sql, $db))) {
-                                    F_display_db_error();
-                                }
-                            }
-                        }
 
-                        break;
-                    }
+                    break;
             } // end of switch
         }
     }
