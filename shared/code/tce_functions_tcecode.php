@@ -912,27 +912,28 @@ function F_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
  */
 function f_remove_tcecode(mixed $str): mixed
 {
-    $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str);
-    $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str);
-    $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str);
-    $str = preg_replace("'\[b\](.*?)\[/b\]'si", '\1', $str);
-    $str = preg_replace("'\[i\](.*?)\[/i\]'si", '\1', $str);
-    $str = preg_replace("'\[s\](.*?)\[/s\]'si", '\1', $str);
-    $str = preg_replace("'\[u\](.*?)\[/u\]'si", '\1', $str);
-    $str = preg_replace("'\[o\](.*?)\[/o\]'si", '\1', $str);
-    $str = preg_replace("'\[color([^\]]*?)\](.*?)\[/color\]'si", '\2', $str);
-    $str = preg_replace("'\[bgcolor([^\]]*?)\](.*?)\[/bgcolor\]'si", '\2', $str);
-    $str = preg_replace("'\[font([^\]]*?)\](.*?)\[/font\]'si", '\2', $str);
-    $str = preg_replace("'\[size([^\]]*?)\](.*?)\[/size\]'si", '\2', $str);
-    $str = preg_replace("'\[small\](.*?)\[/small\]'si", '\1', $str);
-    $str = preg_replace("'\[sub\](.*?)\[/sub\]'si", '\1', $str);
-    $str = preg_replace("'\[sup\](.*?)\[/sup\]'si", '\1', $str);
-    $str = preg_replace("'\[url([^\]]*?)\](.*?)\[/url\]'si", '\2', $str);
-    $str = preg_replace("'\[li\](.*?)\[/li\]'si", ' * \1', $str);
-    $str = preg_replace("'\[\*\](.*?)\n'i", ' * \1', $str);
-    $str = preg_replace("'\[ulist\](.*?)\[/ulist\]'si", '\1', $str);
-    $str = preg_replace("'\[olist([^\]]*?)\](.*?)\[/olist\]'si", '\2', $str);
-    return preg_replace("'\[tex\](.*?)\[/tex\]'si", '[TEX]', $str);
+    /** @var string $str */
+    $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str) ?? $str;
+    $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str) ?? $str;
+    $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[b\](.*?)\[/b\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[i\](.*?)\[/i\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[s\](.*?)\[/s\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[u\](.*?)\[/u\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[o\](.*?)\[/o\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[color([^\]]*?)\](.*?)\[/color\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[bgcolor([^\]]*?)\](.*?)\[/bgcolor\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[font([^\]]*?)\](.*?)\[/font\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[size([^\]]*?)\](.*?)\[/size\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[small\](.*?)\[/small\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[sub\](.*?)\[/sub\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[sup\](.*?)\[/sup\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[url([^\]]*?)\](.*?)\[/url\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[li\](.*?)\[/li\]'si", ' * \1', $str) ?? $str;
+    $str = preg_replace("'\[\*\](.*?)\n'i", ' * \1', $str) ?? $str;
+    $str = preg_replace("'\[ulist\](.*?)\[/ulist\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[olist([^\]]*?)\](.*?)\[/olist\]'si", '\2', $str) ?? $str;
+    return preg_replace("'\[tex\](.*?)\[/tex\]'si", '[TEX]', $str) ?? $str;
 }
 
 /**

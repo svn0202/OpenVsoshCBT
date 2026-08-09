@@ -15440,12 +15440,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `f_remove_tcecode`: expected `string`, but found `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `min`: expected `float|non-empty-array<array-key, float>`, but found `mixed`."
 count = 1
@@ -15542,12 +15536,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "nullable-return-statement"
-message = "Function `f_remove_tcecode` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-false-operand"
 message = "Left operand in `>` comparison might be `false` (type `false|int`)."
 count = 1
@@ -15586,7 +15574,7 @@ count = 2
 file = "shared/code/tce_functions_tcecode.php"
 code = "possibly-null-argument"
 message = "Argument #3 of function `preg_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 28
+count = 8
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
