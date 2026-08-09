@@ -104,7 +104,7 @@ switch ($output_format) {
  * @param $expmode (int) export mode: 1 = selected topic; 2 = selected module; 3 = all modules.
  * @return XML data
  */
-function F_xml_export_questions($module_id, $subject_id, $expmode)
+function f_xml_export_questions($module_id, $subject_id, $expmode)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
