@@ -334,7 +334,7 @@ count = 5
 file = "shared/code/tce_authorization.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_db_connect.php"
