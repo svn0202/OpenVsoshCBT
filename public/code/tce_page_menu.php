@@ -22,6 +22,26 @@
 
 require_once '../../shared/code/tce_functions_menu.php';
 
+/**
+ * @var array{
+ *     h_index: string,
+ *     w_index: string,
+ *     t_all_results_user: string,
+ *     w_results: string,
+ *     w_user: string,
+ *     h_admin_link: string,
+ *     w_admin: string,
+ *     h_logout_link: string,
+ *     w_logout: string,
+ *     h_login_link: string,
+ *     w_login: string,
+ *     t_user_change_email: string,
+ *     w_change_email: string,
+ *     t_user_change_password: string,
+ *     w_change_password: string
+ * } $l
+ */
+/** @var array{session_user_level: int} $_SESSION */
 $menu = [
     'index.php' => [
         'link' => 'index.php',
