@@ -891,7 +891,7 @@ function getFormRowVertDiv(string $title = ''): string
  * @param string $name Name of the input form field.
  * @return string
  */
-function getFormNoscriptSelect(string $name = 'selectrecord'): string
+function get_form_noscript_select(string $name = 'selectrecord'): string
 {
     require_once __DIR__ . '/../config/tce_config.php';
     $str = '<noscript>' . K_NEWLINE;

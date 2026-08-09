@@ -428,7 +428,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectcategory');
+echo get_form_noscript_select('selectcategory');
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -486,7 +486,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormNoscriptSelect('selectrecord');
+echo get_form_noscript_select('selectrecord');
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 

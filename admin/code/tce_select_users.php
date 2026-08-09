@@ -116,7 +116,7 @@ if (strlen($searchterms) > 0) {
     $wherequery = '(' . substr($wherequery, 5) . ')';
 }
 
-echo getFormNoscriptSelect();
+echo get_form_noscript_select();
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
