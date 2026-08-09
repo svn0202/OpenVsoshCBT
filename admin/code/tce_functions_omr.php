@@ -374,9 +374,17 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
         if ($rq = F_db_query($sqlq, $db)) {
             if ($mq = F_db_fetch_array($rq)) {
                 // question scores
-                $question_right_score = $testdata['test_score_right'] * $mq['question_difficulty'];
-                $question_wrong_score = $testdata['test_score_wrong'] * $mq['question_difficulty'];
-                $question_unanswered_score = $testdata['test_score_unanswered'] * $mq['question_difficulty'];
+                /** @var int|float|numeric-string $question_difficulty */
+                $question_difficulty = $mq['question_difficulty'];
+                /** @var int|float|numeric-string $test_score_right */
+                $test_score_right = $testdata['test_score_right'];
+                /** @var int|float|numeric-string $test_score_wrong */
+                $test_score_wrong = $testdata['test_score_wrong'];
+                /** @var int|float|numeric-string $test_score_unanswered */
+                $test_score_unanswered = $testdata['test_score_unanswered'];
+                $question_right_score = $test_score_right * $question_difficulty;
+                $question_wrong_score = $test_score_wrong * $question_difficulty;
+                $question_unanswered_score = $test_score_unanswered * $question_difficulty;
                 // add question
                 $sqll =
                     'INSERT INTO '
@@ -429,7 +437,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                 for ($a = 1; $a <= $num_answers; ++$a) {
                     $answer_id = (int) $omr_testdata[$q][1][$a];
                     if (isset($omr_answers[$q][$a])) {
-                        $answer_selected = $omr_answers[$q][$a]; //-1, 0, 1
+                        $answer_selected = (int) $omr_answers[$q][$a]; //-1, 0, 1
                     } else {
                         $answer_selected = -1;
                     }
@@ -477,9 +485,9 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                                 $answer_isright = f_get_boolean($ma['answer_isright']);
                                 switch ($mq['question_type']) {
                                     case 1: // MCSA - Multiple Choice Single Answer
-                                        if ($answer_selected == 1) {
+                                        if ($answer_selected === 1) {
                                             ++$numselected;
-                                            if ($numselected == 1) {
+                                            if ($numselected === 1) {
                                                 $unanswered = false;
                                                 $qscore = $answer_isright
                                                     ? $question_right_score
@@ -493,16 +501,16 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
 
                                         break;
                                     case 2: // MCMA - Multiple Choice Multiple Answer
-                                        if ($answer_selected == -1) {
+                                        if ($answer_selected === -1) {
                                             $qscore += $question_unanswered_score;
-                                        } elseif ($answer_selected == 0) {
+                                        } elseif ($answer_selected === 0) {
                                             $unanswered = false;
                                             if ($answer_isright) {
                                                 $qscore += $question_wrong_score;
                                             } else {
                                                 $qscore += $question_right_score;
                                             }
-                                        } elseif ($answer_selected == 1) {
+                                        } elseif ($answer_selected === 1) {
                                             $unanswered = false;
                                             if ($answer_isright) {
                                                 $qscore += $question_right_score;
