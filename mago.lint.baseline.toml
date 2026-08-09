@@ -175,12 +175,6 @@ message = "Function name `F_xml_export_users` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "function-name"
-message = "Function name `F_tmf_word_import_template` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_getCSRFToken` should be in snake case."

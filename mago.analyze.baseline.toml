@@ -9201,7 +9201,7 @@ count = 1
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `TmfWordImportException` in `F_tmf_word_import_template`."
+message = "Potentially unhandled exception `TmfWordImportException` in `f_tmf_word_import_template`."
 count = 1
 
 [[issues]]
