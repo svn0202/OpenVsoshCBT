@@ -52,7 +52,10 @@ final class GeneralFunctionsTest extends TestCase
         // @mago-expect lint:no-global -- the legacy helper reads its translations from global $l
         $GLOBALS['l'] = ['w_required' => 'Required', 'w_not_required' => 'Optional'];
 
-        self::assertSame(' <abbr class="requiredonbox" title="Required">+</abbr>', \show_required_field(2));
+        $required = ' <abbr class="requiredonbox" title="Required">+</abbr>';
+        foreach ([2, 2.0, '2', '02', '2.0', '2e0', true] as $requiredMode) {
+            self::assertSame($required, \show_required_field($requiredMode));
+        }
         self::assertSame(' <abbr class="requiredoffbox" title="Optional">-</abbr>', \show_required_field(1));
     }
 
