@@ -790,7 +790,7 @@ function f_is_url($str): bool
  * @param $mode (int) Normalization type: NONE=None; C=Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition; D=Normalization Form D (NFD) - Canonical Decomposition; KC=Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition; KD=Normalization Form KD (NFKD) - Compatibility Decomposition; CUSTOM=Custom normalization using user defined function 'user_utf8_custom_normalizer'.
  * @return normalized string using the specified algorithm.
  */
-function f_utf8_normalizer($str, $mode = 'NONE')
+function f_utf8_normalizer($str, $mode = 'NONE'): mixed
 {
     switch ($mode) {
         case 'CUSTOM':

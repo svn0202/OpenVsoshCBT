@@ -14811,25 +14811,19 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `f_html_to_tsv` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `F_select_table_header_element` is missing a return type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `f_utf8_normalizer` is missing a return type hint."
+message = "Function `F_zero_to_null` is missing a return type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_zero_to_null` is missing a return type hint."
+message = "Function `f_html_to_tsv` is missing a return type hint."
 count = 1
 
 [[issues]]
