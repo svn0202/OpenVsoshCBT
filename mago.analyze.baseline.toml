@@ -3693,7 +3693,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_show_select_user_popup`: expected `false`, but found `true`."
+message = "Invalid return type for function `f_show_select_user_popup`: expected `false`, but found `true`."
 count = 1
 
 [[issues]]
@@ -3837,7 +3837,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "missing-return-type"
-message = "Function `F_show_select_user_popup` is missing a return type hint."
+message = "Function `f_show_select_user_popup` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -6675,13 +6675,13 @@ count = 2
 [[issues]]
 file = "admin/code/tce_select_users_popup.php"
 code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #8 of `F_show_select_user_popup`: expected `string`, but possibly received `array<array-key, string>|null|string`."
+message = "Possible argument type mismatch for argument #8 of `f_show_select_user_popup`: expected `string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
 
 [[issues]]
 file = "admin/code/tce_select_users_popup.php"
 code = "possibly-null-argument"
-message = "Argument #8 of function `F_show_select_user_popup` is possibly `null`, but parameter type `string` does not accept it."
+message = "Argument #8 of function `f_show_select_user_popup` is possibly `null`, but parameter type `string` does not accept it."
 count = 1
 
 [[issues]]
