@@ -143,7 +143,7 @@ function f_db_num_rows($result)
  * @param $fieldname (string) Field name (column name).
  * @return int ID generated from the last INSERT operation.
  */
-function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     /*
      * NOTE : mysql_insert_id() converts the return type of the
