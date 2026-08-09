@@ -321,7 +321,7 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
     while ($file = readdir($dirhdl)) {
         if ($file != '.' && $file != '..') {
             $filename = $dir . $file;
-            if (F_isAuthorizedDir($filename . '/', $rootdir, $authdirs)) {
+            if (f_is_authorized_dir($filename . '/', $rootdir, $authdirs)) {
                 if (is_dir($filename)) {
                     if (
                         !str_contains($filename . '/', K_PATH_LANG_CACHE)
@@ -646,9 +646,9 @@ function F_getAuthorizedDirs()
  * @param $dir (string) the directory to check.
  * @param $rootdir (string) the user root dir.
  * @param $authdirs (string) regular expression containing the authorized dirs.
- * @return true if the user is authorized to use the specified directory, false otherwise.
+ * @return bool whether the user is authorized to use the specified directory.
  */
-function F_isAuthorizedDir(mixed $dir, mixed $rootdir, mixed $authdirs = ''): bool
+function f_is_authorized_dir(mixed $dir, mixed $rootdir, mixed $authdirs = ''): bool
 {
     require_once '../config/tce_config.php';
     if (empty($authdirs)) {

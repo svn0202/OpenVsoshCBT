@@ -90,7 +90,7 @@ $dir = realpath($dir) . '/';
 // get the authorized dirs
 $authdirs = F_getAuthorizedDirs();
 // check if the user is authorized to use this directory
-if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
     $dir = $root_dir;
 }
 
@@ -105,14 +105,14 @@ if (isset($_REQUEST['f'])) {
 // sanitize file
 $file = realpath($file);
 // check if the user is authorized to use this file
-if (!F_isAuthorizedDir($file . '/', $root_dir, $authdirs)) {
+if (!f_is_authorized_dir($file . '/', $root_dir, $authdirs)) {
     $file = '';
 }
 
 // upload multimedia file
 if (isset($_POST['sendfile']) && $_FILES['userfile']['name']) {
     require_once '../code/tce_functions_upload.php';
-    if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+    if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
         $dir = $usr_dir;
     }
 
@@ -138,7 +138,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+        if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
@@ -170,7 +170,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+        if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
@@ -195,7 +195,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+        if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
@@ -225,7 +225,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+        if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
@@ -254,7 +254,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
+        if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }

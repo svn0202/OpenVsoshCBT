@@ -231,12 +231,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "function-name"
-message = "Function name `F_isAuthorizedDir` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "function-name"
 message = "Function name `F_isUsedMediaFile` should be in snake case."
 count = 1
 
