@@ -24,9 +24,9 @@
 /**
  * Encode OMR test data array as a string to be printed on QR-Code.
  * @param $data (array) array to be encoded
- * @return encoded string.
+ * @return string encoded data.
  */
-function F_encodeOMRTestData($data)
+function f_encode_omr_test_data(mixed $data): string
 {
     $str = serialize($data);
     $str = gzcompress($str, 9); // requires php-zlib extension

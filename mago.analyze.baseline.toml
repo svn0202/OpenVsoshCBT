@@ -3548,18 +3548,6 @@ count = 9
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_encodeOMRTestData`: expected `unknown-ref(encoded)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "missing-parameter-type"
-message = "Parameter `$data` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
 code = "missing-parameter-type"
 message = "Parameter `$date` is missing a type hint."
 count = 1
@@ -3616,12 +3604,6 @@ count = 1
 file = "admin/code/tce_functions_omr.php"
 code = "missing-return-type"
 message = "Function `F_decodeOMRTestData` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "missing-return-type"
-message = "Function `F_encodeOMRTestData` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3767,12 +3749,6 @@ file = "admin/code/tce_functions_omr.php"
 code = "non-existent-class"
 message = "Class `ImagickPixel` not found."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `encoded`."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
@@ -6623,18 +6599,6 @@ file = "admin/code/tce_pdf_testgen.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 9
-
-[[issues]]
-file = "admin/code/tce_pdf_testgen.php"
-code = "invalid-argument"
-message = 'Invalid argument type for argument #2 of `Com\Tecnick\Barcode\Barcode::getBarcodeObj`: expected `string`, but found `unknown-ref(encoded)`.'
-count = 1
-
-[[issues]]
-file = "admin/code/tce_pdf_testgen.php"
-code = "invalid-argument"
-message = 'Invalid argument type for argument #2 of `Com\Tecnick\Pdf\Tcpdf::getBarcode`: expected `string`, but found `unknown-ref(encoded)`.'
-count = 1
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
