@@ -63,7 +63,7 @@ function F_tmf_xlsx_build(array $sheets): string
         $workbook_relationships = '';
         foreach (array_values($sheets) as $index => $sheet) {
             $sheet_number = $index + 1;
-            $name = F_tmf_xlsx_safe_sheet_name((string) ($sheet['name'] ?? ''), $sheet_number);
+            $name = F_tmf_xlsx_safe_sheet_name($sheet['name'] ?? '', $sheet_number);
             $content_types .= '<Override PartName="/xl/worksheets/sheet' . $sheet_number . '.xml" '
                 . 'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
             $workbook_sheets .= '<sheet name="' . F_tmf_xlsx_xml($name) . '" sheetId="' . $sheet_number

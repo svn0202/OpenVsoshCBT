@@ -18314,12 +18314,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_xlsx.php"
 code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `RuntimeException` in `F_tmf_xlsx_build`."
 count = 1
