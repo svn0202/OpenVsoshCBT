@@ -1621,12 +1621,6 @@ message = "Function name `F_updateTestuserStat` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "function-name"
 message = "Function name `F_tmf_test_access_status` should be in snake case."

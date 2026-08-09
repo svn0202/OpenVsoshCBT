@@ -2055,7 +2055,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     }
 
     // update log if answer is changed
-    if ($answer_changed || $oldtext != $answer_text) {
+    if ($answer_changed || !f_legacy_equals($oldtext, $answer_text)) {
         if (strlen($answer_text) > 0) {
             $unanswered = false;
             $answer_score = 'NULL';
