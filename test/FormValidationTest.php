@@ -109,6 +109,24 @@ final class FormValidationTest extends TestCase
         $this->assertStringContainsString('<span class="formw">' . K_NEWLINE . '42&nbsp;', $markup);
     }
 
+    public function testNoscriptSelectPreservesFieldNameAndMarkup(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; echo getFormNoscriptSelect("selectcategory");',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringStartsWith("<noscript>\n", $markup);
+        $this->assertStringContainsString('name="selectcategory" id="selectcategory"', $markup);
+        $this->assertStringEndsWith("</noscript>\n", $markup);
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
