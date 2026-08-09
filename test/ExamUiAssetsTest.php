@@ -195,8 +195,8 @@ final class ExamUiAssetsTest extends TestCase
         ];
         foreach ($expected as $language => [$playsLeft, $limitExhausted]) {
             $resource = (new \TMXResourceBundle($tmx, $language, ''))->getResource();
-            self::assertSame($playsLeft, $resource['ov_audio_plays_left']);
-            self::assertSame($limitExhausted, $resource['ov_audio_limit_exhausted']);
+            self::assertSame($playsLeft, $resource['ov_audio_plays_left'] ?? null);
+            self::assertSame($limitExhausted, $resource['ov_audio_limit_exhausted'] ?? null);
         }
     }
 

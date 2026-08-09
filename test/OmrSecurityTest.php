@@ -15,14 +15,22 @@ final class OmrSecurityTest extends TestCase
 
     public function testOmrPayloadRejectsObjects(): void
     {
-        $payload = urlencode(base64_encode(gzcompress(serialize(new \stdClass()), 9)));
+        $compressed = gzcompress(serialize(new \stdClass()), 9);
+        if ($compressed === false) {
+            self::fail('Unable to compress the invalid OMR fixture.');
+        }
+        $payload = urlencode(base64_encode($compressed));
 
         $this->assertFalse(\F_decodeOMRTestData($payload));
     }
 
     public function testOmrPayloadRejectsInvalidStructureAndOversizedInput(): void
     {
-        $invalid = urlencode(base64_encode(gzcompress(serialize([42, ['bad']]), 9)));
+        $compressed = gzcompress(serialize([42, ['bad']]), 9);
+        if ($compressed === false) {
+            self::fail('Unable to compress the malformed OMR fixture.');
+        }
+        $invalid = urlencode(base64_encode($compressed));
 
         $this->assertFalse(\F_decodeOMRTestData($invalid));
         $this->assertFalse(\F_decodeOMRTestData(str_repeat('A', 1_048_577)));
