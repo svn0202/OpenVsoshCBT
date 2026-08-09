@@ -763,12 +763,6 @@ message = "Function name `F_tmf_monitor_attempt_is_authorized` should be in snak
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_monitoring.php"
-code = "function-name"
-message = "Function name `F_tmf_monitor_audit_table` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "function-name"
 message = "Function name `F_tmf_offline_html` should be in snake case."
