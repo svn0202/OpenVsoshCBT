@@ -12549,7 +12549,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_answer_save.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_tmf_save_question_answer`: expected `array{'status': string, 'version': int}`, but found `array{'live_score'?: float, 'status': string('saved'), 'version': never}`."
+message = "Invalid return type for function `f_tmf_save_question_answer`: expected `array{'status': string, 'version': int}`, but found `array{'live_score'?: float, 'status': string('saved'), 'version': never}`."
 count = 1
 
 [[issues]]
