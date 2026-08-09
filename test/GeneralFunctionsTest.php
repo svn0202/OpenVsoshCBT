@@ -203,8 +203,8 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testSubstrUtf8(): void
     {
-        $this->assertSame('hel', \F_substr_utf8('hello', 0, 3));
-        $this->assertSame('caf', \F_substr_utf8('café', 0, 3));
+        $this->assertSame('hel', \f_substr_utf8('hello', 0, 3));
+        $this->assertSame('caf', \f_substr_utf8('café', 0, 3));
     }
 
     public function testUtrim(): void
