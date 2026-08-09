@@ -370,7 +370,10 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 );
                 $textX = $lm + $logoW + $gap;
             } catch (\Throwable) {
-                // ignore logo rendering errors (missing/unsupported image)
+                // Keep the title aligned when an optional logo is missing or unsupported.
+                $logoW = 0.0;
+                $logoH = 0.0;
+                $textX = $lm;
             }
         }
 
@@ -1139,7 +1142,8 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             $this->page->addContent($this->getSetSVG($soid));
             $this->cursorY += $h + 2.0;
         } catch (\Throwable $e) {
-            // Graph is supplementary; ignore rendering failures.
+            // The graph is supplementary, but record the failure for operator diagnostics.
+            error_log('OpenVsoshCBT: supplementary PDF graph rendering failed: ' . $e->getMessage());
         }
     }
 

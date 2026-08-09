@@ -207,8 +207,8 @@ class TmfWordImporter
     private array $warnings = [];
 
     const MAX_ENTRIES = 5000;
-    const MAX_UNCOMPRESSED_BYTES = 104857600;
-    const MAX_DOCUMENT_BYTES = 20971520;
+    const MAX_UNCOMPRESSED_BYTES = 104_857_600;
+    const MAX_DOCUMENT_BYTES = 20_971_520;
 
     public function __construct(string $filename, string $media_directory = '', string $media_url = '')
     {
@@ -227,11 +227,11 @@ class TmfWordImporter
             $blocks = $this->readBodyBlocks();
             $result = $this->parseTemplateBlocks($blocks);
             $result['warnings'] = array_values(array_unique($this->warnings));
-            $result['statistics'] = array(
+            $result['statistics'] = [
                 'blocks' => count($blocks),
                 'questions' => count($result['questions']),
                 'images' => count($this->extracted_media),
-            );
+            ];
             return $result;
         } finally {
             $this->zip->close();
@@ -294,15 +294,15 @@ class TmfWordImporter
             $target = str_replace('\\', '/', $node->getAttribute('Target'));
             $mode = $node->getAttribute('TargetMode');
             $type = $node->getAttribute('Type');
-            if ($mode === 'External' && strpos($type, '/hyperlink') === false) {
+            if ($mode === 'External' && !str_contains($type, '/hyperlink')) {
                 $this->warnings[] = 'External non-hyperlink relationship was ignored.';
                 continue;
             }
-            $this->relationships[$id] = array(
+            $this->relationships[$id] = [
                 'target' => $target,
                 'external' => $mode === 'External',
                 'type' => $type,
-            );
+            ];
         }
     }
 
@@ -340,7 +340,7 @@ class TmfWordImporter
         if (!$body) {
             throw new TmfWordImportException('DOCX body is missing.');
         }
-        $blocks = array();
+        $blocks = [];
         foreach ($body->childNodes as $child) {
             if (!$child instanceof DOMElement) {
                 continue;
@@ -392,11 +392,11 @@ class TmfWordImporter
     private function paragraphBlock(DOMElement $paragraph): array
     {
         $plain = $this->plainText($paragraph);
-        $style = array();
+        $style = [];
         $alignment = $this->xpath->query('./w:pPr/w:jc', $paragraph)->item(0);
         if ($alignment instanceof DOMElement) {
             $value = $this->wordAttribute($alignment, 'val');
-            if (in_array($value, array('left', 'right', 'center', 'justify'), true)) {
+            if (in_array($value, ['left', 'right', 'center', 'justify'], true)) {
                 $style[] = 'text-align:' . $value;
             }
         }
@@ -416,7 +416,7 @@ class TmfWordImporter
                 $inner .= $this->hyperlinkHtml($child);
             } elseif (
                 $child->namespaceURI === 'http://schemas.openxmlformats.org/officeDocument/2006/math'
-                && in_array($child->localName, array('oMath', 'oMathPara'), true)
+                && in_array($child->localName, ['oMath', 'oMathPara'], true)
             ) {
                 $inner .= $this->mathHtml($child);
             }
@@ -424,11 +424,11 @@ class TmfWordImporter
         $style_attribute = empty($style)
             ? ''
             : ' style="' . htmlspecialchars(implode(';', $style), ENT_QUOTES, 'UTF-8') . '"';
-        return array(
+        return [
             'plain' => trim($plain),
             'html' => '<div' . $style_attribute . '>' . $inner . '</div>',
             'kind' => 'paragraph',
-        );
+        ];
     }
 
     private function hyperlinkHtml(DOMElement $hyperlink): string
@@ -465,13 +465,13 @@ class TmfWordImporter
                 $content .= $this->escapeText($child->textContent);
             } elseif ($child->localName === 'tab') {
                 $content .= '&emsp;';
-            } elseif (in_array($child->localName, array('br', 'cr'), true)) {
+            } elseif (in_array($child->localName, ['br', 'cr'], true)) {
                 $content .= '<br />';
             } elseif ($child->localName === 'drawing' || $child->localName === 'pict') {
                 $content .= $this->imageHtml($child);
             } elseif (
                 $child->namespaceURI === 'http://schemas.openxmlformats.org/officeDocument/2006/math'
-                && in_array($child->localName, array('oMath', 'oMathPara'), true)
+                && in_array($child->localName, ['oMath', 'oMathPara'], true)
             ) {
                 $content .= $this->mathHtml($child);
             }
@@ -493,7 +493,7 @@ class TmfWordImporter
         if ($this->xpath->query('./w:u[not(@w:val="none")]', $properties)->length) {
             $content = '<u>' . $content . '</u>';
         }
-        $styles = array();
+        $styles = [];
         $color = $this->xpath->query('./w:color', $properties)->item(0);
         if ($color instanceof DOMElement) {
             $value = $this->wordAttribute($color, 'val');
@@ -504,7 +504,7 @@ class TmfWordImporter
         $highlight = $this->xpath->query('./w:highlight', $properties)->item(0);
         if ($highlight instanceof DOMElement) {
             $value = $this->wordAttribute($highlight, 'val');
-            $map = array(
+            $map = [
                 'yellow' => '#ffff00',
                 'green' => '#00ff00',
                 'cyan' => '#00ffff',
@@ -516,7 +516,7 @@ class TmfWordImporter
                 'darkGreen' => '#008000',
                 'lightGray' => '#d3d3d3',
                 'darkGray' => '#808080',
-            );
+            ];
             if (isset($map[$value])) {
                 $styles[] = 'background-color:' . $map[$value];
             }
@@ -567,8 +567,8 @@ class TmfWordImporter
         }
 
         $target = ltrim(preg_replace('#^(\.\./)+#', '', $rel['target']), '/');
-        $entry = strpos($target, 'word/') === 0 ? $target : 'word/' . $target;
-        if (strpos($entry, 'word/media/') !== 0) {
+        $entry = str_starts_with($target, 'word/') ? $target : 'word/' . $target;
+        if (!str_starts_with($entry, 'word/media/')) {
             $this->warnings[] = 'An image relationship outside word/media was ignored.';
             return '';
         }
@@ -583,14 +583,14 @@ class TmfWordImporter
         } finally {
             restore_error_handler();
         }
-        $allowed = array(IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif');
+        $allowed = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif'];
         if (!$image_info || !isset($allowed[$image_info[2]])) {
             $this->warnings[] = 'A non-JPEG/PNG/GIF image was ignored for safety.';
             return '';
         }
         if (
             !is_dir($this->media_directory)
-            && !mkdir($this->media_directory, 0750, true)
+            && !mkdir($this->media_directory, 0o750, true)
             && !is_dir($this->media_directory)
         ) {
             throw new TmfWordImportException('Unable to create the Word import media directory.');
@@ -611,19 +611,19 @@ class TmfWordImporter
 
     private function tableBlock(DOMElement $table): array
     {
-        $rows = array();
+        $rows = [];
         foreach ($this->xpath->query('./w:tr', $table) as $row) {
-            $cells = array();
+            $cells = [];
             $column = 0;
             foreach ($this->xpath->query('./w:tc', $row) as $cell) {
                 $span = $this->cellGridSpan($cell);
-                $cells[] = array(
+                $cells[] = [
                     'node' => $cell,
                     'column' => $column,
                     'span' => $span,
                     'continue' => $this->isVerticalMergeContinuation($cell),
                     'restart' => $this->isVerticalMergeRestart($cell),
-                );
+                ];
                 $column += $span;
             }
             $rows[] = $cells;
@@ -663,11 +663,11 @@ class TmfWordImporter
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        return array(
+        return [
             'plain' => trim($this->plainText($table)),
             'html' => $html,
             'kind' => 'table',
-        );
+        ];
     }
 
     private function cellGridSpan(DOMElement $cell): int
@@ -801,11 +801,11 @@ class TmfWordImporter
 
     private function parseTemplateBlocks(array $blocks): array
     {
-        $result = array(
+        $result = [
             'module' => '',
             'topic' => '',
-            'questions' => array(),
-        );
+            'questions' => [],
+        ];
         $question = null;
         $active_answer = null;
 
@@ -828,24 +828,24 @@ class TmfWordImporter
                     $result['questions'][] = $question;
                 }
                 $prefix = $match[0];
-                $question = array(
+                $question = [
                     'source_number' => (int) $match[1],
                     'description' => $this->stripHtmlTextPrefix($block['html'], mb_strlen($prefix, 'UTF-8')),
-                    'answers' => array(),
-                    'right_keys' => array(),
+                    'answers' => [],
+                    'right_keys' => [],
                     'difficulty' => 1,
                     'timer' => 0,
                     'auto_next' => 0,
                     'fullscreen' => 0,
                     'inline_answers' => 0,
                     'mcma_checkbox' => false,
-                    'mcma_header' => array(),
+                    'mcma_header' => [],
                     'max_sel' => 0,
                     'similarity_threshold' => 0,
                     'audio_play_limit' => 0,
                     'short_answer' => false,
                     'matching' => false,
-                );
+                ];
                 $active_answer = null;
                 continue;
             }
@@ -855,11 +855,11 @@ class TmfWordImporter
             if (preg_match('/^\s*([A-Z])\s*:\)\s*/u', $plain, $match)) {
                 $key = strtoupper($match[1]);
                 $prefix = $match[0];
-                $answer = array(
+                $answer = [
                     'key' => $key,
                     'description' => $this->stripHtmlTextPrefix($block['html'], mb_strlen($prefix, 'UTF-8')),
                     'weight' => null,
-                );
+                ];
                 $question['answers'][$key] = $answer;
                 $active_answer = $key;
                 continue;
@@ -932,7 +932,7 @@ class TmfWordImporter
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
         if (preg_match('/\[\[TIMER=(\d+)\]\]/iu', $plain, $match)) {
-            $question['timer'] = max(0, min(32767, (int) $match[1]));
+            $question['timer'] = max(0, min(32_767, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
         if (preg_match('/\[\[AUTO_NEXT(?:=1)?\]\]/iu', $plain, $match)) {
@@ -1079,7 +1079,7 @@ class TmfWordImporter
                 $text .= $child->nodeValue;
             } elseif ($child instanceof DOMElement) {
                 if ($child->namespaceURI === 'http://schemas.openxmlformats.org/wordprocessingml/2006/main') {
-                    if (in_array($child->localName, array('t', 'instrText'), true)) {
+                    if (in_array($child->localName, ['t', 'instrText'], true)) {
                         $text .= $child->textContent;
                         continue;
                     }
@@ -1087,13 +1087,13 @@ class TmfWordImporter
                         $text .= "\t";
                         continue;
                     }
-                    if (in_array($child->localName, array('br', 'cr'), true)) {
+                    if (in_array($child->localName, ['br', 'cr'], true)) {
                         $text .= "\n";
                         continue;
                     }
                 }
                 $text .= $this->plainText($child);
-                if (in_array($child->localName, array('p', 'tr', 'tc'), true)) {
+                if (in_array($child->localName, ['p', 'tr', 'tc'], true)) {
                     $text .= "\n";
                 }
             }
@@ -1104,14 +1104,11 @@ class TmfWordImporter
     private function escapeText(string $text): string
     {
         $escaped = htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $escaped = preg_replace_callback(
+        return preg_replace_callback(
             '/ {2,}/',
-            function ($match) {
-                return str_repeat('&nbsp;', strlen($match[0]) - 1) . ' ';
-            },
+            static fn($match): string => str_repeat('&nbsp;', strlen($match[0]) - 1) . ' ',
             $escaped,
         );
-        return $escaped;
     }
 
     private function wordAttribute(DOMElement $element, string $name): string

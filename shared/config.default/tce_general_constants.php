@@ -33,10 +33,12 @@ define('K_RANDOM_SECURITY', 'CHANGE_THIS_K_RANDOM_SECURITY');
  * Public source URL for the exact OpenVsoshCBT version deployed on this instance.
  * Set OPENVSOSHCBT_SOURCE_URL to a release tag or commit URL in production.
  */
-define(
-    'K_OPENVSOSHCBT_SOURCE_URL',
-    getenv('OPENVSOSHCBT_SOURCE_URL') ?: 'https://github.com/svn0202/OpenVsoshCBT',
-);
+$openvsosh_source_url = getenv('OPENVSOSHCBT_SOURCE_URL');
+define('K_OPENVSOSHCBT_SOURCE_URL',
+    is_string($openvsosh_source_url) && $openvsosh_source_url !== ''
+        ? $openvsosh_source_url
+        : 'https://github.com/svn0202/OpenVsoshCBT');
+unset($openvsosh_source_url);
 
 /**
  * Maximum number of tests per year (last 365 days).

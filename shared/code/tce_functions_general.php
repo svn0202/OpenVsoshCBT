@@ -534,7 +534,7 @@ function F_formatPdfPercentage($num, $ratio = true)
         $num = 100 * $num;
     }
 
-    return '(' . sprintf('% 3d', round($num)) . '%)';
+    return sprintf('(% 3d%%)', round($num));
 }
 
 /**

@@ -91,7 +91,7 @@ function F_getOTP($otpkey, $mtime = 0)
     // one time password
     return (
         (
-            ((ord($hash[$offset + 0]) & 0x7f) << 24)
+            ((ord($hash[$offset]) & 0x7f) << 24)
             | ((ord($hash[$offset + 1]) & 0xff) << 16)
             | ((ord($hash[$offset + 2]) & 0xff) << 8)
             | (ord($hash[$offset + 3]) & 0xff)

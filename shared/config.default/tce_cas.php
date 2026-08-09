@@ -65,7 +65,7 @@ define('K_CAS_PATH', '/cas');
 define(
     'K_CAS_SERVICE_BASE_URL',
     (
-        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || ($_SERVER['SERVER_PORT'] ?? null) == 443
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
             ? 'https://'
             : 'http://'
     )

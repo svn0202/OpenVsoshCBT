@@ -94,7 +94,7 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
     $lngstr = '';
     foreach ($lang_array as $lang_code => $lang_name) {
         $lngstr .= ' | ';
-        if ($lang_code == K_USER_LANG) {
+        if ($lang_code === K_USER_LANG) {
             $lngstr .=
                 '<span class="selected" title="'
                 . $lang_name

@@ -215,7 +215,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 && $_REQUEST['nextquestionid'] > 0
             ) {
                 // go to next question
-                $testlog_id = 0 + (int) $_REQUEST['nextquestionid'];
+                $testlog_id = (int) $_REQUEST['nextquestionid'];
             } elseif ($answer_saved && isset($_REQUEST['prevquestion']) && $_REQUEST['prevquestionid'] > 0) {
                 // go to previous question
                 $testlog_id = (int) $_REQUEST['prevquestionid'];
