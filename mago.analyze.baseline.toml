@@ -16792,7 +16792,7 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `==` comparison has `mixed` type."
-count = 6
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -16811,12 +16811,6 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
 count = 88
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
