@@ -805,10 +805,10 @@ function getFormRowVertSpace(): string
 
 /**
  * Print form row with title.
- * @param $title (string) Title to be printed.
+ * @param string $title Title to be printed.
  * @return string
  */
-function getFormRowVertDiv($title = ''): string
+function getFormRowVertDiv(string $title = ''): string
 {
     return (
         '<div class="row"><hr class="dashed"/></div><div class="row"><div style="color:#666666;text-align:center;">'
@@ -820,10 +820,10 @@ function getFormRowVertDiv($title = ''): string
 
 /**
  * Print form row with submit button when noscript is active.
- * @param $name (string) Name of the input form field.
+ * @param string $name Name of the input form field.
  * @return string
  */
-function getFormNoscriptSelect($name = 'selectrecord'): string
+function getFormNoscriptSelect(string $name = 'selectrecord'): string
 {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
