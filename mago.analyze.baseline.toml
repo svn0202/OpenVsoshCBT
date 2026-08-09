@@ -2902,7 +2902,7 @@ count = 1
 file = "admin/code/tce_filemanager.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 4
+count = 3
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
@@ -3195,12 +3195,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_createMediaDir`: expected `true`, but found `false`."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_deleteMediaDir`: expected `true`, but found `false`."
 count = 3
 
@@ -3225,12 +3219,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "less-specific-return-statement"
-message = "Returned type `bool` is less specific than the declared return type `true` for function `F_createMediaDir`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "less-specific-return-statement"
 message = "Returned type `bool` is less specific than the declared return type `true` for function `F_deleteMediaDir`."
 count = 1
 
@@ -3250,7 +3238,7 @@ count = 2
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$dirname` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3275,12 +3263,6 @@ file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$selected` is missing a type hint."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_createMediaDir` is missing a return type hint."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -7306,7 +7288,7 @@ count = 1
 file = "admin/code/tce_select_mediafile.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 4
+count = 3
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"

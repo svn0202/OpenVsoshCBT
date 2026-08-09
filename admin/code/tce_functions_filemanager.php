@@ -126,9 +126,9 @@ function f_rename_media_file(mixed $filename, mixed $newname): bool
  * Create a new media directory inside the cache
  * @author Nicola Asuni
  * @param $dirname (string) the directory name
- * @return true in case of success, false otherwise
+ * @return bool whether the directory was created
  */
-function F_createMediaDir($dirname)
+function f_create_media_dir(mixed $dirname): bool
 {
     require_once '../config/tce_config.php';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMIN_DIRS) {
