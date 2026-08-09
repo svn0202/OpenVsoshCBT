@@ -6,6 +6,46 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testGroupEditorAuthorizationBranchesRemainUnchanged(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["calls"] = []; '
+                    . 'function f_is_user_on_group($user, $group) { '
+                    . '$GLOBALS["calls"][] = [$user, $group]; return [$user, $group]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isAuthorizedEditorForGroup|f_is_authorized_editor_for_group)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR; '
+                    . '$admin = $qualifiedName(7); '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR - 1; '
+                    . '$_SESSION["session_user_id"] = 12; '
+                    . '$empty = $qualifiedName(0); $editor = $qualifiedName(7); '
+                    . 'echo json_encode(["admin" => $admin, "empty" => $empty, '
+                    . '"editor" => $editor, "calls" => $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'admin' => true,
+                'empty' => true,
+                'editor' => [12, 7],
+                'calls' => [[12, 7]],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testGroupMembershipLookupsRemainUnchanged(): void
     {
         $expectations = [
