@@ -1124,12 +1124,6 @@ count = 9
 
 [[issues]]
 file = "admin/code/tce_edit_question.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `F_tmf_set_similarity_threshold`: expected `string`, but possibly received `string|unknown-ref(normalized)`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_question.php"
 code = "possibly-invalid-operand"
 message = "Left operand may be an `array` when compared with non-array type `int(0)` using `>`."
 count = 2
@@ -13844,12 +13838,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "falsable-return-statement"
-message = "Function `f_utf8_normalizer` is declared to return `unknown-ref(normalized)` but possibly returns 'false' (inferred as `false|string`)."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 2
@@ -13895,12 +13883,6 @@ file = "shared/code/tce_functions_general.php"
 code = "invalid-operand"
 message = "Invalid type for left operand."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `f_utf8_normalizer`: expected `unknown-ref(normalized)`, but found `false|string`."
-count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -14117,12 +14099,6 @@ file = "shared/code/tce_functions_general.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `normalized`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"

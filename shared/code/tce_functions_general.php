@@ -789,7 +789,7 @@ function f_is_url(mixed $str): bool
  * Please edit this function to implement your custom normalization method.
  * @param $str (string) UTF-8 string to normalize.
  * @param $mode (int) Normalization type: NONE=None; C=Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition; D=Normalization Form D (NFD) - Canonical Decomposition; KC=Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition; KD=Normalization Form KD (NFKD) - Compatibility Decomposition; CUSTOM=Custom normalization using user defined function 'user_utf8_custom_normalizer'.
- * @return normalized string using the specified algorithm.
+ * @return string|false normalized string, or false when the selected algorithm fails.
  */
 function f_utf8_normalizer(mixed $str, mixed $mode = 'NONE'): mixed
 {
