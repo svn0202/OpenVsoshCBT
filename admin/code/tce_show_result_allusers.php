@@ -667,7 +667,7 @@ echo '<input type="hidden" name="order_field" id="order_field" value="' . $order
 echo '<input type="hidden" name="orderdir" id="orderdir" value="' . $orderdir . '" />' . K_NEWLINE;
 echo '<input type="hidden" name="itemcount" id="itemcount" value="' . $itemcount . '" />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;

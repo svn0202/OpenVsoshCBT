@@ -123,7 +123,7 @@ switch ($menu_mode) {
 
             F_submit_button('forcedelete', $l['w_delete'], $l['h_delete']);
             F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
-            echo F_getCSRFTokenField() . K_NEWLINE;
+            echo f_get_csrf_token_field() . K_NEWLINE;
             ?>
             </div>
             </form>
@@ -612,7 +612,7 @@ echo F_decode_tcecode($subject_description);
 echo '&nbsp;' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

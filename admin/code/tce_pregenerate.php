@@ -102,7 +102,7 @@ if ($test_id > 0) {
     }
     echo '<form action="tce_pregenerate.php" method="post">';
     echo '<input type="hidden" name="test_id" value="' . $test_id . '" />';
-    echo F_getCSRFTokenField();
+    echo f_get_csrf_token_field();
     echo '<button type="submit" name="pregenerate" value="1"'
         . ($waiting_count === 0 ? ' disabled="disabled"' : '')
         . '>Сгенерировать следующую партию</button></form>';

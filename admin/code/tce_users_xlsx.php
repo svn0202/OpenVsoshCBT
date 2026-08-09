@@ -203,7 +203,7 @@ echo '<form method="post" enctype="multipart/form-data" action="tce_users_xlsx.p
     . '<span class="formw"><input type="file" name="xlsx_file" id="xlsx_file" '
     . 'accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required="required" />'
     . '</span></div><div class="row"><button type="submit" name="xlsx_action" value="preview">'
-    . 'Проверить и показать</button>' . F_getCSRFTokenField() . '</div></form>';
+    . 'Проверить и показать</button>' . f_get_csrf_token_field() . '</div></form>';
 
 if (is_array($preview)) {
     if ($preview['errors'] !== []) {
@@ -226,7 +226,7 @@ if (is_array($preview)) {
             . '<input type="hidden" name="preview_token" value="'
             . F_tmf_users_xlsx_html($preview['token']) . '" />'
             . '<button type="submit" name="xlsx_action" value="import">Импортировать '
-            . count($preview['records']) . '</button>' . F_getCSRFTokenField() . '</form>';
+            . count($preview['records']) . '</button>' . f_get_csrf_token_field() . '</form>';
     }
 }
 echo '</div></div>';

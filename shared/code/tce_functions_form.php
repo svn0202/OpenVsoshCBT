@@ -338,7 +338,7 @@ function f_submit_button(mixed $name, mixed $value, mixed $title = '', mixed $ex
  * Returns XHTML code string to display the CSRF token field.
  * @return string XHTML code
  */
-function F_getCSRFTokenField(): string
+function f_get_csrf_token_field(): string
 {
     return '<input type="hidden" name="csrf_token" id="csrf_token" value="' . f_get_csrf_token() . '" />';
 }

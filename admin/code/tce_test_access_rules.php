@@ -203,7 +203,7 @@ if ($test_id > 0) {
         . '</span><span class="formw"><textarea name="completion_message" id="completion_message" '
         . 'rows="5" cols="60">' . $html($rules['test_completion_message']) . '</textarea></span></div>'
         . '<button type="submit" name="save_rules" value="1">Сохранить</button>'
-        . F_getCSRFTokenField() . '</form>';
+        . f_get_csrf_token_field() . '</form>';
 }
 echo '</div></div>';
 

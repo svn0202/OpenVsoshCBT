@@ -3209,7 +3209,7 @@ function F_testLoginForm($faction, $fid, $fmethod, $fenctype, $test_id)
     $str .= '<input type="hidden" name="testpswaction" id="testpswaction" value="login" />' . K_NEWLINE;
     $str .= '<input type="hidden" name="testid" id="testid" value="' . (int) $test_id . '" />' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
-    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= f_get_csrf_token_field() . K_NEWLINE;
     $str .= '</form>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
     $str .= '<div class="pagehelp">' . $l['hp_test_password'] . '</div>' . K_NEWLINE;

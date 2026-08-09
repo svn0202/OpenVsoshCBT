@@ -106,7 +106,7 @@ echo getFormRowTextInput(
     'current-password',
 );
 echo '</fieldset><p><button type="submit" name="save_profile" value="1">Сохранить профиль</button></p>'
-    . F_getCSRFTokenField() . '</form>' . K_NEWLINE;
+    . f_get_csrf_token_field() . '</form>' . K_NEWLINE;
 echo '<p><a href="../../public/code/tce_user_change_email.php">' . $l['w_change_email'] . '</a> · '
     . '<a href="../../public/code/tce_user_change_password.php">' . $l['w_change_password'] . '</a></p>';
 echo '</div>' . K_NEWLINE;

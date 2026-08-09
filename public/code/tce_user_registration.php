@@ -613,7 +613,7 @@ echo '<div class="row">' . K_NEWLINE;
 F_submit_button('add', $l['w_add'], $l['h_add']);
 
 echo '</div>' . K_NEWLINE;
-echo F_getCSRFTokenField() . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

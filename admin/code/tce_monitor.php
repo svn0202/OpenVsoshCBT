@@ -393,7 +393,7 @@ if ($test_id > 0) {
                 . '<form action="tce_monitor.php" method="post" class="monitor-actions">';
             echo '<input type="hidden" name="test_id" value="' . $test_id . '" />';
             echo '<input type="hidden" name="testuser_id" value="' . (int) $attempt['testuser_id'] . '" />';
-            echo F_getCSRFTokenField();
+            echo f_get_csrf_token_field();
             if ($participant['status'] === 'blocked') {
                 echo '<button name="monitor_action" value="unblock" type="submit">Разблокировать</button>';
             } elseif (in_array($participant['status'], ['in_progress', 'connection_lost'], true)) {
