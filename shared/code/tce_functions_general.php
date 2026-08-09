@@ -223,9 +223,9 @@ function F_replace_angulars($str): string
  * @param $str (string) input string
  * @param $start (int) substring start index
  * @param $length (int) substring max length
- * @return substring
+ * @return string Substring.
  */
-function F_substr_utf8($str, $start, $length)
+function F_substr_utf8($str, $start, $length): string
 {
     $str .= ''; // force $str to be a string
     $bytelen = strlen($str);
