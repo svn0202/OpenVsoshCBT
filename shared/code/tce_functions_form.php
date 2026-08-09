@@ -848,7 +848,7 @@ function get_form_row_fixed_value(
  * Print empty form row.
  * @return string
  */
-function getFormSmallVertSpace(): string
+function get_form_small_vert_space(): string
 {
     return '<div class="row">&nbsp;</div>' . K_NEWLINE;
 }

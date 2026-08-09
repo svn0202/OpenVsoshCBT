@@ -195,7 +195,7 @@ final class FormValidationTest extends TestCase
             define('K_NEWLINE', "\n");
         }
 
-        $this->assertSame('<div class="row">&nbsp;</div>' . K_NEWLINE, \getFormSmallVertSpace());
+        $this->assertSame('<div class="row">&nbsp;</div>' . K_NEWLINE, \get_form_small_vert_space());
     }
 
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
