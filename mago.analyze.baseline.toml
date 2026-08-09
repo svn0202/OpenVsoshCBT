@@ -17313,19 +17313,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_db_getUTCoffset` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `F_empty_to_null` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_getUTCoffset` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17368,24 +17356,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
 message = "Function `getContrastColor` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `getDataTSVHeader` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `getDataTSV` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `getDataXML` is missing a return type hint."
 count = 1
 
 [[issues]]

@@ -557,7 +557,7 @@ function F_formatXMLPercentage($num, $ratio = true): string
  * @param $timezone (string) current user timezone
  * @return int UTC time offset in seconds
  */
-function F_getUTCoffset($timezone)
+function F_getUTCoffset($timezone): int
 {
     $user_timezone = new DateTimeZone($timezone);
     $user_datetime = new DateTime('now', $user_timezone);
@@ -569,7 +569,7 @@ function F_getUTCoffset($timezone)
  * @param $timezone (string) current user timezone
  * @return string UTC time offset (+HH:mm)
  */
-function F_db_getUTCoffset($timezone)
+function F_db_getUTCoffset($timezone): string
 {
     $time_offset = F_getUTCoffset($timezone);
     $sign = $time_offset >= 0 ? '+' : '-';
@@ -582,7 +582,7 @@ function F_db_getUTCoffset($timezone)
  * @param $level (int) Indentation level.
  * @return string XML data
  */
-function getDataXML($data, $level = 1)
+function getDataXML($data, $level = 1): string
 {
     $xml = '';
     $tb = str_repeat("\t", $level);
@@ -612,7 +612,7 @@ function getDataXML($data, $level = 1)
  * @param $prefix (string) Prefix to add to keys.
  * @return string data
  */
-function getDataTSVHeader($data, $prefix = '')
+function getDataTSVHeader($data, $prefix = ''): string
 {
     $tsv = '';
     foreach ($data as $key => $value) {
@@ -631,7 +631,7 @@ function getDataTSVHeader($data, $prefix = '')
  * @param $data (array) Array of data.
  * @return string XML data
  */
-function getDataTSV($data)
+function getDataTSV($data): string
 {
     $tsv = '';
     foreach ($data as $value) {
