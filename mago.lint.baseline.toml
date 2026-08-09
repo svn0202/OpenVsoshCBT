@@ -76,7 +76,7 @@ count = 2
 file = "admin/code/tce_edit_subject.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 5
+count = 4
 
 [[issues]]
 file = "admin/code/tce_edit_subject.php"
