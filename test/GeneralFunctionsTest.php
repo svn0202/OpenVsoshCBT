@@ -130,7 +130,7 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testUtcOffsets(): void
     {
-        self::assertSame(0, \F_getUTCoffset('UTC'));
+        self::assertSame(0, \f_get_utc_offset('UTC'));
         self::assertSame('+00:00', \F_db_getUTCoffset('UTC'));
     }
 
