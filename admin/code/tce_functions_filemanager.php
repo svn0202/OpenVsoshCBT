@@ -241,7 +241,12 @@ function f_format_file_size(mixed $size): string
 {
     $out = ''; // string to be returned
     $mult = ['B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']; // multipliers
-    if ($size == 0) {
+    $is_zero_size = $size === 0
+        || $size === 0.0
+        || $size === false
+        || $size === null
+        || (is_string($size) && is_numeric($size) && (float) $size === 0.0);
+    if ($is_zero_size) {
         $out = '0';
     } else {
         $i = floor(log($size, 1024));
