@@ -187,16 +187,16 @@ final class GeneralFunctionsTest extends TestCase
     public function testIpAsBytes(): void
     {
         // always packs to the 16-byte IPv6 form, for both IPv4 and IPv6 input
-        $this->assertSame(16, \strlen((string) \getIpAsBytes('192.168.1.1')));
-        $this->assertSame(16, \strlen((string) \getIpAsBytes('2001:db8::1')));
+        $this->assertSame(16, \strlen((string) \get_ip_as_bytes('192.168.1.1')));
+        $this->assertSame(16, \strlen((string) \get_ip_as_bytes('2001:db8::1')));
         // case-insensitive: upper- and lower-case hex pack to identical bytes
-        $this->assertSame(\getIpAsBytes('2001:DB8::1'), \getIpAsBytes('2001:db8::1'));
+        $this->assertSame(\get_ip_as_bytes('2001:DB8::1'), \get_ip_as_bytes('2001:db8::1'));
         // equivalent localhost forms pack identically
-        $this->assertSame(\getIpAsBytes('127.0.0.1'), \getIpAsBytes('::1'));
+        $this->assertSame(\get_ip_as_bytes('127.0.0.1'), \get_ip_as_bytes('::1'));
         // ordering matches numeric value (byte-wise strcmp)
-        $this->assertLessThan(0, \strcmp((string) \getIpAsBytes('::9'), (string) \getIpAsBytes('::a')));
+        $this->assertLessThan(0, \strcmp((string) \get_ip_as_bytes('::9'), (string) \get_ip_as_bytes('::a')));
         // invalid input
-        $this->assertFalse(\getIpAsBytes('not-an-ip'));
+        $this->assertFalse(\get_ip_as_bytes('not-an-ip'));
     }
 
     public function testIpAsStringUsesCompactReadableNotation(): void
