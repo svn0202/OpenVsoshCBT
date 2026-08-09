@@ -14042,24 +14042,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_file_exists`: expected `unknown-ref(Returns)`, but found `bool`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_file_exists`: expected `unknown-ref(Returns)`, but found `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_url_exists`: expected `unknown-ref(Returns)`, but found `bool`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
 code = "missing-parameter-type"
 message = "Parameter `$errfile` is missing a type hint."
 count = 1
@@ -14091,12 +14073,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
 code = "missing-parameter-type"
-message = "Parameter `$filename` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "missing-parameter-type"
 message = "Parameter `$messagetoprint` is missing a type hint."
 count = 1
 
@@ -14104,12 +14080,6 @@ count = 1
 file = "shared/code/tce_functions_errmsg.php"
 code = "missing-parameter-type"
 message = "Parameter `$messagetype` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "missing-parameter-type"
-message = "Parameter `$url` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -14127,19 +14097,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
 code = "missing-return-type"
-message = "Function `F_file_exists` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "missing-return-type"
 message = "Function `F_print_error` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "missing-return-type"
-message = "Function `F_url_exists` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -14195,12 +14153,6 @@ file = "shared/code/tce_functions_errmsg.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
 count = 8
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `Returns`."
-count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"

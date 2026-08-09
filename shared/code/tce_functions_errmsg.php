@@ -148,10 +148,10 @@ $old_error_handler = set_error_handler('F_error_handler', K_ERROR_TYPES);
 
 /**
  * Check if the URL exist.
- * @param url (string) URL to check.
- * @return Returns TRUE if the URL exists; FALSE otherwise.
+ * @param string $url URL to check.
+ * @return bool True if the URL exists; false otherwise.
  */
-function F_url_exists($url)
+function F_url_exists(string $url): bool
 {
     $crs = curl_init();
     curl_setopt($crs, CURLOPT_URL, $url);
@@ -177,18 +177,18 @@ function F_url_exists($url)
  * Wrapper for file_exists.
  * Checks whether a file or directory exists.
  * Only allows some protocols and local files.
- * @param filename (string) Path to the file or directory.
- * @return Returns TRUE if the file or directory specified by filename exists; FALSE otherwise.
+ * @param mixed $filename Path to the file or directory.
+ * Returns true if the file or directory exists; false otherwise.
  */
-function F_file_exists($filename)
+function F_file_exists(mixed $filename): bool
 {
     if (preg_match('|^https?://|', $filename) === 1) {
-        return F_url_exists($filename);
+        return F_url_exists((string) $filename);
     }
 
     if (strpos($filename, '://')) {
         return false; // only support http and https wrappers for security reasons
     }
 
-    return @file_exists($filename);
+    return file_exists($filename);
 }
