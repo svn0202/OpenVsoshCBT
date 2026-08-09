@@ -38,7 +38,7 @@ switch ($menu_mode) {
             if ($_FILES['userfile']['name']) {
                 require_once '../code/tce_functions_upload.php';
                 // upload file
-                $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
+                $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
                 if ($uploadedfile !== false) {
                     switch ($file_type) {
                         case 1:

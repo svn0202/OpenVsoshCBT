@@ -14,7 +14,7 @@ final class UploadFunctionsTest extends TestCase
                 '-r',
                 'require "../config/tce_config.php"; require "tce_functions_upload.php"; '
                     . '$_FILES["userfile"] = ["name" => ".hidden", "tmp_name" => "/tmp/not-uploaded"]; '
-                    . 'echo json_encode(F_upload_file("userfile", K_PATH_CACHE));',
+                    . 'echo json_encode(f_upload_file("userfile", K_PATH_CACHE));',
             ],
             __DIR__ . '/../admin/code',
         );

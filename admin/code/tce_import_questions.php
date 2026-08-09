@@ -36,7 +36,7 @@ $type = !isset($_REQUEST['type']) || empty($_REQUEST['type']) ? 1 : (int) $_REQU
 if (isset($menu_mode) && $menu_mode == 'upload' && $_FILES['userfile']['name']) {
     require_once '../code/tce_functions_upload.php';
     // upload file
-    $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
+    $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
     if ($uploadedfile !== false) {
         $qimp = false;
         switch ($type) {

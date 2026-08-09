@@ -38,7 +38,7 @@ $uploadedfile = [];
 for ($id = 0; $id < 2; ++$id) {
     if (isset($_POST['sendfile' . $id]) && $_FILES['userfile' . $id]['name']) {
         require_once '../code/tce_functions_upload.php';
-        $uploadedfile["'" . $id . "'"] = F_upload_file('userfile' . $id, K_PATH_CACHE);
+        $uploadedfile["'" . $id . "'"] = f_upload_file('userfile' . $id, K_PATH_CACHE);
     }
 }
 

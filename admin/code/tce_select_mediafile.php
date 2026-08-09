@@ -116,7 +116,7 @@ if (isset($_POST['sendfile']) && $_FILES['userfile']['name']) {
         $dir = $usr_dir;
     }
 
-    $file = F_upload_file('userfile', $dir);
+    $file = f_upload_file('userfile', $dir);
     if (!empty($file)) {
         $file = $dir . $file;
     }
