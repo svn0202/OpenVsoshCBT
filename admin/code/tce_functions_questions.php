@@ -111,7 +111,7 @@ function F_question_get_data($question_id)
  * @param $question_id (int) question ID
  * @param $subject_id (int) subject ID
  */
-function F_question_delete($question_id, $subject_id)
+function f_question_delete(mixed $question_id, mixed $subject_id): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';
