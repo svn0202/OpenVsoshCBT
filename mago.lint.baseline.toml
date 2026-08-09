@@ -583,18 +583,6 @@ message = "Redundant block around statements."
 count = 4
 
 [[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "class-name"
-message = "Class name `C_mailer` should be in class case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_class_mailer.php"
-code = "file-name"
-message = "Class `C_mailer` should be in a file named `C_mailer.php`, found `tce_class_mailer.php`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_db_connect.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."

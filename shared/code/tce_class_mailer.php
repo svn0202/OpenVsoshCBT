@@ -39,6 +39,8 @@ require_once '../../vendor/autoload.php';
  * @package PHPMailer
  * @since 2005-02-24
  */
+// @mago-expect lint:class-name -- public legacy class name retained for backward compatibility
+// @mago-expect lint:file-name -- legacy include path and public class name are both part of the API
 class C_mailer extends PHPMailer\PHPMailer\PHPMailer
 {
     /**
