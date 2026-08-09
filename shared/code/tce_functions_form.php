@@ -579,6 +579,26 @@ function getFormRowTextBox(
 }
 
 /**
+ * Preserve the legacy loose comparison used for select option values without comparing mixed types.
+ */
+function f_form_option_is_selected(int|string $key, mixed $value): bool
+{
+    if (is_bool($value)) {
+        return (bool) $key === $value;
+    }
+
+    if ($value === null) {
+        return $key === 0 || $key === '';
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value)) {
+        return $key == $value;
+    }
+
+    return false;
+}
+
+/**
  * Print select box row form.
  * @param $field_name (string) Name of the form field.
  * @param $name (string) Label.
@@ -633,13 +653,14 @@ function getFormRowSelectBox(
     }
 
     $str .= '>' . K_NEWLINE;
-    foreach ($items as $key => $val) {
+    foreach (array_keys($items) as $key) {
+        $option_label = isset($items[$key]) && is_scalar($items[$key]) ? (string) $items[$key] : '';
         $str .= '<option value="' . $key . '"';
-        if ($key == $value) {
+        if (f_form_option_is_selected($key, $value)) {
             $str .= ' selected="selected"';
         }
 
-        $str .= '>' . $val . '</option>' . K_NEWLINE;
+        $str .= '>' . $option_label . '</option>' . K_NEWLINE;
     }
 
     $str .= '</select>' . K_NEWLINE;
