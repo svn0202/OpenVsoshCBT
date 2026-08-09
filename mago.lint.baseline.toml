@@ -193,12 +193,6 @@ message = "Unsafe use of error control operator `@`."
 count = 3
 
 [[issues]]
-file = "admin/code/tce_functions_email_reports.php"
-code = "function-name"
-message = "Function name `F_send_report_emails` should be in snake case."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "function-name"
 message = "Function name `F_createMediaDir` should be in snake case."

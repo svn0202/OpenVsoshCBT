@@ -84,7 +84,7 @@ if (isset($_REQUEST['show_graph'])) {
 require_once 'tce_functions_email_reports.php';
 echo '<div class="pagehelp">' . $l['hp_sending_in_progress'] . '</div>' . K_NEWLINE;
 flush(); // force browser output
-F_send_report_emails(
+f_send_report_emails(
     $test_id,
     $user_id,
     $testuser_id,
