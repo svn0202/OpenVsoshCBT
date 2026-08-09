@@ -190,36 +190,28 @@ class TMXResourceBundle
     {
         switch (strtolower($name)) {
             case 'tu':
-                {
-                    // translation unit element, unit father of every element to be translated. It can contain a unique identifier (tuid).
-                    if (array_key_exists('tuid', $attribs)) {
-                        $this->current_key = $attribs['tuid'];
-                    }
-                    $this->fallback_data = '';
-                    $this->has_requested_translation = false;
-
-                    break;
+                // translation unit element, unit father of every element to be translated. It can contain a unique identifier (tuid).
+                if (array_key_exists('tuid', $attribs)) {
+                    $this->current_key = $attribs['tuid'];
                 }
+                $this->fallback_data = '';
+                $this->has_requested_translation = false;
+
+                break;
             case 'tuv':
-                {
-                    // translation unit variant, unit that contains the language code of the translation (xml:lang)
-                    if (array_key_exists('xml:lang', $attribs)) {
-                        $this->current_language = strtoupper($attribs['xml:lang']);
-                    }
+                // translation unit variant, unit that contains the language code of the translation (xml:lang)
+                if (array_key_exists('xml:lang', $attribs)) {
+                    $this->current_language = strtoupper($attribs['xml:lang']);
+                }
 
-                    break;
-                }
+                break;
             case 'seg':
-                {
-                    // segment, it contains the translated text
-                    $this->segdata = true;
-                    $this->current_data = '';
-                    break;
-                }
+                // segment, it contains the translated text
+                $this->segdata = true;
+                $this->current_data = '';
+                break;
             default:
-                {
-                    break;
-                }
+                break;
         }
     }
 
@@ -233,50 +225,42 @@ class TMXResourceBundle
     {
         switch (strtolower($name)) {
             case 'tu':
-                {
-                    // translation unit element, unit father of every element to be translated. It can contain a unique identifier (tuid).
-                    if (!$this->has_requested_translation) {
-                        $this->resource[$this->current_key] = $this->fallback_data;
-                    }
-                    if (!empty($this->cachefile)) {
-                        file_put_contents(
-                            $this->cachefile,
-                            "\n"
-                            . '$'
-                            . "tmx['"
-                            . $this->current_key
-                            . "']='"
-                            . str_replace("'", '\\\'', $this->resource[$this->current_key] ?? '')
-                            . "';",
-                            FILE_APPEND,
-                        );
-                    }
-                    $this->current_key = '';
-                    break;
+                // translation unit element, unit father of every element to be translated. It can contain a unique identifier (tuid).
+                if (!$this->has_requested_translation) {
+                    $this->resource[$this->current_key] = $this->fallback_data;
                 }
+                if (!empty($this->cachefile)) {
+                    file_put_contents(
+                        $this->cachefile,
+                        "\n"
+                        . '$'
+                        . "tmx['"
+                        . $this->current_key
+                        . "']='"
+                        . str_replace("'", '\\\'', $this->resource[$this->current_key] ?? '')
+                        . "';",
+                        FILE_APPEND,
+                    );
+                }
+                $this->current_key = '';
+                break;
             case 'tuv':
-                {
-                    // translation unit variant, unit that contains the language code of the translation (xml:lang)
-                    $this->current_language = '';
-                    break;
-                }
+                // translation unit variant, unit that contains the language code of the translation (xml:lang)
+                $this->current_language = '';
+                break;
             case 'seg':
-                {
-                    // segment, it contains the translated text
-                    $this->segdata = false;
-                    if (strcasecmp($this->current_language, $this->language) === 0) {
-                        $this->resource[$this->current_key] = $this->current_data;
-                        $this->has_requested_translation = true;
-                    } elseif (strcasecmp($this->current_language, 'EN') === 0) {
-                        $this->fallback_data = $this->current_data;
-                    }
+                // segment, it contains the translated text
+                $this->segdata = false;
+                if (strcasecmp($this->current_language, $this->language) === 0) {
+                    $this->resource[$this->current_key] = $this->current_data;
+                    $this->has_requested_translation = true;
+                } elseif (strcasecmp($this->current_language, 'EN') === 0) {
+                    $this->fallback_data = $this->current_data;
+                }
 
-                    break;
-                }
+                break;
             default:
-                {
-                    break;
-                }
+                break;
         }
     }
 
