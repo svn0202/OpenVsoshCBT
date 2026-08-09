@@ -334,43 +334,52 @@ function getRequiredMark(bool $required = false): string
 
 /**
  * Print input row form.
- * @param $field_name (string) Name of the form field.
- * @param $name (string) Label.
- * @param $description (string) Label description (tooltip).
- * @param $tip (string) Help to be displayed on the right of the input field.
- * @param $value (string) Initial value.
- * @param $format (string) Regular expression to check the format of the field.
- * @param $maxlen (int) Maximum input length.
- * @param $date (boolean) True if the field is a date input.
- * @param $datetime (boolean) True if the field is a date-time input.
- * @param $password (boolean) True if the field is a password.
- * @param $prefix (string) code to be displayed after label.
- * @param $required (boolean) If true the field is marked as required.
- * @param $autocomplete (string) HTML autocomplete token (e.g. 'email', 'username', 'current-password', 'new-password').
- * @param $inputtype (string) Override for the HTML input type (e.g. 'email', 'tel', 'number'); ignored for password/date/datetime fields.
- * @param $placeholder (string) Optional short hint displayed inside an empty input.
+ * @param string $field_name Name of the form field.
+ * @param mixed $name Label.
+ * @param mixed $description Label description (tooltip).
+ * @param mixed $tip Help to be displayed on the right of the input field.
+ * @param mixed $value Initial value.
+ * @param mixed $format Regular expression to check the format of the field.
+ * @param int $maxlen Maximum input length.
+ * @param bool $date True if the field is a date input.
+ * @param bool $datetime True if the field is a date-time input.
+ * @param bool $password True if the field is a password.
+ * @param mixed $prefix code to be displayed after label.
+ * @param bool $required If true the field is marked as required.
+ * @param mixed $autocomplete HTML autocomplete token (e.g. 'email', 'username', 'current-password', 'new-password').
+ * @param mixed $inputtype Override for the HTML input type (e.g. 'email', 'tel', 'number'); ignored for password/date/datetime fields.
+ * @param mixed $placeholder Optional short hint displayed inside an empty input.
  * @return string
  */
 function getFormRowTextInput(
-    $field_name,
-    $name,
-    $description = '',
-    $tip = '',
-    $value = '',
-    $format = '',
-    $maxlen = 255,
-    $date = false,
-    $datetime = false,
+    string $field_name,
+    mixed $name,
+    mixed $description = '',
+    mixed $tip = '',
+    mixed $value = '',
+    mixed $format = '',
+    int $maxlen = 255,
+    bool $date = false,
+    bool $datetime = false,
     #[\SensitiveParameter]
-    $password = false,
-    $prefix = '',
+    bool $password = false,
+    mixed $prefix = '',
     bool $required = false,
-    $autocomplete = '',
-    $inputtype = '',
-    $placeholder = '',
+    mixed $autocomplete = '',
+    mixed $inputtype = '',
+    mixed $placeholder = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
+    $name = is_scalar($name) ? (string) $name : '';
+    $description = is_scalar($description) ? (string) $description : '';
+    $tip = is_scalar($tip) ? (string) $tip : '';
+    $value = is_scalar($value) ? (string) $value : '';
+    $format = is_scalar($format) ? (string) $format : '';
+    $prefix = is_scalar($prefix) ? (string) $prefix : '';
+    $autocomplete = is_scalar($autocomplete) ? (string) $autocomplete : '';
+    $inputtype = is_scalar($inputtype) ? (string) $inputtype : '';
+    $placeholder = is_scalar($placeholder) ? (string) $placeholder : '';
     if (strlen($description) == 0) {
         $description = $name;
     }
@@ -426,10 +435,6 @@ function getFormRowTextInput(
     $str .= '"';
     if ($datetime) {
         $str .= ' step="1"';
-    }
-
-    if ($value === null) {
-        $value = '';
     }
 
     if ($datetime) {
