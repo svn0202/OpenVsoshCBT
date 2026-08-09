@@ -6,6 +6,41 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testUserIdLookupByRegistrationNumberRemainsUnchanged(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["calls"] = []; '
+                    . 'function F_escape_sql($db, $value) { $GLOBALS["calls"]["escaped"] = $value; return "safe"; } '
+                    . 'function F_db_query($query, $db) { $GLOBALS["calls"]["query"] = $query; return "result"; } '
+                    . 'function F_db_fetch_array($result) { return ["user_id" => "42"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getUIDfromRegnum|f_get_uid_from_regnum)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . 'eval("namespace Harness; " . substr($source, $start)); '
+                    . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; $result = $qualifiedName("REG-7"); '
+                    . 'echo json_encode(["result" => $result, "calls" => $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'result' => '42',
+                'calls' => [
+                    'escaped' => 'REG-7',
+                    'query' => "SELECT user_id FROM tce_users WHERE user_regnumber='safe' LIMIT 1",
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEmptyPopupUserSelectionReportsMessageAndReturnsFalse(): void
     {
         [$status, $output] = \F_tcecode_run_process(
