@@ -66,7 +66,6 @@ if (isset($_FILES['userfile']['name']) && !empty($_FILES['userfile']['name'])) {
 
 switch ($menu_mode) {
     case 'delete':
-        {
             // check if this record is used
             if (!F_check_unique(K_TABLE_TEST_SSLCERTS, 'tstssl_ssl_id=' . $ssl_id . '')) {
                 //this record will be only disabled and not deleted because it's used
@@ -105,10 +104,8 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'forcedelete':
-        {
             if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_SSLCERTS . ' WHERE ssl_id=' . $ssl_id . '';
                 if (!($r = F_db_query($sql, $db))) {
@@ -120,10 +117,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'update':
-        { // Update
+        // Update
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -178,10 +174,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'add':
-        { // Add
+        // Add
             if (($formstatus = F_check_form_fields()) && strlen($ssl_hash) == 32) {
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_SSLCERTS, "ssl_name='" . F_escape_sql($db, $ssl_name) . "'")) {
@@ -231,22 +226,18 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $ssl_name = '';
             $ssl_hash = '';
             $ssl_end_date = '';
             $ssl_enabled = true;
             $ssl_user_id = (int) $_SESSION['session_user_id'];
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
