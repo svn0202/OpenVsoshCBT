@@ -189,6 +189,15 @@ final class FormValidationTest extends TestCase
         $this->assertStringContainsString('id="desc_DISABLED_enabled">Locked</span>', $markup);
     }
 
+    public function testSmallVerticalSpacePreservesExactMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $this->assertSame('<div class="row">&nbsp;</div>' . K_NEWLINE, \getFormSmallVertSpace());
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
