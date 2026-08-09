@@ -676,7 +676,7 @@ function f_mathml_callback(mixed $matches): mixed
 /**
  * Sanitize a MathML fragment while preserving a conservative set of presentation attributes.
  */
-function F_sanitize_mathml_content(string $mathml, string $allowed_tag_string): string
+function f_sanitize_mathml_content(string $mathml, string $allowed_tag_string): string
 {
     if ($mathml === '' || !class_exists('DOMDocument')) {
         return htmlspecialchars($mathml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
