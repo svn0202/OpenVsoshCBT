@@ -151,7 +151,6 @@ echo
         . K_NEWLINE
 ;
 
-global $login_error;
-if (isset($login_error) && $login_error) {
+if (!empty($GLOBALS['login_error'])) {
     F_print_error('WARNING', (string) ($l['m_login_wrong'] ?? ''));
 }
