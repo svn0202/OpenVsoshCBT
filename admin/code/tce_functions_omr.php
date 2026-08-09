@@ -81,7 +81,8 @@ function f_decode_omr_test_data(mixed $str): array|false
         $question = $decoded[$index] ?? null;
         if (
             !is_array($question)
-            || !isset($question[0], $question[1])
+            || !array_key_exists(0, $question)
+            || !array_key_exists(1, $question)
             || !is_numeric($question[0])
             || (int) $question[0] <= 0
             || !is_array($question[1])
