@@ -197,7 +197,7 @@ function F_deleteMediaDir($dirname)
  *     tcename: string
  * }
  */
-function F_getFileInfo(mixed $file): array
+function f_get_file_info(mixed $file): array
 {
     require_once '../config/tce_config.php';
     $info = pathinfo($file);
@@ -423,7 +423,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
     $usrdir = $rootdir . $_SESSION['session_user_id'];
     // dirs
     foreach ($data['dirs'] as $file) {
-        $info = F_getFileInfo($file);
+        $info = f_get_file_info($file);
         $current_dir = urlencode($dir . $info['basename'] . '/');
         $usrdir_cue = '';
         if ($file == $usrdir) {
@@ -456,7 +456,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
     // files
     $current_dir = urlencode($dir);
     foreach ($data['files'] as $file) {
-        $info = F_getFileInfo($file);
+        $info = f_get_file_info($file);
         if (
             in_array(strtolower($info['extension']), $allowed_extensions)
             && !str_starts_with($info['basename'], 'latex_')
@@ -517,7 +517,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
     $data = F_getDirFiles($dir, $rootdir, $authdirs);
     // dirs
     foreach ($data['dirs'] as $file) {
-        $info = F_getFileInfo($file);
+        $info = f_get_file_info($file);
         $current_dir = urlencode($dir . $info['basename'] . '/');
         $out .= '<table role="presentation" style="float:left;border:none;margin:1px;padding:0;width:158px;background-color:#007fff;">';
         $out .= '<tr style="height:16px;font-family:monospace;font-size:12px;font-weight:bold;color:white;"><td>';
@@ -554,7 +554,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
     // files
     $current_dir = urlencode($dir);
     foreach ($data['files'] as $file) {
-        $info = F_getFileInfo($file);
+        $info = f_get_file_info($file);
         if (
             in_array(strtolower($info['extension']), $allowed_extensions)
             && !str_starts_with($info['basename'], 'latex_')
