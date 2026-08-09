@@ -153,7 +153,7 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
                     {
                         if (isset($new_subject_id) && $new_subject_id > 0) {
                             F_question_copy($question_id, $new_subject_id);
-                            F_question_delete($question_id, $subject_id);
+                            f_question_delete($question_id, $subject_id);
                         }
 
                         break;
@@ -168,7 +168,7 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
                     }
                 case 'delete':
                     {
-                        F_question_delete($question_id, $subject_id);
+                        f_question_delete($question_id, $subject_id);
                         break;
                     }
                 case 'disable':
