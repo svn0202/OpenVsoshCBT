@@ -1020,8 +1020,8 @@ function F_substrHTML(string $htmltext, int $min_length = 100, int $offset_lengt
             // First check if quotes are on
             if (!$quotes_on) {
                 // Check if it's a tag On a "<" add 3 if it's an opening tag (like <a href...) or add only 1 if it's an ending tag (like </a>)
-                if ($current_char == '<') {
-                    if ($next_char == '/') {
+                if ($current_char === '<') {
+                    if ($next_char === '/') {
                         ++$tag_counter;
                     } else {
                         $tag_counter += 3;
@@ -1029,32 +1029,32 @@ function F_substrHTML(string $htmltext, int $min_length = 100, int $offset_lengt
                 }
 
                 // Slash signifies an ending (like </a> or ... />) substract 2
-                if ($current_char == '/' && $tag_counter != 0) {
+                if ($current_char === '/' && $tag_counter !== 0) {
                     $tag_counter -= 2;
                 }
 
                 // On a ">" substract 1
-                if ($current_char == '>') {
+                if ($current_char === '>') {
                     --$tag_counter;
                 }
 
                 // If quotes are encountered, start ignoring the tags (for directory slashes)
-                if ($current_char == '"') {
+                if ($current_char === '"') {
                     $quotes_on = true;
                 }
-            } elseif ($current_char == '"') {
+            } elseif ($current_char === '"') {
                 // IF quotes are encountered again, turn it back off
                 $quotes_on = false;
             }
 
             // Count only the chars outside html tags
-            if ($tag_counter == 2 || $tag_counter == 0) {
+            if ($tag_counter === 2 || $tag_counter === 0) {
                 ++$c;
             }
 
             // Check if the counter has reached the minimum length yet,
             // then wait for the tag_counter to become 0, and chop the string there
-            if ($c > ($min_length - $offset_length) && $tag_counter == 0 && $next_char == ' ') {
+            if ($c > ($min_length - $offset_length) && $tag_counter === 0 && $next_char === ' ') {
                 return substr($htmltext, 0, $i + 1);
             }
         }
