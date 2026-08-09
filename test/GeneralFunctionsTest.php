@@ -143,7 +143,7 @@ final class GeneralFunctionsTest extends TestCase
             \getDataXML($data),
         );
         self::assertSame("\tName\tmeta_score", \get_data_tsv_header($data));
-        self::assertSame("\tA&B\t10", \getDataTSV($data));
+        self::assertSame("\tA&B\t10", \get_data_tsv($data));
     }
 
     public function testGetContrastColor(): void
