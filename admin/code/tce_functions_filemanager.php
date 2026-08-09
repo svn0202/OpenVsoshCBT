@@ -319,7 +319,7 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
     }
 
     while ($file = readdir($dirhdl)) {
-        if ($file != '.' && $file != '..') {
+        if ($file !== '.' && $file !== '..') {
             $filename = $dir . $file;
             if (f_is_authorized_dir($filename . '/', $rootdir, $authdirs)) {
                 if (is_dir($filename)) {
