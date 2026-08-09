@@ -9,6 +9,7 @@ require_once __DIR__ . '/../shared/code/tce_functions_roles.php';
 
 final class RolePolicyTest extends TestCase
 {
+    /** @return array<string, array{string, int}> */
     public static function controllerLevels(): array
     {
         return [
@@ -34,4 +35,3 @@ final class RolePolicyTest extends TestCase
         self::assertSame(4, \openvsosh_admin_required_level('custom_extension.php', 4));
     }
 }
-

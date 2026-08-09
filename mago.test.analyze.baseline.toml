@@ -139,12 +139,6 @@ message = "Argument #2 of function `F_tmf_results_are_published` is possibly `fa
 count = 5
 
 [[issues]]
-file = "test/RolePolicyTest.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `controllerLevels` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
 file = "test/SessionFunctionsTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
