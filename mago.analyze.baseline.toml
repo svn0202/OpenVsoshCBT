@@ -14647,91 +14647,91 @@ message = "Redundant `&&` operation: left operand is always falsy and right oper
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `TCExamSessionHandler::gc`: expected `false|int`, but found `unknown-ref(Number)`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `date`: expected `int|null`, but found `mixed`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "mixed-return-statement"
 message = "Could not infer a precise return type for function `TCExamSessionHandler::read`. Saw type `mixed`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "no-value"
 message = "Argument #2 passed to function `F_db_affected_rows` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `session_id`: expected `null|string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `strlen`: expected `string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #3 of `preg_replace`: expected `array<array-key, string>|string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "possibly-null-argument"
 message = "Argument #1 of function `strlen` is possibly `null`, but parameter type `string` does not accept it."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "redundant-comparison"
 message = "Avoid direct comparison with boolean literals."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "redundant-comparison"
 message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
 count = 1
