@@ -232,7 +232,7 @@ final class FormValidationTest extends TestCase
             '<div class="row"><hr class="dashed"/></div>'
                 . '<div class="row"><div style="color:#666666;text-align:center;">Section</div></div>'
                 . K_NEWLINE,
-            \getFormRowVertDiv('Section'),
+            \get_form_row_vert_div('Section'),
         );
     }
 

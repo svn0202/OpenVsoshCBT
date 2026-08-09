@@ -876,7 +876,7 @@ function get_form_row_vert_space(): string
  * @param string $title Title to be printed.
  * @return string
  */
-function getFormRowVertDiv(string $title = ''): string
+function get_form_row_vert_div(string $title = ''): string
 {
     return (
         '<div class="row"><hr class="dashed"/></div><div class="row"><div style="color:#666666;text-align:center;">'
