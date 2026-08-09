@@ -158,7 +158,7 @@ function f_tmf_set_similarity_threshold(string $description, int $threshold): st
  * Return question content without metadata controlled by dedicated editor
  * fields. Saving the form adds these markers back from their controls.
  */
-function F_tmf_question_editor_description(string $description): string
+function f_tmf_question_editor_description(string $description): string
 {
     $description = F_tmf_set_similarity_threshold($description, 0);
     $description = F_tmf_set_matching_positions($description, 0);
