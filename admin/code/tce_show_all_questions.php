@@ -173,12 +173,12 @@ if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty
                     }
                 case 'disable':
                     {
-                        F_question_set_enabled($question_id, false);
+                        f_question_set_enabled($question_id, false);
                         break;
                     }
                 case 'enable':
                     {
-                        F_question_set_enabled($question_id, true);
+                        f_question_set_enabled($question_id, true);
                         break;
                     }
             } // end of switch

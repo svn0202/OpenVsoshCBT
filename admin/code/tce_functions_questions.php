@@ -27,7 +27,7 @@
  * @param $question_id (int) question ID
  * @param $enabled (boolean) if true enables question, false otherwise
  */
-function F_question_set_enabled($question_id, $enabled = true)
+function f_question_set_enabled(mixed $question_id, mixed $enabled = true): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -119,7 +119,7 @@ function F_question_delete($question_id, $subject_id)
     $subject_id = (int) $subject_id;
     // check if this record is used (test_log)
     if (!F_check_unique(K_TABLE_TESTS_LOGS, 'testlog_question_id=' . $question_id . '')) {
-        F_question_set_enabled($question_id, false);
+        f_question_set_enabled($question_id, false);
     } else {
         $sql = 'START TRANSACTION';
         if (!($r = F_db_query($sql, $db))) {
