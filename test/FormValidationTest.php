@@ -272,7 +272,7 @@ final class FormValidationTest extends TestCase
             define('K_NEWLINE', "\n");
         }
 
-        $markup = \getFormUploadFile('upload[]', 'upload_id', 'Upload', 'Upload a file', 'preview(this)');
+        $markup = \get_form_upload_file('upload[]', 'upload_id', 'Upload', 'Upload a file', 'preview(this)');
 
         $this->assertStringContainsString('<div class="row" id="divupload_id">', $markup);
         $this->assertStringContainsString(

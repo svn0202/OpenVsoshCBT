@@ -940,7 +940,7 @@ function get_form_description_line(mixed $name, mixed $description = '', mixed $
  * @param string $onchange Javascript code to execute at onchange event.
  * @return string
  */
-function getFormUploadFile(
+function get_form_upload_file(
     string $field_name,
     string $field_id,
     string $name,
