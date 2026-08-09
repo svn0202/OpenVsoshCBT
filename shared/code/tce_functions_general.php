@@ -625,12 +625,12 @@ function getDataXML($data, $level = 1): string
  * @param $prefix (string) Prefix to add to keys.
  * @return string data
  */
-function getDataTSVHeader($data, $prefix = ''): string
+function get_data_tsv_header($data, $prefix = ''): string
 {
     $tsv = '';
     foreach ($data as $key => $value) {
         if (is_array($value)) {
-            $tsv .= getDataTSVHeader($value, $prefix . $key . '_');
+            $tsv .= get_data_tsv_header($value, $prefix . $key . '_');
         } else {
             $tsv .= "\t" . $prefix . $key;
         }
