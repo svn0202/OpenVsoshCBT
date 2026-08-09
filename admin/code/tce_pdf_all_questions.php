@@ -53,7 +53,7 @@ if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_i
 }
 
 $show_answers = true;
-if (isset($_REQUEST['hide_answers']) && $_REQUEST['hide_answers'] == 1) {
+if (isset($_REQUEST['hide_answers']) && f_legacy_int_equals($_REQUEST['hide_answers'], 1)) {
     $show_answers = false;
 }
 
