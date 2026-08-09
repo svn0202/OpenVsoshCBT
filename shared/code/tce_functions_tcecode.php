@@ -978,7 +978,7 @@ function f_tcecode_to_line($str): mixed
  * @param $str (string) text to process
  * return string
  */
-function F_tcecodeToTitle($str)
+function F_tcecodeToTitle($str): string
 {
     require_once '../config/tce_config.php';
     global $l;

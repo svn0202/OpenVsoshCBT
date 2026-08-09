@@ -16466,12 +16466,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_tcecodeToTitle` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `min`: expected `float|non-empty-array<array-key, float>`, but found `mixed`."
 count = 1
@@ -16510,7 +16504,7 @@ count = 6
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 12
+count = 11
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -17440,7 +17434,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 133
+count = 131
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

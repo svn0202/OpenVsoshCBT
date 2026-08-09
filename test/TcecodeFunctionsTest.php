@@ -23,6 +23,24 @@ final class TcecodeFunctionsTest extends TestCase
         self::assertSame('""', $output);
     }
 
+    public function testTitleConverterReturnsEscapedPlainText(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_general.php"; '
+                    . 'require_once "tce_functions_tcecode.php"; '
+                    . '$GLOBALS["l"] = ["a_meta_charset" => "UTF-8"]; '
+                    . 'echo json_encode(F_tcecodeToTitle("[b]A & B[/b]"));',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('"A &amp; B"', $output);
+    }
+
     public function testStringTransformersPreserveTcecodeRendering(): void
     {
         $this->assertSame(
