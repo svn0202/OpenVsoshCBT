@@ -107,7 +107,7 @@ function f_decode_form_fields(): array
  * @param array<array-key, mixed> $formfields input array containing form fields
  * @return string|false comma-separated missing fields, or false when no fields are required
  */
-function F_check_required_fields(array $formfields): string|false
+function f_check_required_fields(array $formfields): string|false
 {
     if (!is_string($formfields['ff_required'] ?? null) || $formfields['ff_required'] === '') {
         return false;

@@ -615,12 +615,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
-message = "Function name `F_check_required_fields` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "function-name"
 message = "Function name `F_close_button` should be in snake case."
 count = 1
 
