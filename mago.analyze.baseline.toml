@@ -12165,7 +12165,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "missing-return-type"
-message = "Function `F_db_num_rows` is missing a return type hint."
+message = "Function `f_db_num_rows` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -12273,7 +12273,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_db_num_rows`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_db_num_rows`. Saw type `mixed`."
 count = 1
 
 [[issues]]
