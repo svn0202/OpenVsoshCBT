@@ -90,16 +90,16 @@ function F_db_query($query, $link_identifier)
         ? spl_object_id($link_identifier)
         : (int) $link_identifier;
 
-    if ($query == 'START TRANSACTION') {
+    if ($query === 'START TRANSACTION') {
         $transactions[$connection_id] = true;
         return true;
     }
-    if ($query == 'COMMIT') {
+    if ($query === 'COMMIT') {
         $committed = @oci_commit($link_identifier);
         unset($transactions[$connection_id]);
         return $committed;
     }
-    if ($query == 'ROLLBACK') {
+    if ($query === 'ROLLBACK') {
         $rolled_back = @oci_rollback($link_identifier);
         unset($transactions[$connection_id]);
         return $rolled_back;

@@ -92,8 +92,8 @@ function F_tmf_users_xlsx_validate(
         $birth_date = trim((string) $values['birth_date']);
         if ($birth_date !== '' && is_numeric($birth_date)) {
             $serial = (float) $birth_date;
-            if ($serial >= 1 && $serial <= 100000) {
-                $birth_date = gmdate('Y-m-d', (int) round(($serial - 25569) * 86400));
+            if ($serial >= 1 && $serial <= 100_000) {
+                $birth_date = gmdate('Y-m-d', (int) round(($serial - 25_569) * 86_400));
             }
         }
         if ($birth_date !== '') {
@@ -137,9 +137,10 @@ function F_tmf_users_xlsx_validate(
             }
         }
         $group_ids = [];
+        $groups = preg_split('/[,;]+/u', (string) $values['groups']);
         $group_names = array_values(array_filter(array_map(
             'trim',
-            preg_split('/[,;]+/u', (string) $values['groups']) ?: [],
+            $groups === false ? [] : $groups,
         )));
         if ($group_names === []) {
             $row_errors[] = 'Укажите хотя бы одну существующую группу.';

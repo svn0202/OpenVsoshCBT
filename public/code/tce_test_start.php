@@ -39,7 +39,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     echo '<div class="row">' . K_NEWLINE;
     // display execute button
     echo '<a href="tce_test_execute.php?testid=' . $test_id . '';
-    if (isset($_REQUEST['repeat']) && $_REQUEST['repeat'] == 1) {
+    if (isset($_REQUEST['repeat']) && is_string($_REQUEST['repeat']) && $_REQUEST['repeat'] === '1') {
         echo '&amp;repeat=1';
     }
 

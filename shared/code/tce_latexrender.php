@@ -551,7 +551,7 @@ class LatexRender
         }
 
         // convert DVI file to postscript using DVIPS
-        $command = $this->dvips_path . ' -E ' . $this->tmp_filename . '.dvi' . ' -o ' . $this->tmp_filename . '.ps';
+        $command = $this->dvips_path . ' -E ' . $this->tmp_filename . '.dvi -o ' . $this->tmp_filename . '.ps';
         $status_code = exec($command);
 
         // ImageMagick convert PS to image and trim picture

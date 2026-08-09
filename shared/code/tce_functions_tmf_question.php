@@ -190,8 +190,10 @@ function F_tmf_normalize_short_answer(string $value, bool $binary = false): stri
  */
 function F_tmf_text_similarity(string $left, string $right, bool $binary = false): float
 {
-    $left_chars = preg_split('//u', F_tmf_normalize_short_answer($left, $binary), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-    $right_chars = preg_split('//u', F_tmf_normalize_short_answer($right, $binary), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $left_chars = preg_split('//u', F_tmf_normalize_short_answer($left, $binary), -1, PREG_SPLIT_NO_EMPTY);
+    $right_chars = preg_split('//u', F_tmf_normalize_short_answer($right, $binary), -1, PREG_SPLIT_NO_EMPTY);
+    $left_chars = $left_chars === false ? [] : $left_chars;
+    $right_chars = $right_chars === false ? [] : $right_chars;
     $left_count = count($left_chars);
     $right_count = count($right_chars);
     $maximum = max($left_count, $right_count);

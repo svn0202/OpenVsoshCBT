@@ -45,16 +45,16 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     $white = imagecolorallocate($target, 255, 255, 255);
     imagefill($target, 0, 0, $white);
     imagecopyresampled($target, $image, 0, 0, 0, 0, $target_width, $target_height, $width, $height);
-    imagedestroy($image);
+    unset($image);
 
     $directory = dirname(F_tmf_user_photo_path($user_id));
     if (!is_dir($directory) && !mkdir($directory, 0o700, true) && !is_dir($directory)) {
-        imagedestroy($target);
+        unset($target);
         return ['status' => 'error', 'message' => 'Хранилище фотографий недоступно.'];
     }
     $temporary = $directory . '/.' . $user_id . '.' . bin2hex(random_bytes(8)) . '.tmp';
     $stored = imagejpeg($target, $temporary, 88);
-    imagedestroy($target);
+    unset($target);
     if (!$stored || !rename($temporary, F_tmf_user_photo_path($user_id))) {
         if (is_file($temporary)) {
             unlink($temporary);

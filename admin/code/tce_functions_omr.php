@@ -57,9 +57,7 @@ function F_decodeOMRTestData($str)
     if (!is_string($compressed) || strlen($compressed) > $max_encoded_bytes) {
         return false;
     }
-    set_error_handler(static function () {
-        return true;
-    });
+    set_error_handler(static fn(): bool => true);
     try {
         $data = gzuncompress($compressed, $max_decompressed_bytes);
     } finally {

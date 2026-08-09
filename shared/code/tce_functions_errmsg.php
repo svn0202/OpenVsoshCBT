@@ -167,7 +167,7 @@ function F_url_exists($url)
     curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
     curl_exec($crs);
     $code = curl_getinfo($crs, CURLINFO_HTTP_CODE);
-    curl_close($crs);
+    unset($crs);
     return $code == 200;
 }
 
