@@ -65,9 +65,9 @@ function f_delete_media_file(mixed $filename): bool
  * @author Nicola Asuni
  * @param $filename (string) old file name
  * @param $newname (string) new file name
- * @return true in case of success, false otherwise
+ * @return bool whether the file was renamed
  */
-function F_renameMediaFile($filename, $newname)
+function f_rename_media_file(mixed $filename, mixed $newname): bool
 {
     require_once '../config/tce_config.php';
     if ($_SESSION['session_user_level'] < K_AUTH_RENAME_MEDIAFILE) {

@@ -224,12 +224,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
-code = "function-name"
-message = "Function name `F_renameMediaFile` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 4
