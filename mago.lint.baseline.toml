@@ -525,12 +525,6 @@ count = 1
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
 code = "function-name"
-message = "Function name `F_tmf_word_import_cleanup_batch` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "function-name"
 message = "Function name `F_tmf_word_import_cleanup_stale` should be in snake case."
 count = 1
 

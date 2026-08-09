@@ -362,11 +362,11 @@ final class WordImportTest extends TestCase
         self::assertNotFalse(file_put_contents($previewDirectory . '/' . $batch . '.php', 'preview'));
         self::assertNotFalse(file_put_contents($mediaDirectory . '/image.png', 'image'));
 
-        self::assertTrue(\F_tmf_word_import_cleanup_batch($this->temporaryDirectory, $batch, false));
+        self::assertTrue(\f_tmf_word_import_cleanup_batch($this->temporaryDirectory, $batch, false));
         self::assertFileDoesNotExist($previewDirectory . '/' . $batch . '.php');
         self::assertFileExists($mediaDirectory . '/image.png');
         self::assertFalse(
-            \F_tmf_word_import_cleanup_batch($this->temporaryDirectory, '../../unsafe', true),
+            \f_tmf_word_import_cleanup_batch($this->temporaryDirectory, '../../unsafe', true),
         );
     }
 }
