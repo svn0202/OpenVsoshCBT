@@ -9,6 +9,25 @@ require_once __DIR__ . '/../shared/code/tce_functions_users_xlsx.php';
 
 final class XlsxTest extends TestCase
 {
+    public function testAdminHtmlHelperEscapesUsingConfiguredCharset(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_tmf_users_xlsx_html.*?\\n\\}\\n/s", $source, $match); '
+                    . 'eval($match[0]); $GLOBALS["l"] = ["a_meta_charset" => "UTF-8"]; '
+                    . 'echo F_tmf_users_xlsx_html(base64_decode("PGEgaHJlZj0ieCI+J3ZhbHVlJyAmIHRleHQ8L2E+"));',
+                dirname(__DIR__) . '/admin/code/tce_users_xlsx.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('&lt;a href=&quot;x&quot;&gt;&#039;value&#039; &amp; text&lt;/a&gt;', $output);
+    }
+
     public function testNativeWorkbookRoundTripsTypesAndTreatsFormulaTextAsText(): void
     {
         if (!class_exists(ZipArchive::class)) {
