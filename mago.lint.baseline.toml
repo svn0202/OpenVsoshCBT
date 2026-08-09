@@ -735,12 +735,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_pregeneration.php"
 code = "function-name"
-message = "Function name `F_tmf_pregeneration_hash` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_pregeneration.php"
-code = "function-name"
 message = "Function name `F_tmf_pregeneration_invalidate` should be in snake case."
 count = 1
 
