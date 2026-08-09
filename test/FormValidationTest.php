@@ -286,6 +286,35 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testTextBoxRowPreservesRequiredReadonlyAndEscapedValue(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
+                    . '"a_meta_charset" => "UTF-8"]; '
+                    . '$name = function_exists("getFormRowTextBox") '
+                    . '? "getFormRowTextBox" : "get_form_row_text_box"; '
+                    . 'echo $name("comment", "Comment", "Review comment", "<b>&", true, "PREFIX", true);',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringContainsString(
+            '<label for="comment" title="Review comment">Comment '
+                . '<abbr class="required" title="Required">*</abbr></label>',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            'name="comment" id="comment" title="Review comment" aria-required="true" '
+                . 'readonly="readonly" class="disabled">&lt;b&gt;&amp;</textarea>',
+            $markup,
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
