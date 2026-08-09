@@ -777,7 +777,7 @@ function getContrastColor($color): string
  * @param $str (string) String to check.
  * @return boolean true or false.
  */
-function F_isURL($str): bool
+function f_is_url($str): bool
 {
     return preg_match('/^(ftp|http|https|mail|sftp|ssh|telnet|vnc)[:][\/][\/]/', $str) > 0 && parse_url($str) !== false;
 }

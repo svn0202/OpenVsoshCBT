@@ -154,10 +154,10 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testIsUrl(): void
     {
-        $this->assertTrue(\F_isURL('https://example.com/path'));
-        $this->assertTrue(\F_isURL('ftp://host/file'));
-        $this->assertFalse(\F_isURL('just text'));
-        $this->assertFalse(\F_isURL('/relative/path'));
+        $this->assertTrue(\f_is_url('https://example.com/path'));
+        $this->assertTrue(\f_is_url('ftp://host/file'));
+        $this->assertFalse(\f_is_url('just text'));
+        $this->assertFalse(\f_is_url('/relative/path'));
     }
 
     public function testNormalizedIpInvariantsAndValidation(): void
