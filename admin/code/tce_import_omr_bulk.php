@@ -73,7 +73,7 @@ if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
 }
 
 // process OMR files on the specified directory
-if (isset($menu_mode) && $menu_mode == 'upload' && F_file_exists($omrdir)) {
+if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
     $logfilename = 'log_import_omr_' . time() . '.txt';
     $logfile = K_PATH_CACHE . 'OMR/' . $logfilename;
     $dirhdl = @opendir($omrdir);
