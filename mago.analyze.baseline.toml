@@ -16264,7 +16264,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$test_id` is missing a type hint."
-count = 24
+count = 23
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -16276,12 +16276,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$test_ips` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$testcomment` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -16318,12 +16312,6 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$value` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-statement"
-message = "Missing return statement in function `f_updatetestcomment`"
 count = 1
 
 [[issues]]
@@ -16540,12 +16528,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `F_updateQuestionLog` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `F_updateTestComment` is missing a return type hint."
 count = 1
 
 [[issues]]

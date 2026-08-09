@@ -3132,12 +3132,11 @@ function F_testComment($test_id)
 
 /**
  * Updates user's test comment.<br>
- * @param $test_id (int) test ID
- * @param $testcomment (string) user comment.
- * @return string XHTML code
+ * @param mixed $test_id test ID
+ * @param mixed $testcomment user comment.
  * @since 4.0.000 (2006-10-01)
  */
-function F_updateTestComment($test_id, $testcomment)
+function F_updateTestComment(mixed $test_id, mixed $testcomment): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
