@@ -788,7 +788,7 @@ function F_objects_callback(mixed $matches): string
  * @param $maxheight (int) object max or default height
  * @return string replacement string
  */
-function F_objects_replacement($name, $extension, $width = 0, $height = 0, $alt = '', &$maxwidth = 0, &$maxheight = 0): string
+function F_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, mixed $height = 0, mixed $alt = '', mixed &$maxwidth = 0, mixed &$maxheight = 0): string
 {
     require_once '../config/tce_config.php';
     global $l, $db;
