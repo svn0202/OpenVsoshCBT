@@ -13,6 +13,7 @@
 
 namespace Test;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +23,16 @@ use PHPUnit\Framework\TestCase;
  */
 final class GeneralFunctionsTest extends TestCase
 {
+    #[RunInSeparateProcess]
+    public function testRequiredFieldMarkerUsesConfiguredLabels(): void
+    {
+        // @mago-expect lint:no-global -- the legacy helper reads its translations from global $l
+        $GLOBALS['l'] = ['w_required' => 'Required', 'w_not_required' => 'Optional'];
+
+        self::assertSame(' <abbr class="requiredonbox" title="Required">+</abbr>', \showRequiredField(2));
+        self::assertSame(' <abbr class="requiredoffbox" title="Optional">-</abbr>', \showRequiredField(1));
+    }
+
     public function testBootstrapFileExistsShim(): void
     {
         self::assertTrue(\F_file_exists(__FILE__));
