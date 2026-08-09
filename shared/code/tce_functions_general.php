@@ -317,7 +317,7 @@ function f_xml_to_text($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function F_text_to_tsv($str): string
+function f_text_to_tsv($str): string
 {
     if (empty($str)) {
         return '';
@@ -651,7 +651,7 @@ function get_data_tsv($data): string
         if (is_array($value)) {
             $tsv .= get_data_tsv($value);
         } else {
-            $tsv .= "\t" . F_text_to_tsv($value);
+            $tsv .= "\t" . f_text_to_tsv($value);
         }
     }
 
