@@ -504,7 +504,7 @@ if (isset($_REQUEST['PHPSESSID'])) {
     $PHPSESSID = getNewSessionID();
 }
 
-if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] != 'startlongprocess') {
+if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] !== 'startlongprocess') {
     // fix flush problem on long processes
     session_id($PHPSESSID); //set session id
 }
