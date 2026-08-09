@@ -257,7 +257,7 @@ class TCExamSessionHandler implements SessionHandlerInterface
  * @param string $sd input data string
  * @return array<string, mixed>
  */
-function F_session_string_to_array(string $sd): array
+function f_session_string_to_array(string $sd): array
 {
     $sess_array = [];
     /** @var list<string> $vars */
