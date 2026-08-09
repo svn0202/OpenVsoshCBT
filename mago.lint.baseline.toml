@@ -206,12 +206,6 @@ count = 9
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
-code = "excessive-nesting"
-message = "Excessive block nesting."
-count = 6
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
 code = "function-name"
 message = "Function name `F_decodeOMRPage` should be in snake case."
 count = 1
@@ -233,12 +227,6 @@ file = "admin/code/tce_functions_omr.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
 count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
