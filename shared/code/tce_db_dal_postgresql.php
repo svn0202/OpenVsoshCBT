@@ -145,7 +145,7 @@ function f_db_num_rows($result)
  * @param $fieldname (string) Field name (column name).
  * @return int ID generated from the last INSERT operation.
  */
-function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     if (
         // @mago-expect lint:no-error-control-operator -- a missing sequence value follows the DAL's zero-return fallback
