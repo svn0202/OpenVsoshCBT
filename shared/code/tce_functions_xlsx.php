@@ -10,7 +10,7 @@ const TMF_XLSX_MAX_UNCOMPRESSED_BYTES = 52_428_800;
 const TMF_XLSX_MAX_ROWS = 10_000;
 const TMF_XLSX_MAX_COLUMNS = 50;
 
-function F_tmf_xlsx_xml(string $value): string
+function f_tmf_xlsx_xml(string $value): string
 {
     return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 }
