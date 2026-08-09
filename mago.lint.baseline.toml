@@ -561,12 +561,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_auth_sql.php"
 code = "function-name"
-message = "Function name `F_select_module_subjects_sql` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "function-name"
 message = "Function name `F_select_tests_sql` should be in snake case."
 count = 1
 
