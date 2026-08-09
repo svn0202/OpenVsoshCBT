@@ -256,13 +256,14 @@ if (
         $otp = false;
         if (K_OTP_LOGIN) {
             $mtime = microtime(true);
+            $otp_key = (string) ($m['user_otpkey'] ?? '');
             if (
                 isset($_POST['xuser_otpcode'])
                 && !empty($_POST['xuser_otpcode'])
                 && (
-                    hash_equals((string) F_getOTP($m['user_otpkey'], $mtime), (string) $_POST['xuser_otpcode'])
-                    || hash_equals((string) F_getOTP($m['user_otpkey'], $mtime - 30), (string) $_POST['xuser_otpcode'])
-                    || hash_equals((string) F_getOTP($m['user_otpkey'], $mtime + 30), (string) $_POST['xuser_otpcode'])
+                    hash_equals((string) F_getOTP($otp_key, $mtime), (string) $_POST['xuser_otpcode'])
+                    || hash_equals((string) F_getOTP($otp_key, $mtime - 30), (string) $_POST['xuser_otpcode'])
+                    || hash_equals((string) F_getOTP($otp_key, $mtime + 30), (string) $_POST['xuser_otpcode'])
                 )
             ) {
                 $xuser_otpcode = F_escape_sql($db, $_POST['xuser_otpcode']);
