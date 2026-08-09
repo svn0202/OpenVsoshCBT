@@ -5133,7 +5133,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_offline.php"
 code = "possibly-null-argument"
-message = "Argument #1 of function `F_tmf_offline_html` is possibly `null`, but parameter type `array<array-key, mixed>` does not accept it."
+message = "Argument #1 of function `f_tmf_offline_html` is possibly `null`, but parameter type `array<array-key, mixed>` does not accept it."
 count = 1
 
 [[issues]]
@@ -14103,7 +14103,7 @@ count = 13
 [[issues]]
 file = "shared/code/tce_functions_offline.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `F_tmf_offline_html`.'
+message = 'Potentially unhandled exception `Random\RandomException` in `f_tmf_offline_html`.'
 count = 1
 
 [[issues]]
