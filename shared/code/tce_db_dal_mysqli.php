@@ -114,7 +114,7 @@ function f_db_fetch_array($result)
  * @param $result (resource) result resource to the query result.
  * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
  */
-function F_db_fetch_assoc($result)
+function f_db_fetch_assoc($result)
 {
     return mysqli_fetch_assoc($result);
 }
