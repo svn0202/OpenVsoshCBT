@@ -749,7 +749,7 @@ function getFormRowCheckBox(
     }
 
     $str .= ' name="' . $field_name . '" id="' . $field_name . '" value="' . $value . '"';
-    if (F_getBoolean($selected)) {
+    if (f_get_boolean($selected)) {
         $str .= ' checked="checked"';
     }
 

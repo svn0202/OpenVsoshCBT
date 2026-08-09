@@ -220,7 +220,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['module_enabled'])) {
+        if (f_get_boolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -271,7 +271,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['subject_enabled'])) {
+        if (f_get_boolean($m['subject_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -561,7 +561,7 @@ function F_show_select_questions(
         $itemcount = $firstrow;
         while ($m = F_db_fetch_array($r)) {
             ++$itemcount;
-            $question_enabled = F_getBoolean($m['question_enabled']);
+            $question_enabled = f_get_boolean($m['question_enabled']);
             $questlist .= '<li class="question-card'
                 . ($question_enabled ? '' : ' is-disabled')
                 . '" id="qid_'
@@ -646,17 +646,17 @@ function F_show_select_questions(
                     . '</abbr>';
             }
 
-            if (F_getBoolean($m['question_fullscreen'])) {
+            if (f_get_boolean($m['question_fullscreen'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_fullscreen'] . ': ' . $l['w_enabled'] . '">F</abbr>';
             }
 
-            if (F_getBoolean($m['question_inline_answers'])) {
+            if (f_get_boolean($m['question_inline_answers'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_inline_answers'] . ': ' . $l['w_enabled'] . '">I</abbr>';
             }
 
-            if (F_getBoolean($m['question_auto_next'])) {
+            if (f_get_boolean($m['question_auto_next'])) {
                 $questlist .=
                     ' <abbr class="onbox" title="' . $l['w_auto_next'] . ': ' . $l['w_enabled'] . '">A</abbr>';
             }
@@ -721,9 +721,9 @@ function F_show_select_questions(
                     $answer_index = 0;
                     while ($ma = F_db_fetch_array($ra)) {
                         ++$answer_index;
-                        $answer_enabled = F_getBoolean($ma['answer_enabled']);
+                        $answer_enabled = f_get_boolean($ma['answer_enabled']);
                         $answer_correct = !in_array((int) $m['question_type'], [4, 5], true)
-                            && F_getBoolean($ma['answer_isright']);
+                            && f_get_boolean($ma['answer_isright']);
                         $answer_label = $answer_index <= 26 ? chr(64 + $answer_index) : (string) $answer_index;
                         $answlist .= '<li class="answer-card'
                             . ($answer_correct ? ' is-correct' : '')

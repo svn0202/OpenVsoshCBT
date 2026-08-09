@@ -32,7 +32,7 @@ require_once '../../shared/code/tce_functions_authorization.php';
 // set default values
 $ssl_enabled = !isset($_REQUEST['ssl_enabled']) || empty($_REQUEST['ssl_enabled'])
     ? false
-    : F_getBoolean($_REQUEST['ssl_enabled']);
+    : f_get_boolean($_REQUEST['ssl_enabled']);
 
 $ssl_name = isset($_REQUEST['ssl_name']) ? utrim($_REQUEST['ssl_name']) : '';
 
@@ -266,7 +266,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $ssl_name = $m['ssl_name'];
                 $ssl_hash = $m['ssl_hash'];
                 $ssl_end_date = $m['ssl_end_date'];
-                $ssl_enabled = F_getBoolean($m['ssl_enabled']);
+                $ssl_enabled = f_get_boolean($m['ssl_enabled']);
                 $ssl_user_id = (int) $m['ssl_user_id'];
             } else {
                 $ssl_name = '';

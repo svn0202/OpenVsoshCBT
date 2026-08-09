@@ -63,7 +63,7 @@ echo '<div class="tceformbox">' . K_NEWLINE;
 echo '<div class="result-meta">' . K_NEWLINE;
 
 $usr_all = htmlspecialchars(
-    F_tmf_result_identity($userdata, F_getBoolean($testdata['test_results_anonymized'] ?? false)),
+    F_tmf_result_identity($userdata, f_get_boolean($testdata['test_results_anonymized'] ?? false)),
     ENT_NOQUOTES,
     $l['a_meta_charset'],
 );
@@ -153,7 +153,7 @@ echo '<section class="result-hero" aria-labelledby="result-summary-title">'
     . '<div><strong>' . htmlspecialchars($time_diff, ENT_QUOTES, $result_charset)
     . '</strong><span>Время выполнения</span></div></div></section>' . K_NEWLINE;
 
-if (F_getBoolean($testdata['test_report_to_users'])) {
+if (f_get_boolean($testdata['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
 
     $topicresults = []; // per-topic results
@@ -358,7 +358,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                                     echo '<abbr title="' . $l['m_unanswered'] . '" class="offbox">&nbsp;</abbr>';
                                 }
                             } elseif ($ma['logansw_selected'] > 0) {
-                                if (F_getBoolean($ma['answer_isright'])) {
+                                if (f_get_boolean($ma['answer_isright'])) {
                                     echo '<abbr title="' . $l['h_answer_right'] . '" class="okbox">x</abbr>';
                                 } else {
                                     echo '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">x</abbr>';
@@ -367,7 +367,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                                 // MCSA
                                 echo '<abbr title="-" class="offbox">&nbsp;</abbr>';
                             } elseif ($ma['logansw_selected'] == 0) {
-                                if (F_getBoolean($ma['answer_isright'])) {
+                                if (f_get_boolean($ma['answer_isright'])) {
                                     echo '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">&nbsp;</abbr>';
                                 } else {
                                     echo '<abbr title="' . $l['h_answer_right'] . '" class="okbox">&nbsp;</abbr>';
@@ -386,7 +386,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                                         . '</abbr>'
                                 ;
                             // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
-                            } elseif (F_getBoolean($ma['answer_isright'])) {
+                            } elseif (f_get_boolean($ma['answer_isright'])) {
                                 echo '<abbr title="' . $l['w_answers_right'] . '" class="onbox">&reg;</abbr>';
                             } else {
                                 echo '<abbr title="' . $l['w_answers_wrong'] . '" class="offbox">&nbsp;</abbr>';

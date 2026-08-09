@@ -69,7 +69,7 @@ if (isset($_REQUEST['omrdir']) && str_starts_with($_REQUEST['omrdir'], K_PATH_CA
 if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
     $overwrite = false;
 } else {
-    $overwrite = F_getBoolean($_REQUEST['overwrite']);
+    $overwrite = f_get_boolean($_REQUEST['overwrite']);
 }
 
 // process OMR files on the specified directory

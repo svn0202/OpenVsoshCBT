@@ -49,7 +49,7 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l[
 if (!isset($_REQUEST['subject_enabled']) || empty($_REQUEST['subject_enabled'])) {
     $subject_enabled = false;
 } else {
-    $subject_enabled = F_getBoolean($_REQUEST['subject_enabled']);
+    $subject_enabled = f_get_boolean($_REQUEST['subject_enabled']);
 }
 
 $subject_id = isset($_REQUEST['subject_id']) ? (int) $_REQUEST['subject_id'] : 0;
@@ -335,7 +335,7 @@ if ($formstatus && $menu_mode != 'clear') {
                 $subject_id = $m['subject_id'];
                 $subject_name = $m['subject_name'];
                 $subject_description = $m['subject_description'];
-                $subject_enabled = F_getBoolean($m['subject_enabled']);
+                $subject_enabled = f_get_boolean($m['subject_enabled']);
                 $subject_module_id = $m['subject_module_id'];
             } else {
                 $subject_name = '';
@@ -398,7 +398,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['module_enabled'])) {
+        if (f_get_boolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';
@@ -454,7 +454,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['subject_enabled'])) {
+        if (f_get_boolean($m['subject_enabled'])) {
             echo '+';
         } else {
             echo '-';

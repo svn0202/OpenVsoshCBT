@@ -150,12 +150,12 @@ if ($rm = F_db_query($sqlm, $db)) {
                 if ($rq = F_db_query($sqlq, $db)) {
                     $itemcount = 1;
                     while ($mq = F_db_fetch_array($rq)) {
-                        $disabled = !F_getBoolean($mq['question_enabled']);
+                        $disabled = !f_get_boolean($mq['question_enabled']);
                         $rowstyle = $disabled ? 'color:#999999;' : '';
                         $flags =
-                            (F_getBoolean($mq['question_fullscreen']) ? 'F' : '')
-                            . (F_getBoolean($mq['question_inline_answers']) ? 'I' : '')
-                            . (F_getBoolean($mq['question_auto_next']) ? 'A' : '');
+                            (f_get_boolean($mq['question_fullscreen']) ? 'F' : '')
+                            . (f_get_boolean($mq['question_inline_answers']) ? 'I' : '')
+                            . (f_get_boolean($mq['question_auto_next']) ? 'A' : '');
                         $pos = $mq['question_position'] > 0 ? $mq['question_position'] : '';
                         $timer = $mq['question_timer'] > 0 ? $mq['question_timer'] : '';
 
@@ -205,10 +205,10 @@ if ($rm = F_db_query($sqlm, $db)) {
                                 $idx = 0;
                                 while ($ma = F_db_fetch_array($ra)) {
                                     ++$idx;
-                                    $adisabled = !F_getBoolean($ma['answer_enabled']);
+                                    $adisabled = !f_get_boolean($ma['answer_enabled']);
                                     $astyle = $adisabled ? 'color:#999999;' : '';
                                     $rightmark = !in_array((int) $mq['question_type'], [4, 5], true)
-                                        ? $qright[(int) F_getBoolean($ma['answer_isright'])]
+                                        ? $qright[(int) f_get_boolean($ma['answer_isright'])]
                                         : '';
                                     $apos = $ma['answer_position'] > 0 ? $ma['answer_position'] : '';
                                     $akey = $ma['answer_keyboard_key'] > 0

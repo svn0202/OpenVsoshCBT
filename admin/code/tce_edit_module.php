@@ -34,7 +34,7 @@ require_once '../../shared/code/tce_functions_auth_sql.php';
 if (!isset($_REQUEST['module_enabled']) || empty($_REQUEST['module_enabled'])) {
     $module_enabled = false;
 } else {
-    $module_enabled = F_getBoolean($_REQUEST['module_enabled']);
+    $module_enabled = f_get_boolean($_REQUEST['module_enabled']);
 }
 
 $module_name = isset($_REQUEST['module_name']) ? utrim($_REQUEST['module_name']) : '';
@@ -285,7 +285,7 @@ if ($formstatus && $menu_mode != 'clear') {
             if ($m = F_db_fetch_array($r)) {
                 $module_id = $m['module_id'];
                 $module_name = $m['module_name'];
-                $module_enabled = F_getBoolean($m['module_enabled']);
+                $module_enabled = f_get_boolean($m['module_enabled']);
                 $module_user_id = (int) $m['module_user_id'];
             } else {
                 $module_name = '';
@@ -335,7 +335,7 @@ if ($r = F_db_query($sql, $db)) {
         }
 
         echo '>' . $countitem . '. ';
-        if (F_getBoolean($m['module_enabled'])) {
+        if (f_get_boolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';

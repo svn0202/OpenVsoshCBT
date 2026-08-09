@@ -79,13 +79,13 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars(
 if (!isset($_REQUEST['test_results_to_users']) || empty($_REQUEST['test_results_to_users'])) {
     $test_results_to_users = false;
 } else {
-    $test_results_to_users = F_getBoolean($_REQUEST['test_results_to_users']);
+    $test_results_to_users = f_get_boolean($_REQUEST['test_results_to_users']);
 }
 
 if (!isset($_REQUEST['test_report_to_users']) || empty($_REQUEST['test_report_to_users'])) {
     $test_report_to_users = false;
 } else {
-    $test_report_to_users = F_getBoolean($_REQUEST['test_report_to_users']);
+    $test_report_to_users = f_get_boolean($_REQUEST['test_report_to_users']);
 }
 
 $subject_id = !isset($_REQUEST['subject_id']) || empty($_REQUEST['subject_id']) ? [] : $_REQUEST['subject_id'];
@@ -149,13 +149,13 @@ if (!isset($_REQUEST['test_score_threshold']) || empty($_REQUEST['test_score_thr
 if (!isset($_REQUEST['test_random_questions_select']) || empty($_REQUEST['test_random_questions_select'])) {
     $test_random_questions_select = false;
 } else {
-    $test_random_questions_select = F_getBoolean($_REQUEST['test_random_questions_select']);
+    $test_random_questions_select = f_get_boolean($_REQUEST['test_random_questions_select']);
 }
 
 if (!isset($_REQUEST['test_random_questions_order']) || empty($_REQUEST['test_random_questions_order'])) {
     $test_random_questions_order = false;
 } else {
-    $test_random_questions_order = F_getBoolean($_REQUEST['test_random_questions_order']);
+    $test_random_questions_order = f_get_boolean($_REQUEST['test_random_questions_order']);
 }
 
 if (!isset($_REQUEST['test_questions_order_mode']) || empty($_REQUEST['test_questions_order_mode'])) {
@@ -167,13 +167,13 @@ if (!isset($_REQUEST['test_questions_order_mode']) || empty($_REQUEST['test_ques
 if (!isset($_REQUEST['test_random_answers_select']) || empty($_REQUEST['test_random_answers_select'])) {
     $test_random_answers_select = false;
 } else {
-    $test_random_answers_select = F_getBoolean($_REQUEST['test_random_answers_select']);
+    $test_random_answers_select = f_get_boolean($_REQUEST['test_random_answers_select']);
 }
 
 if (!isset($_REQUEST['test_random_answers_order']) || empty($_REQUEST['test_random_answers_order'])) {
     $test_random_answers_order = false;
 } else {
-    $test_random_answers_order = F_getBoolean($_REQUEST['test_random_answers_order']);
+    $test_random_answers_order = f_get_boolean($_REQUEST['test_random_answers_order']);
 }
 
 if (!isset($_REQUEST['test_answers_order_mode']) || empty($_REQUEST['test_answers_order_mode'])) {
@@ -185,25 +185,25 @@ if (!isset($_REQUEST['test_answers_order_mode']) || empty($_REQUEST['test_answer
 if (!isset($_REQUEST['test_comment_enabled']) || empty($_REQUEST['test_comment_enabled'])) {
     $test_comment_enabled = false;
 } else {
-    $test_comment_enabled = F_getBoolean($_REQUEST['test_comment_enabled']);
+    $test_comment_enabled = f_get_boolean($_REQUEST['test_comment_enabled']);
 }
 
 if (!isset($_REQUEST['test_menu_enabled']) || empty($_REQUEST['test_menu_enabled'])) {
     $test_menu_enabled = false;
 } else {
-    $test_menu_enabled = F_getBoolean($_REQUEST['test_menu_enabled']);
+    $test_menu_enabled = f_get_boolean($_REQUEST['test_menu_enabled']);
 }
 
 if (!isset($_REQUEST['test_noanswer_enabled']) || empty($_REQUEST['test_noanswer_enabled'])) {
     $test_noanswer_enabled = false;
 } else {
-    $test_noanswer_enabled = F_getBoolean($_REQUEST['test_noanswer_enabled']);
+    $test_noanswer_enabled = f_get_boolean($_REQUEST['test_noanswer_enabled']);
 }
 
 if (!isset($_REQUEST['test_mcma_radio']) || empty($_REQUEST['test_mcma_radio'])) {
     $test_mcma_radio = false;
 } else {
-    $test_mcma_radio = F_getBoolean($_REQUEST['test_mcma_radio']);
+    $test_mcma_radio = f_get_boolean($_REQUEST['test_mcma_radio']);
 }
 
 if (!isset($_REQUEST['test_repeatable']) || empty($_REQUEST['test_repeatable'])) {
@@ -215,13 +215,13 @@ if (!isset($_REQUEST['test_repeatable']) || empty($_REQUEST['test_repeatable']))
 if (!isset($_REQUEST['test_mcma_partial_score']) || empty($_REQUEST['test_mcma_partial_score'])) {
     $test_mcma_partial_score = false;
 } else {
-    $test_mcma_partial_score = F_getBoolean($_REQUEST['test_mcma_partial_score']);
+    $test_mcma_partial_score = f_get_boolean($_REQUEST['test_mcma_partial_score']);
 }
 
 if (!isset($_REQUEST['test_logout_on_timeout']) || empty($_REQUEST['test_logout_on_timeout'])) {
     $test_logout_on_timeout = false;
 } else {
-    $test_logout_on_timeout = F_getBoolean($_REQUEST['test_logout_on_timeout']);
+    $test_logout_on_timeout = f_get_boolean($_REQUEST['test_logout_on_timeout']);
 }
 
 $test_max_score = isset($_REQUEST['test_max_score']) ? (float) $_REQUEST['test_max_score'] : 0;
@@ -1146,26 +1146,26 @@ if ($formstatus && $menu_mode != 'clear') {
                 $test_end_time = $m['test_end_time'];
                 $test_duration_time = $m['test_duration_time'];
                 $test_ip_range = $m['test_ip_range'];
-                $test_results_to_users = F_getBoolean($m['test_results_to_users']);
-                $test_report_to_users = F_getBoolean($m['test_report_to_users']);
+                $test_results_to_users = f_get_boolean($m['test_results_to_users']);
+                $test_report_to_users = f_get_boolean($m['test_report_to_users']);
                 $test_score_right = $m['test_score_right'];
                 $test_score_wrong = $m['test_score_wrong'];
                 $test_score_unanswered = $m['test_score_unanswered'];
                 $test_max_score = $m['test_max_score'];
                 $test_score_threshold = $m['test_score_threshold'];
-                $test_random_questions_select = F_getBoolean($m['test_random_questions_select']);
-                $test_random_questions_order = F_getBoolean($m['test_random_questions_order']);
+                $test_random_questions_select = f_get_boolean($m['test_random_questions_select']);
+                $test_random_questions_order = f_get_boolean($m['test_random_questions_order']);
                 $test_questions_order_mode = (int) $m['test_questions_order_mode'];
-                $test_random_answers_select = F_getBoolean($m['test_random_answers_select']);
-                $test_random_answers_order = F_getBoolean($m['test_random_answers_order']);
+                $test_random_answers_select = f_get_boolean($m['test_random_answers_select']);
+                $test_random_answers_order = f_get_boolean($m['test_random_answers_order']);
                 $test_answers_order_mode = (int) $m['test_answers_order_mode'];
-                $test_comment_enabled = F_getBoolean($m['test_comment_enabled']);
-                $test_menu_enabled = F_getBoolean($m['test_menu_enabled']);
-                $test_noanswer_enabled = F_getBoolean($m['test_noanswer_enabled']);
-                $test_mcma_radio = F_getBoolean($m['test_mcma_radio']);
+                $test_comment_enabled = f_get_boolean($m['test_comment_enabled']);
+                $test_menu_enabled = f_get_boolean($m['test_menu_enabled']);
+                $test_noanswer_enabled = f_get_boolean($m['test_noanswer_enabled']);
+                $test_mcma_radio = f_get_boolean($m['test_mcma_radio']);
                 $test_repeatable = $m['test_repeatable'];
-                $test_mcma_partial_score = F_getBoolean($m['test_mcma_partial_score']);
-                $test_logout_on_timeout = F_getBoolean($m['test_logout_on_timeout']);
+                $test_mcma_partial_score = f_get_boolean($m['test_mcma_partial_score']);
+                $test_logout_on_timeout = f_get_boolean($m['test_logout_on_timeout']);
                 $test_password = $m['test_password'];
             } else {
                 $test_name = '';

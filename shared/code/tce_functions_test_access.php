@@ -164,7 +164,7 @@ function F_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
             'details' => $minimum_seconds - max(0, $elapsed),
         ];
     }
-    if (F_getBoolean($test['test_require_all_answers'])) {
+    if (f_get_boolean($test['test_require_all_answers'])) {
         $unanswered = F_count_rows(
             K_TABLE_TESTS_LOGS,
             'WHERE testlog_testuser_id=' . (int) $attempt['testuser_id']
@@ -174,7 +174,7 @@ function F_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
             return ['allowed' => false, 'reason' => 'required_answers', 'details' => $unanswered];
         }
     }
-    if (F_getBoolean($test['test_block_finish_below_threshold'])) {
+    if (f_get_boolean($test['test_block_finish_below_threshold'])) {
         $score_result = F_db_query(
             'SELECT SUM(testlog_score) AS total_score FROM ' . K_TABLE_TESTS_LOGS
             . ' WHERE testlog_testuser_id=' . (int) $attempt['testuser_id'],

@@ -1040,7 +1040,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     {
         $marker = ' ';
         $markfill = false;
-        $right = F_getBoolean($ma['answer_isright']);
+        $right = f_get_boolean($ma['answer_isright']);
 
         if (in_array($qtype, [4, 5], true)) {
             $marker = $ma['logansw_position'] > 0 ? (string) $ma['logansw_position'] : ' ';

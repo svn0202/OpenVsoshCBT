@@ -56,7 +56,7 @@ if (isset($_REQUEST['date'])) {
 if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
     $overwrite = false;
 } else {
-    $overwrite = F_getBoolean($_REQUEST['overwrite']);
+    $overwrite = f_get_boolean($_REQUEST['overwrite']);
 }
 
 // process uploaded files

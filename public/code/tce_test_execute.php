@@ -69,10 +69,10 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
     if (F_executeTest($test_id)) {
         $execution_rules = F_getTestData($test_id);
-        if (F_getBoolean($execution_rules['test_disable_previous'] ?? false)) {
+        if (f_get_boolean($execution_rules['test_disable_previous'] ?? false)) {
             unset($_REQUEST['prevquestion'], $_POST['prevquestion']);
         }
-        if (F_getBoolean($execution_rules['test_disable_next'] ?? false)) {
+        if (f_get_boolean($execution_rules['test_disable_next'] ?? false)) {
             unset($_REQUEST['nextquestion'], $_POST['nextquestion']);
         }
         if (!empty($_REQUEST['testlogid'])) {

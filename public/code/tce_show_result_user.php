@@ -92,7 +92,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 
 $usr_all = htmlspecialchars(
-    F_tmf_result_identity($userdata, F_getBoolean($teststat['testinfo']['test_results_anonymized'] ?? false)),
+    F_tmf_result_identity($userdata, f_get_boolean($teststat['testinfo']['test_results_anonymized'] ?? false)),
     ENT_NOQUOTES,
     $l['a_meta_charset'],
 );
@@ -205,7 +205,7 @@ echo
     )
 ;
 
-if (F_getBoolean($teststat['testinfo']['test_report_to_users'])) {
+if (f_get_boolean($teststat['testinfo']['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
     echo F_printUserTestStat($testuser_id);
     echo '</div>' . K_NEWLINE;

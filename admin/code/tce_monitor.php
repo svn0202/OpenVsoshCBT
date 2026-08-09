@@ -145,7 +145,7 @@ if ($test_id > 0) {
         if (is_array($attempt)) {
             $participant['focus_loss_count'] = (int) $attempt['testuser_focus_loss_count'];
         }
-        $participant['status'] = is_array($attempt) && F_getBoolean($attempt['testuser_pregenerated'])
+        $participant['status'] = is_array($attempt) && f_get_boolean($attempt['testuser_pregenerated'])
             ? 'not_started'
             : F_tmf_monitor_status(
                 $attempt === null ? null : (int) $attempt['testuser_status'],

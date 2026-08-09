@@ -143,7 +143,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
             $xml .= '</name>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . '<enabled>';
-            $xml .= $boolean[(int) F_getBoolean($mm['module_enabled'])];
+            $xml .= $boolean[(int) f_get_boolean($mm['module_enabled'])];
             $xml .= '</enabled>' . K_NEWLINE;
 
             // ---- topic
@@ -166,7 +166,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                     $xml .= '</description>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                    $xml .= $boolean[(int) F_getBoolean($ms['subject_enabled'])];
+                    $xml .= $boolean[(int) f_get_boolean($ms['subject_enabled'])];
                     $xml .= '</enabled>' . K_NEWLINE;
 
                     // ---- questions
@@ -184,7 +184,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<question>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                            $xml .= $boolean[(int) F_getBoolean($m['question_enabled'])];
+                            $xml .= $boolean[(int) f_get_boolean($m['question_enabled'])];
                             $xml .= '</enabled>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<type>';
@@ -204,19 +204,19 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= '</timer>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<fullscreen>';
-                            $xml .= $boolean[(int) F_getBoolean($m['question_fullscreen'])];
+                            $xml .= $boolean[(int) f_get_boolean($m['question_fullscreen'])];
                             $xml .= '</fullscreen>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<inline_answers>';
-                            $xml .= $boolean[(int) F_getBoolean($m['question_inline_answers'])];
+                            $xml .= $boolean[(int) f_get_boolean($m['question_inline_answers'])];
                             $xml .= '</inline_answers>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<auto_next>';
-                            $xml .= $boolean[(int) F_getBoolean($m['question_auto_next'])];
+                            $xml .= $boolean[(int) f_get_boolean($m['question_auto_next'])];
                             $xml .= '</auto_next>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<shuffle_answers>';
-                            $xml .= $boolean[(int) F_getBoolean($m['question_shuffle_answers'])];
+                            $xml .= $boolean[(int) f_get_boolean($m['question_shuffle_answers'])];
                             $xml .= '</shuffle_answers>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
@@ -242,11 +242,11 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<answer>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                                    $xml .= $boolean[(int) F_getBoolean($ma['answer_enabled'])];
+                                    $xml .= $boolean[(int) f_get_boolean($ma['answer_enabled'])];
                                     $xml .= '</enabled>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<isright>';
-                                    $xml .= $boolean[(int) F_getBoolean($ma['answer_isright'])];
+                                    $xml .= $boolean[(int) f_get_boolean($ma['answer_isright'])];
                                     $xml .= '</isright>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<position>';

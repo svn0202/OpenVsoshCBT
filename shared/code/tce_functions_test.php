@@ -537,7 +537,7 @@ function F_checkTestStatus($user_id, $test_id, $duration)
         if ($m = F_db_fetch_array($r)) {
             $testuser_id = $m['testuser_id'];
             $test_status = $m['testuser_status'];
-            $test_pregenerated = F_getBoolean($m['testuser_pregenerated'] ?? false);
+            $test_pregenerated = f_get_boolean($m['testuser_pregenerated'] ?? false);
             $endtime = date(
                 K_TIMESTAMP_FORMAT,
                 strtotime($m['testuser_creation_time']) + ($duration * K_SECONDS_IN_MINUTE),
@@ -696,12 +696,12 @@ function F_printTestInfo($test_id, $showip = false)
             $str .= F_twoColRow(
                 $l['w_results_to_users'],
                 $l['h_results_to_users'],
-                $boolval[(int) F_getBoolean($m['test_results_to_users'])],
+                $boolval[(int) f_get_boolean($m['test_results_to_users'])],
             );
             $str .= F_twoColRow(
                 $l['w_report_to_users'],
                 $l['h_report_to_users'],
-                $boolval[(int) F_getBoolean($m['test_report_to_users'])],
+                $boolval[(int) f_get_boolean($m['test_report_to_users'])],
             );
             $is_test_repeatable = $boolval[(int) ($m['test_repeatable'] != 0)];
             $repeat_times = '';
@@ -713,16 +713,16 @@ function F_printTestInfo($test_id, $showip = false)
 
             $str .= F_twoColRow($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
             // Additional information hidden by default
-            //$str .= F_twoColRow($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(F_getBoolean($m['test_random_questions_select']))]);
-            //$str .= F_twoColRow($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(F_getBoolean($m['test_random_questions_order']))]);
-            //$str .= F_twoColRow($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(F_getBoolean($m['test_questions_order_mode']))]);
-            //$str .= F_twoColRow($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(F_getBoolean($m['test_random_answers_select']))]);
-            //$str .= F_twoColRow($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(F_getBoolean($m['test_random_answers_order']))]);
-            //$str .= F_twoColRow($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(F_getBoolean($m['test_answers_order_mode']))]);
-            //$str .= F_twoColRow($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(F_getBoolean($m['test_comment_enabled']))]);
-            //$str .= F_twoColRow($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(F_getBoolean($m['test_menu_enabled']))]);
-            //$str .= F_twoColRow($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(F_getBoolean($m['test_noanswer_enabled']))]);
-            //$str .= F_twoColRow($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(F_getBoolean($m['test_mcma_radio']))]);
+            //$str .= F_twoColRow($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(f_get_boolean($m['test_random_questions_select']))]);
+            //$str .= F_twoColRow($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(f_get_boolean($m['test_random_questions_order']))]);
+            //$str .= F_twoColRow($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(f_get_boolean($m['test_questions_order_mode']))]);
+            //$str .= F_twoColRow($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(f_get_boolean($m['test_random_answers_select']))]);
+            //$str .= F_twoColRow($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(f_get_boolean($m['test_random_answers_order']))]);
+            //$str .= F_twoColRow($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(f_get_boolean($m['test_answers_order_mode']))]);
+            //$str .= F_twoColRow($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(f_get_boolean($m['test_comment_enabled']))]);
+            //$str .= F_twoColRow($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(f_get_boolean($m['test_menu_enabled']))]);
+            //$str .= F_twoColRow($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(f_get_boolean($m['test_noanswer_enabled']))]);
+            //$str .= F_twoColRow($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(f_get_boolean($m['test_mcma_radio']))]);
             if ($showip) {
                 $str .= F_twoColRow($l['w_ip_range'], $l['h_ip_range'], $m['test_ip_range']);
             }
@@ -1327,11 +1327,11 @@ function F_createTest($test_id, $user_id)
     $firsttest = 0; // id of the firts test of this type
     // get test data
     $testdata = F_getTestData($test_id);
-    $test_random_questions_select = F_getBoolean($testdata['test_random_questions_select']);
-    $test_random_questions_order = F_getBoolean($testdata['test_random_questions_order']);
+    $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
+    $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
     $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
-    $test_random_answers_select = F_getBoolean($testdata['test_random_answers_select']);
-    $test_random_answers_order = F_getBoolean($testdata['test_random_answers_order']);
+    $test_random_answers_select = f_get_boolean($testdata['test_random_answers_select']);
+    $test_random_answers_order = f_get_boolean($testdata['test_random_answers_order']);
     $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
     $random_questions = $test_random_questions_select || $test_random_questions_order;
     $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
@@ -1642,7 +1642,7 @@ function F_createTest($test_id, $user_id)
 			FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
 			WHERE question_id=testlog_question_id
 				AND testlog_testuser_id=' . $firsttest . '';
-        if (F_getBoolean($testdata['test_random_questions_order'])) {
+        if (f_get_boolean($testdata['test_random_questions_order'])) {
             $sql .= ' ORDER BY RAND()';
         } else {
             $sql .= ' ORDER BY testlog_order';
@@ -1725,13 +1725,13 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
         $db,
     );
     $question_options = $question_options_result ? F_db_fetch_array($question_options_result) : false;
-    $randorder = F_getBoolean($testdata['test_random_answers_order'])
-        || F_getBoolean($question_options['question_shuffle_answers'] ?? false);
+    $randorder = f_get_boolean($testdata['test_random_answers_order'])
+        || f_get_boolean($question_options['question_shuffle_answers'] ?? false);
     $ordmode = (int) $testdata['test_answers_order_mode'];
     // for each question
     if (
-        F_getBoolean($testdata['test_random_questions_select'])
-        || F_getBoolean($testdata['test_random_answers_select'])
+        f_get_boolean($testdata['test_random_questions_select'])
+        || f_get_boolean($testdata['test_random_answers_select'])
         || $firsttest == 0
     ) {
         $answers_ids = []; // array used to store answers IDs
@@ -1930,7 +1930,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                 // selected
                                 $answer_score = F_tmf_answer_score(
                                     $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
-                                    F_getBoolean($m['answer_isright']),
+                                    f_get_boolean($m['answer_isright']),
                                     (float) $question_right_score,
                                     (float) $question_wrong_score,
                                 );
@@ -1962,14 +1962,14 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                     // unanswered
                                     $answer_score += $question_unanswered_score;
                                 } elseif (
-                                    F_getBoolean($m['answer_isright'])
+                                    f_get_boolean($m['answer_isright'])
                                     && $answer_id[$m['logansw_answer_id']] == 1
                                 ) {
                                     // right (selected)
                                     $unanswered = false;
                                     $answer_score += $question_right_score;
                                 } elseif (
-                                    !F_getBoolean($m['answer_isright'])
+                                    !f_get_boolean($m['answer_isright'])
                                     && $answer_id[$m['logansw_answer_id']] == 0
                                 ) {
                                     // right (unselected)
@@ -1989,7 +1989,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             } else {
                                 // unselected checkbox
                                 $unanswered = false;
-                                if (F_getBoolean($m['answer_isright'])) {
+                                if (f_get_boolean($m['answer_isright'])) {
                                     $answer_score += $question_wrong_score;
                                 } else {
                                     $answer_score += $question_right_score;
@@ -2053,7 +2053,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
 
             if ($question_type > 1) {
                 // normalize score
-                if (F_getBoolean($testdata['test_mcma_partial_score'])) {
+                if (f_get_boolean($testdata['test_mcma_partial_score'])) {
                     // use partial scoring for MCMA, ORDER and MATCHING questions
                     $answer_score = round($answer_score / $num_answers, 3);
                 } elseif ($answer_score >= ($question_right_score * $num_answers)) {
@@ -2195,7 +2195,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
     $testdata = F_getTestData($test_id);
     $noanswer_hidden = '';
     $noanswer_disabled = '';
-    if (!F_getBoolean($testdata['test_noanswer_enabled'])) {
+    if (!f_get_boolean($testdata['test_noanswer_enabled'])) {
         $noanswer_hidden = ' style="visibility:hidden;display:none;"';
         $noanswer_disabled = ' readonly="readonly" disabled="disabled"';
     }
@@ -2239,7 +2239,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            if (F_getBoolean($m['question_fullscreen'])) {
+            if (f_get_boolean($m['question_fullscreen'])) {
                 // hide some section for fullscreen mode
                 $str .= '<style>' . K_NEWLINE;
                 $str .= '.header{visibility:hidden;display:none;}' . K_NEWLINE;
@@ -2273,7 +2273,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 F_getTestStartTime($m['testlog_testuser_id'])
                 + ($test_data['test_duration_time'] * K_SECONDS_IN_MINUTE);
             $str .= '<input type="hidden" name="examtime" id="examtime" value="' . $examtime . '" />' . K_NEWLINE;
-            if (F_getBoolean($test_data['test_logout_on_timeout'])) {
+            if (f_get_boolean($test_data['test_logout_on_timeout'])) {
                 $str .= '<input type="hidden" name="timeout_logout" id="timeout_logout" value="1" />' . K_NEWLINE;
             }
 
@@ -2340,7 +2340,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 }
                 if (
                     (int) $m['question_type'] === 2
-                    && F_getBoolean($testdata['test_mcma_radio'])
+                    && f_get_boolean($testdata['test_mcma_radio'])
                     && !$tmf_options['checkbox']
                 ) {
                     $str .=
@@ -2350,7 +2350,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                         . K_NEWLINE;
                 }
 
-                if (F_getBoolean($m['question_inline_answers'])) {
+                if (f_get_boolean($m['question_inline_answers'])) {
                     // inline display
                     $str .= '<ol class="answer_inline">' . K_NEWLINE;
                 } else {
@@ -2416,7 +2416,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                         $checked = true;
                                     }
 
-                                    if (F_getBoolean($m['question_auto_next'])) {
+                                    if (f_get_boolean($m['question_auto_next'])) {
                                         $str .=
                                             " onclick=\"var submittime=new Date();document.getElementById('reaction_time').value=submittime.getTime()-document.getElementById('display_time').value;document.getElementById('autonext').value=1;document.getElementById('"
                                             . $formname
@@ -2436,7 +2436,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                             case 2:
                                 {
                                     // MCMA - multiple-answer question
-                                    if (F_getBoolean($testdata['test_mcma_radio']) && !$tmf_options['checkbox']) {
+                                    if (f_get_boolean($testdata['test_mcma_radio']) && !$tmf_options['checkbox']) {
                                         // radiobuttons
 
                                         // no-answer option
@@ -2570,7 +2570,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                         . K_NEWLINE;
                                     if (
                                         (int) $m['question_type'] === 5
-                                        || F_getBoolean($testdata['test_noanswer_enabled'])
+                                        || f_get_boolean($testdata['test_noanswer_enabled'])
                                     ) {
                                         $str .= '<option value="0">&nbsp;</option>' . K_NEWLINE;
                                     }
@@ -2681,7 +2681,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 $testdata,
                 $m['testlog_testuser_id'],
                 $testlog_id,
-                F_getBoolean($m['question_fullscreen']),
+                f_get_boolean($m['question_fullscreen']),
             );
         }
 
@@ -2756,7 +2756,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         while ($m = F_db_fetch_array($r)) {
             ++$i;
             $item_classes = [];
-            if (F_getBoolean($m['testlog_reviewed'] ?? false)) {
+            if (f_get_boolean($m['testlog_reviewed'] ?? false)) {
                 $item_classes[] = 'marked-for-review';
             }
             if ($m['testlog_id'] != $testlog_id) {
@@ -2777,7 +2777,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     $testlog_id_next = $m['testlog_id'];
                 }
             } else {
-                $question_reviewed = F_getBoolean($m['testlog_reviewed'] ?? false);
+                $question_reviewed = f_get_boolean($m['testlog_reviewed'] ?? false);
                 $tmf_options = F_tmf_question_options((string) $m['question_description']);
                 array_unshift($item_classes, 'selected');
                 $str .= '<li class="' . implode(' ', $item_classes)
@@ -2793,7 +2793,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
                     . F_tcecodeToTitle($m['question_description'])
                     . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
-                $question_timer = F_getBoolean($m['question_timer']);
+                $question_timer = f_get_boolean($m['question_timer']);
                 $qsel = $i;
                 if ($qsel > 1) {
                     $qprev = ' (' . ($i - 1) . ')';
@@ -2888,8 +2888,8 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             ENT_QUOTES,
             $l['a_meta_charset'],
         )
-        . '" data-auto-fullscreen="' . (F_getBoolean($testdata['test_auto_fullscreen'] ?? false) ? '1' : '0')
-        . '" data-hide-exam-info="' . (F_getBoolean($testdata['test_hide_exam_info'] ?? false) ? '1' : '0')
+        . '" data-auto-fullscreen="' . (f_get_boolean($testdata['test_auto_fullscreen'] ?? false) ? '1' : '0')
+        . '" data-hide-exam-info="' . (f_get_boolean($testdata['test_hide_exam_info'] ?? false) ? '1' : '0')
         . '">' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'
         . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])
@@ -2925,7 +2925,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $navlink = '';
 
     // button for previous question
-    if (!$question_timer && !F_getBoolean($testdata['test_disable_previous'] ?? false)) {
+    if (!$question_timer && !f_get_boolean($testdata['test_disable_previous'] ?? false)) {
         $navlink .=
             '<input type="submit" name="prevquestion" id="prevquestion" title="'
             . $l['w_previous']
@@ -2976,7 +2976,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
         $qnext = '(' . ($qsel + 1) . ') ';
     }
 
-    if (!F_getBoolean($testdata['test_disable_next'] ?? false)) {
+    if (!f_get_boolean($testdata['test_disable_next'] ?? false)) {
         $navlink .=
             '<input type="submit" name="nextquestion" id="nextquestion" title="'
             . $l['w_next']
@@ -3013,7 +3013,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $rstr .= '<br />' . K_NEWLINE;
     $rstr .= $navlink;
     $rstr .= '<br />' . K_NEWLINE;
-    if (F_getBoolean($testdata['test_menu_enabled']) && !$disable) {
+    if (f_get_boolean($testdata['test_menu_enabled']) && !$disable) {
         // display questions menu
         $rstr .= '<span id="questionssection"></span>' . K_NEWLINE;
         $rstr .= '<details class="tcecontentbox exam-question-list" open="open">' . K_NEWLINE;
@@ -3041,7 +3041,7 @@ function F_tmf_live_score(int $test_id, int $testuser_id): ?float
         $db,
     );
     $enabled = $enabled_result ? F_db_fetch_array($enabled_result) : false;
-    if (!is_array($enabled) || !F_getBoolean($enabled['test_live_score'] ?? false)) {
+    if (!is_array($enabled) || !f_get_boolean($enabled['test_live_score'] ?? false)) {
         return null;
     }
     $score_result = F_db_query(
@@ -3091,7 +3091,7 @@ function F_testComment($test_id)
     $user_id = (int) $_SESSION['session_user_id'];
     $str = '';
     // user's comment
-    if (F_getBoolean($td['test_comment_enabled'])) {
+    if (f_get_boolean($td['test_comment_enabled'])) {
         // get user's test comment
         $comment = '';
         $sql =

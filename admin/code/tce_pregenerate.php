@@ -63,7 +63,7 @@ if ($test_id > 0) {
         if (!isset($eligible_lookup[(int) $attempt['testuser_user_id']])) {
             continue;
         }
-        if (F_getBoolean($attempt['testuser_pregenerated'])) {
+        if (f_get_boolean($attempt['testuser_pregenerated'])) {
             ++$prepared_count;
         } else {
             ++$started_count;

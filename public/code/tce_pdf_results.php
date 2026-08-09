@@ -232,12 +232,12 @@ if ($mode > 2) {
     // detailed report per test user (respecting the per-test "report to users" flag in public mode)
     if ($testuser_id === 0) {
         foreach ($ts['testuser'] as $tstusr) {
-            if (!$pubmode || F_getBoolean($tstusr['test']['test_report_to_users'])) {
+            if (!$pubmode || f_get_boolean($tstusr['test']['test_report_to_users'])) {
                 $pdf->addReportPage();
                 $pdf->printTestUserInfo($tstusr, $onlytext);
             }
         }
-    } elseif (!$pubmode || F_getBoolean($ts['testuser']["'" . $testuser_id . "'"]['test']['test_report_to_users'])) {
+    } elseif (!$pubmode || f_get_boolean($ts['testuser']["'" . $testuser_id . "'"]['test']['test_report_to_users'])) {
         $pdf->addReportPage();
         $pdf->printTestUserInfo($ts['testuser']["'" . $testuser_id . "'"], $onlytext);
     }
