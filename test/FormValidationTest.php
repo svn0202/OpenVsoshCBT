@@ -61,6 +61,14 @@ final class FormValidationTest extends TestCase
         ]));
     }
 
+    public function testRequiredFieldCheckIgnoresNonStringLabels(): void
+    {
+        $this->assertSame(' user_email', \F_check_required_fields([
+            'ff_required' => 'user_email',
+            'ff_required_labels' => ['Email'],
+        ]));
+    }
+
     public function testSubmitButtonPrintsExistingMarkup(): void
     {
         ob_start();
