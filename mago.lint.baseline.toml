@@ -1029,12 +1029,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "function-name"
-message = "Function name `F_tmf_test_access_status` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_access.php"
-code = "function-name"
 message = "Function name `F_tmf_test_completion_status` should be in snake case."
 count = 1
 
