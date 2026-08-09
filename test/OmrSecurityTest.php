@@ -6,6 +6,22 @@ use PHPUnit\Framework\TestCase;
 
 final class OmrSecurityTest extends TestCase
 {
+    public function testQrDecoderRejectsEmptyImagePathBeforeRunningExternalTool(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_omr.php"; '
+                    . 'echo json_encode(f_decode_omr_test_data_qr_code(""));',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('false', $output);
+    }
+
     public function testValidOmrPayloadRoundTrips(): void
     {
         $payload = [42, [100, [1 => 501, 2 => 502]], [101, []]];

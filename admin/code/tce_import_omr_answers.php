@@ -62,7 +62,7 @@ if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
 // process uploaded files
 if (isset($menu_mode) && $menu_mode === 'upload' && $user_id > 0 && $_FILES !== []) {
     // read OMR DATA page
-    $omr_testdata = F_decodeOMRTestDataQRCode($_FILES['omrfile']['tmp_name'][0]);
+    $omr_testdata = f_decode_omr_test_data_qr_code($_FILES['omrfile']['tmp_name'][0]);
     if ($omr_testdata === false) {
         F_print_error('ERROR', $l['m_omr_wrong_test_data']);
     } else {

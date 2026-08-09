@@ -104,7 +104,7 @@ function f_decode_omr_test_data(mixed $str): array|false
  * @param $image (string) image file to be decoded (scanned OMR page).
  * @return array<array-key, mixed>|false test data, or false in case of error
  */
-function F_decodeOMRTestDataQRCode(mixed $image): array|false
+function f_decode_omr_test_data_qr_code(mixed $image): array|false
 {
     require_once '../config/tce_config.php';
     if (empty($image)) {
