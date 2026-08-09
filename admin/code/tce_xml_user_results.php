@@ -118,7 +118,7 @@ switch ($output_format) {
  * @author Nicola Asuni
  * @return XML data
  */
-function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
+function f_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
