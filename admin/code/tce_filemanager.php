@@ -192,7 +192,7 @@ switch ($menu_mode) {
         } elseif (F_isUsedMediaFile($file)) {
             F_print_error('WARNING', $l['m_used_file']);
         } elseif (isset($_REQUEST['newname'])) {
-            if (F_renameMediaFile($file, $dir . $newname)) {
+            if (f_rename_media_file($file, $dir . $newname)) {
                 $file = $dir . $newname;
                 F_print_error('MESSAGE', $l['m_file_renamed']);
             } else {
