@@ -17539,42 +17539,6 @@ message = "This condition (type `true`) will always evaluate to true."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$upload` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-false-argument"
-message = "Argument #2 of function `hash_equals` is possibly `false`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-false-argument"
-message = "Argument #2 of function `openvsosh_save_setting` is possibly `false`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "possibly-false-operand"
-message = "Possibly false right operand used in string concatenation (type `false|non-negative-int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "redundant-null-coalesce"
-message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_site_assets.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `openvsosh_store_site_asset`.'
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_statistics.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."

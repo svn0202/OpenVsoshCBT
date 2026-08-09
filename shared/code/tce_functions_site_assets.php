@@ -29,7 +29,9 @@ function openvsosh_site_asset_metadata(string $type): array|false
 }
 
 /**
+ * @param array<array-key, mixed> $upload
  * @return array{stored:bool,message:string}
+ * @throws Random\RandomException
  */
 function openvsosh_store_site_asset(string $type, array $upload): array
 {
@@ -57,7 +59,7 @@ function openvsosh_store_site_asset(string $type, array $upload): array
     if (
         !is_array($image)
         || !in_array($mime, ['image/jpeg', 'image/png'], true)
-        || ($image['mime'] ?? '') !== $mime
+        || $image['mime'] !== $mime
         || (int) $image[0] < 32 || (int) $image[1] < 32
         || (int) $image[0] > 8192 || (int) $image[1] > 8192
     ) {
@@ -77,7 +79,7 @@ function openvsosh_store_site_asset(string $type, array $upload): array
     $values = [
         'site_' . $type . '_stored' => $stored,
         'site_' . $type . '_mime' => $mime,
-        'site_' . $type . '_sha256' => hash_file('sha256', $target),
+        'site_' . $type . '_sha256' => (string) hash_file('sha256', $target),
     ];
     foreach ($values as $key => $value) {
         if (!openvsosh_save_setting($key, $value)) {
@@ -100,13 +102,14 @@ function openvsosh_send_site_asset(string $type): never
     $path = $metadata ? openvsosh_site_asset_directory() . $metadata['stored'] : '';
     if (
         !$metadata || !is_file($path)
-        || !hash_equals($metadata['sha256'], hash_file('sha256', $path))
+        || !hash_equals($metadata['sha256'], (string) hash_file('sha256', $path))
     ) {
         http_response_code(404);
         exit();
     }
     header('Content-Type: ' . $metadata['mime']);
-    header('Content-Length: ' . filesize($path));
+    $size = filesize($path);
+    header('Content-Length: ' . ($size === false ? '' : $size));
     header('Cache-Control: public, max-age=300, must-revalidate');
     header('X-Content-Type-Options: nosniff');
     readfile($path);
