@@ -47,12 +47,13 @@ function F_db_connect(
         $dbstring .= '/' . $database;
     }
 
+    // @mago-expect lint:no-error-control-operator -- connection failures follow the DAL's false-return contract
     if (!($db = @oci_connect($username, $password, $dbstring, 'UTF8'))) {
         return false;
     }
 
     // change date format
-    @F_db_query("ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'", $db);
+    F_db_query("ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'", $db);
     return $db;
 }
 
@@ -95,11 +96,13 @@ function F_db_query($query, $link_identifier)
         return true;
     }
     if ($query === 'COMMIT') {
+        // @mago-expect lint:no-error-control-operator -- transaction failures follow the DAL's false-return contract
         $committed = @oci_commit($link_identifier);
         unset($transactions[$connection_id]);
         return $committed;
     }
     if ($query === 'ROLLBACK') {
+        // @mago-expect lint:no-error-control-operator -- transaction failures follow the DAL's false-return contract
         $rolled_back = @oci_rollback($link_identifier);
         unset($transactions[$connection_id]);
         return $rolled_back;
@@ -110,12 +113,14 @@ function F_db_query($query, $link_identifier)
     // remove last limit clause
     $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
 
+    // @mago-expect lint:no-error-control-operator -- invalid SQL follows the DAL's false-return contract
     $stid = @oci_parse($link_identifier, $query);
     if (!$stid) {
         return false;
     }
 
     $mode = isset($transactions[$connection_id]) ? OCI_NO_AUTO_COMMIT : OCI_COMMIT_ON_SUCCESS;
+    // @mago-expect lint:no-error-control-operator -- execution failures follow the DAL's false-return contract
     if (@oci_execute($stid, $mode)) {
         return $stid;
     }
