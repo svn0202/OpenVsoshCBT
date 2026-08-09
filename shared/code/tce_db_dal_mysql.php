@@ -41,10 +41,12 @@ function F_db_connect(
     $password = '',
     $database = '',
 ) {
+    // @mago-expect lint:no-error-control-operator -- connection failures follow the legacy DAL's false-return contract
     if (!($db = @mysql_connect($host . ':' . $port, $username, $password))) {
         return false;
     }
 
+    // @mago-expect lint:no-error-control-operator -- database selection failures follow the legacy DAL's false-return contract
     if (strlen($database) > 0 && !@mysql_select_db($database, $db)) {
         return false;
     }
