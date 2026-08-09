@@ -73,7 +73,7 @@ function f_decode_base32(string $code): string
  * @param int|float $mtime Reference time in seconds.
  * @return int OTP in the range from 0 to 999999.
  */
-function F_getOTP(string $otpkey, int|float $mtime = 0): int
+function f_get_otp(string $otpkey, int|float $mtime = 0): int
 {
     // get binary key
     $binkey = f_decode_base32($otpkey);
