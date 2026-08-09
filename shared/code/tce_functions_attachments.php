@@ -13,7 +13,7 @@ function F_tmf_attachment_table(): string
     return K_TABLE_PREFIX . 'testlog_attachments';
 }
 
-function F_tmf_attachment_directory(): string
+function f_tmf_attachment_directory(): string
 {
     return rtrim(K_PATH_CACHE, '/\\') . DIRECTORY_SEPARATOR . 'attachments' . DIRECTORY_SEPARATOR;
 }
