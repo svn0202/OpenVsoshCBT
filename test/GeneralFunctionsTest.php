@@ -220,6 +220,15 @@ final class GeneralFunctionsTest extends TestCase
         self::assertSame('fi', \f_utf8_normalizer('ﬁ', 'KD'));
     }
 
+    public function testDecimalToHexConversion(): void
+    {
+        self::assertSame('0', \bcdechex(0));
+        self::assertSame('F', \bcdechex(15));
+        self::assertSame('10', \bcdechex(16));
+        self::assertSame('FF', \bcdechex(255));
+        self::assertSame('FFFFFFFFFFFFFFFF', \bcdechex('18446744073709551615'));
+    }
+
     public function testUtrim(): void
     {
         $this->assertSame('hi there', \utrim('   hi there   '));
