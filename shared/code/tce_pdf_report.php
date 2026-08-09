@@ -1066,7 +1066,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Print an SVG statistics graph with a coloured legend.
-     * @param string $svgdata SVG graph data (legacy F_getSVGGraphCode input).
+     * @param string $svgdata SVG graph data (legacy f_get_svg_graph_code input).
      */
     public function printSVGStatsGraph($svgdata): void
     {
@@ -1087,23 +1087,23 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             . '&nbsp;</span></div>';
         $this->writeReportHTML($legend);
 
-        // F_getSVGGraphCode() lives in a standalone helper that the PDF report endpoints
+        // f_get_svg_graph_code() lives in a standalone helper that the PDF report endpoints
         // do not otherwise include; load it on demand so the graph is not silently skipped
         // (the legend above would still print, leaving a confusing legend-without-graph).
-        if (!function_exists('F_getSVGGraphCode')) {
+        if (!function_exists('f_get_svg_graph_code')) {
             $svgfn = __DIR__ . '/tce_functions_svg_graph.php';
             if (is_file($svgfn)) {
                 require_once $svgfn;
             }
         }
-        if (!function_exists('F_getSVGGraphCode')) {
+        if (!function_exists('f_get_svg_graph_code')) {
             return;
         }
         // Render the SVG at a high native resolution (as the web view does) so its
         // fixed-size axis labels stay small relative to the viewport. Generating it at
         // the content width (~180 units) would map roughly 1 unit -> 1 mm, blowing the
         // labels up to ~30pt and overlapping them.
-        $svg = F_getSVGGraphCode(substr((string) $svgdata, 1), 800, 450);
+        $svg = f_get_svg_graph_code(substr((string) $svgdata, 1), 800, 450);
         if ($svg === '' || $svg[0] !== '<') {
             return;
         }

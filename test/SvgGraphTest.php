@@ -10,7 +10,7 @@ final class SvgGraphTest extends TestCase
 {
     public function testBuildsBothSeriesAtRequestedDimensions(): void
     {
-        $svg = F_getSVGGraphCode('10v20x30v40', 100, 250);
+        $svg = f_get_svg_graph_code('10v20x30v40', 100, 250);
 
         self::assertStringStartsWith('<?xml version="1.0"', $svg);
         self::assertStringContainsString('<svg width="100" height="250"', $svg);

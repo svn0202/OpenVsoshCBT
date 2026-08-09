@@ -27,7 +27,7 @@
  * @param $h (int) Graph height.
  * @return string Converted SVG document.
  */
-function F_getSVGGraphCode($p, $w = '', $h = ''): string
+function f_get_svg_graph_code($p, $w = '', $h = ''): string
 {
     // points to graph (values between 0 and 100)
     $points = explode('x', $p);
@@ -167,5 +167,5 @@ function F_getSVGGraph($p, $w = '', $h = '')
     // Turn on output buffering with the gzhandler
     //ob_start('ob_gzhandler');
     // output SVG code
-    echo F_getSVGGraphCode($p, $w, $h);
+    echo f_get_svg_graph_code($p, $w, $h);
 }
