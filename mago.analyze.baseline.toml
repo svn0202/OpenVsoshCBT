@@ -11715,12 +11715,6 @@ count = 2
 [[issues]]
 file = "public/code/tce_test_allresults.php"
 code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "public/code/tce_test_allresults.php"
-code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
 count = 1
 
