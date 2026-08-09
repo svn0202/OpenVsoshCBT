@@ -223,7 +223,7 @@ switch ($menu_mode) { // process submitted data
                     if ($newpassword === $newpassword_repeat) {
                         $user_password = get_password_hash($newpassword);
                         // update OTP key
-                        $user_otpkey = F_getRandomOTPkey();
+                        $user_otpkey = f_get_random_otp_key();
                     } else { //print message and exit
                         F_print_error('WARNING', $l['m_different_passwords']);
                         $formstatus = false;
@@ -380,7 +380,7 @@ switch ($menu_mode) { // process submitted data
                     if ($newpassword === $newpassword_repeat) {
                         $user_password = get_password_hash($newpassword);
                         // update OTP key
-                        $user_otpkey = F_getRandomOTPkey();
+                        $user_otpkey = f_get_random_otp_key();
                     } else { //print message and exit
                         F_print_error('WARNING', $l['m_different_passwords']);
                         $formstatus = false;

@@ -11,7 +11,7 @@ final class OtpFunctionsTest extends TestCase
     /** @throws \Random\RandomException */
     public function testRandomKeyUsesSixteenBase32Characters(): void
     {
-        $key = \F_getRandomOTPkey();
+        $key = \f_get_random_otp_key();
 
         self::assertSame(16, strlen($key));
         self::assertMatchesRegularExpression('/^[A-Z2-7]{16}$/', $key);
