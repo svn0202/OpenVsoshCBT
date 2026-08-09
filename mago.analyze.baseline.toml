@@ -1148,12 +1148,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_module.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_module.php"
 code = "less-specific-nested-argument-type"
 message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `non-empty-list<mixed>` is less specific."
 count = 1
@@ -5624,20 +5618,8 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_users_online.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -7538,12 +7520,6 @@ count = 21
 
 [[issues]]
 file = "admin/code/tce_pdf_all_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_pdf_all_questions.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `Com\Tecnick\Pdf\Tcpdf::setLanguageArray`: expected `array<string, string>`, but found `mixed`.'
 count = 1
@@ -7678,12 +7654,6 @@ count = 1
 file = "admin/code/tce_pdf_results.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_pdf_results.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -7835,12 +7805,6 @@ file = "admin/code/tce_pdf_testgen.php"
 code = "invalid-array-element-key"
 message = "Invalid array key type."
 count = 6
-
-[[issues]]
-file = "admin/code/tce_pdf_testgen.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_pdf_testgen.php"
@@ -12334,12 +12298,6 @@ count = 1
 file = "public/code/tce_pdf_results.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "public/code/tce_pdf_results.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -17144,12 +17102,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 2
@@ -17169,12 +17121,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_compact_string`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_formatFloat`: expected `unknown-ref(formatted)`, but found `non-empty-string`."
 count = 1
 
@@ -17182,12 +17128,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_formatPercentage`: expected `unknown-ref(formatted)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_replace_angulars`: expected `unknown-ref(converted)`, but found `string`."
 count = 1
 
 [[issues]]
@@ -17219,12 +17159,6 @@ file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `showRequiredField`: expected `unknown-ref(html)`, but found `truthy-string`."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `unhtmlentities`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -17415,12 +17349,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_compact_string` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `F_count_rows` is missing a return type hint."
 count = 1
 
@@ -17482,12 +17410,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
 message = "Function `F_isURL` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_replace_angulars` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17560,12 +17482,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
 message = "Function `showRequiredField` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `unhtmlentities` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17751,12 +17667,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `converted`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `formatted`."
 count = 2
 
@@ -17824,12 +17734,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `bcsub`: expected `numeric-string`, but possibly received `int|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `rtrim`: expected `string`, but possibly received `array<array-key, string>|string`."
 count = 1
 
 [[issues]]
@@ -17990,12 +17894,6 @@ count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_html2txt.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
 code = "missing-parameter-type"
 message = "Parameter `$display_links` is missing a type hint."
 count = 1
@@ -18035,12 +17933,6 @@ file = "shared/code/tce_functions_html2txt.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `strpos`: expected `string`, but possibly received `array<array-key, string>|null|string`."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `trim`: expected `string`, but possibly received `array<array-key, string>|string`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_html2txt.php"
@@ -19761,42 +19653,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `F_sanitize_mathml_content`: expected `string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `htmlentities`: expected `string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `unknown-ref(converted)`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `md5`: expected `string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `unknown-ref(converted)`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `preg_match`: expected `string`, but found `unknown-ref(converted)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-argument"
 message = "Invalid argument type for argument #2 of `preg_replace_callback`: expected `(callable(array<array-key, string>): string)`, but found `(closure(mixed): null|string)`."
 count = 2
 
@@ -19805,12 +19661,6 @@ file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-destructuring-source"
 message = "Invalid destructuring assignment: Cannot unpack type `array{0: int, 1: int, 2: int, 3: string, 'bits': int, 'channels': int, 'mime': string}|false` into variables."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -20488,12 +20338,6 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "invalid-operand"
 message = "Invalid type `unknown-ref(XHTML)` for middle operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -21785,12 +21629,6 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
 count = 9
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `unknown-ref(converted)`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

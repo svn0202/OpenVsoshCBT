@@ -128,8 +128,8 @@ switch ($test_questions_order_mode) {
 $pdf = new TcePdfReport();
 $pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
 $pdf->setAuthor(PDF_AUTHOR);
-$pdf->setTitle((string) $doc_title);
-$pdf->setSubject((string) $doc_description);
+$pdf->setTitle($doc_title);
+$pdf->setSubject($doc_description);
 $pdf->setKeywords('TCExam, ' . $doc_title);
 $pdf->setLanguageArray($l);
 $pdf->setReportHeader(PDF_HEADER_TITLE, PDF_HEADER_STRING, PDF_HEADER_LOGO, (float) PDF_HEADER_LOGO_WIDTH);
@@ -185,7 +185,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
 
     $html =
         '<h2 style="text-align:center;background-color:#cccccc;border:0.5px solid #000000;">'
-        . htmlspecialchars((string) $doc_title)
+        . htmlspecialchars($doc_title)
         . '</h2>';
     $html .= '<div style="text-align:center;color:#ff0000;font-size:7pt;">[' . htmlspecialchars($test_ref) . ']</div>';
 

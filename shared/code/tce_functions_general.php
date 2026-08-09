@@ -164,9 +164,9 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
  * Reverse function for htmlentities.
  * @param $text_to_convert (string) input string to convert
  * @param $preserve_tagsign (boolean) if true preserve <> symbols, default=FALSE
- * @return converted string
+ * @return string Converted string.
  */
-function unhtmlentities($text_to_convert, $preserve_tagsign = false)
+function unhtmlentities($text_to_convert, $preserve_tagsign = false): string
 {
     if ($preserve_tagsign) {
         $text_to_convert = preg_replace('/\&([gl])t;/', '&amp;\\1t;', $text_to_convert);
@@ -186,9 +186,9 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false)
  * </ul>
  * @param $string (string) input string to convert
  * @param $dquotes (boolean) If true add slash in fron of double quotes;
- * @return converted string
+ * @return string Converted string.
  */
-function F_compact_string($string, $dquotes = false)
+function F_compact_string($string, $dquotes = false): string
 {
     $repTable = [
         "\t" => ' ',
@@ -207,9 +207,9 @@ function F_compact_string($string, $dquotes = false)
 /**
  * Replace angular parenthesis with html equivalents (html entities).
  * @param $str (string) input string to convert
- * @return converted string
+ * @return string Converted string.
  */
-function F_replace_angulars($str)
+function F_replace_angulars($str): string
 {
     $replaceTable = [
         '<' => '&lt;',

@@ -89,8 +89,8 @@ switch ($expmode) {
 // document metadata
 $pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
 $pdf->setAuthor(PDF_AUTHOR);
-$pdf->setTitle((string) $doc_title);
-$pdf->setSubject((string) $doc_description);
+$pdf->setTitle($doc_title);
+$pdf->setSubject($doc_description);
 $pdf->setKeywords('TCExam, ' . $doc_title);
 $pdf->setLanguageArray($l);
 
@@ -128,7 +128,7 @@ if ($rm = F_db_query($sqlm, $db)) {
 
                 // subject header block
                 $html =
-                    '<h1 style="text-align:center;font-size:13pt;">' . htmlspecialchars((string) $doc_title) . '</h1>';
+                    '<h1 style="text-align:center;font-size:13pt;">' . htmlspecialchars($doc_title) . '</h1>';
                 $html .=
                     '<div style="background-color:#cccccc;font-weight:bold;padding:2px;">'
                     . htmlspecialchars($module_name . ' :: ' . $subject_name)
