@@ -104,7 +104,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         $order_field = 'test_begin_time DESC,test_name';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {
@@ -419,7 +419,7 @@ function F_show_select_test_popup(
         $order_field = 'test_begin_time DESC,test_name';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {
