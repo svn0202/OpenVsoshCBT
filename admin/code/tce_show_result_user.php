@@ -140,7 +140,9 @@ switch ($menu_mode) {
     case 'forcedelete':
         {
             // Delete
-            if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
+            if (
+                f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')
+            ) { //check if delete button has been pushed (redundant check)
                 require_once '../../shared/code/tce_functions_attachments.php';
                 F_tmf_attachment_delete_attempt((int) $testuser_id);
                 $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
@@ -220,12 +222,12 @@ switch ($menu_mode) {
 
 // --- Initialize variables
 
-if ($test_id == 0 && $testuser_id == 0) {
+if ($test_id === 0 && f_form_option_is_selected(0, $testuser_id)) {
     // select default test ID
     $sql = F_select_executed_tests_sql() . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            $test_id = $m['test_id'];
+            $test_id = (int) $m['test_id'];
         }
     } else {
         F_display_db_error();
@@ -327,7 +329,7 @@ $sql = F_select_executed_tests_sql();
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['test_id'] . '"';
-        if ($m['test_id'] == $test_id) {
+        if (f_form_option_is_selected((int) $test_id, $m['test_id'])) {
             echo ' selected="selected"';
         }
 
@@ -379,7 +381,7 @@ if ($r = F_db_query($sql, $db)) {
     $usrcount = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['testuser_id'] . '"';
-        if ($m['testuser_id'] == $testuser_id) {
+        if (f_form_option_is_selected((int) $testuser_id, $m['testuser_id'])) {
             echo ' selected="selected"';
         }
 
