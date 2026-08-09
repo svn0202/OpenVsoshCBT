@@ -117,9 +117,9 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testFormatPercentage(): void
     {
-        $this->assertSame('(&nbsp;50%)', \F_formatPercentage(0.5));       // ratio 0..1, space-padded
-        $this->assertSame('(&nbsp;50%)', \F_formatPercentage(50, false)); // percentage 0..100
-        $this->assertSame('(100%)', \F_formatPercentage(1.0));            // 3 digits => no padding
+        $this->assertSame('(&nbsp;50%)', \f_format_percentage(0.5));       // ratio 0..1, space-padded
+        $this->assertSame('(&nbsp;50%)', \f_format_percentage(50, false)); // percentage 0..100
+        $this->assertSame('(100%)', \f_format_percentage(1.0));            // 3 digits => no padding
     }
 
     public function testFormatPdfAndXmlPercentage(): void
