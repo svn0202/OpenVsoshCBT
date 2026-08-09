@@ -7839,7 +7839,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_users_xlsx.php"
 code = "less-specific-argument"
-message = "Argument type mismatch for argument #1 of `F_tmf_users_xlsx_import`: expected `array<int, array<string, mixed>>`, but provided type `array<array-key, mixed>` is less specific."
+message = "Argument type mismatch for argument #1 of `f_tmf_users_xlsx_import`: expected `array<int, array<string, mixed>>`, but provided type `array<array-key, mixed>` is less specific."
 count = 1
 
 [[issues]]
@@ -17361,13 +17361,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `RuntimeException` in `F_tmf_users_xlsx_import`."
+message = "Potentially unhandled exception `RuntimeException` in `f_tmf_users_xlsx_import`."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `Throwable` in `F_tmf_users_xlsx_import`."
+message = "Potentially unhandled exception `Throwable` in `f_tmf_users_xlsx_import`."
 count = 1
 
 [[issues]]
