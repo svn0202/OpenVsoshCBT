@@ -42,7 +42,7 @@ function F_menu_link($link, $data, $level = 0): ?string
         $description = '<small class="menu-description">' . $data['title'] . '</small>';
     }
     $str = '<li>';
-    if ($link != basename($_SERVER['SCRIPT_NAME'])) {
+    if ((string) $link !== basename($_SERVER['SCRIPT_NAME'])) {
         $str .= '<a href="' . $data['link'] . '" title="' . $data['title'] . '"';
         if (!empty($data['key'])) {
             $str .= ' accesskey="' . (string) $data['key'] . '"';
