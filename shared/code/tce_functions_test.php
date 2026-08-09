@@ -945,19 +945,16 @@ function F_executeTest($test_id)
                     { // 0 = test is not yet created
                         // create new test session for the current user
                         return F_createTest($test_id, $_SESSION['session_user_id']);
-                        break;
                     }
                 case 1: // 1 = the test has been successfully created
                 case 2: // 2 = all questions have been displayed to the user
                 case 3:
                     { // 3 = all questions have been answered
                         return true;
-                        break;
                     }
                 case 4:
                     { // 4 = test locked (for timeout)
                         return false;
-                        break;
                     }
             }
         }
