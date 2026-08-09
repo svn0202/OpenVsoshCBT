@@ -14475,7 +14475,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `F_tmf_recorded_answer_score`: expected `array<string, mixed>`, but found `unknown-ref(Returns)`."
+message = "Invalid argument type for argument #2 of `f_tmf_recorded_answer_score`: expected `array<string, mixed>`, but found `unknown-ref(Returns)`."
 count = 1
 
 [[issues]]
@@ -14505,7 +14505,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_recorded_answer_score`: expected `array<string, mixed>`, but found `mixed`."
+message = "Invalid argument type for argument #1 of `f_tmf_recorded_answer_score`: expected `array<string, mixed>`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -14523,7 +14523,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #3 of `F_tmf_recorded_answer_score`: expected `array<int, array<string, mixed>>`, but possibly received `array{}|non-empty-list<unknown-ref(Returns)>`."
+message = "Possible argument type mismatch for argument #3 of `f_tmf_recorded_answer_score`: expected `array<int, array<string, mixed>>`, but possibly received `array{}|non-empty-list<unknown-ref(Returns)>`."
 count = 1
 
 [[issues]]
