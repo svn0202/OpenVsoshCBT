@@ -30,7 +30,10 @@ final class DeploymentSecurityTest extends TestCase
     public function testSeededAdministratorDoesNotUseHistoricalPassword(): void
     {
         $sql = (string) file_get_contents(dirname(__DIR__) . '/install/db_data.sql');
-        preg_match("/127\\.0\\.0\\.0', 'admin', '([^']+)'/", $sql, $matches);
+        $matches = [];
+        if (preg_match("/127\\.0\\.0\\.0', 'admin', '([^']+)'/", $sql, $matches) !== 1 || !isset($matches[1])) {
+            self::fail('The seeded administrator password hash was not found.');
+        }
 
         $this->assertArrayHasKey(1, $matches);
         $this->assertFalse(password_verify('1234', $matches[1]));
