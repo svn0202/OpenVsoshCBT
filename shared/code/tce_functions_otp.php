@@ -40,15 +40,15 @@ function F_getRandomOTPkey(): string
 
 /**
  * Decode a Base32 encoded string.
- * @param $code (string) Base32 code to be decoded.
+ * @param string $code Base32 code to be decoded.
  * @return string Decoded key.
  */
-function F_decodeBase32($code): string
+function F_decodeBase32(string $code): string
 {
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     // remove invalid chars
-    $code = preg_replace('/[^' . $dict . ']+/', '', $code);
+    $code = preg_replace('/[^' . $dict . ']+/', '', $code) ?? '';
     $n = 0;
     $j = 0;
     $bin = '';
@@ -69,11 +69,11 @@ function F_decodeBase32($code): string
 
 /**
  * Get a One Time Password for the specified secret key.
- * @param $otpkey (string) One Time Password secret key.
- * @param $mtime (int) Reference time in microseconds.
+ * @param string $otpkey One Time Password secret key.
+ * @param int|float $mtime Reference time in seconds.
  * @return int OTP in the range from 0 to 999999.
  */
-function F_getOTP($otpkey, $mtime = 0): int
+function F_getOTP(string $otpkey, int|float $mtime = 0): int
 {
     // get binary key
     $binkey = F_decodeBase32($otpkey);

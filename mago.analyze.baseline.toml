@@ -14488,7 +14488,7 @@ count = 4
 file = "shared/code/tce_authorization.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 21
+count = 18
 
 [[issues]]
 file = "shared/code/tce_authorization.php"
@@ -14741,12 +14741,6 @@ file = "shared/code/tce_authorization.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
 count = 18
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "undefined-variable"
-message = "Undefined variable: `$m`."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_authorization.php"
@@ -18388,78 +18382,6 @@ count = 1
 file = "shared/code/tce_functions_openvsosh_settings.php"
 code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `RuntimeException` in `openvsosh_get_offline_package_secret`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "missing-parameter-type"
-message = "Parameter `$code` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "missing-parameter-type"
-message = "Parameter `$mtime` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "missing-parameter-type"
-message = "Parameter `$otpkey` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `floor`: expected `float|int`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `preg_replace`: expected `array<array-key, string>|string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "mixed-operand"
-message = "Left operand in binary operation has type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `strlen`: expected `string`, but possibly received `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `strlen` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `strpos` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "possibly-null-array-access"
-message = "Cannot perform array access on possibly `null` value."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `non-negative-int` accessed on `array<array-key, string>`."
 count = 1
 
 [[issues]]
