@@ -81,6 +81,18 @@ function f_get_form_translation(string $key, string $fallback = ''): string
 }
 
 /**
+ * Format a decimal value for a machine-readable form field.
+ */
+function f_format_form_currency(string $value, int $decimals): string
+{
+    if (!is_numeric($value)) {
+        return number_format(0.0, $decimals, '.', '');
+    }
+
+    return number_format((float) $value, $decimals, '.', '');
+}
+
+/**
  * Returns an array containing form fields.
  * @return array<array-key, mixed> containing form fields
  */
@@ -794,7 +806,7 @@ function getFormRowFixedValue(
     $str .=
         '<input type="text" readonly="readonly" name="DISABLED_' . $field_name . '" id="DISABLED_' . $field_name . '"';
     if ($currency) {
-        $value = F_formatCurrency($value, 2);
+        $value = f_format_form_currency($value, 2);
         $str .= ' class="disablednum"';
     } else {
         $str .= ' class="disabled"';
