@@ -8,6 +8,25 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    public function testChecksMediaDirectoryAuthorizationAgainstConfiguredPattern(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . 'echo json_encode(['
+                    . 'F_isAuthorizedDir("/cache/alice/", "/cache/", "alice"), '
+                    . 'F_isAuthorizedDir("/cache/bob/", "/cache/", "alice"), '
+                    . 'F_isAuthorizedDir("/cache/bob/docs/", "/cache/", "alice|bob")]);',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('[true,false,true]', $output);
+    }
+
     /** @throws Random\RandomException */
     public function testListsDirectoriesAndFilesInNaturalCaseInsensitiveOrder(): void
     {

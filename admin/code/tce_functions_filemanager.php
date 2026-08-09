@@ -648,7 +648,7 @@ function F_getAuthorizedDirs()
  * @param $authdirs (string) regular expression containing the authorized dirs.
  * @return true if the user is authorized to use the specified directory, false otherwise.
  */
-function F_isAuthorizedDir($dir, $rootdir, $authdirs = '')
+function F_isAuthorizedDir(mixed $dir, mixed $rootdir, mixed $authdirs = ''): bool
 {
     require_once '../config/tce_config.php';
     if (empty($authdirs)) {
