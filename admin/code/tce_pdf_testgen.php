@@ -100,7 +100,7 @@ $test_random_answers_order = f_get_boolean($testdata['test_random_answers_order'
 $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
 $random_questions = $test_random_questions_select || $test_random_questions_order;
 $sql_answer_position = '';
-if (!$test_random_answers_order && $test_answers_order_mode == 0) {
+if (!$test_random_answers_order && $test_answers_order_mode === 0) {
     $sql_answer_position = ' AND answer_position>0';
 }
 
