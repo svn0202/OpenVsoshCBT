@@ -261,7 +261,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
     $right_answers_mcsa_questions_ids = '';
     $wrong_answers_mcsa_questions_ids = [];
     $answers_mcma_questions_ids = [];
-    $answers_order_questions_ids = [];
+    $answers_order_questions_ids = [4 => null, 5 => null];
     $selected_questions = '0';
 
     // 2. for each set of subjects
@@ -277,6 +277,9 @@ for ($item = 1; $item <= $test_num; ++$item) {
     if ($r = F_db_query($sql, $db)) {
         $questions_data = [];
         while ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $raw_subset_type */
+            $raw_subset_type = $m['tsubset_type'];
+            $subset_type = (int) $raw_subset_type;
             // 3. select the subjects IDs
             $selected_subjects = '0';
             $sqlt =
@@ -304,8 +307,8 @@ for ($item = 1; $item <= $test_num; ++$item) {
 				AND question_id NOT IN ('
                 . $selected_questions
                 . ')';
-            if ($m['tsubset_type'] > 0) {
-                $sqlq .= ' AND question_type=' . $m['tsubset_type'];
+            if ($subset_type > 0) {
+                $sqlq .= ' AND question_type=' . $subset_type;
             } else {
                 // Keep malformed MATCHING questions out of mixed-type sets.
                 $sqlq .=
@@ -325,7 +328,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
 						))))";
             }
 
-            if ($m['tsubset_type'] == 1) {
+            if ($subset_type === 1) {
                 // (MCSA : Multiple Choice Single Answer)
                 if ($right_answers_mcsa_questions_ids === '') {
                     $right_answers_mcsa_questions_ids = '0';
@@ -366,7 +369,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         . $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"]
                         . ')';
                 }
-            } elseif ($m['tsubset_type'] == 2) {
+            } elseif ($subset_type === 2) {
                 // (MCMA : Multiple Choice Multiple Answers)
                 if ($m['tsubset_answers'] > 0) {
                     if (!isset($answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
@@ -390,11 +393,14 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     $sqlq .=
                         ' AND question_id IN (' . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] . ')';
                 }
-            } elseif (in_array((int) $m['tsubset_type'], [4, 5], true)) {
+            } elseif (in_array($subset_type, [4, 5], true)) {
                 // ORDERING / MATCHING
-                $position_type = (int) $m['tsubset_type'];
-                if (!isset($answers_order_questions_ids[$position_type])) {
-                    $answers_order_questions_ids[$position_type] = '0';
+                $position_type = $subset_type;
+                $answer_question_ids = $position_type === 4
+                    ? $answers_order_questions_ids[4]
+                    : $answers_order_questions_ids[5];
+                if ($answer_question_ids === null) {
+                    $answer_question_ids = '0';
                     $matching_having = $position_type === 5
                         ? ' AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))'
                             . ' OR answer_question_id IN (SELECT question_id FROM '
@@ -408,12 +414,18 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         . $matching_having;
                     if ($rt = F_db_query($sqlt, $db)) {
                         while ($mt = F_db_fetch_array($rt)) {
-                            $answers_order_questions_ids[$position_type] .= ',' . $mt['answer_question_id'];
+                            $answer_question_ids .= ',' . $mt['answer_question_id'];
                         }
+                    }
+
+                    if ($position_type === 4) {
+                        $answers_order_questions_ids[4] = $answer_question_ids;
+                    } else {
+                        $answers_order_questions_ids[5] = $answer_question_ids;
                     }
                 }
 
-                $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids[$position_type] . ')';
+                $sqlq .= ' AND question_id IN (' . $answer_question_ids . ')';
             }
 
             if ($random_questions) {

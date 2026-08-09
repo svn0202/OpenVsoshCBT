@@ -304,7 +304,7 @@ count = 1
 file = "admin/code/tce_pdf_testgen.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 5
+count = 3
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
