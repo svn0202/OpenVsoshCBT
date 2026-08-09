@@ -266,7 +266,7 @@ function F_login_form()
  * Display logout form.
  * @return XHTML string for logout form.
  */
-function F_logout_form()
+function f_logout_form()
 {
     global $l;
     require_once '../config/tce_config.php';
