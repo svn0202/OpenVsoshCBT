@@ -3542,18 +3542,6 @@ count = 6
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
-code = "redundant-isset-check"
-message = "Redundant condition: variable `$question[0]` (type `nonnull`) is always considered set (not null)."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "redundant-isset-check"
-message = "Redundant condition: variable `$question[1]` (type `nonnull`) is always considered set (not null)."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
 code = "unreachable-else-clause"
 message = "Unreachable else clause"
 count = 2
