@@ -33,12 +33,6 @@ count = 1
 [[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
-message = "Function name `checkCSRFTokenForScript` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/TCExamSessionHandler.php"
-code = "function-name"
 message = "Function name `checkCSRFToken` should be in snake case."
 count = 1
 
