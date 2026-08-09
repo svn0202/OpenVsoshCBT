@@ -443,19 +443,19 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0"';
-if ($sqlordermode == 0) {
+if (f_legacy_int_equals($sqlordermode, 0)) {
     echo ' selected="selected"';
 }
 
 echo '>' . $l['w_user'] . '</option>' . K_NEWLINE;
 echo '<option value="1"';
-if ($sqlordermode == 1) {
+if (f_legacy_int_equals($sqlordermode, 1)) {
     echo ' selected="selected"';
 }
 
 echo '>' . $l['w_question'] . '</option>' . K_NEWLINE;
 echo '<option value="2"';
-if ($sqlordermode == 2) {
+if (f_legacy_int_equals($sqlordermode, 2)) {
     echo ' selected="selected"';
 }
 
