@@ -16402,7 +16402,7 @@ count = 2
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
 message = "Parameter `$str` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"

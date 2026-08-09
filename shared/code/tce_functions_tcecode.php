@@ -910,7 +910,7 @@ function F_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
  * @param $str (string) text to process
  * @return string without tcecode markup tags
  */
-function f_remove_tcecode($str): mixed
+function f_remove_tcecode(mixed $str): mixed
 {
     $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str);
     $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str);
