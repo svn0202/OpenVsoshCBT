@@ -190,7 +190,7 @@ function F_question_copy($question_id, $new_subject_id)
 
     $q = F_question_get_data($question_id);
     if ($q !== false) {
-        if (K_DATABASE_TYPE == 'ORACLE') {
+        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
             $chksql =
                 "dbms_lob.instr(question_description,'" . F_escape_sql($db, $q['question_description']) . "',1,1)>0";
         } elseif (K_DATABASE_TYPE === 'MYSQL' && defined('K_MYSQL_QA_BIN_UNIQUITY') && K_MYSQL_QA_BIN_UNIQUITY) {
