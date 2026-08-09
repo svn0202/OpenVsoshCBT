@@ -1456,7 +1456,7 @@ count = 1
 file = "shared/code/tce_functions_session.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"

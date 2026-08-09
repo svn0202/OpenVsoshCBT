@@ -495,7 +495,7 @@ if (isset($_COOKIE['PHPSESSID'])) {
 if (isset($_REQUEST['PHPSESSID'])) {
     // sanitize $PHPSESSID from get/post/cookie
     $PHPSESSID = preg_replace('/[^0-9a-f]*/', '', $_REQUEST['PHPSESSID']);
-    if (strlen($PHPSESSID) != 32) {
+    if (strlen($PHPSESSID) !== 32) {
         // generate new ID
         $PHPSESSID = getNewSessionID();
     }
