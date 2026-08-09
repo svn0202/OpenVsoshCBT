@@ -136,7 +136,7 @@ if (isset($_REQUEST['answer_description'])) {
     $answer_description = utrim($_REQUEST['answer_description']);
     if (function_exists('normalizer_normalize')) {
         // normalize UTF-8 string based on settings
-        $answer_description = F_utf8_normalizer($answer_description, K_UTF8_NORMALIZATION_MODE);
+        $answer_description = f_utf8_normalizer($answer_description, K_UTF8_NORMALIZATION_MODE);
     }
 }
 

@@ -1413,12 +1413,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
-message = "Function name `F_utf8_normalizer` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "function-name"
 message = "Function name `F_zero_to_null` should be in snake case."
 count = 1
 
