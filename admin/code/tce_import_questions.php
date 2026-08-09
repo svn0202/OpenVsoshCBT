@@ -376,7 +376,7 @@ function F_TSVQuestionImporter($tsvfile)
                             --$stop; // variable used to avoid infinite loop
                         }
 
-                        if ($stop == 0) {
+                        if (f_legacy_int_equals($stop, 0)) {
                             F_print_error('ERROR', 'Unable to get unique question ID');
                             return;
                         }
