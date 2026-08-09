@@ -16352,60 +16352,6 @@ count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormDescriptionLine` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormNoscriptSelect` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowCheckBox` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowFixedValue` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowVertDiv` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormRowVertSpace` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormSmallDivSpace` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormSmallVertSpace` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `getFormUploadFile` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 5
