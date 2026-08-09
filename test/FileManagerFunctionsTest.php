@@ -8,6 +8,47 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    public function testUsedMediaFileDetectionQueryRemainsUnchanged(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["calls"] = []; '
+                    . 'function F_escape_sql($db, $value) { $GLOBALS["calls"]["escaped"] = $value; return $value; } '
+                    . 'function F_db_query($query, $db) { '
+                    . '$GLOBALS["calls"]["queries"][] = preg_replace("/\\s+/", " ", trim($query)); return "result"; } '
+                    . 'function F_db_fetch_array($result) { return ["question_id" => 1]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isUsedMediaFile|f_is_used_media_file)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$result = $qualifiedName(K_PATH_CACHE . "media/a.png"); '
+                    . 'echo json_encode(["result" => $result, "calls" => $GLOBALS["calls"]]);',
+                __DIR__ . '/../admin/code/tce_functions_filemanager.php',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'result' => true,
+                'calls' => [
+                    'escaped' => 'media/a.png',
+                    'queries' => [
+                        "SELECT question_id FROM tce_questions WHERE question_description LIKE '%media/a.png"
+                            . "[/object%' OR question_explanation LIKE '%media/a.png[/object%' LIMIT 1",
+                    ],
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     /** @throws Random\RandomException */
     public function testRendersEmptyMediaDirectoryInBothDisplayModes(): void
     {
