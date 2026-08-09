@@ -434,7 +434,7 @@ function F_syncUserGroups($usrid, $grpids)
         $newgrps = explode(',', $grpids);
         array_walk($newgrps, 'intval');
         $newgrps = array_unique($newgrps, SORT_NUMERIC);
-    } elseif ($grpids == 0) {
+    } elseif (f_legacy_int_equals($grpids, 0)) {
         // all available groups
         $sqlg = 'SELECT group_id FROM ' . K_TABLE_GROUPS . '';
         if ($rg = F_db_query($sqlg, $db)) {

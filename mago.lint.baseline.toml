@@ -805,12 +805,6 @@ message = "Function name `F_syncUserGroups` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "file-name"
 message = "Class `TmfBackupException` should be in a file named `TmfBackupException.php`, found `tce_functions_backup.php`."
