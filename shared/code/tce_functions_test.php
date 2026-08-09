@@ -2040,7 +2040,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                     // all-or-nothing points
                     // right
                     $answer_score = $question_right_score;
-                } elseif ($answer_score == ($question_unanswered_score * $num_answers)) {
+                } elseif ((float) $answer_score === (float) ($question_unanswered_score * $num_answers)) {
                     // unanswered
                     $answer_score = $question_unanswered_score;
                 } else {
@@ -2083,7 +2083,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                     $short_answer_keys,
                     K_SHORT_ANSWERS_BINARY,
                     (int) $tmf_options['similarity_threshold'],
+                    // @mago-expect analysis:invalid-type-cast -- database score is intentionally normalized for scoring
                     (float) $question_right_score,
+                    // @mago-expect analysis:invalid-type-cast -- database score is intentionally normalized for scoring
                     (float) $question_wrong_score,
                 );
                 if ($short_score !== null) {
