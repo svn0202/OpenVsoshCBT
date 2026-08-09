@@ -74,7 +74,7 @@ final class TcecodeFunctionsTest extends TestCase
         chdir(dirname(__DIR__) . '/admin/code');
 
         try {
-            self::assertSame('[LaTeX error]', \F_latex_callback(['', '\\input{secret}']));
+            self::assertSame('[LaTeX error]', \f_latex_callback(['', '\\input{secret}']));
         } finally {
             chdir($workingDirectory);
         }
@@ -133,5 +133,12 @@ final class TcecodeFunctionsTest extends TestCase
         $source = (string) file_get_contents(dirname(__DIR__) . '/shared/code/tce_functions_tcecode.php');
 
         self::assertStringContainsString("'f_mathml_callback'", $source);
+    }
+
+    public function testDecoderWiresLatexCallback(): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__) . '/shared/code/tce_functions_tcecode.php');
+
+        self::assertStringContainsString("'f_latex_callback'", $source);
     }
 }

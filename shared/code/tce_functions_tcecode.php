@@ -71,7 +71,7 @@ function F_decode_tcecode($text_to_decode)
     $newtext = F_bbcode_to_tcecode($newtext);
 
     // [tex]LaTeX_code[/tex]
-    $newtext = preg_replace_callback("#\[tex\](.*?)\[/tex\]#si", 'F_latex_callback', $newtext) ?? $newtext;
+    $newtext = preg_replace_callback("#\[tex\](.*?)\[/tex\]#si", 'f_latex_callback', $newtext) ?? $newtext;
 
     // [mathml]MathML_code[/mathml]
     $newtext = preg_replace_callback("#\[mathml\](.*?)\[/mathml\]#si", 'f_mathml_callback', $newtext) ?? $newtext;
@@ -525,7 +525,7 @@ function F_tcecode_run_process(array $command, string $working_directory): array
  * @param $matches (string) array containing matches: $matches[0] is the complete match, $matches[1] the match for the first subpattern enclosed in '(...)' (the LaTeX code)
  * @return string replacement HTML code string to include the equivalent LaTeX image.
  */
-function F_latex_callback($matches): mixed
+function f_latex_callback($matches): mixed
 {
     require_once '../../shared/config/tce_latex.php';
     $picture_path = (string) K_LATEX_PATH_PICTURE;
