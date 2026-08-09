@@ -2156,7 +2156,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
     $user_id = (int) $_SESSION['session_user_id'];
     $aswkeys = [];
     $str = '';
-    if (!isset($test_id) || $test_id == 0) {
+    if (!isset($test_id) || $test_id === 0) {
         return;
     }
 
@@ -2169,7 +2169,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
     }
 
     // select question for the first time
-    if (!isset($testlog_id) || $testlog_id == 0) {
+    if (!isset($testlog_id) || $testlog_id === 0) {
         //select first question
         $sql =
             'SELECT testlog_id
