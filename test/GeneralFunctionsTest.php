@@ -88,7 +88,7 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testReplaceAngulars(): void
     {
-        $this->assertSame('&lt;a href&gt;', \F_replace_angulars('<a href>'));
+        $this->assertSame('&lt;a href&gt;', \f_replace_angulars('<a href>'));
     }
 
     public function testTextXmlRoundTrip(): void
