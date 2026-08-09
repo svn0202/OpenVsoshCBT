@@ -24,6 +24,6 @@ final class OtpFunctionsTest extends TestCase
 
     public function testOtpMatchesRfc6238Sha1VectorAt59Seconds(): void
     {
-        self::assertSame(287082, \F_getOTP('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', 59));
+        self::assertSame(287082, \f_get_otp('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', 59));
     }
 }
