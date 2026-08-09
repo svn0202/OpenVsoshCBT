@@ -85,6 +85,26 @@ function f_legacy_int_equals(mixed $value, int $expected): bool
 }
 
 /**
+ * Compare a legacy scalar value with a non-numeric string literal without PHP's loose comparison operator.
+ */
+function f_legacy_literal_equals(mixed $value, string $expected): bool
+{
+    if (is_string($value)) {
+        return $value === $expected;
+    }
+
+    if (is_bool($value)) {
+        return $value === ($expected !== '');
+    }
+
+    if ($value === null) {
+        return $expected === '';
+    }
+
+    return (is_int($value) || is_float($value)) && (string) $value === $expected;
+}
+
+/**
  * Prepare field value for SQL query.<br>
  * Returns the num if different from zero, NULL otherwise.
  * @param $num (string) string to check.
