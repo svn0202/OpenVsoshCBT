@@ -369,11 +369,11 @@ switch ($menu_mode) {
                 $subjids = '(' . $subjids . ')';
                 $sql_answer_position = '';
                 $sql_questions_position = '';
-                if (!$test_random_questions_order && $test_questions_order_mode == 0) {
+                if (!$test_random_questions_order && $test_questions_order_mode === 0) {
                     $sql_questions_position = ' AND question_position>0';
                 }
 
-                if (!$test_random_answers_order && $test_answers_order_mode == 0) {
+                if (!$test_random_answers_order && $test_answers_order_mode === 0) {
                     $sql_answer_position = ' AND answer_position>0';
                 }
 
@@ -1505,7 +1505,7 @@ echo
 ;
 foreach ($qordmode as $ok => $ov) {
     echo '<option value="' . $ok . '"';
-    if ($test_questions_order_mode == $ok) {
+    if ($test_questions_order_mode === $ok) {
         echo ' selected="selected"';
     }
 
@@ -1551,7 +1551,7 @@ echo
 ;
 foreach ($aordmode as $ok => $ov) {
     echo '<option value="' . $ok . '"';
-    if ($test_answers_order_mode == $ok) {
+    if ($test_answers_order_mode === $ok) {
         echo ' selected="selected"';
     }
 
@@ -1885,7 +1885,7 @@ if (isset($test_id) && $test_id > 0) {
     ;
     for ($i = 0; $i <= K_QUESTION_DIFFICULTY_LEVELS; ++$i) {
         echo '<option value="' . $i . '"';
-        if ($i == $tsubset_difficulty) {
+        if ($i === $tsubset_difficulty) {
             echo ' selected="selected"';
         }
 
