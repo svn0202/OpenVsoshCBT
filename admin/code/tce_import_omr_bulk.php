@@ -80,7 +80,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
     $dirhdl = @opendir($omrdir);
     if ($dirhdl !== false) {
         while ($file = readdir($dirhdl)) {
-            if ($file != '.' && $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $filename = $omrdir . $file;
                 $matches = [];
                 if (!is_dir($filename) && preg_match('/OMR_([^_]+)_QR.([a-zA-Z]+)/', $file, $matches)) {
@@ -225,7 +225,7 @@ if (F_file_exists(K_PATH_CACHE . 'OMR')) {
     $dirhdl = @opendir(K_PATH_CACHE . 'OMR/');
     if ($dirhdl !== false) {
         while ($file = readdir($dirhdl)) {
-            if ($file != '.' && $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $filename = K_PATH_CACHE . 'OMR/' . $file . '/';
                 if (is_dir($filename)) {
                     $dirs[$filename] = 'OMR/' . $file . '/';
