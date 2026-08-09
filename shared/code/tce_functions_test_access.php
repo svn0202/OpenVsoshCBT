@@ -27,7 +27,7 @@ function f_tmf_test_session_is_unlocked(int $test_id): bool
 /**
  * @return array{allowed:bool,reason:string}
  */
-function F_tmf_test_access_status(int $test_id, int $user_id): array
+function f_tmf_test_access_status(int $test_id, int $user_id): array
 {
     global $db;
     if (F_count_rows(
