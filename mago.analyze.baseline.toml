@@ -18320,24 +18320,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
-code = "missing-parameter-type"
-message = "Parameter `$user_email` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
-code = "missing-parameter-type"
-message = "Parameter `$user_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
-code = "missing-parameter-type"
-message = "Parameter `$user_verifycode` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `PHPMailer\PHPMailer\PHPMailer::addAddress`: expected `string`, but found `mixed`.'
 count = 1

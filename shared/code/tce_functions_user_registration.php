@@ -27,7 +27,7 @@
  * @param $user_verifycode (string) user verification code
  * @throws \PHPMailer\PHPMailer\Exception
  */
-function f_send_user_reg_email($user_id, $user_email, $user_verifycode): void
+function f_send_user_reg_email(mixed $user_id, mixed $user_email, mixed $user_verifycode): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';
