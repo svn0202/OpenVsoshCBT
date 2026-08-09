@@ -88,7 +88,7 @@ function f_db_error($link_identifier = null)
  * @param $link_identifier (resource) database link identifier.
  * @return PgSql\Result|false query result on success, false on error.
  */
-function F_db_query($query, $link_identifier)
+function f_db_query($query, $link_identifier)
 {
     // convert MySQL RAND() function to PostgreSQL RANDOM()
     $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY RANDOM()', $query);
