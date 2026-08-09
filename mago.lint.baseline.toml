@@ -271,12 +271,6 @@ message = "Function name `F_db_connect` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_db_dal_postgresql.php"
-code = "function-name"
-message = "Function name `F_escape_sql` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "function-name"
 message = "Function name `F_getAuthorizedUsers` should be in snake case."
