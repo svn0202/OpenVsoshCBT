@@ -191,7 +191,7 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
  * Display login page.
  * NOTE: This function calls exit() after execution.
  */
-function F_login_form()
+function f_login_form()
 {
     global $l, $thispage_title;
     global $xuser_name, $xuser_password;

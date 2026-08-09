@@ -213,12 +213,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "function-name"
-message = "Function name `F_login_form` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "function-name"
 message = "Function name `F_logout_page` should be in snake case."
 count = 1
 
