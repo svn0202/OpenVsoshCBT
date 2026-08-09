@@ -6,6 +6,31 @@ use PHPUnit\Framework\TestCase;
 
 final class XmlUserImporterTest extends TestCase
 {
+    public function testDestructionIgnoresAnAlreadyRemovedTemporaryFile(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "\nclass XMLUserImporter\n") + 1; '
+                    . '$marker = "} // END OF CLASS"; $end = strpos($source, $marker, $start); '
+                    . 'eval(substr($source, $start, $end - $start + strlen($marker))); '
+                    . 'require_once "../config/tce_config.php"; restore_error_handler(); '
+                    . 'error_reporting(E_ALL & ~E_DEPRECATED); '
+                    . '$file = tempnam(sys_get_temp_dir(), "openvsosh-users-xml-"); '
+                    . 'file_put_contents($file, "<users/>"); '
+                    . '$importer = new XMLUserImporter($file); unlink($file); unset($importer); '
+                    . 'echo "destroyed";',
+                dirname(__DIR__) . '/admin/code/tce_import_users.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('destroyed', $output);
+    }
+
     public function testEmptyDocumentParsesAndTemporaryFileIsDeletedOnDestruction(): void
     {
         [$status, $output] = \F_tcecode_run_process(
