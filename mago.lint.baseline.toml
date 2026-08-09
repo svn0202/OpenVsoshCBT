@@ -793,12 +793,6 @@ message = "Redundant file with no executable code or declarations."
 count = 1
 
 [[issues]]
-file = "public/code/tce_test_allresults.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 6
-
-[[issues]]
 file = "public/code/tce_test_results.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
