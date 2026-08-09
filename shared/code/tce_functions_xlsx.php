@@ -197,7 +197,7 @@ function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
  *
  * @return array<int,array<int,string>>
  */
-function F_tmf_xlsx_read(string $filename): array
+function f_tmf_xlsx_read(string $filename): array
 {
     if (
         !is_file($filename)
