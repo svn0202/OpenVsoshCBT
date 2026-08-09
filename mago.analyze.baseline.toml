@@ -22385,27 +22385,3 @@ file = "shared/config.default/tce_email_config.php"
 code = "undefined-variable"
 message = "Undefined variable: `$emailcfg`."
 count = 2
-
-[[issues]]
-file = "shared/custom_auth/basic.php"
-code = "missing-return-type"
-message = "Function `custom_auth_basic_check_login` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/custom_auth/basic.php"
-code = "mixed-array-assignment"
-message = "Unsafe array assignment on type `mixed`."
-count = 9
-
-[[issues]]
-file = "shared/custom_auth/basic.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `password_verify`: expected `string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string`."
-count = 1
-
-[[issues]]
-file = "shared/custom_auth/basic.php"
-code = "undefined-variable"
-message = "Undefined variable: `$usr`."
-count = 2
