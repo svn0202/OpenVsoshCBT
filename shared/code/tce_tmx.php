@@ -186,7 +186,7 @@ class TMXResourceBundle
      * @param $attribs (array) The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
      * @private
      */
-    private function startElementHandler($parser, $name, $attribs)
+    private function startElementHandler($parser, $name, $attribs): void
     {
         switch (strtolower($name)) {
             case 'tu':
@@ -229,7 +229,7 @@ class TMXResourceBundle
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler($parser, $name)
+    private function endElementHandler($parser, $name): void
     {
         switch (strtolower($name)) {
             case 'tu':
@@ -286,7 +286,7 @@ class TMXResourceBundle
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler($parser, $data)
+    private function segContentHandler($parser, $data): void
     {
         // we are inside a seg element
         if (!($this->segdata && strlen($this->current_key) > 0 && strlen($this->current_language) > 0)) {
