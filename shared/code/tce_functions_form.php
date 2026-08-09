@@ -866,7 +866,7 @@ function get_form_small_div_space(): string
  * Print empty form row.
  * @return string
  */
-function getFormRowVertSpace(): string
+function get_form_row_vert_space(): string
 {
     return '<div class="row" style="margin-bottom:5px;"><hr class="dashed"/></div>' . K_NEWLINE;
 }
