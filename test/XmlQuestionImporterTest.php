@@ -9,6 +9,42 @@ require_once __DIR__ . '/../admin/code/tce_class_import_xml.php';
 
 final class XmlQuestionImporterTest extends TestCase
 {
+    public function testConstructorParsesAndDeletesMinimalXmlFile(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'tce-import-');
+        self::assertIsString($path);
+        self::assertNotFalse(file_put_contents($path, '<metadata/>'));
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_class_import_xml.php"; '
+                    . 'set_error_handler(static fn () => true, E_DEPRECATED); '
+                    . '$importer = new XMLQuestionImporter($argv[1]); $importer->__destruct(); '
+                    . 'echo json_encode(file_exists($argv[1]));',
+                $path,
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('false', $output);
+    }
+
+    public function testDestructorDeletesUploadedFile(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'tce-import-');
+        self::assertIsString($path);
+
+        $class = new ReflectionClass(\XMLQuestionImporter::class);
+        $importer = $class->newInstanceWithoutConstructor();
+        $class->getProperty('xmlfile')->setValue($importer, $path);
+
+        unset($importer);
+
+        self::assertFileDoesNotExist($path);
+    }
+
     public function testStartElementHandlerReturnsNothing(): void
     {
         $class = new ReflectionClass(\XMLQuestionImporter::class);

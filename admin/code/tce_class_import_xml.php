@@ -92,7 +92,7 @@ class XMLQuestionImporter
          * XML file.
          * @private
          */
-        private $xmlfile,
+        private string $xmlfile,
     ) {
         // creates a new XML parser to be used by the other XML functions
         $this->parser = xml_parser_create();
@@ -121,7 +121,9 @@ class XMLQuestionImporter
     public function __destruct()
     {
         // delete uploaded file
-        @unlink($this->xmlfile);
+        if (is_file($this->xmlfile) || is_link($this->xmlfile)) {
+            unlink($this->xmlfile);
+        }
     }
 
     /**
