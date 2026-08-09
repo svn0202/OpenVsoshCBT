@@ -874,6 +874,14 @@ function F_twoColRow($label = '', $description = '', $value = '')
 }
 
 /**
+ * Normalize the review checkbox value submitted by the test interface.
+ */
+function f_tmf_review_value(mixed $value): int
+{
+    return is_scalar($value) && (string) $value === '1' ? 1 : 0;
+}
+
+/**
  * Returns true if the current user is authorized to execute the selected test.<br>
  * Generates the test if it's not already generated.
  * @param $test_id (int) test ID.
