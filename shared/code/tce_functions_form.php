@@ -311,10 +311,10 @@ function F_getCSRFTokenField(): string
 /**
  * Returns the visual "required field" marker to append to a form label.
  * The control itself should also carry aria-required="true".
- * @param $required (boolean) true if the field is required.
+ * @param bool $required true if the field is required.
  * @return string XHTML code (empty string when the field is not required).
  */
-function getRequiredMark($required = false)
+function getRequiredMark(bool $required = false): string
 {
     global $l;
     if (!$required) {
@@ -360,7 +360,7 @@ function getFormRowTextInput(
     #[\SensitiveParameter]
     $password = false,
     $prefix = '',
-    $required = false,
+    bool $required = false,
     $autocomplete = '',
     $inputtype = '',
     $placeholder = '',
@@ -506,7 +506,7 @@ function getFormRowTextBox(
     $value = '',
     $disabled = false,
     $prefix = '',
-    $required = false,
+    bool $required = false,
 ) {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
@@ -567,7 +567,7 @@ function getFormRowSelectBox(
     $value = '',
     $items = [],
     $prefix = '',
-    $required = false,
+    bool $required = false,
 ) {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
