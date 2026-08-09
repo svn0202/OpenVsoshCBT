@@ -407,7 +407,7 @@ function F_isRandomSecurityConfigured(#[\SensitiveParameter] ?string $secret = n
  * Network-path references (//host) and backslashes are rejected because browsers may interpret
  * them as an external authority even though the value begins with a slash.
  */
-function F_isSafeLocalRedirectUri(string $uri): bool
+function f_is_safe_local_redirect_uri(string $uri): bool
 {
     if (
         $uri === ''

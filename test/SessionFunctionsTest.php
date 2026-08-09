@@ -117,7 +117,7 @@ final class SessionFunctionsTest extends TestCase
     #[DataProvider('localRedirectProvider')]
     public function testLocalRedirectValidation(string $uri, bool $expected): void
     {
-        $this->assertSame($expected, \F_isSafeLocalRedirectUri($uri));
+        $this->assertSame($expected, \f_is_safe_local_redirect_uri($uri));
     }
 
     /** @return array<string,array{string,bool}> */

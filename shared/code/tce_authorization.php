@@ -162,7 +162,7 @@ if (
         'samesite' => K_COOKIE_SAMESITE,
     ]);
     $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
-    if (F_isSafeLocalRedirectUri($request_uri)) {
+    if (f_is_safe_local_redirect_uri($request_uri)) {
         header('Location: ' . $request_uri);
         exit();
     }
