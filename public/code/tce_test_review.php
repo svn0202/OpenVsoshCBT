@@ -3,6 +3,7 @@
 ob_start();
 
 require_once '../config/tce_config.php';
+/** @var mixed $db Database connection initialized by tce_config.php. */
 
 $pagelevel = K_AUTH_PUBLIC_TEST_EXECUTE;
 require_once '../../shared/code/tce_authorization.php';
