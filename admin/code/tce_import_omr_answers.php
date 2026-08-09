@@ -208,12 +208,12 @@ echo
 ;
 
 // OMR DATA page
-echo getFormUploadFile('omrfile[]', 'omrdata', (string) $l['w_omr_data_page'], (string) $l['h_omr_data_page'], '');
+echo get_form_upload_file('omrfile[]', 'omrdata', (string) $l['w_omr_data_page'], (string) $l['h_omr_data_page'], '');
 
 // OMR ANSWER SHEET pages
 for ($i = 1; $i < $max_omr_sheets; ++$i) {
     echo
-        getFormUploadFile(
+        get_form_upload_file(
             'omrfile[]',
             'omrsheet' . $i,
             (string) $l['w_omr_answer_sheet'] . ' ' . $i,
@@ -224,7 +224,7 @@ for ($i = 1; $i < $max_omr_sheets; ++$i) {
 }
 
 echo
-    getFormUploadFile(
+    get_form_upload_file(
         'omrfile[]',
         'omrsheet' . $max_omr_sheets,
         (string) $l['w_omr_answer_sheet'] . ' ' . $max_omr_sheets,
