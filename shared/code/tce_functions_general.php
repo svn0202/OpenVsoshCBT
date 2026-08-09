@@ -372,7 +372,7 @@ function show_required_field(mixed $mode = 1): string
  * @param $txt (string) The string that will be trimmed.
  * @return string The trimmed string.
  */
-function utrim($txt): mixed
+function utrim(mixed $txt): mixed
 {
     if (empty($txt)) {
         return '';

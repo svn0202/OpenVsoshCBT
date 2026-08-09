@@ -14613,12 +14613,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$txt` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$where` is missing a type hint."
 count = 2
 
