@@ -3013,7 +3013,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
 /**
  * Return the current score only when the test explicitly enables LiveScore.
  */
-function F_tmf_live_score(int $test_id, int $testuser_id): ?float
+function f_tmf_live_score(int $test_id, int $testuser_id): ?float
 {
     require_once '../config/tce_config.php';
     global $db;
