@@ -18,7 +18,7 @@ final class StatisticsTest extends TestCase
          *     kurtosi: array{spread: float, constant: int}
          * } $statistics
          */
-        $statistics = \F_getArrayStatistics([
+        $statistics = \f_get_array_statistics([
             'spread' => [1, 3],
             'constant' => [2, 2],
         ]);

@@ -290,7 +290,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
     }
 
     // calculate statistics
-    $stats = F_getArrayStatistics($statsdata);
+    $stats = f_get_array_statistics($statsdata);
     $excludestat = ['sum', 'variance'];
     $calcpercent = ['mean', 'median', 'mode', 'minimum', 'maximum', 'range', 'standard_deviation'];
 
