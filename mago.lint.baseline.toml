@@ -805,18 +805,6 @@ message = "Function name `F_xml_export_user_results` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tce_xml_user_results.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_xml_user_results.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 2
-
-[[issues]]
 file = "admin/code/tce_xml_users.php"
 code = "function-name"
 message = "Function name `F_xml_export_users` should be in snake case."
