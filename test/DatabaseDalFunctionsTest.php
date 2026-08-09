@@ -6,6 +6,60 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseFetchBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => [
+                'array' => [0 => 'zero\\', 'NAME' => "O\\'Brien"],
+                'assoc' => ['NAME' => "O\\'Brien"],
+            ],
+            'mysqli' => [
+                'array' => ['exception' => 'TypeError'],
+                'assoc' => ['exception' => 'TypeError'],
+            ],
+            'oracle' => [
+                'array' => [0 => 'zero', 'name' => "O'Brien"],
+                'assoc' => ['name' => "O'Brien"],
+            ],
+            'postgresql' => [
+                'array' => ['exception' => 'TypeError'],
+                'assoc' => ['exception' => 'TypeError'],
+            ],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_fetch_array($result) { return [0 => "zero\\\\", "NAME" => "O\\\\\'Brien"]; } '
+                    . 'function mysql_fetch_assoc($result) { return ["NAME" => "O\\\\\'Brien"]; } ',
+                'oracle' => 'define("OCI_BOTH", 1); define("OCI_RETURN_NULLS", 2); define("OCI_RETURN_LOBS", 4); '
+                    . 'function oci_fetch_array($result, $mode) { return [0 => "zero\\\\", "NAME" => "O\\\\\'Brien"]; } '
+                    . 'function oci_fetch_assoc($result) { return ["NAME" => "O\\\\\'Brien"]; } ',
+                default => '',
+            };
+            $result = ($driver === 'mysql' || $driver === 'oracle') ? '"rows"' : 'null';
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    $prelude . '$source = file_get_contents($argv[1]); '
+                        . 'foreach (["fetch_array", "fetch_assoc"] as $suffix) { '
+                        . 'preg_match("/function [Ff]_db_" . $suffix . "/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval(substr($source, $start, $end - $start)); } '
+                        . '$values = []; foreach (["array", "assoc"] as $suffix) { try { '
+                        . '$function = "F_db_fetch_" . $suffix; $values[$suffix] = $function(' . $result . '); } '
+                        . 'catch (Throwable $exception) { $values[$suffix] = ["exception" => get_class($exception)]; } } '
+                        . 'echo json_encode($values);',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseRowCountBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
