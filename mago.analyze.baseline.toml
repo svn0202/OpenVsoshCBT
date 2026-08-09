@@ -164,30 +164,6 @@ count = 5
 
 [[issues]]
 file = "admin/code/tce_class_import_xml.php"
-code = "missing-return-type"
-message = "Function `addAnswer` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "missing-return-type"
-message = "Function `addModule` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "missing-return-type"
-message = "Function `addQuestion` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "missing-return-type"
-message = "Function `addSubject` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
 count = 1
