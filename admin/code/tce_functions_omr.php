@@ -544,7 +544,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                         // all-or-nothing points
                         // right
                         $qscore = $question_right_score;
-                    } elseif ($qscore == ($question_unanswered_score * $num_answers)) {
+                    } elseif ((float) $qscore === (float) ($question_unanswered_score * $num_answers)) {
                         // unanswered
                         $qscore = $question_unanswered_score;
                     } else {
