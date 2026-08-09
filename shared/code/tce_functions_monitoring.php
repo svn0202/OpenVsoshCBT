@@ -22,7 +22,7 @@ function f_tmf_monitor_action_is_valid(string $action): bool
     return in_array($action, TMF_MONITOR_ACTIONS, true);
 }
 
-function F_tmf_monitor_status(
+function f_tmf_monitor_status(
     ?int $attempt_status,
     ?string $close_reason,
     ?string $last_activity,
