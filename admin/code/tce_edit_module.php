@@ -61,7 +61,6 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l[
 
 switch ($menu_mode) {
     case 'delete':
-        {
             // check if this record is used (test_log)
             if (!F_check_unique(
                 K_TABLE_SUBJECTS . ',' . K_TABLE_SUBJECT_SET,
@@ -102,10 +101,8 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'forcedelete':
-        {
             if (($_POST['forcedelete'] ?? '') == $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_MODULES . ' WHERE module_id=' . $module_id . '';
                 if (!($r = F_db_query($sql, $db))) {
@@ -117,10 +114,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'update':
-        { // Update
+        // Update
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -211,10 +207,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'add':
-        { // Add
+        // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_MODULES, "module_name='" . F_escape_sql($db, $module_name) . "'")) {
@@ -256,20 +251,16 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $module_name = '';
             $module_enabled = true;
             $module_user_id = (int) $_SESSION['session_user_id'];
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
