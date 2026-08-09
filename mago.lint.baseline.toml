@@ -1359,12 +1359,6 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "function-name"
-message = "Function name `F_menu_isChildActive` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_menu.php"
-code = "function-name"
 message = "Function name `F_menu_link` should be in snake case."
 count = 1
 

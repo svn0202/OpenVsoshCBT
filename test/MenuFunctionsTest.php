@@ -29,7 +29,7 @@ final class MenuFunctionsTest extends TestCase
             ],
         ];
 
-        self::assertTrue(F_menu_isChildActive($menu));
+        self::assertTrue(f_menu_is_child_active($menu));
     }
 
     public function testChildActivityRecognizesNestedChild(): void
@@ -44,7 +44,7 @@ final class MenuFunctionsTest extends TestCase
             ],
         ];
 
-        self::assertTrue(F_menu_isChildActive($menu));
+        self::assertTrue(f_menu_is_child_active($menu));
     }
 
     public function testChildActivityRejectsUnrelatedTree(): void
@@ -59,6 +59,6 @@ final class MenuFunctionsTest extends TestCase
             ],
         ];
 
-        self::assertFalse(F_menu_isChildActive($menu));
+        self::assertFalse(f_menu_is_child_active($menu));
     }
 }
