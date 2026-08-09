@@ -9843,7 +9843,7 @@ count = 2
 [[issues]]
 file = "public/code/tce_show_result_user.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -11979,7 +11979,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "falsable-return-statement"
-message = "Function `F_db_fetch_assoc` is declared to return `unknown-ref(Returns)` but possibly returns 'false' (inferred as `array<string, string>|false`)."
+message = "Function `f_db_fetch_assoc` is declared to return `unknown-ref(Returns)` but possibly returns 'false' (inferred as `array<string, string>|false`)."
 count = 1
 
 [[issues]]
@@ -12015,7 +12015,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_db_fetch_assoc`: expected `unknown-ref(Returns)`, but found `array<string, string>|false`."
+message = "Invalid return type for function `f_db_fetch_assoc`: expected `unknown-ref(Returns)`, but found `array<string, string>|false`."
 count = 1
 
 [[issues]]
@@ -12153,7 +12153,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "missing-return-type"
-message = "Function `F_db_fetch_assoc` is missing a return type hint."
+message = "Function `f_db_fetch_assoc` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -14457,7 +14457,7 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_pregeneration.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -15951,7 +15951,7 @@ count = 33
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 4
 
 [[issues]]
@@ -16725,7 +16725,7 @@ count = 6
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 2
 
 [[issues]]
