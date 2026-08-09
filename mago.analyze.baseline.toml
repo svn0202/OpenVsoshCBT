@@ -16551,12 +16551,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-return-type"
-message = "Function `F_remove_tcecode` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
 message = "Function `F_tcecodeToLine` is missing a return type hint."
 count = 1
 
