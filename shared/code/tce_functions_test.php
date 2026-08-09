@@ -157,7 +157,7 @@ function F_getUserTests()
                 } elseif (!$expired && !$upcoming) {
                     switch ($catalog_test_status) {
                         case 0:
-                            { // 0 = the test generation process is started but not completed
+                            // 0 = the test generation process is started but not completed
                                 // print execute test link
                                 $str .= '<a href="';
                                 if (K_DISPLAY_TEST_DESCRIPTION || !empty($m['test_password'])) {
@@ -177,11 +177,10 @@ function F_getUserTests()
                                     . $l['w_execute']
                                     . '</a>';
                                 break;
-                            }
                         case 1: // 1 = the test has been successfully created
                         case 2: // 2 = all questions have been displayed to the user
                         case 3:
-                            { // 3 = all questions have been answered
+                            // 3 = all questions have been answered
                                 // continue test
                                 $str .=
                                     '<a href="tce_test_execute.php?testid='
@@ -192,9 +191,8 @@ function F_getUserTests()
                                     . $l['w_continue']
                                     . '</a>';
                                 break;
-                            }
                         default:
-                            { // 4 or greater = test can be repeated
+                            // 4 or greater = test can be repeated
                                 if (
                                     F_countUserTest($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable']
                                     || $m['test_repeatable'] == 1
@@ -220,7 +218,6 @@ function F_getUserTests()
                                 }
 
                                 break;
-                            }
                     }
                 }
 
@@ -558,7 +555,7 @@ function F_checkTestStatus($user_id, $test_id, $duration)
             } else {
                 switch ($test_status) {
                     case 0:
-                        { // 0 = the test generation process is started but not completed
+                        // 0 = the test generation process is started but not completed
                             // delete incomplete test (also deletes test logs using database referential integrity)
                             $sqld = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 							WHERE testuser_id=' . $testuser_id . '';
@@ -567,9 +564,8 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                             }
 
                             break;
-                        }
                     case 1:
-                        { // 1 = the test has been successfully created
+                        // 1 = the test has been successfully created
                             // check if all questions were displayed
                             if (
                                 F_count_rows(
@@ -589,9 +585,8 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                             }
 
                             break;
-                        }
                     case 2:
-                        { // 2 = all questions have been displayed to the user
+                        // 2 = all questions have been displayed to the user
                             // check if test has been completed in time
                             if (
                                 F_count_rows(
@@ -611,7 +606,6 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                             }
 
                             break;
-                        }
                 } //end switch
             } //end else
         }
