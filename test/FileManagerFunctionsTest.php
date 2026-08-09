@@ -16,9 +16,9 @@ final class FileManagerFunctionsTest extends TestCase
                 '-r',
                 'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
                     . 'echo json_encode(['
-                    . 'F_isAuthorizedDir("/cache/alice/", "/cache/", "alice"), '
-                    . 'F_isAuthorizedDir("/cache/bob/", "/cache/", "alice"), '
-                    . 'F_isAuthorizedDir("/cache/bob/docs/", "/cache/", "alice|bob")]);',
+                    . 'f_is_authorized_dir("/cache/alice/", "/cache/", "alice"), '
+                    . 'f_is_authorized_dir("/cache/bob/", "/cache/", "alice"), '
+                    . 'f_is_authorized_dir("/cache/bob/docs/", "/cache/", "alice|bob")]);',
             ],
             __DIR__ . '/../admin/code',
         );
