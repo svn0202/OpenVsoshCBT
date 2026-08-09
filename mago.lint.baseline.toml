@@ -554,12 +554,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_import_omr_answers.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 1

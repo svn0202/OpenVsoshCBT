@@ -60,7 +60,7 @@ if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
 }
 
 // process uploaded files
-if (isset($menu_mode) && $menu_mode == 'upload' && $user_id > 0 && $_FILES !== []) {
+if (isset($menu_mode) && $menu_mode === 'upload' && $user_id > 0 && $_FILES !== []) {
     // read OMR DATA page
     $omr_testdata = F_decodeOMRTestDataQRCode($_FILES['omrfile']['tmp_name'][0]);
     if ($omr_testdata === false) {
@@ -71,7 +71,7 @@ if (isset($menu_mode) && $menu_mode == 'upload' && $user_id > 0 && $_FILES !== [
         $num_pages = ceil($num_questions / 30);
         $omr_answers = [];
         for ($i = 1; $i <= $num_pages; ++$i) {
-            if ($_FILES['omrfile']['error'][$i] == 0) {
+            if ((int) $_FILES['omrfile']['error'][$i] === UPLOAD_ERR_OK) {
                 $answers_page = F_decodeOMRPage($_FILES['omrfile']['tmp_name'][$i]);
                 if ($answers_page !== false && !empty($answers_page)) {
                     $omr_answers += $answers_page;
@@ -107,7 +107,7 @@ if (isset($menu_mode) && $menu_mode == 'upload' && $user_id > 0 && $_FILES !== [
 
     // remove uploaded files
     for ($i = 0; $i <= $max_omr_sheets; ++$i) {
-        if ($_FILES['omrfile']['error'][$i] == 0) {
+        if ((int) $_FILES['omrfile']['error'][$i] === UPLOAD_ERR_OK) {
             @unlink($_FILES['omrfile']['tmp_name'][$i]);
         }
     }

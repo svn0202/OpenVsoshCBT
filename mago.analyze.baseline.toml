@@ -5510,12 +5510,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_import_omr_answers.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
@@ -5549,12 +5543,6 @@ file = "admin/code/tce_import_omr_answers.php"
 code = "possibly-null-array-access"
 message = "Cannot perform array access on possibly `null` value."
 count = 10
-
-[[issues]]
-file = "admin/code/tce_import_omr_answers.php"
-code = "possibly-null-operand"
-message = "Left operand in `==` comparison might be `null` (type `int<0, 8>|null`)."
-count = 2
 
 [[issues]]
 file = "admin/code/tce_import_omr_answers.php"
