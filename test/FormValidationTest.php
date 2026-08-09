@@ -97,6 +97,36 @@ final class FormValidationTest extends TestCase
         $this->assertSame('', \getRequiredMark(false));
     }
 
+    public function testRequiredFieldMarkerPreservesTranslatedAccessibleMarkup(): void
+    {
+        $original = null;
+        // @mago-expect lint:no-global -- form translations are a legacy global dictionary
+        if (isset($GLOBALS['l'])) {
+            // @mago-expect lint:no-global -- narrow the legacy translation dictionary
+            if (is_array($GLOBALS['l'])) {
+                // @mago-expect lint:no-global -- narrowed translation dictionary snapshot
+                $original = $GLOBALS['l'];
+            }
+        }
+        try {
+            // @mago-expect lint:no-global -- controlled translation fixture
+            $GLOBALS['l'] = ['w_required' => 'Required', 'a_meta_charset' => 'UTF-8'];
+
+            $this->assertSame(
+                ' <abbr class="required" title="Required">*</abbr>',
+                \getRequiredMark(true),
+            );
+        } finally {
+            if ($original === null) {
+                // @mago-expect lint:no-global -- restore absence of the translation dictionary
+                unset($GLOBALS['l']);
+            } else {
+                // @mago-expect lint:no-global -- restore the translation dictionary after the test
+                $GLOBALS['l'] = $original;
+            }
+        }
+    }
+
     public function testDescriptionLinePreservesExistingMarkup(): void
     {
         if (!defined('K_NEWLINE')) {
