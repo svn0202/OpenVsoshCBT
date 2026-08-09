@@ -17648,81 +17648,9 @@ count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_html2txt.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `preg_replace_callback`: expected `(callable(array<array-key, string>): string)`, but found `(closure(mixed): array<array-key, string>|null|string)`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "missing-parameter-type"
-message = "Parameter `$display_links` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "missing-parameter-type"
-message = "Parameter `$preserve_newlines` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "missing-parameter-type"
-message = "Parameter `$str` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
 code = "possibly-false-operand"
 message = "Left operand in `>` comparison might be `false` (type `false|non-negative-int`)."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-false-operand"
-message = "Right operand in `>` comparison might be `false` (type `false|non-negative-int`)."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `strpos`: expected `string`, but possibly received `array<array-key, string>|null|string`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `strpos` is possibly `null`, but parameter type `string` does not accept it."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-null-argument"
-message = "Argument #3 of function `preg_replace_callback` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-null-argument"
-message = "Argument #3 of function `preg_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 10
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-null-argument"
-message = "Argument #3 of function `str_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_language.php"
