@@ -567,7 +567,7 @@ class XMLUserImporter
  * @param $tsvfile (string) TSV (tab delimited text) file name
  * @return boolean TRUE in case of success, FALSE otherwise
  */
-function F_import_tsv_users($tsvfile)
+function f_import_tsv_users($tsvfile)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
