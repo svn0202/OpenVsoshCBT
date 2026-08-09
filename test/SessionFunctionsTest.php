@@ -139,18 +139,18 @@ final class SessionFunctionsTest extends TestCase
      */
     public function testRandomSecurityRejectsInsecureValues(): void
     {
-        $this->assertFalse(\F_isRandomSecurityConfigured(''));
-        $this->assertFalse(\F_isRandomSecurityConfigured('CHANGE_THIS_K_RANDOM_SECURITY'));
-        $this->assertFalse(\F_isRandomSecurityConfigured('mkTzxf8WwUxwvj6w'));
+        $this->assertFalse(\f_is_random_security_configured(''));
+        $this->assertFalse(\f_is_random_security_configured('CHANGE_THIS_K_RANDOM_SECURITY'));
+        $this->assertFalse(\f_is_random_security_configured('mkTzxf8WwUxwvj6w'));
     }
 
     /** @throws \Random\RandomException */
     public function testRandomSecurityAcceptsConfiguredSecret(): void
     {
-        $this->assertTrue(\F_isRandomSecurityConfigured(\bin2hex(\random_bytes(16))));
+        $this->assertTrue(\f_is_random_security_configured(\bin2hex(\random_bytes(16))));
         // the no-argument form reads the configured K_RANDOM_SECURITY from the test bootstrap
-        $this->assertTrue(\F_isRandomSecurityConfigured());
-        $this->assertSame(\F_isRandomSecurityConfigured(), \F_isRandomSecurityConfigured(null));
+        $this->assertTrue(\f_is_random_security_configured());
+        $this->assertSame(\f_is_random_security_configured(), \f_is_random_security_configured(null));
     }
 
     public function testClientFingerprintIsStableAcrossDocumentAndFetchHeaders(): void
