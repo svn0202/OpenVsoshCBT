@@ -19802,18 +19802,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "array-to-string-conversion"
-message = "Potential array in middle operand of string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `nonnull`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "mixed-property-type-coercion"
 message = "A value with a less specific type `mixed` is being assigned to property `$$resource` (array<array-key, mixed>)."
 count = 1
@@ -19826,26 +19814,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "possibly-false-operand"
-message = "Left operand in `>=` comparison might be `false` (type `false|int<1750595956, max>`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "possibly-false-operand"
-message = "Right operand in `>=` comparison might be `false` (type `false|int<1750595956, max>`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$matches`."
 count = 1
 
 [[issues]]

@@ -2239,12 +2239,6 @@ message = "Unsafe use of error control operator `@`."
 count = 3
 
 [[issues]]
-file = "shared/code/tce_tmx.php"
-code = "file-name"
-message = "Class `TMXResourceBundle` should be in a file named `TMXResourceBundle.php`, found `tce_tmx.php`."
-count = 1
-
-[[issues]]
 file = "shared/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
