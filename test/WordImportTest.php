@@ -21,6 +21,7 @@ final class WordImportTest extends TestCase
 {
     private string $temporaryDirectory;
 
+    /** @throws \Random\RandomException */
     protected function setUp(): void
     {
         $this->temporaryDirectory = sys_get_temp_dir() . '/openvsosh-word-' . bin2hex(random_bytes(6));
@@ -39,6 +40,7 @@ final class WordImportTest extends TestCase
         rmdir($this->temporaryDirectory);
     }
 
+    /** @return array<string, array{string, int, int, int, int, array<int, int>}> */
     public static function fixtureProvider(): array
     {
         return [
@@ -77,6 +79,7 @@ final class WordImportTest extends TestCase
         ];
     }
 
+    /** @param array<int, int> $expectedTypes */
     #[DataProvider('fixtureProvider')]
     public function testRealWordExamples(
         string $filename,
