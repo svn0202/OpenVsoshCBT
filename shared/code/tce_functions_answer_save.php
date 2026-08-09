@@ -14,7 +14,7 @@ function f_tmf_answer_operation_is_valid(string $operation_id): bool
 /**
  * @return string "save", "duplicate", "conflict" or "invalid"
  */
-function F_tmf_answer_save_decision(
+function f_tmf_answer_save_decision(
     int $current_version,
     ?string $current_operation,
     int $expected_version,
