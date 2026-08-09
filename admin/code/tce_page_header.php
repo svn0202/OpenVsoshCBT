@@ -21,6 +21,7 @@
  */
 
 require_once 'tce_xhtml_header.php';
+/** @var string $thispage_title Set or normalized by tce_xhtml_header.php. */
 require_once '../../shared/code/tce_functions_menu.php';
 require_once '../../shared/code/tce_functions_site_assets.php';
 $admin_site = openvsosh_get_site_settings();
@@ -111,7 +112,7 @@ echo '<span class="admin-page-icon">' . f_menu_icon_svg($admin_page_context['ico
 echo '<div class="admin-page-title">' . K_NEWLINE;
 echo '<span class="admin-page-eyebrow">' . htmlspecialchars($admin_page_context['label'], ENT_QUOTES, $admin_header_charset)
     . '</span>' . K_NEWLINE;
-echo '<h1>' . htmlspecialchars((string) $thispage_title, ENT_NOQUOTES, $admin_header_charset) . '</h1>' . K_NEWLINE;
+echo '<h1>' . htmlspecialchars($thispage_title, ENT_NOQUOTES, $admin_header_charset) . '</h1>' . K_NEWLINE;
 echo '<p>' . htmlspecialchars($admin_page_context['description'], ENT_QUOTES, $admin_header_charset) . '</p>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
