@@ -985,7 +985,7 @@ function F_isAuthorizedEditorForUser($user_id)
  * @return sql selection string
  * @since 11.1.003 (2010-10-05)
  */
-function F_user_group_select_sql($where = '')
+function f_user_group_select_sql($where = '')
 {
     global $l, $db;
     require_once '../config/tce_config.php';
