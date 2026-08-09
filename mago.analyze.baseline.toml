@@ -20306,48 +20306,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$attribs` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$cachefile` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$data` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$language` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$name` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$parser` is missing a type hint."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-parameter-type"
-message = "Parameter `$tmxfile` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "missing-property-type"
 message = "Property `$current_key` is missing a type hint."
 count = 1
