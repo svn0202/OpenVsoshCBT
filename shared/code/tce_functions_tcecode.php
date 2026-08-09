@@ -141,7 +141,7 @@ function f_has_html_markup(string $text): bool
  * @param $html (string) imported HTML fragment
  * @return string safe HTML fragment
  */
-function F_sanitize_html_content(string $html): string
+function f_sanitize_html_content(string $html): string
 {
     if ($html === '' || !class_exists('DOMDocument')) {
         return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
