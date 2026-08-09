@@ -460,7 +460,7 @@ function f_tcecode_tag_arg(string $text): string
  * @param list<string> $command Executable and arguments.
  * @return array{0:int,1:string} Exit status and combined diagnostic output.
  */
-function F_tcecode_run_process(array $command, string $working_directory): array
+function f_tcecode_run_process(array $command, string $working_directory): array
 {
     if ($working_directory === '') {
         return [1, 'renderer working directory is empty'];
