@@ -12873,7 +12873,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_logout_form`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
+message = "Invalid return type for function `f_logout_form`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
 count = 1
 
 [[issues]]
@@ -13005,7 +13005,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "missing-return-type"
-message = "Function `F_logout_form` is missing a return type hint."
+message = "Function `f_logout_form` is missing a return type hint."
 count = 1
 
 [[issues]]
