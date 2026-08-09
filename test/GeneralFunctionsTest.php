@@ -22,6 +22,12 @@ use PHPUnit\Framework\TestCase;
  */
 final class GeneralFunctionsTest extends TestCase
 {
+    public function testBootstrapFileExistsShim(): void
+    {
+        self::assertTrue(\F_file_exists(__FILE__));
+        self::assertFalse(\F_file_exists(__DIR__ . '/missing-file-for-bootstrap-test'));
+    }
+
     public function testGetBoolean(): void
     {
         $this->assertTrue(\F_getBoolean(true));

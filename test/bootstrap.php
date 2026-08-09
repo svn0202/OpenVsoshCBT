@@ -44,7 +44,7 @@ if (! defined('K_COOKIE_SAMESITE')) {
 // lives in shared/code/tce_functions_errmsg.php, which registers a global error handler on
 // include; the TMX parser only needs a plain local-file check here.
 if (! function_exists('F_file_exists')) {
-    function F_file_exists($filename)
+    function F_file_exists(mixed $filename): bool
     {
         return @file_exists((string) $filename);
     }
