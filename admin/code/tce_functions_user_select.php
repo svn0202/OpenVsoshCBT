@@ -947,7 +947,7 @@ function f_is_authorized_editor_for_group($group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function F_isAuthorizedEditorForUser($user_id)
+function f_is_authorized_editor_for_user($user_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

@@ -61,7 +61,7 @@ $user_id = 0;
 $session_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
 if (isset($_REQUEST['user_id'])) {
     $user_id = (int) $_REQUEST['user_id'];
-    if (!F_isAuthorizedEditorForUser($user_id)) {
+    if (!f_is_authorized_editor_for_user($user_id)) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 }

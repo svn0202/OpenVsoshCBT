@@ -142,7 +142,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
                         && $user_id > 1
                         && !f_form_option_is_selected($user_id, $_SESSION['session_user_id'])
-                        && F_isAuthorizedEditorForUser($user_id)
+                        && f_is_authorized_editor_for_user($user_id)
                     ) {
                         $sql = 'DELETE FROM ' . K_TABLE_USERS . '
 							WHERE user_id=' . $user_id . '';
