@@ -467,7 +467,7 @@ echo '</div>' . K_NEWLINE;
 echo get_form_noscript_select('selectmode');
 
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'display_user_info',
         $l['w_display_user_info'],
         $l['h_display_user_info'],
@@ -478,7 +478,7 @@ echo
         '',
     )
 ;
-echo getFormRowCheckBox('display_all', $l['w_display_all'], $l['h_display_all'], '', 1, $display_all, false, '');
+echo get_form_row_checkbox('display_all', $l['w_display_all'], $l['h_display_all'], '', 1, $display_all, false, '');
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 

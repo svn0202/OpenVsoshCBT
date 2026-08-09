@@ -533,7 +533,7 @@ echo tcecode_editor_tag_buttons('form_subjecteditor', 'subject_description');
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo getFormRowCheckBox('subject_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $subject_enabled, false, '');
+echo get_form_row_checkbox('subject_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $subject_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 

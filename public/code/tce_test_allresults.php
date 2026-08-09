@@ -294,7 +294,7 @@ echo '</div>' . K_NEWLINE;
 
 echo get_form_noscript_select('display_mode');
 
-echo getFormRowCheckBox('show_graph', $l['w_graph'], $l['w_result_graph'], '', 1, $show_graph, false, '');
+echo get_form_row_checkbox('show_graph', $l['w_graph'], $l['w_result_graph'], '', 1, $show_graph, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">&nbsp;</span>' . K_NEWLINE;

@@ -1246,7 +1246,7 @@ echo
 ;
 
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'question_matching_reuse_positions',
         'Разрешать повтор позиций',
         'Разрешить нескольким вариантам ответа соответствовать одному элементу левой колонки.',
@@ -1275,7 +1275,7 @@ echo
 ;
 
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'question_fullscreen',
         $l['w_fullscreen'],
         $l['h_question_fullscreen'],
@@ -1287,7 +1287,7 @@ echo
     )
 ;
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'question_inline_answers',
         $l['w_inline_answers'],
         $l['h_question_inline_answers'],
@@ -1299,7 +1299,7 @@ echo
     )
 ;
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'question_auto_next',
         $l['w_auto_next'],
         $l['h_question_auto_next'],
@@ -1311,7 +1311,7 @@ echo
     )
 ;
 echo
-    getFormRowCheckBox(
+    get_form_row_checkbox(
         'question_shuffle_answers',
         'Перемешивать ответы',
         'Перемешивать варианты только для этого вопроса независимо от общей настройки теста',
@@ -1322,7 +1322,7 @@ echo
         '',
     )
 ;
-echo getFormRowCheckBox('question_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $question_enabled, false, '');
+echo get_form_row_checkbox('question_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, $question_enabled, false, '');
 
 echo '<div class="row">' . K_NEWLINE;
 
