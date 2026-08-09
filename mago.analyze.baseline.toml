@@ -16634,15 +16634,9 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 827
+count = 825
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -16672,7 +16666,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 376
+count = 312
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -16684,7 +16678,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 6
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -16696,12 +16690,6 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `<` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
 count = 2
 
 [[issues]]
@@ -16816,12 +16804,6 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('test_score_right')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `truthy-string` accessed on `array{'a_meta_dir': mixed, ...}`."
 count = 1
 
 [[issues]]

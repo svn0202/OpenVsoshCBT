@@ -815,6 +815,37 @@ function F_printTestStat(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /**
+     * @var array{
+     *     a_meta_dir: string,
+     *     h_answer_time: string,
+     *     h_answers_right: string,
+     *     h_answers_wrong: string,
+     *     h_question_recurrence: string,
+     *     h_questions_unanswered: string,
+     *     h_questions_undisplayed: string,
+     *     h_questions_unrated: string,
+     *     h_score_average: string,
+     *     t_answers_editor: string,
+     *     t_modules_editor: string,
+     *     t_questions_editor: string,
+     *     t_subjects_editor: string,
+     *     w_all: string,
+     *     w_answer_time: string,
+     *     w_answer: string,
+     *     w_answers_right: string,
+     *     w_answers_wrong: string,
+     *     w_module: string,
+     *     w_question: string,
+     *     w_questions_unanswered: string,
+     *     w_questions_undisplayed: string,
+     *     w_questions_unrated: string,
+     *     w_recurrence: string,
+     *     w_score: string,
+     *     w_statistics: string,
+     *     w_subject: string
+     * } $l
+     */
     if (empty($ts['qstats']['recurrence'])) {
         return;
     }
@@ -827,7 +858,7 @@ function F_printTestStat(
         $ts = F_getTestStat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, $pubmode);
     }
 
-    $txtdir = $l['a_meta_dir'] == 'rtl' ? 'right' : 'left';
+    $txtdir = (($l['a_meta_dir'] <=> 'rtl') === 0) ? 'right' : 'left';
 
     $ret = '';
     $ret .= '<table class="userselect">' . K_NEWLINE;
@@ -1269,11 +1300,55 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /**
+     * @var array{
+     *     a_meta_charset: string,
+     *     a_meta_dir: string,
+     *     h_answers_right: string,
+     *     h_answers_wrong: string,
+     *     h_firstname: string,
+     *     h_lastname: string,
+     *     h_login_name: string,
+     *     h_questions_unanswered: string,
+     *     h_questions_undisplayed: string,
+     *     h_questions_unrated: string,
+     *     h_score_total: string,
+     *     h_test_time: string,
+     *     h_test: string,
+     *     h_testcomment: string,
+     *     h_time_begin: string,
+     *     h_time_end: string,
+     *     h_view_details: string,
+     *     w_answers_right: string,
+     *     w_answers_wrong: string,
+     *     w_comment: string,
+     *     w_firstname: string,
+     *     w_lastname: string,
+     *     w_locked: string,
+     *     w_minutes: string,
+     *     w_not_passed: string,
+     *     w_passed: string,
+     *     w_questions_unanswered: string,
+     *     w_questions_undisplayed: string,
+     *     w_questions_unrated: string,
+     *     w_results: string,
+     *     w_score: string,
+     *     w_select: string,
+     *     w_status: string,
+     *     w_test: string,
+     *     w_time_begin: string,
+     *     w_time_end: string,
+     *     w_time: string,
+     *     w_unlocked: string,
+     *     w_user: string,
+     *     w_yes: string
+     * } $l
+     */
     if (empty($data['num_records'])) {
         return;
     }
 
-    if ($l['a_meta_dir'] == 'rtl') {
+    if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $tdalignr = 'left';
         $tdalign = 'right';
     } else {
@@ -1591,6 +1666,8 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
                 . '" style="text-align:'
                 . $tdalignr
                 . ';">'
+                // @mago-expect analysis:possibly-undefined-string-array-index -- row names map to required translation keys
+                // @mago-expect analysis:possibly-null-operand -- every mapped translation value is a string
                 . $l['w_' . $row]
                 . '</th>'
                 . K_NEWLINE;
