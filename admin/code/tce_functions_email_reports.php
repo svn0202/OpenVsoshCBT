@@ -213,7 +213,7 @@ function F_send_report_emails(
                     . K_NEWLINE;
             }
 
-            if ($mode == 0) {
+            if ($mode === 0) {
                 $pdfkey = getPasswordHash(
                     date('Y') . $tu['id'] . K_RANDOM_SECURITY . $tu['test']['test_id'] . date('m') . $tu['user_id'],
                 );
