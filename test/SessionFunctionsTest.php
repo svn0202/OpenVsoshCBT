@@ -164,13 +164,13 @@ final class SessionFunctionsTest extends TestCase
             $_SERVER['HTTP_ACCEPT'] = 'text/html';
             $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'] = '1';
             $documentFingerprint = \get_client_fingerprint();
-            $legacyDocumentFingerprint = \getLegacyClientFingerprint();
+            $legacyDocumentFingerprint = \get_legacy_client_fingerprint();
 
             $_SERVER['HTTP_ACCEPT'] = 'application/json';
             unset($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']);
 
             $this->assertSame($documentFingerprint, \get_client_fingerprint());
-            $this->assertNotSame($legacyDocumentFingerprint, \getLegacyClientFingerprint());
+            $this->assertNotSame($legacyDocumentFingerprint, \get_legacy_client_fingerprint());
         } finally {
             $_SERVER = $original;
         }

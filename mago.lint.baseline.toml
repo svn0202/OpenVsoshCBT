@@ -51,12 +51,6 @@ count = 1
 [[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
-message = "Function name `getLegacyClientFingerprint` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/TCExamSessionHandler.php"
-code = "function-name"
 message = "Function name `getNewSessionID` should be in snake case."
 count = 1
 
