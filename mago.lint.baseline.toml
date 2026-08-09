@@ -247,12 +247,6 @@ message = "Function name `F_altLogin` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_db_dal_mysql.php"
-code = "function-name"
-message = "Function name `F_db_connect` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_db_dal_mysqli.php"
 code = "function-name"
 message = "Function name `F_db_connect` should be in snake case."
