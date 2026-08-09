@@ -53,7 +53,7 @@ session_set_cookie_params([
  *   Strict-Transport-Security?:string
  * }
  */
-function F_getSecurityHeaders(): array
+function f_get_security_headers(): array
 {
     $headers = [
         'X-Content-Type-Options' => 'nosniff',
@@ -73,7 +73,7 @@ function F_sendSecurityHeaders(): void
     if (headers_sent()) {
         return;
     }
-    foreach (F_getSecurityHeaders() as $name => $value) {
+    foreach (f_get_security_headers() as $name => $value) {
         header($name . ': ' . $value);
     }
 }

@@ -27,12 +27,6 @@ count = 1
 [[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
-message = "Function name `F_getSecurityHeaders` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/TCExamSessionHandler.php"
-code = "function-name"
 message = "Function name `F_isRandomSecurityConfigured` should be in snake case."
 count = 1
 

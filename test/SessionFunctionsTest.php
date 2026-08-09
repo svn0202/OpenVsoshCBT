@@ -106,7 +106,7 @@ final class SessionFunctionsTest extends TestCase
 
     public function testSecurityHeadersIncludeClickjackingAndTransportProtections(): void
     {
-        $headers = \F_getSecurityHeaders();
+        $headers = \f_get_security_headers();
 
         $this->assertSame('nosniff', $headers['X-Content-Type-Options']);
         $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options']);
