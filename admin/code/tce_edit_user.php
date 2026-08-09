@@ -778,7 +778,7 @@ echo
 ;
 echo getFormRowFixedValue('user_regdate', $l['w_regdate'], $l['h_regdate'], '', $user_regdate);
 echo getFormRowFixedValue('user_ip', $l['w_ip'], $l['h_ip'], '', $user_ip);
-echo getFormRowSelectBox('user_level', $l['w_level'], $l['h_level'], '', $user_level, [
+echo getFormRowSelectBox('user_level', (string) $l['w_level'], (string) $l['h_level'], '', $user_level, [
     0,
     1,
     2,

@@ -555,18 +555,18 @@ function getFormRowTextBox(
  * @param $description (string) Label description (tooltip).
  * @param $tip (string) Help to be displayed on the right of the input field.
  * @param $value (string) Initial value.
- * @param $items (array) array of items to print key => value.
+ * @param array<array-key, mixed> $items array of items to print key => value.
  * @param $prefix (string) code to be displayed after label.
  * @return string
  */
 function getFormRowSelectBox(
-    $field_name,
-    $name,
-    $description = '',
-    $tip = '',
-    $value = '',
-    $items = [],
-    $prefix = '',
+    string $field_name,
+    string $name,
+    string $description = '',
+    string $tip = '',
+    mixed $value = '',
+    array $items = [],
+    string $prefix = '',
     bool $required = false,
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
