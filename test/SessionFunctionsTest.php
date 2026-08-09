@@ -24,6 +24,19 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testSessionCookieConfigurationMatchesApplicationConstants(): void
+    {
+        self::assertSame('PHPSESSID', session_name());
+        self::assertSame('1', ini_get('session.use_cookies'));
+        self::assertSame('On', ini_get('session.use_strict_mode'));
+
+        $params = session_get_cookie_params();
+        self::assertSame(0, $params['lifetime']);
+        self::assertSame(K_COOKIE_SECURE, $params['secure']);
+        self::assertSame(K_COOKIE_HTTPONLY, $params['httponly']);
+        self::assertSame(K_COOKIE_SAMESITE, $params['samesite']);
+    }
+
     public function testSessionClosePassesConfiguredLifetimeAsInteger(): void
     {
         $handler = new class extends \TCExamSessionHandler {
