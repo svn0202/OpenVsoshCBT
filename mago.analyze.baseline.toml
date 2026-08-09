@@ -13820,36 +13820,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-return-type"
-message = "Function `F_select_executed_tests_sql` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-return-type"
-message = "Function `F_select_module_subjects_sql` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-return-type"
-message = "Function `F_select_modules_sql` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-return-type"
-message = "Function `F_select_subjects_sql` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-return-type"
-message = "Function `F_select_tests_sql` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `truthy-mixed` cannot be reliably used in string concatenation."
 count = 3
