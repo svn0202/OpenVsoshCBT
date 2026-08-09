@@ -110,6 +110,24 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertSame(' 50', \F_formatXMLPercentage(0.5));
     }
 
+    public function testUtcOffsets(): void
+    {
+        self::assertSame(0, \F_getUTCoffset('UTC'));
+        self::assertSame('+00:00', \F_db_getUTCoffset('UTC'));
+    }
+
+    public function testXmlAndTsvDataSerialization(): void
+    {
+        $data = ['Name' => 'A&B', 'meta' => ['score' => 10]];
+
+        self::assertSame(
+            "\t<name>A&amp;B</name>\n\t<meta>\n\t\t<score>10</score>\n</meta>\n",
+            \getDataXML($data),
+        );
+        self::assertSame("\tName\tmeta_score", \getDataTSVHeader($data));
+        self::assertSame("\tA&B\t10", \getDataTSV($data));
+    }
+
     public function testGetContrastColor(): void
     {
         $this->assertSame('ffffff', \getContrastColor('000000')); // dark background -> white
