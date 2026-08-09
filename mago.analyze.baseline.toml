@@ -17115,14 +17115,14 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `getIpAsString`: expected `string`, but found `null|string`."
-count = 1
+message = "Invalid return type for function `showRequiredField`: expected `unknown-ref(html)`, but found `truthy-string`."
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `showRequiredField`: expected `unknown-ref(html)`, but found `truthy-string`."
-count = 2
+message = "Invalid return type for function `utrim`: expected `string`, but found `array<array-key, string>|null|string`."
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -17391,13 +17391,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `getIpAsString` is missing a return type hint."
+message = "Function `showRequiredField` is missing a return type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `showRequiredField` is missing a return type hint."
+message = "Function `utrim` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17601,7 +17601,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "nullable-return-statement"
-message = "Function `getIpAsString` is declared to return `string` but possibly returns a nullable value (inferred as `null|string`)."
+message = "Function `utrim` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
 count = 1
 
 [[issues]]
@@ -17758,7 +17758,7 @@ count = 4
 file = "shared/code/tce_functions_general.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -24479,20 +24479,3 @@ file = "shared/custom_auth/basic.php"
 code = "undefined-variable"
 message = "Undefined variable: `$usr`."
 count = 2
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `utrim`: expected `string`, but found `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `utrim` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "nullable-return-statement"
-message = "Function `utrim` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
-count = 1

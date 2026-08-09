@@ -151,6 +151,13 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\getIpAsBytes('not-an-ip'));
     }
 
+    public function testIpAsStringUsesCompactReadableNotation(): void
+    {
+        self::assertSame('127.0.0.1', \getIpAsString('127.0.0.1'));
+        self::assertSame('2001:db8::1', \getIpAsString('2001:0db8:0000:0000:0000:0000:0000:0001'));
+        self::assertSame('', \getIpAsString('not-an-ip'));
+    }
+
     public function testSubstrUtf8(): void
     {
         $this->assertSame('hel', \F_substr_utf8('hello', 0, 3));
