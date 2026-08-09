@@ -11985,12 +11985,6 @@ count = 4
 [[issues]]
 file = "public/code/tce_test_execute.php"
 code = "possibly-null-operand"
-message = "Left operand in `==` comparison might be `null` (type `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|null|string`)."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_execute.php"
-code = "possibly-null-operand"
 message = "Left operand in `>` comparison might be `null` (type `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|null|string`)."
 count = 1
 
