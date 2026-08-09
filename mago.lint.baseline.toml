@@ -213,12 +213,6 @@ count = 1
 [[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
-message = "Function name `F_session_string_to_array` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/TCExamSessionHandler.php"
-code = "function-name"
 message = "Function name `checkCSRFTokenForScript` should be in snake case."
 count = 1
 
