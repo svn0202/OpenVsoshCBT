@@ -201,7 +201,13 @@ if (!isset($test_id) || $test_id === 0) {
     // select one executed test
     $sql = F_select_executed_tests_sql() . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        $test_id = ($m = F_db_fetch_array($r)) ? $m['test_id'] : 0;
+        if ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $default_test_id */
+            $default_test_id = $m['test_id'];
+            $test_id = (int) $default_test_id;
+        } else {
+            $test_id = 0;
+        }
     } else {
         F_display_db_error();
     }
@@ -259,8 +265,12 @@ if (isset($changecategory) && $changecategory > 0 || !isset($testlog_id) || empt
 if ($sql !== '' && $sql !== '0') {
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            $testlog_id = $m['testlog_id'];
-            $test_id = $m['test_id'];
+            /** @var int|numeric-string $stored_testlog_id */
+            $stored_testlog_id = $m['testlog_id'];
+            /** @var int|numeric-string $stored_test_id */
+            $stored_test_id = $m['test_id'];
+            $testlog_id = (int) $stored_testlog_id;
+            $test_id = (int) $stored_test_id;
             $testlog_score = $m['testlog_score'];
             $testlog_comment = (string) ($m['testlog_comment'] ?? '');
             $test_score_right = round($m['test_score_right'] * $m['question_difficulty'], 3);
@@ -312,7 +322,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['test_id'] . '"';
-        if ($m['test_id'] == $test_id) {
+        /** @var int|numeric-string $listed_test_id */
+        $listed_test_id = $m['test_id'];
+        if ((int) $listed_test_id === $test_id) {
             echo ' selected="selected"';
         }
 
@@ -376,7 +388,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['testlog_id'] . '"';
-        if ($m['testlog_id'] == $testlog_id) {
+        /** @var int|numeric-string $listed_testlog_id */
+        $listed_testlog_id = $m['testlog_id'];
+        if ((int) $listed_testlog_id === $testlog_id) {
             echo ' selected="selected"';
         }
 
@@ -586,7 +600,7 @@ echo getFormRowTextBox('testlog_comment', (string) $l['w_comment'], (string) $l[
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if (isset($testlog_id) && $testlog_id > 0) {
+if ($testlog_id > 0) {
     F_submit_button('update', $l['w_update'], $l['h_update']);
 }
 
