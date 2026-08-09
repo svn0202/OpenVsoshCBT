@@ -1146,7 +1146,7 @@ for ($i = 0; $i <= K_QUESTION_DIFFICULTY_LEVELS; ++$i) {
 }
 
 echo
-    getFormRowSelectBox(
+    get_form_row_select_box(
         'question_difficulty',
         (string) $l['w_question_difficulty'],
         (string) $l['h_question_difficulty'],

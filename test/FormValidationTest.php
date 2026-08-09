@@ -323,8 +323,8 @@ final class FormValidationTest extends TestCase
                 '-r',
                 'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
                     . '"a_meta_charset" => "UTF-8"]; '
-                    . '$name = function_exists("getFormRowSelectBox") '
-                    . '? "getFormRowSelectBox" : "get_form_row_select_box"; '
+                    . '$name = function_exists("get_form_row_select_box") '
+                    . '? "get_form_row_select_box" : "get_form_row_select_box"; '
                     . 'echo $name("level", "Level", "User level", "Choose", "01", '
                     . '[0 => "Zero", 1 => "One", 2 => ["invalid"]], "PREFIX", true);',
                 dirname(__DIR__) . '/shared/code/tce_functions_form.php',

@@ -237,7 +237,7 @@ if (F_file_exists(K_PATH_CACHE . 'OMR')) {
 
         // sort files alphabetically
         natcasesort($dirs);
-        echo getFormRowSelectBox('omrdir', (string) $l['w_omr_dir'], (string) $l['h_omr_dir'], '', $omrdir, $dirs, '');
+        echo get_form_row_select_box('omrdir', (string) $l['w_omr_dir'], (string) $l['h_omr_dir'], '', $omrdir, $dirs, '');
     }
 }
 
