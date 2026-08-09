@@ -26,7 +26,7 @@ function custom_auth_basic_check_login(): ?array
     // - etc.
     if (
         isset($_POST['logaction'])
-        && $_POST['logaction'] == 'login'
+        && $_POST['logaction'] === 'login'
         && isset($_POST['xuser_name'])
         && isset($_POST['xuser_password'])
     ) {
@@ -36,7 +36,7 @@ function custom_auth_basic_check_login(): ?array
         if (
             is_string($username)
             && is_string($password)
-            && $username == K_CUSTOM_AUTH_BASIC_USERNAME
+            && $username === K_CUSTOM_AUTH_BASIC_USERNAME
             && password_verify($password, K_CUSTOM_AUTH_BASIC_PASSWORD_HASH)
         ) {
             // Return the user data at least with the following minimum format.
