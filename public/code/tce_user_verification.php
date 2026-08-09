@@ -53,7 +53,7 @@ $sql =
 if ($r = F_db_query($sql, $db)) {
     if ($m = F_db_fetch_array($r)) {
         // update user level
-        if ($verifycode[0] == '@') {
+        if ($verifycode[0] === '@') {
             // password reset
             $new_password = substr(md5(uniqid(random_int(0, mt_getrandmax()), true)), 0, 8);
             $sqlu =
@@ -73,7 +73,7 @@ if ($r = F_db_query($sql, $db)) {
         if (!($ru = F_db_query($sqlu, $db))) {
             F_display_db_error(false);
         } else {
-            if ($verifycode[0] == '@') {
+            if ($verifycode[0] === '@') {
                 F_print_error('MESSAGE', $l['w_new_password'] . ': ' . $new_password);
             } else {
                 F_print_error('MESSAGE', $l['m_user_registration_ok']);
