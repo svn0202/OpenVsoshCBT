@@ -217,6 +217,8 @@ require_once '../../shared/code/tce_functions_general.php';
 
 // --- PHP SETTINGS -----------------------------------------------------------
 
+// @mago-expect lint:no-ini-set -- administrator requests need the configured runtime memory ceiling
 ini_set('memory_limit', K_MAX_MEMORY_LIMIT); // set PHPmemory limit
 // upload_max_filesize and post_max_size are PHP_INI_PERDIR settings; configure them in PHP/FPM.
+// @mago-expect lint:no-ini-set -- security policy forbids session identifiers in generated URLs
 ini_set('session.use_trans_sid', 0); // if =1 use PHPSESSID

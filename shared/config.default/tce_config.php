@@ -338,6 +338,7 @@ $lang_resources = new TMXResourceBundle(
 );
 $l = $lang_resources->getResource(); // language array
 
+// @mago-expect lint:no-ini-set -- generated XHTML requires an escaped query-argument separator
 ini_set('arg_separator.output', '&amp;');
 //date_default_timezone_set(K_TIMEZONE);
 
