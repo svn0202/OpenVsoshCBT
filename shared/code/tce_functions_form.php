@@ -201,7 +201,7 @@ function f_get_field_format_registry(): array
  * @param mixed $formfields input value expected to contain form fields
  * @return string comma-separated list of wrong fields (empty when all valid)
  */
-function F_check_fields_format(mixed $formfields): string
+function f_check_fields_format(mixed $formfields): string
 {
     if (!is_array($formfields) || empty($formfields)) {
         return '';
