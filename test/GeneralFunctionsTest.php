@@ -142,7 +142,7 @@ final class GeneralFunctionsTest extends TestCase
             "\t<name>A&amp;B</name>\n\t<meta>\n\t\t<score>10</score>\n</meta>\n",
             \getDataXML($data),
         );
-        self::assertSame("\tName\tmeta_score", \getDataTSVHeader($data));
+        self::assertSame("\tName\tmeta_score", \get_data_tsv_header($data));
         self::assertSame("\tA&B\t10", \getDataTSV($data));
     }
 
