@@ -84,13 +84,13 @@ class TMXResourceBundle
      * @param $cachefile (string) set filename for cache (leave blank to exclude cache)
      */
     public function __construct(
-        mixed $tmxfile,
-        mixed $language,
+        string $tmxfile,
+        string $language,
         /**
          * String filename for cache
          * @private
          */
-        private mixed $cachefile = '',
+        private string $cachefile = '',
     ) {
         // set selecteed language
         $this->language = strtoupper($language);
