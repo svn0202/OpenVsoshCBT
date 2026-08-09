@@ -71,7 +71,7 @@ if (isset($_REQUEST['d'])) {
 // sanitize dir
 $dir = realpath($dir) . '/';
 // get the authorized dirs
-$authdirs = F_getAuthorizedDirs();
+$authdirs = f_get_authorized_dirs();
 // check if the user is authorized to use this directory
 if (!f_is_authorized_dir($dir, $root_dir, $authdirs)) {
     $dir = $root_dir;

@@ -213,12 +213,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "function-name"
-message = "Function name `F_getAuthorizedDirs` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "function-name"
 message = "Function name `F_getDirTable` should be in snake case."
 count = 1
 

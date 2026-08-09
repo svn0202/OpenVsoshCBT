@@ -627,9 +627,9 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
 
 /**
  * Returns a regular expression to match authorised directories.
- * @return a regular expression to match authorised directories.
+ * @return string regular expression matching authorised directories.
  */
-function F_getAuthorizedDirs()
+function f_get_authorized_dirs(): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_authorization.php';
@@ -652,7 +652,7 @@ function f_is_authorized_dir(mixed $dir, mixed $rootdir, mixed $authdirs = ''): 
 {
     require_once '../config/tce_config.php';
     if (empty($authdirs)) {
-        $authdirs = F_getAuthorizedDirs();
+        $authdirs = f_get_authorized_dirs();
     }
 
     return preg_match('#^' . $rootdir . '(' . $authdirs . ')/#', $dir) > 0;
