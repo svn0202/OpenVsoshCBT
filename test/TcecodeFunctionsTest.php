@@ -6,6 +6,23 @@ use PHPUnit\Framework\TestCase;
 
 final class TcecodeFunctionsTest extends TestCase
 {
+    public function testStringTransformersPreserveTcecodeRendering(): void
+    {
+        $this->assertSame(
+            "[li]One[/li][object]image.png[/object:20:10]",
+            \F_bbcode_to_tcecode("[*]One\n[img=20x10]image.png[/img]"),
+        );
+        $this->assertSame(
+            '<a class="tcecode" href="https://example.com" rel="noopener noreferrer" target="_blank">Example</a>',
+            \F_tcecode_url('[url=https://example.com]Example[/url]'),
+        );
+        $this->assertSame('<strong class="tcecode">Bold</strong>', \F_tcecode_tag('[b]Bold[/b]'));
+        $this->assertSame(
+            '<span style="text-align:center;">Centered</span>',
+            \F_tcecode_tag_arg('[align=center]Centered[/align]'),
+        );
+    }
+
     public function testRendererProcessDoesNotInterpretShellMetacharacters(): void
     {
         $argument = 'literal;$(touch should-not-exist)';
