@@ -46,13 +46,13 @@ count = 2
 file = "admin/code/tce_edit_question.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 17
+count = 16
 
 [[issues]]
 file = "admin/code/tce_edit_question.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 3
+count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_rating.php"
