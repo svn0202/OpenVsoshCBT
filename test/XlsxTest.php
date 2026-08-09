@@ -9,6 +9,24 @@ require_once __DIR__ . '/../shared/code/tce_functions_users_xlsx.php';
 
 final class XlsxTest extends TestCase
 {
+    public function testAdminXlsxSenderWritesBytesUnchanged(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_tmf_users_xlsx_send.*?\\n\\}\\n/s", $source, $match); '
+                    . 'eval($match[0]); F_tmf_users_xlsx_send(base64_decode("YmluYXJ5AGRhdGE="), "test.xlsx");',
+                dirname(__DIR__) . '/admin/code/tce_users_xlsx.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame("binary\0data", $output);
+    }
+
     public function testAdminHtmlHelperEscapesUsingConfiguredCharset(): void
     {
         [$status, $output] = \F_tcecode_run_process(
