@@ -1603,7 +1603,7 @@ for ($i = 2; $i <= 127; ++$i) {
     $repeat_options[$i] = $i;
 }
 
-echo getFormRowSelectBox('test_repeatable', $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
+echo getFormRowSelectBox('test_repeatable', (string) $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
 
 echo getFormRowCheckBox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
 
