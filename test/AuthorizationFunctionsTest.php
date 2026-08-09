@@ -71,7 +71,7 @@ final class AuthorizationFunctionsTest extends TestCase
                     . 'function bcdechex($serial) { return "ff"; } '
                     . 'function date($format, $time) { return $format . ":" . $time; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getSSLCertificateHash|f_get_ssl_certificate_hash)\\(/", '
+                    . 'preg_match("/function (f_get_ssl_certificate_hash)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
