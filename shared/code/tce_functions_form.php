@@ -68,6 +68,19 @@ if (
 define('K_EMAIL_RE_PATTERN', '^([a-zA-Z0-9_\.\-\+\%]+)@([a-zA-Z0-9\.\-]+)$');
 
 /**
+ * Return a scalar form translation as a string.
+ */
+function f_get_form_translation(string $key, string $fallback = ''): string
+{
+    global $l;
+    if (!is_array($l) || !isset($l[$key]) || !is_scalar($l[$key])) {
+        return $fallback;
+    }
+
+    return (string) $l[$key];
+}
+
+/**
  * Returns an array containing form fields.
  * @return array<array-key, mixed> containing form fields
  */
@@ -84,7 +97,6 @@ function F_decode_form_fields(): array
  */
 function F_check_required_fields(array $formfields): string|false
 {
-    global $l;
     if (!is_string($formfields['ff_required'] ?? null) || $formfields['ff_required'] === '') {
         return false;
     }
@@ -104,9 +116,7 @@ function F_check_required_fields(array $formfields): string|false
         ) { //if is empty
             $label = $required_fields_labels[$i] ?? '';
             if ($label !== '' && $label !== '0') { // check if the field has a label
-                $charset = is_array($l) && is_string($l['a_meta_charset'] ?? null)
-                    ? $l['a_meta_charset']
-                    : 'UTF-8';
+                $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
                 $fieldname = htmlspecialchars($label, ENT_NOQUOTES, $charset);
             }
 
@@ -180,7 +190,6 @@ function F_get_field_format_registry(): array
  */
 function F_check_fields_format(mixed $formfields): string
 {
-    global $l;
     if (!is_array($formfields) || empty($formfields)) {
         return '';
     }
@@ -211,9 +220,7 @@ function F_check_fields_format(mixed $formfields): string
             $xlabel_key = 'xl_' . $fieldname;
             if (isset($formfields[$xlabel_key]) && is_scalar($formfields[$xlabel_key])) {
                 $xlabel = (string) $formfields[$xlabel_key]; // human label supplied by the form
-                $charset = is_array($l) && is_string($l['a_meta_charset'] ?? null)
-                    ? $l['a_meta_charset']
-                    : 'UTF-8';
+                $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
                 if ($xlabel !== '') {
                     $label = htmlspecialchars($xlabel, ENT_NOQUOTES, $charset);
                 }
@@ -238,14 +245,10 @@ function F_check_fields_format(mixed $formfields): string
 function F_check_form_fields(): bool
 {
     require_once '../config/tce_config.php';
-    global $l;
-    $translations = is_array($l) ? $l : [];
     $formfields = F_decode_form_fields(); //decode form fields
     //check missing fields
     if ($missing_fields = F_check_required_fields($formfields)) {
-        $message = isset($translations['m_form_missing_fields']) && is_scalar($translations['m_form_missing_fields'])
-            ? (string) $translations['m_form_missing_fields']
-            : '';
+        $message = f_get_form_translation('m_form_missing_fields');
         F_print_error('WARNING', $message . ': ' . $missing_fields);
 
         return false;
@@ -253,9 +256,7 @@ function F_check_form_fields(): bool
 
     //check fields format
     if ($wrong_fields = F_check_fields_format($formfields)) {
-        $message = isset($translations['m_form_wrong_fields']) && is_scalar($translations['m_form_wrong_fields'])
-            ? (string) $translations['m_form_wrong_fields']
-            : '';
+        $message = f_get_form_translation('m_form_wrong_fields');
         F_print_error('WARNING', $message . ': ' . $wrong_fields);
 
         return false;
@@ -272,16 +273,15 @@ function F_check_form_fields(): bool
 function F_close_button(string $onclick = ''): string
 {
     require_once '../config/tce_config.php';
-    global $l;
     $str = '';
     $str .= '<div class="row">' . K_NEWLINE;
     $str .= '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" id="closeform">' . K_NEWLINE;
     $str .= '<div>' . K_NEWLINE;
     $str .=
         '<input type="button" name="wclose" id="wclose" value="'
-        . $l['w_close']
+        . f_get_form_translation('w_close')
         . '" title="'
-        . $l['h_close_window']
+        . f_get_form_translation('h_close_window')
         . '" onclick="'
         . $onclick
         . 'window.close();" />'
@@ -338,14 +338,17 @@ function F_getCSRFTokenField(): string
  */
 function getRequiredMark(bool $required = false): string
 {
-    global $l;
     if (!$required) {
         return '';
     }
 
     return (
         ' <abbr class="required" title="'
-        . htmlspecialchars($l['w_required'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars(
+            f_get_form_translation('w_required'),
+            ENT_QUOTES,
+            f_get_form_translation('a_meta_charset', 'UTF-8'),
+        )
         . '">*</abbr>'
     );
 }
@@ -388,7 +391,6 @@ function getFormRowTextInput(
     mixed $placeholder = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
     $name = is_scalar($name) ? (string) $name : '';
     $description = is_scalar($description) ? (string) $description : '';
     $tip = is_scalar($tip) ? (string) $tip : '';
@@ -398,6 +400,7 @@ function getFormRowTextInput(
     $autocomplete = is_scalar($autocomplete) ? (string) $autocomplete : '';
     $inputtype = is_scalar($inputtype) ? (string) $inputtype : '';
     $placeholder = is_scalar($placeholder) ? (string) $placeholder : '';
+    $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
     if (strlen($description) == 0) {
         $description = $name;
     }
@@ -407,14 +410,14 @@ function getFormRowTextInput(
         $format = '^([0-9]{4})([\-])([0-9]{2})([\-])([0-9]{2})$';
         $maxlen = 10;
         if (strlen($tip) == 0) {
-            $tip = $l['w_date_format'];
+            $tip = f_get_form_translation('w_date_format');
         }
     } elseif ($datetime) {
         // native datetime-local uses an ISO 'T' separator and may omit the seconds
         $format = '^([0-9]{4})([\-])([0-9]{2})([\-])([0-9]{2})([ T])([0-9]{2})([\:])([0-9]{2})(([\:])([0-9]{2}))?$';
         $maxlen = 19;
         if (strlen($tip) == 0) {
-            $tip = $l['w_datetime_format'];
+            $tip = f_get_form_translation('w_datetime_format');
         }
     }
 
@@ -466,7 +469,7 @@ function getFormRowTextInput(
         . '" id="'
         . $field_name
         . '" value="'
-        . htmlspecialchars($value, ENT_COMPAT, $l['a_meta_charset'])
+        . htmlspecialchars($value, ENT_COMPAT, $charset)
         . '" size="20" maxlength="'
         . $maxlen
         . '" title="'
@@ -481,7 +484,7 @@ function getFormRowTextInput(
     }
 
     if (strlen($placeholder) > 0) {
-        $str .= ' placeholder="' . htmlspecialchars($placeholder, ENT_COMPAT, $l['a_meta_charset']) . '"';
+        $str .= ' placeholder="' . htmlspecialchars($placeholder, ENT_COMPAT, $charset) . '"';
     }
 
     if (strlen($tip) > 0) {
@@ -536,7 +539,7 @@ function getFormRowTextBox(
     bool $required = false,
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
+    $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
     if (strlen($description) == 0) {
         $description = $name;
     }
@@ -570,7 +573,7 @@ function getFormRowTextBox(
         $str .= ' readonly="readonly" class="disabled"';
     }
 
-    $str .= '>' . htmlspecialchars($value ?? '', ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
+    $str .= '>' . htmlspecialchars($value ?? '', ENT_NOQUOTES, $charset) . '</textarea>' . K_NEWLINE;
     $str .= '</span>' . K_NEWLINE;
     return $str . ('</div>' . K_NEWLINE);
 }
@@ -597,7 +600,6 @@ function getFormRowSelectBox(
     bool $required = false,
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
     if (strlen($description) == 0) {
         $description = $name;
     }
@@ -672,7 +674,7 @@ function getFormRowCheckBox(
     mixed $prefix = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
+    $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
     $name = is_scalar($name) ? (string) $name : '';
     $description = is_scalar($description) ? (string) $description : '';
     $tip = is_scalar($tip) ? (string) $tip : '';
@@ -694,7 +696,7 @@ function getFormRowCheckBox(
             . '" id="'
             . $field_name
             . '" value="'
-            . htmlspecialchars($value, ENT_COMPAT, $l['a_meta_charset'])
+            . htmlspecialchars($value, ENT_COMPAT, $charset)
             . '" />'
             . K_NEWLINE;
         $field_name = 'DISABLED_' . $field_name;
@@ -753,7 +755,7 @@ function getFormRowFixedValue(
     string $prefix = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
+    $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
     if (strlen($description) == 0) {
         $description = $name;
     }
@@ -784,7 +786,7 @@ function getFormRowFixedValue(
 
     $str .=
         ' value="'
-        . htmlspecialchars($value, ENT_COMPAT, $l['a_meta_charset'])
+        . htmlspecialchars($value, ENT_COMPAT, $charset)
         . '" size="'
         . $size
         . '" maxlength="255" title="'
@@ -801,7 +803,7 @@ function getFormRowFixedValue(
         . '" id="'
         . $field_name
         . '" value="'
-        . htmlspecialchars($value, ENT_COMPAT, $l['a_meta_charset'])
+        . htmlspecialchars($value, ENT_COMPAT, $charset)
         . '" />'
         . K_NEWLINE;
     $str .= '</span>' . K_NEWLINE;
@@ -858,13 +860,12 @@ function getFormRowVertDiv(string $title = ''): string
 function getFormNoscriptSelect(string $name = 'selectrecord'): string
 {
     require_once __DIR__ . '/../config/tce_config.php';
-    global $l;
     $str = '<noscript>' . K_NEWLINE;
     $str .= '<div class="row">' . K_NEWLINE;
     $str .= '<span class="label">&nbsp;</span>' . K_NEWLINE;
     $str .= '<span class="formw">' . K_NEWLINE;
     $str .=
-        '<input type="submit" name="' . $name . '" id="' . $name . '" value="' . $l['w_select'] . '" />' . K_NEWLINE;
+        '<input type="submit" name="' . $name . '" id="' . $name . '" value="' . f_get_form_translation('w_select') . '" />' . K_NEWLINE;
     $str .= '</span>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
     return $str . ('</noscript>' . K_NEWLINE);
