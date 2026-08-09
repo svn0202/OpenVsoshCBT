@@ -12003,7 +12003,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_db_datetime_diff_seconds`: expected `unknown-ref(SQL)`, but found `truthy-string`."
+message = "Invalid return type for function `f_db_datetime_diff_seconds`: expected `unknown-ref(SQL)`, but found `truthy-string`."
 count = 1
 
 [[issues]]
@@ -12135,7 +12135,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "missing-return-type"
-message = "Function `F_db_datetime_diff_seconds` is missing a return type hint."
+message = "Function `f_db_datetime_diff_seconds` is missing a return type hint."
 count = 1
 
 [[issues]]
