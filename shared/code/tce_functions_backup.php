@@ -138,7 +138,7 @@ function F_tmf_backup_ignorable_postgresql_restore_diagnostic(string $diagnostic
  * @param array<string,string> $config
  * @return list<string>
  */
-function F_tmf_backup_dump_command(array $config): array
+function f_tmf_backup_dump_command(array $config): array
 {
     if ($config['type'] === 'POSTGRESQL') {
         return [

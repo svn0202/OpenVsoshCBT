@@ -13131,13 +13131,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_tmf_backup_dump_command`: expected `list<string>`, but found `list{string, string('--opt'), string('-h'), null|string, string('-P'), null|string, string('-u'), null|string, null|string}`."
+message = "Invalid return type for function `f_tmf_backup_dump_command`: expected `list<string>`, but found `list{string, string('--opt'), string('-h'), null|string, string('-P'), null|string, string('-u'), null|string, null|string}`."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_tmf_backup_dump_command`: expected `list<string>`, but found `list{string, string('-h'), null|string, string('-p'), null|string, string('-U'), null|string, string('-Ft'), null|string}`."
+message = "Invalid return type for function `f_tmf_backup_dump_command`: expected `list<string>`, but found `list{string, string('-h'), null|string, string('-p'), null|string, string('-U'), null|string, string('-Ft'), null|string}`."
 count = 1
 
 [[issues]]
