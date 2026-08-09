@@ -349,6 +349,7 @@ $user_groups = $_REQUEST['user_groups'] ?? [];
 
 // some fields are always required
 $regfields['user_name'] = 2;
+// @mago-expect lint:no-literal-password -- this is a required-field flag, not a password value
 $regfields['newpassword'] = 2;
 $regfields['newpassword_repeat'] = 2;
 if (K_USRREG_EMAIL_CONFIRM) {

@@ -535,12 +535,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 11
 
 [[issues]]
-file = "public/code/tce_user_registration.php"
-code = "no-literal-password"
-message = "Literal passwords or sensitive data should not be stored in code."
-count = 1
-
-[[issues]]
 file = "public/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
