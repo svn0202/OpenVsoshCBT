@@ -78,6 +78,7 @@ class XMLQuestionImporter
     /**
      * Store hash values of question descriptions.
      * This is used to avoid the 255 chars limitation for string indexes on MySQL
+     * @var list<string>
      * @private
      */
     private array $questionhash = [];
