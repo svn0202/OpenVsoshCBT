@@ -6,6 +6,41 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testUserGroupSelectRenderingRemainsUnchanged(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["l"] = ["a_meta_charset" => "UTF-8", "w_group" => "Group"]; '
+                    . '$GLOBALS["db"] = "connection"; $GLOBALS["query"] = ""; '
+                    . '$GLOBALS["rows"] = [["group_id" => 3, "group_name" => "Alpha&Beta"]]; '
+                    . 'function F_user_group_select_sql() { return "groups-query"; } '
+                    . 'function F_db_query($query, $db) { $GLOBALS["query"] = $query; return "result"; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_user_group_select\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$html = F_user_group_select("team"); '
+                    . 'echo json_encode(["html" => $html, "query" => $GLOBALS["query"]]);',
+                dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'html' => '<select name="team" id="team" title="группа" aria-label="группа">' . "\n"
+                    . '<option value="0" style="color:gray" selected="selected">группа</option>' . "\n"
+                    . '<option value="3"> Alpha&amp;Beta&nbsp;</option>' . "\n</select>\n",
+                'query' => 'groups-query',
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testUserGroupSelectionSqlRemainsRoleSpecific(): void
     {
         [$status, $output] = \F_tcecode_run_process(
