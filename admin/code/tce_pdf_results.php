@@ -50,7 +50,7 @@ $testuser_id = $_REQUEST['testuser_id'] ?? 0;
 $order_field = $_REQUEST['order_field'] ?? '';
 $orderdir = $_REQUEST['orderdir'] ?? 0;
 
-$onlytext = $mode == 5;
+$onlytext = $mode === 5;
 // The ?email= token bypasses the normal authorization check, so it must fail closed when
 // K_RANDOM_SECURITY is still the shipped default (otherwise the token is publicly forgeable).
 $email_token = $_REQUEST['email'] ?? null;
@@ -129,7 +129,7 @@ if (isset($_REQUEST['display_mode'])) {
 if (isset($_REQUEST['show_graph'])) {
     $show_graph = (int) $_REQUEST['show_graph'];
     $filter .= '&amp;show_graph=' . $show_graph;
-    if ($show_graph && $display_mode == 0) {
+    if ($show_graph && $display_mode === 0) {
         $display_mode = 1;
     }
 } else {
@@ -230,7 +230,7 @@ $pdf->setLanguageArray($l);
 // page header content (title, description, logo)
 $pdf->setReportHeader(PDF_HEADER_TITLE, PDF_HEADER_STRING, PDF_HEADER_LOGO, (float) PDF_HEADER_LOGO_WIDTH);
 
-if ($mode != 3) {
+if ($mode !== 3) {
     $pdf->addReportPage();
     $pdf->writeReportHTML(
         '<h1 style="text-align:center;font-size:13pt;">' . htmlspecialchars($doc_title) . '</h1>',
