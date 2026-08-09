@@ -14,7 +14,7 @@ final class FileManagerFunctionsTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'require "tce_functions_filemanager.php"; $info = F_getFileInfo($argv[1]); echo implode("\n", ['
+                'require "tce_functions_filemanager.php"; $info = f_get_file_info($argv[1]); echo implode("\n", ['
                     . '$info["basename"], $info["extension"], $info["filename"], $info["dir"] ? "1" : "0", '
                     . '(string) $info["size"], $info["link"] ? "1" : "0", $info["aperms"]]);',
                 __FILE__,

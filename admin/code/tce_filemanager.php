@@ -275,7 +275,7 @@ echo '<legend title="' . $l['w_action'] . '">' . $l['w_action'] . '</legend>' . 
 if (!empty($file)) {
     // file mode
     // preview
-    $filedata = F_getFileInfo($file);
+    $filedata = f_get_file_info($file);
     $w = 500;
     $h = 250;
     echo F_objects_replacement($filedata['tcename'], $filedata['extension'], 0, 0, $l['w_preview'], $w, $h);
