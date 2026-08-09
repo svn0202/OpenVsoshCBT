@@ -835,7 +835,7 @@ function bcdechex($dec): string
 {
     $last = bcmod($dec, 16);
     $remain = bcdiv(bcsub($dec, $last), 16);
-    if ($remain == 0) {
+    if ($remain === '0') {
         return strtoupper(dechex($last));
     }
 
