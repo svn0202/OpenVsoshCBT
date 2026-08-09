@@ -175,7 +175,7 @@ function F_TSVQuestionImporter($tsvfile)
         // get user data into array
         switch ($qdata[0]) {
             case 'M':
-                { // MODULE
+                // MODULE
                     $current_module_id = 0;
                     if (!isset($qdata[2]) || empty($qdata[2])) {
                         break;
@@ -229,9 +229,8 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     break;
-                }
             case 'S':
-                { // SUBJECT
+                // SUBJECT
                     $current_subject_id = 0;
                     if ($current_module_id === 0) {
                         return;
@@ -305,9 +304,8 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     break;
-                }
             case 'Q':
-                { // QUESTION
+                // QUESTION
                     $current_question_id = 0;
                     if ($current_module_id === 0 || $current_subject_id === 0) {
                         return;
@@ -464,9 +462,8 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     break;
-                }
             case 'A':
-                { // ANSWER
+                // ANSWER
                     $current_answer_id = 0;
                     if ($current_module_id === 0 || $current_subject_id === 0 || $current_question_id === 0) {
                         return;
@@ -572,7 +569,6 @@ function F_TSVQuestionImporter($tsvfile)
                     }
 
                     break;
-                }
         } // end of switch
     }
 

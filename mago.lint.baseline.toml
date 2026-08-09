@@ -307,12 +307,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 7
 
 [[issues]]
-file = "admin/code/tce_import_questions.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 4
-
-[[issues]]
 file = "admin/code/tce_import_users.php"
 code = "file-name"
 message = "Class `XMLUserImporter` should be in a file named `XMLUserImporter.php`, found `tce_import_users.php`."
