@@ -27,7 +27,9 @@
 //ini_set('session.save_handler', 'user');
 session_name('PHPSESSID');
 //ini_set('session.gc_maxlifetime', K_SESSION_LIFE);
+// @mago-expect lint:no-ini-set -- sessions are intentionally cookie-only across every entry point
 ini_set('session.use_cookies', true);
+// @mago-expect lint:no-ini-set -- reject attacker-supplied uninitialized session identifiers
 ini_set('session.use_strict_mode', 'On');
 session_set_cookie_params([
     'lifetime' => 0,

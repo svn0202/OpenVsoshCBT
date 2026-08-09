@@ -223,18 +223,6 @@ message = "Function name `F_tmf_word_import_template` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/config.default/tce_config.php"
-code = "no-ini-set"
-message = "ini_set should not be used."
-count = 2
-
-[[issues]]
-file = "public/config.default/tce_config.php"
-code = "no-ini-set"
-message = "ini_set should not be used."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_altauth.php"
 code = "function-name"
 message = "Function name `F_altLogin` should be in snake case."
@@ -1243,12 +1231,6 @@ message = "Unsafe use of error control operator `@`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "no-ini-set"
-message = "ini_set should not be used."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "function-name"
 message = "Function name `F_bbcode_to_tcecode` should be in snake case."
@@ -1871,9 +1853,3 @@ file = "shared/code/tce_pdf_report.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 3
-
-[[issues]]
-file = "shared/config.default/tce_config.php"
-code = "no-ini-set"
-message = "ini_set should not be used."
-count = 1
