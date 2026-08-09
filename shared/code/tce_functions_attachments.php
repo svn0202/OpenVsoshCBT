@@ -98,7 +98,7 @@ function f_tmf_attachment_normalize_uploads(array $files): array
  *
  * @return array{status:string,count:int,message:string}
  */
-function F_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $files): array
+function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $files): array
 {
     global $db;
     $user_id = (int) ($_SESSION['session_user_id'] ?? 0);
