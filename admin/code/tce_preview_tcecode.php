@@ -21,7 +21,7 @@
  */
 
 require_once '../config/tce_config.php';
-$pagelevel = K_AUTH_ADMIN_TCECODE;
+$pagelevel = (int) K_AUTH_ADMIN_TCECODE;
 require_once '../../shared/code/tce_authorization.php';
 
 $thispage_title = '';
@@ -30,9 +30,7 @@ require_once '../code/tce_page_header_popup.php';
 
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_form.php';
-$tcexamcode = str_replace('+', '~#PLUS#~', $_REQUEST['tcexamcode']);
-$tcexamcode = stripslashes(urldecode($tcexamcode));
-$tcexamcode = str_replace('~#PLUS#~', '+', $tcexamcode);
+$tcexamcode = f_tcecode_preview_input($_REQUEST['tcexamcode'] ?? null);
 echo F_decode_tcecode($tcexamcode);
 
 echo '<hr />' . K_NEWLINE;

@@ -24,6 +24,20 @@
  */
 
 /**
+ * Decode the string submitted to the TCECode preview endpoint.
+ */
+function f_tcecode_preview_input(mixed $value): string
+{
+    if (!is_string($value)) {
+        return '';
+    }
+
+    $value = str_replace('+', '~#PLUS#~', $value);
+    $value = stripslashes(urldecode($value));
+    return str_replace('~#PLUS#~', '+', $value);
+}
+
+/**
  * Returns XHTML code from text marked-up with TCExam Code Tags
  * @param $text_to_decode (string) text to convert
  * @return string XHTML code
