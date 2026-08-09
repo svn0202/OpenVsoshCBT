@@ -129,7 +129,7 @@ function F_decodeOMRPage($image)
     $command = K_OMR_PATH_ZBARIMG . ' --raw -Sdisable -Scode128.enable -q ' . escapeshellarg($image);
     $qstart = exec($command);
     $qstart = (int) $qstart;
-    if ($qstart == 0) {
+    if ($qstart === 0) {
         return false;
     }
 
