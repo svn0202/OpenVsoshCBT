@@ -389,7 +389,7 @@ function utrim($txt)
  * @return string|false IPv6 address in expanded notation or false in case of invalid input.
  * @since 7.1.000 (2009-02-13)
  */
-function getNormalizedIP($ip): string|false
+function get_normalized_ip($ip): string|false
 {
     $ip = strtolower($ip ?? '');
     if ($ip === '0000:0000:0000:0000:0000:0000:0000:0001' || $ip === '::1') {
@@ -460,7 +460,7 @@ function getNormalizedIP($ip): string|false
  * Converts an IP address into its packed 16-byte binary representation (network byte order).
  * This preserves full 128-bit precision and is case-insensitive, so the returned fixed-width
  * byte strings can be ordered and range-compared losslessly with strcmp() (see F_isValidIP).
- * Input may use any notation accepted by getNormalizedIP() (IPv4, IPv6, or the expanded form
+ * Input may use any notation accepted by get_normalized_ip() (IPv4, IPv6, or the expanded form
  * already stored in the database).
  * @param $ip (string) IP address to convert.
  * @return string|false 16-byte packed IPv6 address, or false on invalid input.
@@ -468,7 +468,7 @@ function getNormalizedIP($ip): string|false
  */
 function get_ip_as_bytes($ip): string|false
 {
-    $norm = getNormalizedIP($ip);
+    $norm = get_normalized_ip($ip);
     if ($norm === false) {
         return false;
     }
@@ -478,7 +478,7 @@ function get_ip_as_bytes($ip): string|false
 
 /**
  * Returns a human-readable, compact string representation of an IP address.
- * The stored form is the expanded IPv6 produced by getNormalizedIP(); this compacts it
+ * The stored form is the expanded IPv6 produced by get_normalized_ip(); this compacts it
  * (and unwraps IPv4-mapped IPv6, e.g. ::ffff:127.0.0.1 -> 127.0.0.1) so it reads naturally
  * and fits report/result columns.
  * @param $ip (string) IP address to convert.
@@ -487,7 +487,7 @@ function get_ip_as_bytes($ip): string|false
  */
 function get_ip_as_string($ip): string
 {
-    $norm = getNormalizedIP($ip);
+    $norm = get_normalized_ip($ip);
     if ($norm === false || $norm === '') {
         return '';
     }

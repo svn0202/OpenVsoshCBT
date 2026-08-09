@@ -164,7 +164,7 @@ if ($menu_mode == 'add') { // process submitted data
 
         if ($formstatus) {
             $user_verifycode = md5(uniqid((string) random_int(0, mt_getrandmax()), true)); // verification code
-            $user_ip = getNormalizedIP($_SERVER['REMOTE_ADDR']); // get the user's IP number
+            $user_ip = get_normalized_ip($_SERVER['REMOTE_ADDR']); // get the user's IP number
             $user_regdate = date(K_TIMESTAMP_FORMAT);
             // get the registration date and time
             $usrlevel = K_USRREG_EMAIL_CONFIRM ? 0 : 1;

@@ -397,7 +397,7 @@ switch ($menu_mode) { // process submitted data
                     break;
                 }
 
-                $normalized_user_ip = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+                $normalized_user_ip = get_normalized_ip($_SERVER['REMOTE_ADDR']);
                 $user_ip = is_string($normalized_user_ip) ? $normalized_user_ip : ''; // get the user's IP number
                 $user_regdate = date(K_TIMESTAMP_FORMAT); // get the registration date and time
 
