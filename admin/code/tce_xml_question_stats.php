@@ -89,7 +89,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
  * @param $test_id (int) test ID
  * @return XML data
  */
-function F_xml_export_question_stats($test_id)
+function f_xml_export_question_stats($test_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
