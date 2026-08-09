@@ -52,9 +52,9 @@ function F_question_set_enabled($question_id, $enabled = true)
  * @author Nicola Asuni
  * @since 2008-11-26
  * @param $question_id (int) question ID
- * @return int question position
+ * @return int|string|null question position
  */
-function F_question_get_position($question_id)
+function f_question_get_position(mixed $question_id): mixed
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -72,6 +72,7 @@ function F_question_get_position($question_id)
         F_display_db_error();
     }
 
+    /** @var int|string|null $question_position */
     return $question_position;
 }
 
@@ -126,7 +127,7 @@ function F_question_delete($question_id, $subject_id)
         }
 
         // get question position (if defined)
-        $question_position = F_question_get_position($question_id);
+        $question_position = f_question_get_position($question_id);
         // delete question
         $sql = 'DELETE FROM ' . K_TABLE_QUESTIONS . ' WHERE question_id=' . $question_id . '';
         if (!($r = F_db_query($sql, $db))) {
