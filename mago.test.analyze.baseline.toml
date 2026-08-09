@@ -2,18 +2,6 @@ variant = "loose"
 
 [[issues]]
 file = "test/WordImportTest.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$expectedTypes` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `fixtureProvider` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 3
@@ -137,12 +125,6 @@ file = "test/WordImportTest.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('topic')` accessed on `array<array-key, mixed>`."
 count = 2
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\WordImportTest::setUp`.'
-count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
