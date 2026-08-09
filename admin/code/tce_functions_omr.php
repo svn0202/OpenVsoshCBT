@@ -201,7 +201,7 @@ function F_decodeOMRPage($image)
 
     $imreg->clear();
     $impref->clear();
-    if ($psum != 12) {
+    if ($psum !== 12.0) {
         return false;
     }
 
