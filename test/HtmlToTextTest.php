@@ -21,6 +21,14 @@ final class HtmlToTextTest extends TestCase
         );
     }
 
+    public function testConvertsOrderedListItemsOnSeparateLines(): void
+    {
+        self::assertSame(
+            "Items:\n\nOne\nTwo",
+            $this->convert('<p>Items:</p><ol><li>One</li><li>Two</li></ol>'),
+        );
+    }
+
     private function convert(string $html, bool $preserveNewlines = false, bool $displayLinks = false): string
     {
         $workingDirectory = getcwd();
