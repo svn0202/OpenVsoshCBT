@@ -130,7 +130,7 @@ function f_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_
 /**
  * Remove abandoned previews and only the media directories tied to them.
  */
-function F_tmf_word_import_cleanup_stale(
+function f_tmf_word_import_cleanup_stale(
     string $cache_directory,
     int $maximum_age = TMF_WORD_IMPORT_PREVIEW_TTL,
     ?int $now = null,
