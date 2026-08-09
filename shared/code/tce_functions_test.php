@@ -2411,7 +2411,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                         . '" value="'
                                         . $anspos
                                         . '"';
-                                    if ((int) $ma['logansw_selected'] == 1) {
+                                    if ((int) $ma['logansw_selected'] === 1) {
                                         $str .= ' checked="checked"';
                                         $checked = true;
                                     }
@@ -2460,7 +2460,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             . 'u" value="-1" title="'
                                             . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '"';
-                                        if ((int) $ma['logansw_selected'] == -1) {
+                                        if ((int) $ma['logansw_selected'] === -1) {
                                             $str .= ' checked="checked"';
                                         }
 
@@ -2483,7 +2483,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             . ']" id="answpos_'
                                             . $anspos
                                             . 'f" value="0"';
-                                        if ((int) $ma['logansw_selected'] == 0) {
+                                        if ((int) $ma['logansw_selected'] === 0) {
                                             $str .= ' checked="checked"';
                                         }
 
@@ -2506,7 +2506,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                             . ']" id="answpos_'
                                             . $anspos
                                             . 't" value="1"';
-                                        if ((int) $ma['logansw_selected'] == 1) {
+                                        if ((int) $ma['logansw_selected'] === 1) {
                                             $str .= ' checked="checked"';
                                         }
 
@@ -2541,7 +2541,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                                 . $maximum
                                                 . '){this.checked=false;return false;}"';
                                         }
-                                        if ((int) $ma['logansw_selected'] == 1) {
+                                        if ((int) $ma['logansw_selected'] === 1) {
                                             $str .= ' checked="checked"';
                                             $checked = true;
                                         }
