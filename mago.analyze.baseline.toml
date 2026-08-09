@@ -16112,24 +16112,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_svg_graph.php"
-code = "missing-parameter-type"
-message = "Parameter `$h` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
-code = "missing-parameter-type"
-message = "Parameter `$p` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
-code = "missing-parameter-type"
-message = "Parameter `$w` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `mixed`."
 count = 1
