@@ -112,7 +112,7 @@ $data = F_getAllUsersTestStat(
 $table = F_printTestResultStat($data, 1, $order_field, '', false, $display_mode);
 $table .= F_printTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
 // convert HTML table to TSV
-echo F_html_to_TSV($table);
+echo f_html_to_tsv($table);
 
 if ($user_id === 0) {
     $users = [];
@@ -131,7 +131,7 @@ if ($user_id === 0) {
             $table = F_printTestResultStat($usrdata, 1, $order_field, '', false, $display_mode);
             $table .= F_printTestStat($test_id, $group_id, $uid, $startdate, $enddate, 0, $usrdata, $display_mode);
             // convert HTML table to TSV
-            echo F_html_to_TSV($table);
+            echo f_html_to_tsv($table);
         }
     }
 }

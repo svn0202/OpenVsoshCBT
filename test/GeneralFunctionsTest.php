@@ -146,6 +146,13 @@ final class GeneralFunctionsTest extends TestCase
         self::assertSame("\tA&B\t10", \get_data_tsv($data));
     }
 
+    public function testHtmlToTsvPreservesTableContent(): void
+    {
+        $html = '<table><tr><th>A</th><th>B</th></tr><tr><td>$1</td><td>A&amp;B<br>next</td></tr></table>';
+
+        self::assertSame("\tA\tB\n\t$1\tA&B next", \f_html_to_tsv($html));
+    }
+
     public function testGetContrastColor(): void
     {
         $this->assertSame('ffffff', \get_contrast_color('000000')); // dark background -> white
