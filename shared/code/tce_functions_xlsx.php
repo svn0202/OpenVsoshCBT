@@ -34,7 +34,7 @@ function f_tmf_xlsx_safe_sheet_name(string $name, int $fallback): string
 /**
  * @param array<int,array{name?:string,rows:array,widths?:array<int,float>}> $sheets
  */
-function F_tmf_xlsx_build(array $sheets): string
+function f_tmf_xlsx_build(array $sheets): string
 {
     if ($sheets === [] || !class_exists(ZipArchive::class)) {
         throw new RuntimeException('XLSX support requires ZipArchive and at least one sheet.');
