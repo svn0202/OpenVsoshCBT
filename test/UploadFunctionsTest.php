@@ -6,6 +6,23 @@ use PHPUnit\Framework\TestCase;
 
 final class UploadFunctionsTest extends TestCase
 {
+    public function testUploadRejectsHiddenFilenameBeforeMovingFile(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_upload.php"; '
+                    . '$_FILES["userfile"] = ["name" => ".hidden", "tmp_name" => "/tmp/not-uploaded"]; '
+                    . 'echo json_encode(F_upload_file("userfile", K_PATH_CACHE));',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('false', $output);
+    }
+
     public function testReadsLocalFileSizeIncludingLegacyEmptyFileResult(): void
     {
         [$status, $output] = \F_tcecode_run_process(
