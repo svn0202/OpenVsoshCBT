@@ -757,12 +757,6 @@ message = "Function name `F_tmf_pregeneration_invalidate` should be in snake cas
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_regrade.php"
-code = "function-name"
-message = "Function name `F_tmf_regrade_test` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_result_publication.php"
 code = "function-name"
 message = "Function name `F_tmf_result_identity` should be in snake case."

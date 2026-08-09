@@ -14601,13 +14601,13 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `RuntimeException` in `F_tmf_regrade_test`."
+message = "Potentially unhandled exception `RuntimeException` in `f_tmf_regrade_test`."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `Throwable` in `F_tmf_regrade_test`."
+message = "Potentially unhandled exception `Throwable` in `f_tmf_regrade_test`."
 count = 1
 
 [[issues]]
