@@ -52,6 +52,13 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\F_getBoolean(0));
     }
 
+    public function testPositiveRequestIntegerRejectsStructuredInput(): void
+    {
+        self::assertSame(7, \f_positive_request_int('7'));
+        self::assertSame(0, \f_positive_request_int(0));
+        self::assertSame(0, \f_positive_request_int(['7']));
+    }
+
     public function testNormalizeMatchingPositions(): void
     {
         $this->assertSame(
