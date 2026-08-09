@@ -14072,12 +14072,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `set_error_handler`: expected `int`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 3

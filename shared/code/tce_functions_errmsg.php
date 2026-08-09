@@ -144,7 +144,7 @@ function F_error_handler(int $errno, string $errstr, string $errfile, int $errli
 }
 
 // Set the custom error handler function
-$old_error_handler = set_error_handler('F_error_handler', K_ERROR_TYPES);
+$old_error_handler = set_error_handler('F_error_handler', (int) K_ERROR_TYPES);
 
 /**
  * Check if the URL exist.
