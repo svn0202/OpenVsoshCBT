@@ -75,7 +75,7 @@ if (strlen($searchterms) > 0) {
         $wherequery .= ' AND (';
         $wherequery .= " (test_name LIKE '%" . $word . "%')";
         $wherequery .= " OR (test_description LIKE '%" . $word . "%')";
-        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) == 1 && checkdate($wd[2], $wd[3], $wd[1])) {
+        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) === 1 && checkdate($wd[2], $wd[3], $wd[1])) {
             $wherequery .= " OR ((test_begin_time <= '" . $word . "')";
             $wherequery .= " AND (test_end_time >= '" . $word . "'))";
         }
