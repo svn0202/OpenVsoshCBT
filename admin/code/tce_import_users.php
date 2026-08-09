@@ -162,12 +162,6 @@ class XMLUserImporter
     private $group_data = [];
 
     /**
-     * Int ID of last inserted user (counter)
-     * @private
-     */
-    private int $user_id = 0;
-
-    /**
      * Class constructor.
      * @param $xmlfile (string) XML file name
      */
