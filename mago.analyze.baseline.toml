@@ -11372,12 +11372,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_altauth.php"
-code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
 code = "mixed-return-statement"
 message = "Could not infer a precise return type for function `F_altLogin`. Saw type `mixed`."
 count = 1
