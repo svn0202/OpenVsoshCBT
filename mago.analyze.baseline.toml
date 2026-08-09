@@ -13143,12 +13143,6 @@ count = 15
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "mixed-operand"
 message = "Left operand in `>=` comparison has `mixed` type."
 count = 1
 
