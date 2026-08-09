@@ -1889,7 +1889,6 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                 $sqlu = 'UPDATE ' . K_TABLE_LOG_ANSWER . ' SET';
                 switch ($question_type) {
                     case 1:
-                        {
                             // MCSA - Multiple Choice Single Answer
                             if (empty($answer_id)) {
                                 // unanswered
@@ -1925,9 +1924,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             }
 
                             break;
-                        }
                     case 2:
-                        {
                             // MCMA - Multiple Choice Multiple Answer
                             if (isset($answer_id[$m['logansw_answer_id']])) {
                                 // radiobutton or selected checkbox
@@ -1977,10 +1974,8 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             }
 
                             break;
-                        }
                     case 4:
                     case 5:
-                        {
                             // ORDER / MATCHING
                             if (!empty($answer_id[$m['logansw_answer_id']])) {
                                 // selected
@@ -2009,7 +2004,6 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             }
 
                             break;
-                        }
                 }
 
                 // end of switch
