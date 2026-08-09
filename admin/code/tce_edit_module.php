@@ -274,7 +274,9 @@ if ($formstatus && $menu_mode != 'clear') {
         $sql = F_select_modules_sql('module_id=' . $module_id) . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $module_id = $m['module_id'];
+                /** @var int|numeric-string $stored_module_id */
+                $stored_module_id = $m['module_id'];
+                $module_id = (int) $stored_module_id;
                 $module_name = $m['module_name'];
                 $module_enabled = f_get_boolean($m['module_enabled']);
                 $module_user_id = (int) $m['module_user_id'];
@@ -311,7 +313,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($module_id == 0) {
+if ($module_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -321,7 +323,9 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['module_id'] . '"';
-        if ($m['module_id'] == $module_id) {
+        /** @var int|numeric-string $listed_module_id */
+        $listed_module_id = $m['module_id'];
+        if ((int) $listed_module_id === $module_id) {
             echo ' selected="selected"';
         }
 
@@ -394,7 +398,9 @@ if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
         while ($m = F_db_fetch_array($r)) {
             $userids[] = $m['user_id'];
             echo '<option value="' . $m['user_id'] . '"';
-            if ($m['user_id'] == $module_user_id) {
+            /** @var int|numeric-string $listed_user_id */
+            $listed_user_id = $m['user_id'];
+            if ((int) $listed_user_id === $module_user_id) {
                 echo ' selected="selected"';
             }
 
@@ -496,7 +502,7 @@ echo getFormRowCheckBox('module_enabled', $l['w_enabled'], $l['h_enabled'], '', 
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if (isset($module_id) && $module_id > 0) {
+if ($module_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -524,7 +530,7 @@ echo '</div>' . K_NEWLINE;
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="right">' . K_NEWLINE;
 
-if (isset($module_id) && $module_id > 0) {
+if ($module_id > 0) {
     echo
         '<a href="tce_edit_subject.php?subject_module_id='
             . $module_id
