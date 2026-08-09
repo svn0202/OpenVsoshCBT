@@ -442,9 +442,12 @@ for ($item = 1; $item <= $test_num; ++$item) {
 
             if ($rq = F_db_query($sqlq, $db)) {
                 while ($mq = F_db_fetch_array($rq)) {
+                    /** @var int|numeric-string $raw_question_type */
+                    $raw_question_type = $mq['question_type'];
+                    $normalized_question_type = (int) $raw_question_type;
                     $tmp_data = [
                         'id' => $mq['question_id'],
-                        'type' => $mq['question_type'],
+                        'type' => $normalized_question_type,
                         'difficulty' => $mq['question_difficulty'],
                         'description' => $mq['question_description'],
                         'answers' => $m['tsubset_answers'],
@@ -502,7 +505,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
 
             ++$itemcount;
 
-            if ($q['type'] == 3) {
+            if ($q['type'] === 3) {
                 // free-text question: print a writing area; the correct short answers are
                 // printed in hidden white (visible only via "Replace Document Colors").
                 $shortanswers = '';
@@ -830,7 +833,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                                 $grid_bg_hex,
                             );
                             $x += $circle_shift;
-                            if ($question_type == 2) { // MCMA: add a "false" circle
+                            if ($question_type === 2) { // MCMA: add a "false" circle
                                 $out .= $pdf->graph->getCircle(
                                     $x + $circle_half_width,
                                     $cy,
