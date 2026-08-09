@@ -33,6 +33,8 @@ function F_decode_tcecode($text_to_decode)
     require_once '../config/tce_config.php';
     global $l, $db;
 
+    $text_to_decode = (string) $text_to_decode;
+
     // Patterns and replacements
     $pattern = [];
     $replacement = [];
@@ -112,11 +114,11 @@ function F_decode_tcecode($text_to_decode)
  * @param $text (string) content to inspect
  * @return bool true for HTML content
  */
-function F_has_html_markup($text)
+function F_has_html_markup(string $text): bool
 {
     return preg_match(
         '/<\/?(?:a|b|blockquote|br|code|del|div|em|h[1-6]|hr|i|img|li|mark|ol|p|pre|s|small|span|strong|sub|sup|table|tbody|td|tfoot|th|thead|tr|u|ul)(?:\s|\/?>)/i',
-        (string) $text,
+        $text,
     ) === 1;
 }
 
@@ -125,10 +127,10 @@ function F_has_html_markup($text)
  * @param $html (string) imported HTML fragment
  * @return string safe HTML fragment
  */
-function F_sanitize_html_content($html)
+function F_sanitize_html_content(string $html): string
 {
     if ($html === '' || !class_exists('DOMDocument')) {
-        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     $document = new DOMDocument('1.0', 'UTF-8');
@@ -141,12 +143,12 @@ function F_sanitize_html_content($html)
     libxml_clear_errors();
     libxml_use_internal_errors($previous_errors);
     if (!$loaded) {
-        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     $container = $document->getElementById('tce-imported-content');
     if (!$container instanceof DOMElement) {
-        return htmlspecialchars((string) $html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     F_sanitize_html_node($container);
@@ -163,7 +165,7 @@ function F_sanitize_html_content($html)
  * @param $parent (DOMNode) branch to sanitize
  * @return void
  */
-function F_sanitize_html_node($parent)
+function F_sanitize_html_node(DOMNode $parent): void
 {
     $allowed_tags = [
         'a', 'b', 'blockquote', 'br', 'code', 'del', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
@@ -203,7 +205,7 @@ function F_sanitize_html_node($parent)
  * @param $tag (string) normalized tag name
  * @return void
  */
-function F_sanitize_html_attributes($element, $tag)
+function F_sanitize_html_attributes(DOMElement $element, string $tag): void
 {
     $allowed = ['dir', 'lang', 'style', 'title'];
     if ($tag === 'a') {
@@ -252,9 +254,9 @@ function F_sanitize_html_attributes($element, $tag)
  * @param $image (bool) true for an image source
  * @return bool true when safe to render
  */
-function F_is_safe_html_url($url, $image = false)
+function F_is_safe_html_url(string $url, bool $image = false): bool
 {
-    $url = trim(html_entity_decode((string) $url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    $url = trim(html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     if ($url === '' || preg_match('/[\x00-\x20]/', $url) === 1) {
         return false;
     }
@@ -275,7 +277,7 @@ function F_is_safe_html_url($url, $image = false)
  * @param $style (string) style declaration
  * @return string safe style declaration
  */
-function F_sanitize_html_style($style)
+function F_sanitize_html_style(string $style): string
 {
     $allowed = [
         'font-style' => ['italic', 'normal'],
@@ -286,7 +288,7 @@ function F_sanitize_html_style($style)
         'white-space' => ['normal', 'pre', 'pre-line', 'pre-wrap'],
     ];
     $safe = [];
-    foreach (explode(';', (string) $style) as $declaration) {
+    foreach (explode(';', $style) as $declaration) {
         $parts = explode(':', $declaration, 2);
         if (count($parts) !== 2) {
             continue;
@@ -707,7 +709,8 @@ function F_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
                 }
                 $parent->removeChild($node);
             } else {
-                foreach (iterator_to_array($node->attributes) as $attribute) {
+                $attributes = $node->attributes;
+                foreach ($attributes === null ? [] : iterator_to_array($attributes) as $attribute) {
                     $name = strtolower($attribute->name);
                     $value = (string) $attribute->value;
                     if (
@@ -920,6 +923,7 @@ function F_remove_tcecode($str)
  */
 function F_tcecodeToLine($str)
 {
+    $str = (string) $str;
     if (F_has_html_markup($str)) {
         $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $str = F_compact_string($str);
@@ -959,6 +963,7 @@ function F_tcecodeToTitle($str)
 {
     require_once '../config/tce_config.php';
     global $l;
+    $str = (string) $str;
     if (F_has_html_markup($str)) {
         $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     } else {
