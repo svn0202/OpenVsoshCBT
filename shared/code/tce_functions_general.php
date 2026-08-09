@@ -185,7 +185,7 @@ function unhtmlentities(mixed $text_to_convert, mixed $preserve_tagsign = false)
         $text_to_convert = preg_replace('/\&([gl])t;/', '&amp;\\1t;', $text_to_convert);
     }
 
-    return @html_entity_decode($text_to_convert, ENT_NOQUOTES | ENT_XHTML, 'UTF-8');
+    return html_entity_decode($text_to_convert, ENT_NOQUOTES | ENT_XHTML, 'UTF-8');
 }
 
 /**

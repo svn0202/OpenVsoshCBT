@@ -1309,12 +1309,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 7
 
 [[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "no-error-control-operator"
-message = "Unsafe use of error control operator `@`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "function-name"
 message = "Function name `F_menu_link` should be in snake case."
