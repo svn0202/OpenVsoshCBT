@@ -74,8 +74,8 @@ $fielddesc = [
 $reqfields = [];
 $reqdesc = [];
 foreach ($regfields as $field => $required) {
-    if ($required == 2) {
-        $reqfields[] = $field;
+    if (f_legacy_int_equals($required, 2)) {
+        $reqfields[] = (string) $field;
         $reqdesc[] = htmlspecialchars($fielddesc[$field], ENT_COMPAT, $l['a_meta_charset']);
     }
 }
@@ -83,7 +83,7 @@ foreach ($regfields as $field => $required) {
 $_REQUEST['ff_required'] = implode(',', $reqfields);
 $_REQUEST['ff_required_labels'] = implode(',', $reqdesc);
 
-if ($menu_mode == 'add') { // process submitted data
+if ($menu_mode === 'add') { // process submitted data
     foreach ($regfields as $name => $enabled) {
         // disable unauthorized fields
         if ($enabled) {
@@ -379,7 +379,7 @@ echo
         false,
         false,
         show_required_field($regfields['user_name']),
-        $regfields['user_name'] == 2,
+        f_legacy_int_equals($regfields['user_name'], 2),
         'username',
     )
 ;
@@ -397,7 +397,7 @@ if (K_USRREG_EMAIL_CONFIRM || $regfields['user_email']) {
             false,
             false,
             show_required_field($regfields['user_email']),
-            $regfields['user_email'] == 2,
+            f_legacy_int_equals($regfields['user_email'], 2),
             'email',
             'email',
         )
@@ -452,7 +452,7 @@ if ($regfields['user_regnumber']) {
             false,
             false,
             show_required_field($regfields['user_regnumber']),
-            $regfields['user_regnumber'] == 2,
+            f_legacy_int_equals($regfields['user_regnumber'], 2),
         )
     ;
 }
@@ -471,7 +471,7 @@ if ($regfields['user_firstname']) {
             false,
             false,
             show_required_field($regfields['user_firstname']),
-            $regfields['user_firstname'] == 2,
+            f_legacy_int_equals($regfields['user_firstname'], 2),
             'given-name',
         )
     ;
@@ -491,7 +491,7 @@ if ($regfields['user_lastname']) {
             false,
             false,
             show_required_field($regfields['user_lastname']),
-            $regfields['user_lastname'] == 2,
+            f_legacy_int_equals($regfields['user_lastname'], 2),
             'family-name',
         )
     ;
@@ -511,7 +511,7 @@ if ($regfields['user_birthdate']) {
             false,
             false,
             show_required_field($regfields['user_birthdate']),
-            $regfields['user_birthdate'] == 2,
+            f_legacy_int_equals($regfields['user_birthdate'], 2),
             'bday',
         )
     ;
@@ -531,7 +531,7 @@ if ($regfields['user_birthplace']) {
             false,
             false,
             show_required_field($regfields['user_birthplace']),
-            $regfields['user_birthplace'] == 2,
+            f_legacy_int_equals($regfields['user_birthplace'], 2),
         )
     ;
 }
@@ -550,7 +550,7 @@ if ($regfields['user_ssn']) {
             false,
             false,
             show_required_field($regfields['user_ssn']),
-            $regfields['user_ssn'] == 2,
+            f_legacy_int_equals($regfields['user_ssn'], 2),
         )
     ;
 }
@@ -569,7 +569,7 @@ if ($regfields['user_groups']) {
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
             echo '<option value="' . $m['group_id'] . '"';
-            if (in_array($m['group_id'], $user_groups) || $m['group_id'] == K_USRREG_GROUP) {
+            if (in_array($m['group_id'], $user_groups) || f_legacy_int_equals($m['group_id'], K_USRREG_GROUP)) {
                 echo ' selected="selected"';
             }
 

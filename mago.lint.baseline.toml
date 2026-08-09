@@ -313,12 +313,6 @@ message = "ini_set should not be used."
 count = 2
 
 [[issues]]
-file = "public/code/tce_user_registration.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 11
-
-[[issues]]
 file = "public/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
