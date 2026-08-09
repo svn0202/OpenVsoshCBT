@@ -1714,7 +1714,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
         $answers_ids = []; // array used to store answers IDs
         switch ($question_type) {
             case 1:
-                { // MCSA
+                // MCSA
                     // select first right answer
                     $answers_ids += F_selectAnswers($question_id, 1, false, 1, 0, $randorder, $ordmode);
                     // select remaining answers
@@ -1739,21 +1739,18 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
                     }
 
                     break;
-                }
             case 2:
-                { // MCMA
+                // MCMA
                     // select answers
                     $answers_ids += F_selectAnswers($question_id, '', false, $num_answers, 0, $randorder, $ordmode);
                     break;
-                }
             case 4:
             case 5:
-                { // ORDERING
+                // ORDERING
                     // select answers
                     $randorder = true;
                     $answers_ids += F_selectAnswers($question_id, '', true, 0, 0, $randorder, $ordmode);
                     break;
-                }
         }
 
         // randomizes the order of the answers
