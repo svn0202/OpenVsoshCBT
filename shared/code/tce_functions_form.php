@@ -222,9 +222,9 @@ function F_check_fields_format(mixed $formfields): string
 /**
  * Check Form Fields.
  * see: F_check_required_fields, F_check_fields_format
- * @return false in case of error, true otherwise
+ * @return bool false in case of error, true otherwise
  */
-function F_check_form_fields()
+function F_check_form_fields(): bool
 {
     require_once '../config/tce_config.php';
     global $l;
