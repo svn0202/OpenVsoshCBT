@@ -276,7 +276,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
     $dateanswers = date(K_TIMESTAMP_FORMAT, $time + 1);
     // check user's group
     if (
-        F_count_rows(
+        (int) F_count_rows(
             K_TABLE_USERGROUP
             . ', '
             . K_TABLE_TEST_GROUPS
@@ -285,7 +285,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
             . ' AND usrgrp_user_id='
             . $user_id
             . ' LIMIT 1',
-        ) == 0
+        ) === 0
     ) {
         return false;
     }
