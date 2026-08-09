@@ -83,7 +83,7 @@ function F_zero_to_null($num)
  * @param $str (string) string to check.
  * @return boolean value.
  */
-function F_getBoolean($str)
+function F_getBoolean($str): bool
 {
     if (is_bool($str)) {
         return $str;
@@ -500,9 +500,9 @@ function getIpAsString($ip)
 /**
  * Format a percentage number.
  * @param $num (float) number to be formatted
- * @return formatted string
+ * @return string Formatted number.
  */
-function F_formatFloat($num)
+function F_formatFloat($num): string
 {
     return sprintf('%.03f', round($num ?? 0, 3));
 }
@@ -511,9 +511,9 @@ function F_formatFloat($num)
  * Format a percentage number.
  * @param $num (float) Number to be formatted.
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
- * @return formatted string
+ * @return string Formatted percentage.
  */
-function F_formatPercentage($num, $ratio = true)
+function F_formatPercentage($num, $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;
@@ -528,7 +528,7 @@ function F_formatPercentage($num, $ratio = true)
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string
  */
-function F_formatPdfPercentage($num, $ratio = true)
+function F_formatPdfPercentage($num, $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;
@@ -543,7 +543,7 @@ function F_formatPdfPercentage($num, $ratio = true)
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string
  */
-function F_formatXMLPercentage($num, $ratio = true)
+function F_formatXMLPercentage($num, $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;

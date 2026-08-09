@@ -3080,12 +3080,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_email_reports.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(formatted)` for middle operand in string concatenation."
-count = 6
-
-[[issues]]
-file = "admin/code/tce_functions_email_reports.php"
 code = "less-specific-nested-argument-type"
 message = 'Argument type mismatch for argument #1 of `Com\Tecnick\File\File::setAllowedHosts`: expected `array<array-key, string>`, but provided type `array<array-key, mixed>|non-empty-list<non-empty-string>` is less specific.'
 count = 1
@@ -17109,18 +17103,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_formatFloat`: expected `unknown-ref(formatted)`, but found `non-empty-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_formatPercentage`: expected `unknown-ref(formatted)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_select_table_header_element`: expected `unknown-ref(table)`, but found `truthy-string`."
 count = 1
 
@@ -17344,36 +17326,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
 message = "Function `F_empty_to_null` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_formatFloat` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_formatPdfPercentage` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_formatPercentage` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_formatXMLPercentage` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_getBoolean` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17638,12 +17590,6 @@ count = 3
 file = "shared/code/tce_functions_general.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `formatted`."
 count = 2
 
 [[issues]]
@@ -21621,12 +21567,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-operand"
-message = "Invalid type `unknown-ref(formatted)` for middle operand in string concatenation."
-count = 44
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "invalid-operand"
 message = "Invalid type `unknown-ref(table)` for right operand in string concatenation."
 count = 6
 
@@ -23573,12 +23513,6 @@ file = "shared/code/tce_pdf_report.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 6
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(formatted)` for left operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"

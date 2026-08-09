@@ -1172,7 +1172,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $row = '<tr style="background-color:' . $bgcolor . ';">';
         $row .= '<td style="font-family:courier;font-weight:bold;">' . htmlspecialchars($code) . '</td>';
         foreach ($cells as $c) {
-            $row .= '<td style="text-align:right;font-family:courier;">' . htmlspecialchars((string) $c) . '</td>';
+            $row .= '<td style="text-align:right;font-family:courier;">' . htmlspecialchars($c) . '</td>';
         }
         return $row . '</tr>';
     }
