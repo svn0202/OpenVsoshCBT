@@ -84,13 +84,13 @@ class TMXResourceBundle
      * @param $cachefile (string) set filename for cache (leave blank to exclude cache)
      */
     public function __construct(
-        $tmxfile,
-        $language,
+        mixed $tmxfile,
+        mixed $language,
         /**
          * String filename for cache
          * @private
          */
-        private $cachefile = '',
+        private mixed $cachefile = '',
     ) {
         // set selecteed language
         $this->language = strtoupper($language);
@@ -186,7 +186,7 @@ class TMXResourceBundle
      * @param $attribs (array) The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
      * @private
      */
-    private function startElementHandler($parser, $name, $attribs): void
+    private function startElementHandler(mixed $parser, mixed $name, mixed $attribs): void
     {
         switch (strtolower($name)) {
             case 'tu':
@@ -229,7 +229,7 @@ class TMXResourceBundle
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler($parser, $name): void
+    private function endElementHandler(mixed $parser, mixed $name): void
     {
         switch (strtolower($name)) {
             case 'tu':
@@ -286,7 +286,7 @@ class TMXResourceBundle
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler($parser, $data): void
+    private function segContentHandler(mixed $parser, mixed $data): void
     {
         // we are inside a seg element
         if (!($this->segdata && strlen($this->current_key) > 0 && strlen($this->current_language) > 0)) {
