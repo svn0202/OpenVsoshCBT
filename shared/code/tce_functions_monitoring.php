@@ -70,7 +70,7 @@ function f_tmf_monitor_attempt_is_authorized(int $testuser_id): bool
  *
  * @return array{status:string,testuser_id:int,new_testuser_id?:int}
  */
-function F_tmf_monitor_apply_action(
+function f_tmf_monitor_apply_action(
     int $testuser_id,
     string $action,
     int $extend_minutes = 0,
