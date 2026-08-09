@@ -4,11 +4,14 @@ require_once '../config/tce_config.php';
 $pagelevel = K_AUTH_PUBLIC_TEST_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_attachments.php';
+$session_user_id = isset($_SESSION['session_user_id']) && is_numeric($_SESSION['session_user_id'])
+    ? (int) $_SESSION['session_user_id']
+    : 0;
 
 $attachment = F_tmf_attachment_find(isset($_GET['id']) ? (int) $_GET['id'] : 0);
 if (
     !$attachment
-    || (int) $attachment['attachment_user_id'] !== (int) $_SESSION['session_user_id']
+    || (int) $attachment['attachment_user_id'] !== $session_user_id
 ) {
     http_response_code(404);
     exit();
