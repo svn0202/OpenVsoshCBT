@@ -263,9 +263,9 @@ function F_substr_utf8($str, $start, $length)
 /**
  * Escape some special characters (&lt; &gt; &amp;).
  * @param $str (string) input string to convert
- * @return converted string
+ * @return string Converted string.
  */
-function F_text_to_xml($str)
+function F_text_to_xml($str): string
 {
     if (empty($str)) {
         return '';
@@ -283,9 +283,9 @@ function F_text_to_xml($str)
 /**
  * Unescape some special characters (&lt; &gt; &amp;).
  * @param $str (string) input string to convert
- * @return converted string
+ * @return string Converted string.
  */
-function F_xml_to_text($str)
+function F_xml_to_text($str): string
 {
     if (empty($str)) {
         return '';
@@ -302,9 +302,9 @@ function F_xml_to_text($str)
 /**
  * Escape some special characters for TSV output.
  * @param $str (string) input string to convert
- * @return converted string
+ * @return string Converted string.
  */
-function F_text_to_tsv($str)
+function F_text_to_tsv($str): string
 {
     if (empty($str)) {
         return '';
@@ -322,9 +322,9 @@ function F_text_to_tsv($str)
 /**
  * Unescape some special characters from TSV format.
  * @param $str (string) input string to convert
- * @return converted string
+ * @return string Converted string.
  */
-function F_tsv_to_text($str)
+function F_tsv_to_text($str): string
 {
     if (empty($str)) {
         return '';

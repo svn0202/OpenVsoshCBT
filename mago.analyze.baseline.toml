@@ -9242,12 +9242,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_show_all_questions.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_show_select_questions`: expected `false`, but found `true`."
 count = 1
@@ -10154,12 +10148,6 @@ count = 26
 
 [[issues]]
 file = "admin/code/tce_tsv_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 7
-
-[[issues]]
-file = "admin/code/tce_tsv_questions.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_tsv_export_questions`: expected `unknown-ref(TSV)`, but found `truthy-string`."
 count = 1
@@ -10665,12 +10653,6 @@ count = 25
 [[issues]]
 file = "admin/code/tce_xml_question_stats.php"
 code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_xml_question_stats.php"
-code = "invalid-operand"
 message = "Invalid type `unknown-ref(number)` for middle operand in string concatenation."
 count = 4
 
@@ -10829,12 +10811,6 @@ file = "admin/code/tce_xml_questions.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 26
-
-[[issues]]
-file = "admin/code/tce_xml_questions.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 7
 
 [[issues]]
 file = "admin/code/tce_xml_questions.php"
@@ -11066,12 +11042,6 @@ count = 14
 
 [[issues]]
 file = "admin/code/tce_xml_user_results.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for middle operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_xml_user_results.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_xml_export_user_results`: expected `unknown-ref(XML)`, but found `truthy-string`."
 count = 1
@@ -11291,12 +11261,6 @@ file = "admin/code/tce_xml_users.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 16
-
-[[issues]]
-file = "admin/code/tce_xml_users.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 14
 
 [[issues]]
 file = "admin/code/tce_xml_users.php"
@@ -17217,12 +17181,6 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-operand"
-message = "Invalid type `unknown-ref(converted)` for right operand in string concatenation."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-operand"
 message = "Invalid type for left operand."
 count = 1
 
@@ -17265,56 +17223,8 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_text_to_tsv`: expected `unknown-ref(converted)`, but found `string('')`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_text_to_tsv`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_text_to_xml`: expected `unknown-ref(converted)`, but found `string('')`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_text_to_xml`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_tsv_to_text`: expected `unknown-ref(converted)`, but found `string('')`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_tsv_to_text`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_utf8_normalizer`: expected `unknown-ref(normalized)`, but found `false|string`."
 count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_xml_to_text`: expected `unknown-ref(converted)`, but found `string('')`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_xml_to_text`: expected `unknown-ref(converted)`, but found `string`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
@@ -17613,31 +17523,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_text_to_tsv` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_text_to_xml` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_tsv_to_text` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `F_utf8_normalizer` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_xml_to_text` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -17884,7 +17770,7 @@ count = 2
 file = "shared/code/tce_functions_general.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `converted`."
-count = 7
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
