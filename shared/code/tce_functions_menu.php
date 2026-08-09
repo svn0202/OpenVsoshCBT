@@ -108,7 +108,7 @@ function f_menu_icon_svg(string $icon): string
  * Returns true if the menu item has an active child, false otherwise.
  * @param $data (array) link data
  */
-function F_menu_isChildActive($data)
+function F_menu_isChildActive($data): bool
 {
     if (isset($data['sub']) && !empty($data['sub'])) {
         if (array_key_exists(basename($_SERVER['SCRIPT_NAME']), $data['sub'])) {

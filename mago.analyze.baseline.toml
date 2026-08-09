@@ -15200,12 +15200,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_menu.php"
-code = "missing-return-type"
-message = "Function `F_menu_isChildActive` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_menu.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 1
