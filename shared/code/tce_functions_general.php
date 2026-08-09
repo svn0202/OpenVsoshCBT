@@ -201,7 +201,7 @@ function f_normalize_matching_positions(array $positions, bool $allow_repeated =
  * @param $fieldid (mixed) ID of table row to check
  * @return bool true if unique, false otherwise
  */
-function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
+function f_check_unique($table, $where, $fieldname = false, $fieldid = false)
 {
     require_once '../config/tce_config.php';
     global $l, $db;
