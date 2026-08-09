@@ -34,7 +34,6 @@ require_once '../../shared/code/tce_functions_form.php';
 
 switch ($menu_mode) {
     case 'upload':
-        {
             if ($_FILES['userfile']['name']) {
                 require_once '../code/tce_functions_upload.php';
                 // upload file
@@ -42,30 +41,23 @@ switch ($menu_mode) {
                 if ($uploadedfile !== false) {
                     switch ($file_type) {
                         case 1:
-                            {
                                 $xmlimporter = new XMLUserImporter(K_PATH_CACHE . $uploadedfile);
                                 F_print_error('MESSAGE', $l['m_importing_complete']);
                                 break;
-                            }
                         case 2:
-                            {
                                 if (F_import_tsv_users(K_PATH_CACHE . $uploadedfile)) {
                                     F_print_error('MESSAGE', $l['m_importing_complete']);
                                 }
 
                                 break;
-                            }
                     }
                 }
             }
 
             break;
-        }
 
     default:
-        {
             break;
-        }
 }
 
 //end of switch
@@ -208,12 +200,10 @@ class XMLUserImporter
         $name = strtolower($name);
         switch ($name) {
             case 'user':
-                {
                     $this->user_data = [];
                     $this->group_data = [];
                     $this->current_data = '';
                     break;
-                }
             case 'name':
             case 'password':
             case 'email':
@@ -228,21 +218,15 @@ class XMLUserImporter
             case 'level':
             case 'verifycode':
             case 'otpkey':
-                {
                     $this->current_element = 'user_' . $name;
                     $this->current_data = '';
                     break;
-                }
             case 'group':
-                {
                     $this->current_element = 'group_name';
                     $this->current_data = '';
                     break;
-                }
             default:
-                {
                     break;
-                }
         }
     }
 
@@ -273,15 +257,12 @@ class XMLUserImporter
             case 'level':
             case 'verifycode':
             case 'otpkey':
-                {
                     $this->current_data = F_escape_sql($db, f_xml_to_text($this->current_data));
                     $this->user_data[$this->current_element] = $this->current_data;
                     $this->current_element = '';
                     $this->current_data = '';
                     break;
-                }
             case 'group':
-                {
                     $group_name = F_escape_sql($db, f_xml_to_text($this->current_data));
                     // check if group already exist
                     $sql = 'SELECT group_id
@@ -310,9 +291,7 @@ class XMLUserImporter
                     }
 
                     break;
-                }
             case 'user':
-                {
                     // insert users
                     if (!empty($this->user_data['user_name'])) {
                         if (empty($this->user_data['user_regdate'])) {
@@ -559,11 +538,8 @@ class XMLUserImporter
                     }
 
                     break;
-                }
             default:
-                {
                     break;
-                }
         }
     }
 
