@@ -317,7 +317,7 @@ if ($subject_module_id <= 0) {
 }
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if ($changecategory > 0 || $subject_id === 0) {
         $subject_id = 0;
         $subject_name = '';

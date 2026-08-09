@@ -264,7 +264,7 @@ switch ($menu_mode) {
 } //end of switch
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if ($module_id === 0) {
         $module_id = 0;
         $module_name = '';

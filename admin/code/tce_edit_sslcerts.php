@@ -241,7 +241,7 @@ switch ($menu_mode) {
 } //end of switch
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if (!isset($ssl_id) || $ssl_id === 0) {
         $ssl_id = 0;
         $ssl_name = '';

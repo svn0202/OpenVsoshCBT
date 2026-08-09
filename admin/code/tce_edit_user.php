@@ -521,7 +521,7 @@ switch ($menu_mode) { // process submitted data
 } //end of switch
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if (!isset($user_id) || empty($user_id)) {
         $user_id = 0;
         $user_regdate = '';

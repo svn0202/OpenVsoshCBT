@@ -339,12 +339,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_answer.php"
 code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_answer.php"
-code = "mixed-operand"
 message = "Left operand in `&&` operation has `mixed` type."
 count = 1
 
@@ -645,12 +639,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_group.php"
 code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_group.php"
-code = "mixed-operand"
 message = "Left operand in `&&` operation has `mixed` type."
 count = 1
 
@@ -831,12 +819,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_edit_module.php"
 code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_module.php"
-code = "mixed-operand"
 message = "Left operand in `&&` operation has `mixed` type."
 count = 1
 
@@ -994,12 +976,6 @@ count = 1
 file = "admin/code/tce_edit_question.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_question.php"
-code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
 count = 1
 
 [[issues]]
@@ -1431,12 +1407,6 @@ count = 3
 [[issues]]
 file = "admin/code/tce_edit_sslcerts.php"
 code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_sslcerts.php"
-code = "mixed-operand"
 message = "Left operand in `&&` operation has `mixed` type."
 count = 1
 
@@ -1594,12 +1564,6 @@ count = 24
 file = "admin/code/tce_edit_subject.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_subject.php"
-code = "mixed-operand"
-message = "Left operand in `!=` comparison has `mixed` type."
 count = 1
 
 [[issues]]
@@ -1798,7 +1762,7 @@ count = 12
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Left operand in `!=` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -2110,7 +2074,7 @@ count = 2
 file = "admin/code/tce_edit_user.php"
 code = "mixed-operand"
 message = "Left operand in `!=` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_user.php"

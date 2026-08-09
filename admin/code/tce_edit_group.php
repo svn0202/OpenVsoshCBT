@@ -209,7 +209,7 @@ switch ($menu_mode) { // process submitted data
 } //end of switch
 
 // --- Initialize variables
-if ($formstatus && $menu_mode != 'clear') {
+if ($formstatus && $menu_mode !== 'clear') {
     if (!isset($group_id) || $group_id === 0) {
         $group_id = 0;
         $group_name = '';
