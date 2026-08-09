@@ -29,7 +29,7 @@
  * @param $param_array (string) parameters to pass on url via GET
  * @return mixed the number of pages in case of success, false otherwise
  */
-function F_show_page_navigator(
+function f_show_page_navigator(
     mixed $script_name,
     mixed $sql,
     mixed $firstrow,
