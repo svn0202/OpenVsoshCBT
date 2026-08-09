@@ -1070,7 +1070,7 @@ echo '<fieldset class="noborder">' . K_NEWLINE;
 echo '<legend title="' . $l['h_question_type'] . '">' . $l['w_type'] . '</legend>' . K_NEWLINE;
 
 echo '<input type="radio" name="question_type" id="single_answer" value="1"';
-if ($question_type == 1) {
+if ($question_type === 1) {
     echo ' checked="checked"';
 }
 
@@ -1079,7 +1079,7 @@ echo '<label for="single_answer">' . $l['w_single_answer'] . '</label>' . K_NEWL
 echo '<br />' . K_NEWLINE;
 
 echo '<input type="radio" name="question_type" id="multiple_answers" value="2"';
-if ($question_type == 2) {
+if ($question_type === 2) {
     echo ' checked="checked"';
 }
 
@@ -1088,7 +1088,7 @@ echo '<label for="multiple_answers">' . $l['w_multiple_answers'] . '</label>' . 
 echo '<br />' . K_NEWLINE;
 
 echo '<input type="radio" name="question_type" id="free_answer" value="3"';
-if ($question_type == 3) {
+if ($question_type === 3) {
     echo ' checked="checked"';
 }
 
@@ -1097,7 +1097,7 @@ echo '<label for="free_answer">' . $l['w_free_answer'] . '</label>' . K_NEWLINE;
 echo '<br />' . K_NEWLINE;
 
 echo '<input type="radio" name="question_type" id="ordering_answer" value="4"';
-if ($question_type == 4) {
+if ($question_type === 4) {
     echo ' checked="checked"';
 }
 
@@ -1106,7 +1106,7 @@ echo '<label for="ordering_answer">' . $l['w_ordering_answer'] . '</label>' . K_
 echo '<br />' . K_NEWLINE;
 
 echo '<input type="radio" name="question_type" id="matching_answer" value="5"';
-if ($question_type == 5) {
+if ($question_type === 5) {
     echo ' checked="checked"';
 }
 
