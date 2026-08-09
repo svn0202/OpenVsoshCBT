@@ -90,6 +90,56 @@ final class AuthorizationFunctionsTest extends TestCase
         );
     }
 
+    public function testLoginFormPreservesStructureFieldsAndFallbackContent(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_NEWLINE", "\\n"); define("K_OTP_LOGIN", false); '
+                    . '$GLOBALS["l"] = ["ov_rcoko_alt" => "Logo", "a_meta_charset" => "UTF-8", '
+                    . '"ov_login_intro" => "Welcome", "ov_login_intro_organization" => "School", '
+                    . '"w_username" => "User", "h_login_name" => "Login", '
+                    . '"ov_username_placeholder" => "Username", "w_password" => "Password", '
+                    . '"h_password" => "Secret", "ov_password_placeholder" => "Password", '
+                    . '"ov_show_password" => "Show", "w_login" => "Sign in", '
+                    . '"h_login_button" => "Submit", "ov_login_support" => "Ask support", '
+                    . '"ov_results_site" => "Results"]; '
+                    . 'function openvsosh_get_access_settings() { return ["registration_enabled" => false, '
+                    . '"password_reset_enabled" => false, "access_help" => ""]; } '
+                    . 'function openvsosh_get_site_settings() { return ["site_name" => "Test site", '
+                    . '"welcome" => "", "site_description" => "", "login_instruction" => "", '
+                    . '"site_contact" => ""]; } '
+                    . 'function openvsosh_site_asset_metadata($type) { return null; } '
+                    . 'function get_form_row_text_input($field) { return "<FIELD:" . $field . ">"; } '
+                    . 'function f_get_csrf_token_field() { return "<CSRF>"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_loginForm|f_login_form_markup)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo $qualified("/login", "login-form", "post", "multipart/form-data", "alice");',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertStringContainsString(
+            '<form action="/login" method="post" id="login-form" enctype="multipart/form-data">',
+            $output,
+        );
+        self::assertStringContainsString('<FIELD:xuser_name><FIELD:xuser_password>', $output);
+        self::assertStringContainsString('<CSRF>', $output);
+        self::assertStringContainsString('../../images/vsosh-logo.png', $output);
+        self::assertStringContainsString('<p>Test site</p>', $output);
+        self::assertStringContainsString('<p>Ask support</p>', $output);
+    }
+
     public function testLogoutPageSetsTitleRendersFormAndTerminates(): void
     {
         [$status, $output] = \F_tcecode_run_process(
