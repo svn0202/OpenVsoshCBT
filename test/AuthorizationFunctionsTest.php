@@ -32,6 +32,32 @@ final class AuthorizationFunctionsTest extends TestCase
         self::assertSame([true, false], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
+    public function testSslClientHashPreservesCertificateFieldOrderAndNormalization(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getSSLClientHash|f_get_ssl_client_hash)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'if ($end === false) { $end = strlen($source); } '
+                    . 'eval(substr($source, $start, $end - $start)); '
+                    . '$_SERVER = ["SSL_CLIENT_M_SERIAL" => "ab", "SSL_CLIENT_I_DN_C" => "IT", '
+                    . '"SSL_CLIENT_S_DN_CN" => "user", '
+                    . '"SSL_CLIENT_V_END" => "1970-01-01 00:00:01 UTC"]; '
+                    . 'echo $name();',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(md5('ABITuser1'), $output);
+    }
+
     public function testLogoutPageSetsTitleRendersFormAndTerminates(): void
     {
         [$status, $output] = \F_tcecode_run_process(
