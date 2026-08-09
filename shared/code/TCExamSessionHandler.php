@@ -431,7 +431,7 @@ function f_is_safe_local_redirect_uri(string $uri): bool
  *
  * @return string
  */
-function getPlainCSRFToken(): string
+function get_plain_csrf_token(): string
 {
     /** @var non-empty-list<non-empty-string> $inc */
     $inc = get_included_files();
@@ -454,7 +454,7 @@ function get_plain_csrf_token_for_script(string $script): string
  */
 function checkCSRFToken(#[\SensitiveParameter] string $token): bool
 {
-    return check_password(getPlainCSRFToken(), $token);
+    return check_password(get_plain_csrf_token(), $token);
 }
 
 /**
@@ -472,7 +472,7 @@ function checkCSRFTokenForScript(#[\SensitiveParameter] string $token, string $s
  */
 function F_getCSRFToken(): string
 {
-    return get_password_hash(getPlainCSRFToken());
+    return get_password_hash(get_plain_csrf_token());
 }
 
 // ------------------------------------------------------------
