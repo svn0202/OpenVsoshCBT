@@ -517,7 +517,7 @@ function f_is_ssl_certificate_valid(): bool
  * @author Nicola Asuni
  * @since 2013-07-01
  */
-function F_getSSLCertificateHash($cert, $pkcs12 = false)
+function f_get_ssl_certificate_hash($cert, $pkcs12 = false): array
 {
     if ($pkcs12) {
         $certs = [];

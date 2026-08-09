@@ -58,7 +58,7 @@ if (isset($_FILES['userfile']['name']) && !empty($_FILES['userfile']['name'])) {
     if ($uploadedfile !== false) {
         $cert = file_get_contents(K_PATH_CACHE . $uploadedfile);
         $pkcs12 = str_ends_with($uploadedfile, '.pfx');
-        [$ssl_hash, $ssl_end_date] = F_getSSLCertificateHash($cert, $pkcs12);
+        [$ssl_hash, $ssl_end_date] = f_get_ssl_certificate_hash($cert, $pkcs12);
         //remove certificate file
         unlink(K_PATH_CACHE . $uploadedfile);
     }
