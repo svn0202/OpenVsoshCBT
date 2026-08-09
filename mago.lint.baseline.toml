@@ -1585,12 +1585,6 @@ message = "Function name `getRequiredMark` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
 message = "Function name `F_check_unique` should be in snake case."

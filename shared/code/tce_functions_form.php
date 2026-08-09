@@ -605,7 +605,7 @@ function f_form_option_is_selected(int|string $key, mixed $value): bool
     }
 
     if (is_int($value) || is_float($value) || is_string($value)) {
-        return $key == $value;
+        return ($key <=> $value) === 0;
     }
 
     return false;
