@@ -32,6 +32,14 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    #[RunInSeparateProcess]
+    public function testTcecodeToLineCompactsImportedHtml(): void
+    {
+        define('K_QUESTION_LINE_MAX_LENGTH', 100);
+
+        self::assertSame('Hello &amp; world', \F_tcecodeToLine('<strong>Hello &amp; world</strong>'));
+    }
+
     public function testPreviewInputPreservesLiteralPlusAndRejectsArrays(): void
     {
         $this->assertSame('A+B C', \f_tcecode_preview_input('A+B%20C'));
