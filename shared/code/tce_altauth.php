@@ -84,7 +84,7 @@ function F_altLogin()
             && f_legacy_literal_equals($_SERVER['AUTH_TYPE'], 'Basic')
             && isset($_SERVER['PHP_AUTH_USER'])
             && isset($_SERVER['PHP_AUTH_PW'])
-            && $_SESSION['session_user_name'] != $_SERVER['PHP_AUTH_USER']
+            && !f_legacy_equals($_SESSION['session_user_name'], $_SERVER['PHP_AUTH_USER'])
         )
     ) {
         $_POST['xuser_name'] = $_SERVER['PHP_AUTH_USER'];
@@ -112,7 +112,7 @@ function F_altLogin()
         phpCAS::client(K_CAS_VERSION, K_CAS_HOST, K_CAS_PORT, K_CAS_PATH, K_CAS_SERVICE_BASE_URL, false);
         phpCAS::setNoCasServerValidation();
         phpCAS::forceAuthentication();
-        if ($_SESSION['session_user_name'] != phpCAS::getUser()) {
+        if (!f_legacy_equals($_SESSION['session_user_name'], phpCAS::getUser())) {
             $_POST['xuser_name'] = phpCAS::getUser();
             $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'] . K_RANDOM_SECURITY);
             $_POST['logaction'] = 'login';
@@ -145,7 +145,7 @@ function F_altLogin()
                 || isset($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER']) && !empty($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'])
             )
             && isset($_SERVER['eppn'])
-            && $_SESSION['session_user_name'] != $_SERVER['eppn']
+            && !f_legacy_equals($_SESSION['session_user_name'], $_SERVER['eppn'])
         )
     ) {
         $_POST['xuser_name'] = $_SERVER['eppn'];
