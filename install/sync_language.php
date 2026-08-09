@@ -16,7 +16,7 @@ if ($default_file === '' || $runtime_file === '') {
 }
 
 try {
-    if (F_sync_tmx_translations($default_file, $runtime_file)) {
+    if (f_sync_tmx_translations($default_file, $runtime_file)) {
         $cache_files = glob(rtrim($cache_directory, '/') . '/*.php');
         foreach ($cache_files === false ? [] : $cache_files as $cache_file) {
             if (is_file($cache_file)) {
