@@ -134,7 +134,7 @@ function f_tmf_test_prerequisite_would_cycle(int $test_id, array $prerequisite_i
 /**
  * @return array{allowed:bool,reason:string,details:int|float|null}
  */
-function F_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = null): array
+function f_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = null): array
 {
     global $db;
     $result = F_db_query(
