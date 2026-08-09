@@ -212,7 +212,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
             $time_diff = strtotime($m['testuser_end_time']) - strtotime($m['testuser_creation_time']); //sec
             $time_diff = gmdate('H:i:s', $time_diff);
             $xml .= K_TAB . K_TAB . K_TAB . '<time>' . $time_diff . '</time>' . K_NEWLINE;
-            $xml .= K_TAB . K_TAB . K_TAB . '<name>' . F_text_to_xml($m['test_name']) . '</name>' . K_NEWLINE;
+            $xml .= K_TAB . K_TAB . K_TAB . '<name>' . f_text_to_xml($m['test_name']) . '</name>' . K_NEWLINE;
             if ($usrtestdata['score_threshold'] > 0) {
                 if ($usrtestdata['score'] >= $usrtestdata['score_threshold']) {
                     $xml .= K_TAB . K_TAB . K_TAB . '<passed>true</passed>' . K_NEWLINE;
@@ -274,7 +274,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
 
             $xml .= K_TAB . K_TAB . K_TAB . '<status>' . $status . '</status>' . K_NEWLINE;
             $xml .=
-                K_TAB . K_TAB . K_TAB . '<comment>' . F_text_to_xml($usrtestdata['comment']) . '</comment>' . K_NEWLINE;
+                K_TAB . K_TAB . K_TAB . '<comment>' . f_text_to_xml($usrtestdata['comment']) . '</comment>' . K_NEWLINE;
             $xml .= K_TAB . K_TAB . '</test>' . K_NEWLINE;
 
             // collects data for descriptive statistics

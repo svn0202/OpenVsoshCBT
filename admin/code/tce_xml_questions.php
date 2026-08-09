@@ -139,7 +139,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
             $xml .= K_TAB . K_TAB . '<module>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . '<name>';
-            $xml .= F_text_to_xml($mm['module_name']);
+            $xml .= f_text_to_xml($mm['module_name']);
             $xml .= '</name>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . '<enabled>';
@@ -158,11 +158,11 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                     $xml .= K_TAB . K_TAB . K_TAB . '<subject>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<name>';
-                    $xml .= F_text_to_xml($ms['subject_name']);
+                    $xml .= f_text_to_xml($ms['subject_name']);
                     $xml .= '</name>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
-                    $xml .= F_text_to_xml($ms['subject_description']);
+                    $xml .= f_text_to_xml($ms['subject_description']);
                     $xml .= '</description>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
@@ -220,11 +220,11 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= '</shuffle_answers>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
-                            $xml .= F_text_to_xml($m['question_description']);
+                            $xml .= f_text_to_xml($m['question_description']);
                             $xml .= '</description>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<explanation>';
-                            $xml .= F_text_to_xml($m['question_explanation']);
+                            $xml .= f_text_to_xml($m['question_explanation']);
                             $xml .= '</explanation>' . K_NEWLINE;
 
                             // display alternative answers
@@ -262,11 +262,11 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                                     $xml .= '</weight>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
-                                    $xml .= F_text_to_xml($ma['answer_description']);
+                                    $xml .= f_text_to_xml($ma['answer_description']);
                                     $xml .= '</description>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<explanation>';
-                                    $xml .= F_text_to_xml($ma['answer_explanation']);
+                                    $xml .= f_text_to_xml($ma['answer_explanation']);
                                     $xml .= '</explanation>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '</answer>' . K_NEWLINE;

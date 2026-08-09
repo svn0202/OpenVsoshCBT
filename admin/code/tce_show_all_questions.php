@@ -626,7 +626,7 @@ function F_show_select_questions(
             if ($question_type_label !== '') {
                 $questlist .=
                     '<span class="question-card__type">'
-                    . F_text_to_xml($question_type_label)
+                    . f_text_to_xml($question_type_label)
                     . '</span>';
             }
 
@@ -757,7 +757,7 @@ function F_show_select_questions(
                                 '<abbr class="answer-card__key" title="'
                                 . $l['h_answer_keyboard_key']
                                 . '">'
-                                . F_text_to_xml(chr($ma['answer_keyboard_key']))
+                                . f_text_to_xml(chr($ma['answer_keyboard_key']))
                                 . '</abbr>';
                         }
 
