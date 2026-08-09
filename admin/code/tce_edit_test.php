@@ -542,7 +542,6 @@ switch ($menu_mode) {
             break;
 
     case 'delete':
-        {
             // ask confirmation
             F_print_error('WARNING', $l['m_delete_confirm_test']);
             ?>
@@ -567,10 +566,8 @@ switch ($menu_mode) {
         <?php
 
         break;
-        }
 
     case 'forcedelete':
-        {
             // Delete
             if ($forcedelete == $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 // delete test
@@ -584,10 +581,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'update':
-        { // Update
+        // Update
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -785,10 +781,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'add':
-        { // Add
+        // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_TESTS, "test_name='" . F_escape_sql($db, $test_name) . "'")) {
@@ -1055,10 +1050,9 @@ switch ($menu_mode) {
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $test_name = '';
             $test_description = '';
             $test_begin_time = date(K_TIMESTAMP_FORMAT);
@@ -1087,12 +1081,9 @@ switch ($menu_mode) {
             $test_logout_on_timeout = false;
             $test_password = '';
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
