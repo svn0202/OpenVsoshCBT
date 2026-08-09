@@ -622,7 +622,7 @@ function f_form_option_is_selected(int|string $key, mixed $value): bool
  * @param $prefix (string) code to be displayed after label.
  * @return string
  */
-function getFormRowSelectBox(
+function get_form_row_select_box(
     string $field_name,
     string $name,
     string $description = '',
