@@ -76,7 +76,7 @@ function F_db_close($link_identifier)
  * Returns the text of the error message from previous database operation
  * @return string error message.
  */
-function F_db_error($link_identifier = null)
+function f_db_error($link_identifier = null)
 {
     return pg_last_error();
 }
