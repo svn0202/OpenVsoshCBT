@@ -55,8 +55,8 @@ function F_show_page_navigator($script_name, $sql, $firstrow, $rowsperpage, $par
     }
 
     $count_rows = preg_match('/GROUP BY/i', $sql); //check if query contain a "GROUP BY"
-    $all_updates = F_db_num_rows($r);
-    if ($all_updates == 1 && !$count_rows) {
+    $all_updates = (int) F_db_num_rows($r);
+    if ($all_updates === 1 && !$count_rows) {
         [$all_updates] = F_db_fetch_array($r);
     }
 
@@ -90,7 +90,7 @@ function F_show_page_navigator($script_name, $sql, $firstrow, $rowsperpage, $par
         $x = 0;
         for ($x = $rowsperpage; $x < ($all_updates - $rowsperpage); $x += $rowsperpage) {
             if ($x >= ($firstrow - $page_range) && $x <= ($firstrow + $page_range)) {
-                if ($x == $firstrow) {
+                if ($x === $firstrow) {
                     $indexbar .= $count . ' | ';
                 } else {
                     $indexbar .=
