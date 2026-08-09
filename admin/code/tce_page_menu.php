@@ -76,7 +76,7 @@ $menu = [
         'name' => $l['w_backup'],
         'level' => K_AUTH_BACKUP,
         'key' => '',
-        'enabled' => K_DATABASE_TYPE === 'MYSQL' || K_DATABASE_TYPE == 'POSTGRESQL',
+        'enabled' => in_array(K_DATABASE_TYPE, ['MYSQL', 'POSTGRESQL'], true),
         'icon' => 'backup',
     ],
     'public' => [

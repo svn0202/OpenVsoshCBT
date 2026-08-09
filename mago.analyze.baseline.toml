@@ -7118,18 +7118,6 @@ count = 3
 
 [[issues]]
 file = "admin/code/tce_page_menu.php"
-code = "redundant-comparison"
-message = "Redundant `===` comparison: left-hand side is never identical to right-hand side."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "redundant-logical-operation"
-message = "Redundant `||` operation: left operand is always false and right operand is evaluated."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
 code = "undefined-variable"
 message = "Undefined variable: `$l`."
 count = 60
