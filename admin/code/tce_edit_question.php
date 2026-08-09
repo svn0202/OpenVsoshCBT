@@ -368,7 +368,7 @@ switch ($menu_mode) {
                         . (int) $question_enabled
                         . '\',
 					question_position='
-                        . F_zero_to_null($question_position)
+                        . f_zero_to_null($question_position)
                         . '
 					WHERE question_id='
                         . $question_id
@@ -508,7 +508,7 @@ switch ($menu_mode) {
                     . (int) $question_enabled
                     . '\',
 				question_position='
-                    . F_zero_to_null($question_position)
+                    . f_zero_to_null($question_position)
                     . ',
 				question_timer=\''
                     . $question_timer
@@ -632,7 +632,7 @@ switch ($menu_mode) {
                     . (int) $question_enabled
                     . '\',
 				'
-                    . F_zero_to_null($question_position)
+                    . f_zero_to_null($question_position)
                     . ',
 				\''
                     . $question_timer

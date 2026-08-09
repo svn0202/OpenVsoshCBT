@@ -335,7 +335,7 @@ switch ($menu_mode) {
                         . $answer_enabled
                         . '\',
 					answer_position='
-                        . F_zero_to_null($answer_position)
+                        . f_zero_to_null($answer_position)
                         . '
 					WHERE answer_id='
                         . $answer_id
@@ -477,7 +477,7 @@ switch ($menu_mode) {
                     . (int) $answer_enabled
                     . '\',
 				answer_position='
-                    . F_zero_to_null($answer_position)
+                    . f_zero_to_null($answer_position)
                     . ',
 					answer_keyboard_key='
                     . F_empty_to_null($answer_keyboard_key)
@@ -587,7 +587,7 @@ switch ($menu_mode) {
                     . (int) $answer_enabled
                     . '\',
 				'
-                    . F_zero_to_null($answer_position)
+                    . f_zero_to_null($answer_position)
                     . ',
 				'
                     . F_empty_to_null($answer_keyboard_key)

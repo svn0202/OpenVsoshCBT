@@ -266,7 +266,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
                 . $q['question_enabled']
                 . '\',
 				'
-                . F_zero_to_null($q['question_position'])
+                . f_zero_to_null($q['question_position'])
                 . ',
 				\''
                 . $q['question_timer']
@@ -325,7 +325,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
                         . $m['answer_enabled']
                         . '\',
 						'
-                        . F_zero_to_null($m['answer_position'])
+                        . f_zero_to_null($m['answer_position'])
                         . ',
 						'
                         . F_empty_to_null($m['answer_keyboard_key'])
