@@ -13251,7 +13251,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `TmfBackupException` in `F_tmf_backup_start_process`."
+message = "Potentially unhandled exception `TmfBackupException` in `f_tmf_backup_start_process`."
 count = 1
 
 [[issues]]
