@@ -212,16 +212,18 @@ define('K_PDF_MODE', '');
  * (images, fonts, cache, SVG temp files). Restricts file:// reads to these paths
  * to prevent path traversal / arbitrary file disclosure.
  */
+$resolve_pdf_path = static fn(mixed $path): string|false => is_string($path) ? realpath($path) : false;
 define(
     'K_PDF_ALLOWED_PATHS',
     serialize(array_values(array_filter([
         realpath(K_PATH_MAIN . 'images'),
         realpath(K_PATH_MAIN . 'cache'),
         realpath(K_PATH_MAIN . 'vendor/tecnickcom/tc-lib-pdf-font/target/fonts'),
-        defined('K_PATH_FONTS') ? realpath(K_PATH_FONTS) : false,
+        defined('K_PATH_FONTS') ? $resolve_pdf_path(K_PATH_FONTS) : false,
         realpath(sys_get_temp_dir()),
     ]))),
 );
+unset($resolve_pdf_path);
 
 /**
  * Serialized whitelist of remote host names the PDF engine may fetch over HTTP(S).

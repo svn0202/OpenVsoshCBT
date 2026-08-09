@@ -22981,12 +22981,6 @@ message = "This condition (type `true`) will always evaluate to true."
 count = 1
 
 [[issues]]
-file = "shared/config.default/tce_pdf.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `realpath`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
 file = "shared/custom_auth/basic.php"
 code = "missing-return-type"
 message = "Function `custom_auth_basic_check_login` is missing a return type hint."
