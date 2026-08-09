@@ -42,7 +42,7 @@ foreach ($data['testuser'] as $attempt) {
         $attempt['testuser_creation_time'],
         $attempt['testuser_end_time'],
         $attempt['time_diff'],
-        ['value' => F_formatFloat($attempt['total_score']), 'type' => 'number'],
+        ['value' => f_format_float($attempt['total_score']), 'type' => 'number'],
         ['value' => (string) $attempt['total_score_perc'], 'type' => 'number'],
         $attempt['passmsg'] ? 'Да' : 'Нет',
         ['value' => (int) $attempt['right'], 'type' => 'number'],

@@ -178,7 +178,7 @@ function f_send_report_emails(
             $mail->AltBody .=
                 $l['w_score']
                 . ': '
-                . F_formatFloat($tu['total_score'])
+                . f_format_float($tu['total_score'])
                 . ' '
                 . F_formatPercentage($tu['total_score_perc'], false)
                 . $passmsg

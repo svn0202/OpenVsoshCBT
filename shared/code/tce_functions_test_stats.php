@@ -1088,7 +1088,7 @@ function F_printTestStat(
                                 '<td rowspan="2" valign="middle"><strong>Q'
                                 . $num_question
                                 . '</strong><br /><small>сложность: '
-                                . F_formatFloat($question['difficulty'])
+                                . f_format_float($question['difficulty'])
                                 . '</small></td>'
                                 . K_NEWLINE;
                         } else {
@@ -1100,7 +1100,7 @@ function F_printTestStat(
                                 . '"><strong>Q'
                                 . $num_question
                                 . '</strong></a><br /><small>сложность: '
-                                . F_formatFloat($question['difficulty'])
+                                . f_format_float($question['difficulty'])
                                 . '</small></td>'
                                 . K_NEWLINE;
                         }
@@ -1466,7 +1466,7 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
             . $passmsg
             . ' class="numeric">'
             . $passlabel
-            . F_formatFloat($tu['total_score'])
+            . f_format_float($tu['total_score'])
             . '&nbsp;'
             . F_formatPercentage($tu['total_score_perc'], false)
             . '</td>'
@@ -1595,13 +1595,13 @@ function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pub
                 . '</th>'
                 . K_NEWLINE;
             if (in_array($row, $noperc)) {
-                $ret .= '<td class="numeric">' . F_formatFloat($col['score_perc']) . '</td>' . K_NEWLINE;
+                $ret .= '<td class="numeric">' . f_format_float($col['score_perc']) . '</td>' . K_NEWLINE;
                 if ($stats > 0) {
-                    $ret .= '<td class="numeric">' . F_formatFloat($col['right_perc']) . '</td>' . K_NEWLINE;
-                    $ret .= '<td class="numeric">' . F_formatFloat($col['wrong_perc']) . '</td>' . K_NEWLINE;
-                    $ret .= '<td class="numeric">' . F_formatFloat($col['unanswered_perc']) . '</td>' . K_NEWLINE;
-                    $ret .= '<td class="numeric">' . F_formatFloat($col['undisplayed_perc']) . '</td>' . K_NEWLINE;
-                    $ret .= '<td class="numeric">' . F_formatFloat($col['unrated_perc']) . '</td>' . K_NEWLINE;
+                    $ret .= '<td class="numeric">' . f_format_float($col['right_perc']) . '</td>' . K_NEWLINE;
+                    $ret .= '<td class="numeric">' . f_format_float($col['wrong_perc']) . '</td>' . K_NEWLINE;
+                    $ret .= '<td class="numeric">' . f_format_float($col['unanswered_perc']) . '</td>' . K_NEWLINE;
+                    $ret .= '<td class="numeric">' . f_format_float($col['undisplayed_perc']) . '</td>' . K_NEWLINE;
+                    $ret .= '<td class="numeric">' . f_format_float($col['unrated_perc']) . '</td>' . K_NEWLINE;
                 }
             } else {
                 $ret .= '<td class="numeric">' . round($col['score_perc']) . '%</td>' . K_NEWLINE;
@@ -1981,7 +1981,7 @@ function F_getAllUsersTestStat(
             // Keep one canonical decimal representation across HTML, PDF and
             // machine-readable exporters. Do not route stored DECIMAL through
             // a binary float before it reaches XML/JSON/XLSX.
-            $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score'] = F_formatFloat($mr['total_score']);
+            $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score'] = f_format_float($mr['total_score']);
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score_perc'] = $total_score_perc;
             if ($stats > 0) {
                 $data['testuser']["'" . $mr['testuser_id'] . "'"]['recurrence'] = $teststat['qstats']['recurrence'];

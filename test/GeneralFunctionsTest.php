@@ -110,9 +110,9 @@ final class GeneralFunctionsTest extends TestCase
 
     public function testFormatFloat(): void
     {
-        $this->assertSame('1.235', \F_formatFloat(1.23456));
-        $this->assertSame('2.000', \F_formatFloat(2));
-        $this->assertSame('0.000', \F_formatFloat(null));
+        $this->assertSame('1.235', \f_format_float(1.23456));
+        $this->assertSame('2.000', \f_format_float(2));
+        $this->assertSame('0.000', \f_format_float(null));
     }
 
     public function testFormatPercentage(): void

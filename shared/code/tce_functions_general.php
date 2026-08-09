@@ -515,7 +515,7 @@ function getIpAsString($ip): string
  * @param $num (float) number to be formatted
  * @return string Formatted number.
  */
-function F_formatFloat($num): string
+function f_format_float($num): string
 {
     return sprintf('%.03f', round($num ?? 0, 3));
 }
