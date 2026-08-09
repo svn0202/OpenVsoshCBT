@@ -15524,42 +15524,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_page.php"
-code = "missing-parameter-type"
-message = "Parameter `$firstrow` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
-code = "missing-parameter-type"
-message = "Parameter `$param_array` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
-code = "missing-parameter-type"
-message = "Parameter `$rowsperpage` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
-code = "missing-parameter-type"
-message = "Parameter `$script_name` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
-code = "missing-parameter-type"
-message = "Parameter `$sql` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
-code = "missing-return-type"
-message = "Function `F_show_page_navigator` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_page.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `truthy-mixed`."
 count = 1
