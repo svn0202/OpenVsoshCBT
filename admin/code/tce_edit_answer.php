@@ -355,7 +355,7 @@ switch ($menu_mode) {
                 }
 
                 // check if alternate key is unique
-                if (K_DATABASE_TYPE == 'ORACLE') {
+                if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $chksql =
                         "dbms_lob.instr(answer_description,'" . F_escape_sql($db, $answer_description) . "',1,1)>0";
                 } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
@@ -504,7 +504,7 @@ switch ($menu_mode) {
         // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if alternate key is unique
-                if (K_DATABASE_TYPE == 'ORACLE') {
+                if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $chksql =
                         "dbms_lob.instr(answer_description,'" . F_escape_sql($db, $answer_description) . "',1,1)>0";
                 } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
@@ -660,7 +660,7 @@ if ($changesubject > 0 || $changemodule > 0 || $answer_question_id <= 0) {
 		FROM ' . K_TABLE_QUESTIONS . '
 		WHERE question_subject_id=' . $question_subject_id . '
 		ORDER BY ';
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql .= 'CAST(question_description as varchar2(100))';
     } else {
         $sql .= 'question_description LIMIT 1';
@@ -881,7 +881,7 @@ $sql =
     . ' WHERE question_subject_id='
     . (int) $question_subject_id
     . ' ORDER BY question_enabled DESC, question_position,';
-if (K_DATABASE_TYPE == 'ORACLE') {
+if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $sql .= 'CAST(question_description as varchar2(100))';
 } else {
     $sql .= 'question_description';
@@ -953,7 +953,7 @@ $sql =
     . ' WHERE answer_question_id='
     . (int) $answer_question_id
     . ' ORDER BY answer_position, answer_enabled DESC, answer_isright DESC,';
-if (K_DATABASE_TYPE == 'ORACLE') {
+if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $sql .= 'CAST(answer_description as varchar2(100))';
 } else {
     $sql .= 'answer_description';
