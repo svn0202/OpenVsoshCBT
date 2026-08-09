@@ -74,7 +74,7 @@ $display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST
 
 if (isset($_REQUEST['show_graph'])) {
     $show_graph = (int) $_REQUEST['show_graph'];
-    if ($show_graph && $display_mode == 0) {
+    if ($show_graph && $display_mode === 0) {
         $display_mode = 1;
     }
 } else {
