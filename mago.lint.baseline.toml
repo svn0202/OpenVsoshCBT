@@ -751,12 +751,6 @@ message = "Function name `F_menu_link` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_offline.php"
-code = "function-name"
-message = "Function name `F_tmf_offline_import` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_otp.php"
 code = "function-name"
 message = "Function name `F_decodeBase32` should be in snake case."
