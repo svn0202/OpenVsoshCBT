@@ -2155,12 +2155,6 @@ message = "Function name `F_getSVGGraph` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "function-name"
 message = "Function name `F_bbcode_to_tcecode` should be in snake case."
