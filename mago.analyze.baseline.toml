@@ -2762,12 +2762,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_filemanager.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `basename`: expected `string`, but found `mixed`."
 count = 3
@@ -3195,55 +3189,13 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getDirVisualTable`: expected `unknown-ref(html)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_isUsedMediaFile`: expected `true`, but found `false`."
 count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
-message = "Parameter `$authdirs` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
-message = "Parameter `$dir` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
 message = "Parameter `$file` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
-message = "Parameter `$params` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
-message = "Parameter `$rootdir` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-parameter-type"
-message = "Parameter `$selected` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_getDirVisualTable` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3467,12 +3419,6 @@ file = "admin/code/tce_functions_filemanager.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `html`."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -7091,12 +7037,6 @@ file = "admin/code/tce_select_mediafile.php"
 code = "array-to-string-conversion"
 message = "Potentially casting `array` to `string`."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_select_mediafile.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"

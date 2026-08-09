@@ -371,7 +371,7 @@ if ($viewmode) {
     echo f_get_dir_table($dir, basename($file), '', $root_dir, $authdirs);
 } else {
     // visual mode
-    echo F_getDirVisualTable($dir, basename($file), '', $root_dir, $authdirs);
+    echo f_get_dir_visual_table($dir, basename($file), '', $root_dir, $authdirs);
 }
 
 echo '</div>' . K_NEWLINE;
