@@ -53,7 +53,7 @@ if (empty($menu_mode)) {
 // the legacy menu_mode list above.
 if (
     PHP_SAPI !== 'cli'
-    && strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST'
+    && strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
     && $_POST !== []
     && (
         empty($_POST['csrf_token'])
@@ -85,25 +85,29 @@ function F_decode_form_fields(): array
 function F_check_required_fields(array $formfields): string|false
 {
     global $l;
-    if (
-        empty($formfields)
-        || !array_key_exists('ff_required', $formfields)
-        || strlen($formfields['ff_required']) <= 0
-    ) {
+    if (!is_string($formfields['ff_required'] ?? null) || $formfields['ff_required'] === '') {
         return false;
     }
 
+    $required = $formfields['ff_required'];
     $missing_fields = '';
-    $required_fields = explode(',', $formfields['ff_required']);
-    $required_fields_labels = explode(',', $formfields['ff_required_labels']);
+    $required_fields = explode(',', $required);
+    $labels = $formfields['ff_required_labels'] ?? '';
+    $required_fields_labels = is_string($labels) ? explode(',', $labels) : [];
     // form fields labels
-    $counter = count($required_fields); // form fields labels
-    for ($i = 0; $i < $counter; ++$i) { //for each required field
-        $fieldname = trim($required_fields[$i]);
-        $fieldname = preg_replace('/[^a-z0-9_\[\]]/i', '', $fieldname);
-        if (!array_key_exists($fieldname, $formfields) || strlen(trim($formfields[$fieldname])) <= 0) { //if is empty
-            if ($required_fields_labels[$i] !== '' && $required_fields_labels[$i] !== '0') { // check if the field has a label
-                $fieldname = htmlspecialchars($required_fields_labels[$i], ENT_NOQUOTES, $l['a_meta_charset']);
+    foreach ($required_fields as $i => $required_field) { //for each required field
+        $fieldname = preg_replace('/[^a-z0-9_\[\]]/i', '', trim($required_field)) ?? '';
+        if (
+            !array_key_exists($fieldname, $formfields)
+            || !is_scalar($formfields[$fieldname])
+            || trim((string) $formfields[$fieldname]) === ''
+        ) { //if is empty
+            $label = $required_fields_labels[$i] ?? '';
+            if ($label !== '' && $label !== '0') { // check if the field has a label
+                $charset = is_array($l) && is_string($l['a_meta_charset'] ?? null)
+                    ? $l['a_meta_charset']
+                    : 'UTF-8';
+                $fieldname = htmlspecialchars($label, ENT_NOQUOTES, $charset);
             }
 
             $missing_fields .= ', ' . stripslashes($fieldname);
@@ -202,10 +206,15 @@ function F_check_fields_format(mixed $formfields): string
         // bad pattern cannot silently reject every submission; only a clean 0 means "wrong format".
         if ($matches === 0) {
             $label = $fieldname;
-            $xlabel = $formfields['xl_' . $fieldname] ?? ''; // human label supplied by the form
-            if (is_scalar($xlabel) && (string) $xlabel !== '') {
-                $charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
-                $label = htmlspecialchars((string) $xlabel, ENT_NOQUOTES, $charset);
+            $xlabel_key = 'xl_' . $fieldname;
+            if (isset($formfields[$xlabel_key]) && is_scalar($formfields[$xlabel_key])) {
+                $xlabel = (string) $formfields[$xlabel_key]; // human label supplied by the form
+                $charset = is_array($l) && is_string($l['a_meta_charset'] ?? null)
+                    ? $l['a_meta_charset']
+                    : 'UTF-8';
+                if ($xlabel !== '') {
+                    $label = htmlspecialchars($xlabel, ENT_NOQUOTES, $charset);
+                }
             }
 
             $wrongfields .= ', ' . $label;
