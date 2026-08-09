@@ -217,7 +217,7 @@ function f_tmf_attachment_list(int $testlog_id): array
  *     testuser_test_id: mixed
  * }|false
  */
-function F_tmf_attachment_find(int $attachment_id): array|false
+function f_tmf_attachment_find(int $attachment_id): array|false
 {
     global $db;
     $result = F_db_query(
