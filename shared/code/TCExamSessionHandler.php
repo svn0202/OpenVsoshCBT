@@ -281,7 +281,7 @@ function f_session_string_to_array(string $sd): array
  * @since 2010-10-04
  * @return string client ID
  */
-function getClientFingerprint(): string
+function get_client_fingerprint(): string
 {
     $sid = K_RANDOM_SECURITY;
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -443,7 +443,7 @@ function getPlainCSRFToken(): string
  */
 function getPlainCSRFTokenForScript(string $script): string
 {
-    return $script . (string) session_id() . K_RANDOM_SECURITY . getClientFingerprint();
+    return $script . (string) session_id() . K_RANDOM_SECURITY . get_client_fingerprint();
 }
 
 /**

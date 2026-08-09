@@ -60,7 +60,7 @@ final class SessionFunctionsTest extends TestCase
 
         /** @var non-empty-list<non-empty-string> $included_files */
         self::assertSame(
-            $included_files[0] . (string) session_id() . K_RANDOM_SECURITY . \getClientFingerprint(),
+            $included_files[0] . (string) session_id() . K_RANDOM_SECURITY . \get_client_fingerprint(),
             \getPlainCSRFToken(),
         );
     }
@@ -163,13 +163,13 @@ final class SessionFunctionsTest extends TestCase
             $_SERVER['HTTP_DNT'] = '1';
             $_SERVER['HTTP_ACCEPT'] = 'text/html';
             $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'] = '1';
-            $documentFingerprint = \getClientFingerprint();
+            $documentFingerprint = \get_client_fingerprint();
             $legacyDocumentFingerprint = \getLegacyClientFingerprint();
 
             $_SERVER['HTTP_ACCEPT'] = 'application/json';
             unset($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']);
 
-            $this->assertSame($documentFingerprint, \getClientFingerprint());
+            $this->assertSame($documentFingerprint, \get_client_fingerprint());
             $this->assertNotSame($legacyDocumentFingerprint, \getLegacyClientFingerprint());
         } finally {
             $_SERVER = $original;
