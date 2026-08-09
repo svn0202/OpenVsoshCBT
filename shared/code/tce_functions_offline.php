@@ -35,7 +35,7 @@ function f_tmf_offline_signature_is_valid(
         && hash_equals(F_tmf_offline_sign($payload_base64, $secret), $signature);
 }
 
-function F_tmf_offline_scalar(mixed $value): string
+function f_tmf_offline_scalar(mixed $value): string
 {
     if ($value === null) {
         return '';
