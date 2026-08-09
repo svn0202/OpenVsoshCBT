@@ -138,7 +138,9 @@ function F_decodeOMRPage($image)
     $img->readImage($image);
 
     $imginfo = $img->identifyImage();
-    if ($imginfo['type'] == 'TrueColor') {
+    /** @var string $image_type */
+    $image_type = $imginfo['type'];
+    if ($image_type === 'TrueColor') {
         // remove red color
         $img->separateImageChannel(Imagick::CHANNEL_RED);
     } else {
