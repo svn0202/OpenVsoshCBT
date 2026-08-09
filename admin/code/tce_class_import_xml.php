@@ -431,7 +431,7 @@ class XMLQuestionImporter
         $sql = 'SELECT question_id
 			FROM ' . K_TABLE_QUESTIONS . '
 			WHERE ';
-        if (K_DATABASE_TYPE == 'ORACLE') {
+        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
             $sql .=
                 "dbms_lob.instr(question_description,'"
                 . $this->level_data['question']['question_description']
@@ -591,7 +591,7 @@ class XMLQuestionImporter
         $sql = 'SELECT answer_id
 			FROM ' . K_TABLE_ANSWERS . '
 			WHERE ';
-        if (K_DATABASE_TYPE == 'ORACLE') {
+        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
             $sql .=
                 "dbms_lob.instr(answer_description, '" . $this->level_data['answer']['answer_description'] . "',1,1)>0";
         } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
