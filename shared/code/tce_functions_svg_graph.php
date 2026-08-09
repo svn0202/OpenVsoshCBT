@@ -103,7 +103,7 @@ function F_getSVGGraphCode($p, $w = '', $h = '')
         // line
         $svg .= '	<line x1="' . $x . '" y1="' . $vstep . '" x2="' . $x . '" y2="' . $vh . '" />' . "\n";
         $xi = $i + 1;
-        if ($xi == 1 || ($xi % $step) == 0) {
+        if ($xi === 1 || ($xi % $step) === 0) {
             // text
             $svg .= '	<text x="' . $x . '" y="' . $textpos . '" stroke-width="0">' . $xi . '</text>' . "\n";
         }
