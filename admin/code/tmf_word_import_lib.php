@@ -7,7 +7,7 @@
  * archives and never executes macros, embedded objects or external content.
  */
 
-class TmfWordImportException extends Exception {}
+require_once __DIR__ . '/TmfWordImportException.php';
 
 const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
 
@@ -191,6 +191,7 @@ function f_tmf_word_import_remove_directory(string $directory): void
     rmdir($directory);
 }
 
+// @mago-expect lint:file-name -- the legacy library path is required directly by application integrations
 class TmfWordImporter
 {
     private string $filename;

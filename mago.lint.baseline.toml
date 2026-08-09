@@ -505,12 +505,6 @@ message = "Function name `F_tmf_word_import_template` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "single-class-per-file"
-message = "File contains multiple class-like definitions; found class `TmfWordImporter` but class `TmfWordImportException` is already defined in this file."
-count = 1
-
-[[issues]]
 file = "admin/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
