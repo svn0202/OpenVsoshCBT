@@ -190,7 +190,7 @@ function f_tmf_backup_restore_command(array $config): array
 /**
  * @param array<string,string> $config
  */
-function F_tmf_backup_create(array $config, string $backup_directory, ?string $timestamp = null): string
+function f_tmf_backup_create(array $config, string $backup_directory, ?string $timestamp = null): string
 {
     $timestamp_is_fixed = $timestamp !== null;
     $timestamp ??= date('YmdHis');
