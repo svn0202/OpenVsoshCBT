@@ -187,6 +187,9 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 . '</div></div>' . K_NEWLINE;
             echo '<ol class="question result-question-list">' . K_NEWLINE;
             while ($m = F_db_fetch_array($r)) {
+                /** @var int|numeric-string $raw_question_type */
+                $raw_question_type = $m['question_type'];
+                $question_type = (int) $raw_question_type;
                 // create per-topic results array
                 if (!array_key_exists($m['module_id'], $topicresults)) {
                     $topicresults[$m['module_id']] = [];
@@ -311,7 +314,7 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                     ;
                 }
 
-                if ($m['question_type'] == 3) {
+                if ($question_type === 3) {
                     // TEXT
                     echo '<ul class="answer"><li>' . K_NEWLINE;
                     echo F_decode_tcecode($m['testlog_answer_text']);
@@ -333,16 +336,25 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
 						ORDER BY logansw_order';
                     if ($ra = F_db_query($sqla, $db)) {
                         while ($ma = F_db_fetch_array($ra)) {
+                            /** @var int|numeric-string $raw_log_position */
+                            $raw_log_position = $ma['logansw_position'];
+                            /** @var int|numeric-string $raw_answer_position */
+                            $raw_answer_position = $ma['answer_position'];
+                            /** @var int|numeric-string $raw_selected */
+                            $raw_selected = $ma['logansw_selected'];
+                            $log_position = (int) $raw_log_position;
+                            $answer_position = (int) $raw_answer_position;
+                            $selected = (int) $raw_selected;
                             echo '<li>';
-                            if (in_array((int) $m['question_type'], [4, 5], true)) {
+                            if (in_array($question_type, [4, 5], true)) {
                                 // ORDER / MATCHING
-                                if ($ma['logansw_position'] > 0) {
-                                    if ($ma['logansw_position'] == $ma['answer_position']) {
+                                if ($log_position > 0) {
+                                    if ($log_position === $answer_position) {
                                         echo
                                             '<abbr title="'
                                                 . $l['h_answer_right']
                                                 . '" class="okbox">'
-                                                . $ma['logansw_position']
+                                                . $log_position
                                                 . '</abbr>'
                                         ;
                                     } else {
@@ -350,23 +362,23 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                                             '<abbr title="'
                                                 . $l['h_answer_wrong']
                                                 . '" class="nobox">'
-                                                . $ma['logansw_position']
+                                                . $log_position
                                                 . '</abbr>'
                                         ;
                                     }
                                 } else {
                                     echo '<abbr title="' . $l['m_unanswered'] . '" class="offbox">&nbsp;</abbr>';
                                 }
-                            } elseif ($ma['logansw_selected'] > 0) {
+                            } elseif ($selected > 0) {
                                 if (f_get_boolean($ma['answer_isright'])) {
                                     echo '<abbr title="' . $l['h_answer_right'] . '" class="okbox">x</abbr>';
                                 } else {
                                     echo '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">x</abbr>';
                                 }
-                            } elseif ($m['question_type'] == 1) {
+                            } elseif ($question_type === 1) {
                                 // MCSA
                                 echo '<abbr title="-" class="offbox">&nbsp;</abbr>';
-                            } elseif ($ma['logansw_selected'] == 0) {
+                            } elseif ($selected === 0) {
                                 if (f_get_boolean($ma['answer_isright'])) {
                                     echo '<abbr title="' . $l['h_answer_wrong'] . '" class="nobox">&nbsp;</abbr>';
                                 } else {
@@ -377,12 +389,12 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                             }
 
                             echo '&nbsp;';
-                            if (in_array((int) $m['question_type'], [4, 5], true)) {
+                            if (in_array($question_type, [4, 5], true)) {
                                 echo
                                     '<abbr title="'
                                         . $l['w_position']
                                         . '" class="onbox">'
-                                        . $ma['answer_position']
+                                        . $answer_position
                                         . '</abbr>'
                                 ;
                             // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
