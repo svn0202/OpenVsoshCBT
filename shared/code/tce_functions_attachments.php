@@ -271,7 +271,7 @@ function f_tmf_attachment_html(int $testlog_id): string
     return $html . '</ul></div>';
 }
 
-function F_tmf_attachment_send(array $attachment, bool $inline): never
+function f_tmf_attachment_send(array $attachment, bool $inline): never
 {
     $path = F_tmf_attachment_path($attachment);
     if (
