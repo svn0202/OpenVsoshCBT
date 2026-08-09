@@ -9,7 +9,7 @@ require_once __DIR__ . '/tce_functions_tmf_question.php';
  * @param array<string,mixed> $question
  * @param array<int,array<string,mixed>> $answers
  */
-function F_tmf_recorded_answer_score(array $test, array $question, array $answers): float
+function f_tmf_recorded_answer_score(array $test, array $question, array $answers): float
 {
     $type = (int) $question['question_type'];
     $difficulty = (float) $question['question_difficulty'];
