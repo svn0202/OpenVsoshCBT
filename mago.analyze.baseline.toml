@@ -1552,7 +1552,7 @@ count = 1
 file = "admin/code/tce_edit_rating.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 26
+count = 25
 
 [[issues]]
 file = "admin/code/tce_edit_rating.php"
@@ -1600,7 +1600,7 @@ count = 41
 file = "admin/code/tce_edit_rating.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 7
+count = 6
 
 [[issues]]
 file = "admin/code/tce_edit_rating.php"
@@ -2188,7 +2188,7 @@ count = 1
 file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 76
+count = 75
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -2230,7 +2230,7 @@ count = 162
 file = "admin/code/tce_edit_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 27
+count = 26
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -16258,13 +16258,13 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$description` is missing a type hint."
-count = 7
+count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$disabled` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16282,7 +16282,7 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$field_name` is missing a type hint."
-count = 6
+count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16312,7 +16312,7 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$name` is missing a type hint."
-count = 9
+count = 8
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16336,7 +16336,7 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$prefix` is missing a type hint."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16360,7 +16360,7 @@ count = 2
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$value` is missing a type hint."
-count = 7
+count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16426,13 +16426,13 @@ count = 5
 file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `nonnull`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 22
+count = 21
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16468,7 +16468,7 @@ count = 16
 file = "shared/code/tce_functions_form.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 13
+count = 12
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16486,7 +16486,7 @@ count = 2
 file = "shared/code/tce_functions_form.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 73
+count = 67
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16504,7 +16504,7 @@ count = 2
 file = "shared/code/tce_functions_form.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `truthy-mixed` cannot be reliably used in string concatenation."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
