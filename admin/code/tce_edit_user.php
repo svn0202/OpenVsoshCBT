@@ -90,7 +90,6 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l[
 
 switch ($menu_mode) { // process submitted data
     case 'delete':
-        {
             // ask confirmation
             if (
                 $_SESSION['session_user_level'] < K_AUTH_DELETE_USERS
@@ -124,10 +123,8 @@ switch ($menu_mode) { // process submitted data
         <?php
 
         break;
-        }
 
     case 'forcedelete':
-        {
             // Delete specified user
             if (
                 $_SESSION['session_user_level'] < K_AUTH_DELETE_USERS
@@ -157,10 +154,9 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'update':
-        { // Update user
+        // Update user
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -340,10 +336,9 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'add':
-        { // Add user
+        // Add user
             if ($formstatus = F_check_form_fields()) { // check submittef form fields
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_USERS, "user_name='" . F_escape_sql($db, $user_name) . "'")) {
@@ -501,10 +496,9 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $user_regdate = '';
             $user_ip = '';
             $user_name = '';
@@ -521,12 +515,9 @@ switch ($menu_mode) { // process submitted data
             $user_level = '';
             $user_otpkey = '';
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
