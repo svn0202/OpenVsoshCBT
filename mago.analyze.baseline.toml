@@ -19185,12 +19185,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$element` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$extension` is missing a type hint."
 count = 1
 
@@ -19203,19 +19197,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$html` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$htmltext` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
-message = "Parameter `$image` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -19257,26 +19239,8 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
-message = "Parameter `$parent` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
 message = "Parameter `$str` is missing a type hint."
 count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
-message = "Parameter `$style` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
-message = "Parameter `$tag` is missing a type hint."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19288,13 +19252,7 @@ count = 1
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-parameter-type"
 message = "Parameter `$text` is missing a type hint."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-parameter-type"
-message = "Parameter `$url` is missing a type hint."
-count = 1
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19312,18 +19270,6 @@ count = 1
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-return-type"
 message = "Function `F_decode_tcecode` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_has_html_markup` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_is_safe_html_url` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -19354,30 +19300,6 @@ count = 1
 file = "shared/code/tce_functions_tcecode.php"
 code = "missing-return-type"
 message = "Function `F_remove_tcecode` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_sanitize_html_attributes` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_sanitize_html_content` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_sanitize_html_node` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "missing-return-type"
-message = "Function `F_sanitize_html_style` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -19419,18 +19341,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `truthy-mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `iterator_to_array`: expected `Traversable<('K.iterator_to_array() extends mixed), ('V.iterator_to_array() extends mixed)>|array<('K.iterator_to_array() extends mixed), ('V.iterator_to_array() extends mixed)>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `min`: expected `float|non-empty-array<array-key, float>`, but found `mixed`."
 count = 1
 
@@ -19450,19 +19360,13 @@ count = 3
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `strtolower`: expected `string`, but found `mixed`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
 count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `preg_match`: expected `string`, but found `mixed`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19480,7 +19384,7 @@ count = 3
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `preg_replace`: expected `array<array-key, string>|string`, but found `mixed`."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19492,12 +19396,6 @@ count = 6
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 16
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-method-access"
-message = "Attempting to access a method on a non-object type (`mixed`)."
 count = 12
 
 [[issues]]
@@ -19510,7 +19408,7 @@ count = 6
 file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 14
+count = 13
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
@@ -19553,18 +19451,6 @@ file = "shared/code/tce_functions_tcecode.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
 count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-property-access"
-message = "Attempting to access a property on a non-object type (`mixed`)."
-count = 7
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "mixed-property-access"
-message = "Attempting to access a property on a non-object type (`nonnull`)."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
