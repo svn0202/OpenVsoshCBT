@@ -53,11 +53,36 @@ function F_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhe
 function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
 {
     global $l, $db;
+    /**
+     * @var array{
+     *     a_meta_charset: string,
+     *     a_meta_dir: string,
+     *     h_delete: string,
+     *     h_test_description: string,
+     *     h_test_name: string,
+     *     hp_select_tests: string,
+     *     m_databasempty: string,
+     *     m_delete_confirm: string,
+     *     m_search_void: string,
+     *     w_check_all: string,
+     *     w_datetime_format: string,
+     *     w_delete: string,
+     *     w_description: string,
+     *     w_edit: string,
+     *     w_lock: string,
+     *     w_name: string,
+     *     w_select: string,
+     *     w_tests: string,
+     *     w_time_begin: string,
+     *     w_time_end: string,
+     *     w_unlock: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
     $filter = '';
-    if ($l['a_meta_dir'] == 'rtl') {
+    if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
         $numalign = 'left';
     } else {
@@ -368,11 +393,28 @@ function F_show_select_test_popup(
     $cid = 0,
 ) {
     global $l, $db;
+    /**
+     * @var array{
+     *     a_meta_charset: string,
+     *     a_meta_dir: string,
+     *     h_test_description: string,
+     *     h_test_name: string,
+     *     m_databasempty: string,
+     *     m_search_void: string,
+     *     w_datetime_format: string,
+     *     w_description: string,
+     *     w_name: string,
+     *     w_select: string,
+     *     w_tests: string,
+     *     w_time_begin: string,
+     *     w_time_end: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
     $filter = 'cid=' . $cid;
-    if ($l['a_meta_dir'] == 'rtl') {
+    if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
         $numalign = 'left';
     } else {
@@ -561,7 +603,7 @@ function F_show_select_test_popup(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['test_description'], ENT_NOQUOTES, (string) $l['a_meta_charset'])
+                        . htmlspecialchars($m['test_description'], ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;

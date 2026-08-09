@@ -61,12 +61,6 @@ message = "Function name `F_show_select_test` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tce_functions_test_select.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
-
-[[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "function-name"
 message = "Function name `F_getUIDfromRegnum` should be in snake case."
