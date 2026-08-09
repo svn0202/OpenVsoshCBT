@@ -8,6 +8,36 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    public function testBuildsLinkedMediaDirectoryPath(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$_SERVER["SCRIPT_NAME"] = "/admin/code/tce_filemanager.php"; '
+                    . 'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . '$l["w_change_dir"] = "Change directory"; '
+                    . 'echo f_get_media_dir_path_link(K_PATH_CACHE . "alpha/beta/", false);',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+        self::assertSame(0, $status);
+
+        $cachePath = dirname(__DIR__) . '/cache/';
+        self::assertSame(
+            '<a href="/admin/code/tce_filemanager.php?d='
+                . urlencode($cachePath)
+                . '&amp;v=0" title="CACHE ROOT">[CACHE]</a> /'
+                . ' <a href="/admin/code/tce_filemanager.php?d='
+                . urlencode($cachePath . 'alpha/')
+                . '&amp;v=0" title="Change directory">alpha</a> /'
+                . ' <a href="/admin/code/tce_filemanager.php?d='
+                . urlencode($cachePath . 'alpha/beta/')
+                . '&amp;v=0" title="Change directory">beta</a> /',
+            $output,
+        );
+    }
+
     public function testReturnsFileInformationWithStableScalarFields(): void
     {
         [$status, $output] = F_tcecode_run_process(

@@ -421,7 +421,7 @@ echo '</div>' . K_NEWLINE;
 
 // directory link path
 echo '<br />' . K_NEWLINE;
-echo '<strong>' . $l['w_position'] . ': ' . F_getMediaDirPathLink($dir, $viewmode) . '</strong>';
+echo '<strong>' . $l['w_position'] . ': ' . f_get_media_dir_path_link($dir, $viewmode) . '</strong>';
 
 if ($_SESSION['session_user_level'] >= K_AUTH_ADMIN_DIRS) {
     // directory mode

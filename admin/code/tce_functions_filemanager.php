@@ -257,9 +257,9 @@ function f_format_file_size(mixed $size): string
  * @author Nicola Asuni
  * @param $dirpath (string) the directory path
  * @param $viewmode (boolean) true=table, false=visual
- * @return an html string
+ * @return string HTML directory path
  */
-function F_getMediaDirPathLink($dirpath, $viewmode = true)
+function f_get_media_dir_path_link(mixed $dirpath, mixed $viewmode = true): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
