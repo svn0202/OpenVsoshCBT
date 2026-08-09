@@ -37,7 +37,7 @@ final class TcecodeFunctionsTest extends TestCase
     {
         define('K_QUESTION_LINE_MAX_LENGTH', 100);
 
-        self::assertSame('Hello &amp; world', \F_tcecodeToLine('<strong>Hello &amp; world</strong>'));
+        self::assertSame('Hello &amp; world', \f_tcecode_to_line('<strong>Hello &amp; world</strong>'));
     }
 
     public function testPreviewInputPreservesLiteralPlusAndRejectsArrays(): void

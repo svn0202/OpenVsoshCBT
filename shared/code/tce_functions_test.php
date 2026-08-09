@@ -2839,7 +2839,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
 
             $testlog_id_last = $m['testlog_id'];
             $str .= '<span class="exam-question-menu-description">'
-                . F_tcecodeToLine($m['question_description'])
+                . f_tcecode_to_line($m['question_description'])
                 . '</span>';
             $str .= '</li>' . K_NEWLINE;
         }
