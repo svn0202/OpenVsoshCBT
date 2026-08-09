@@ -230,7 +230,7 @@ function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
  * @return string Returns the escaped string, or FALSE on error.
  * @since 5.0.005 2007-12-05
  */
-function F_escape_sql($link_identifier, $str, $stripslashes = true)
+function f_escape_sql($link_identifier, $str, $stripslashes = true)
 {
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
     if ($stripslashes) {
