@@ -180,7 +180,7 @@ function F_url_exists(string $url): bool
  * @param string $filename Path to the file or directory.
  * Returns true if the file or directory exists; false otherwise.
  */
-function F_file_exists(string $filename): bool
+function f_file_exists(string $filename): bool
 {
     if (preg_match('|^https?://|', $filename) === 1) {
         return F_url_exists($filename);
