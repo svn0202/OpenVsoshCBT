@@ -473,7 +473,7 @@ function get_ip_as_bytes(mixed $ip): string|false
         return false;
     }
 
-    return @inet_pton($norm);
+    return inet_pton($norm);
 }
 
 /**
@@ -492,7 +492,7 @@ function get_ip_as_string(mixed $ip): string
         return '';
     }
 
-    $packed = @inet_pton($norm);
+    $packed = inet_pton($norm);
     if ($packed === false) {
         return $norm;
     }

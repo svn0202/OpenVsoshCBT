@@ -1312,7 +1312,7 @@ count = 7
 file = "shared/code/tce_functions_general.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
-count = 3
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_menu.php"
