@@ -23,6 +23,14 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    public function testRemoveTcecodePreservesVisiblePlaceholders(): void
+    {
+        self::assertSame(
+            'Bold [OBJ] [IMG] [TEX]',
+            \F_remove_tcecode('[b]Bold[/b] [object]file[/object] [img]file[/img] [tex]x[/tex]'),
+        );
+    }
+
     public function testPreviewInputPreservesLiteralPlusAndRejectsArrays(): void
     {
         $this->assertSame('A+B C', \f_tcecode_preview_input('A+B%20C'));
