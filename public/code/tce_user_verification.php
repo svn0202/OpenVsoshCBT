@@ -60,7 +60,7 @@ if ($r = F_db_query($sql, $db)) {
                 'UPDATE '
                 . K_TABLE_USERS
                 . " SET user_password='"
-                . F_escape_sql($db, getPasswordHash($new_password))
+                . F_escape_sql($db, get_password_hash($new_password))
                 . "', user_verifycode=NULL WHERE user_id="
                 . $userid
                 . '';

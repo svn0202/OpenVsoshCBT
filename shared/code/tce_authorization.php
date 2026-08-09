@@ -251,7 +251,7 @@ if (
         F_print_error('WARNING', $l['m_login_brute_force'] . ' ' . $wait);
     } else {
         // encode password
-        $xuser_password = getPasswordHash($submitted_password);
+        $xuser_password = get_password_hash($submitted_password);
         // check One-Time-Password if enabled
         $otp = false;
         if (K_OTP_LOGIN) {
@@ -597,7 +597,7 @@ if (
     $submitted_test_password = is_string($_POST['xtest_password']) ? $_POST['xtest_password'] : '';
     if (checkPassword($submitted_test_password, $tph)) {
         // test password is correct, save status on a session variable
-        $_SESSION['session_test_login'] = getPasswordHash(
+        $_SESSION['session_test_login'] = get_password_hash(
             $tph . $_POST['testid'] . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],
         );
         F_tmf_test_session_unlock((int) $_POST['testid']);

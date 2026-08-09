@@ -363,7 +363,7 @@ function get_new_session_id(): string
  * @param string $password Password to hash.
  * @return string password hash
  */
-function getPasswordHash(#[\SensitiveParameter] string $password): string
+function get_password_hash(#[\SensitiveParameter] string $password): string
 {
     return password_hash($password, PASSWORD_DEFAULT);
 }
@@ -472,7 +472,7 @@ function checkCSRFTokenForScript(#[\SensitiveParameter] string $token, string $s
  */
 function F_getCSRFToken(): string
 {
-    return getPasswordHash(getPlainCSRFToken());
+    return get_password_hash(getPlainCSRFToken());
 }
 
 // ------------------------------------------------------------
