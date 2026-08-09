@@ -12,6 +12,7 @@ require_once '../config/tce_config.php';
 
 $pagelevel = K_AUTH_ADMIN_INFO;
 require_once '../../shared/code/tce_authorization.php';
+/** @var array{a_meta_charset: string} $l Loaded language data. */
 
 $thispage_title = 'Помощь OpenVsoshCBT';
 require_once 'tce_page_header.php';

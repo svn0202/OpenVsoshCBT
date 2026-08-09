@@ -7051,24 +7051,6 @@ message = "Undefined variable: `$l`."
 count = 24
 
 [[issues]]
-file = "admin/code/tce_page_help.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_page_help.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_page_help.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 4
-
-[[issues]]
 file = "admin/code/tce_page_info.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
