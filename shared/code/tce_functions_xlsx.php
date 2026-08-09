@@ -117,7 +117,7 @@ function F_tmf_xlsx_build(array $sheets): string
     return $bytes;
 }
 
-function F_tmf_xlsx_styles_xml(): string
+function f_tmf_xlsx_styles_xml(): string
 {
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         . '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
