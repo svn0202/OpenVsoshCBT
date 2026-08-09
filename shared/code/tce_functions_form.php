@@ -414,7 +414,7 @@ function getFormRowTextInput(
     $inputtype = is_scalar($inputtype) ? (string) $inputtype : '';
     $placeholder = is_scalar($placeholder) ? (string) $placeholder : '';
     $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -422,14 +422,14 @@ function getFormRowTextInput(
     if ($date) {
         $format = '^([0-9]{4})([\-])([0-9]{2})([\-])([0-9]{2})$';
         $maxlen = 10;
-        if (strlen($tip) == 0) {
+        if (strlen($tip) === 0) {
             $tip = f_get_form_translation('w_date_format');
         }
     } elseif ($datetime) {
         // native datetime-local uses an ISO 'T' separator and may omit the seconds
         $format = '^([0-9]{4})([\-])([0-9]{2})([\-])([0-9]{2})([ T])([0-9]{2})([\:])([0-9]{2})(([\:])([0-9]{2}))?$';
         $maxlen = 19;
-        if (strlen($tip) == 0) {
+        if (strlen($tip) === 0) {
             $tip = f_get_form_translation('w_datetime_format');
         }
     }
@@ -553,7 +553,7 @@ function getFormRowTextBox(
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
     $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -633,7 +633,7 @@ function getFormRowSelectBox(
     bool $required = false,
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -714,7 +714,7 @@ function getFormRowCheckBox(
     $tip = is_scalar($tip) ? (string) $tip : '';
     $value = is_scalar($value) ? (string) $value : '';
     $prefix = is_scalar($prefix) ? (string) $prefix : '';
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -790,7 +790,7 @@ function getFormRowFixedValue(
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
     $charset = f_get_form_translation('a_meta_charset', 'UTF-8');
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -917,7 +917,7 @@ function getFormDescriptionLine(mixed $name, mixed $description = '', mixed $val
     $name = is_scalar($name) ? (string) $name : '';
     $description = is_scalar($description) ? (string) $description : '';
     $value = is_scalar($value) ? (string) $value : '';
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
@@ -948,7 +948,7 @@ function getFormUploadFile(
     string $onchange = '',
 ): string
 {
-    if (strlen($description) == 0) {
+    if (strlen($description) === 0) {
         $description = $name;
     }
 
