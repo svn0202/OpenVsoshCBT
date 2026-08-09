@@ -37,7 +37,7 @@ function f_tmf_answer_save_decision(
  *
  * @return array{status:string,version:int}
  */
-function F_tmf_save_question_answer(
+function f_tmf_save_question_answer(
     int $test_id,
     int $testlog_id,
     array $answer_positions,
