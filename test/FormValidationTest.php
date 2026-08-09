@@ -159,6 +159,36 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testDisabledCheckboxRowPreservesCheckedAndHiddenValues(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; require $argv[2]; '
+                    . '$name = function_exists("getFormRowCheckBox") '
+                    . '? "getFormRowCheckBox" : "get_form_row_checkbox"; '
+                    . 'echo $name("enabled", "Enabled", "Account status", "Locked", '
+                    . '"1&x", true, true, "PREFIX");',
+                dirname(__DIR__) . '/shared/code/tce_functions_general.php',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringContainsString(
+            'readonly="readonly" class="disabled" name="DISABLED_enabled" id="DISABLED_enabled" '
+                . 'value="1&x" checked="checked"',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            '<input type="hidden" name="enabled" id="enabled" value="1&amp;x" />',
+            $markup,
+        );
+        $this->assertStringContainsString('id="desc_DISABLED_enabled">Locked</span>', $markup);
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
