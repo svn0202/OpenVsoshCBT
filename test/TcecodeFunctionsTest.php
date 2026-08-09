@@ -134,7 +134,7 @@ final class TcecodeFunctionsTest extends TestCase
     {
         $this->assertSame(
             '<strong>Hello world</strong>',
-            \F_substrHTML('<strong>Hello world</strong> again', 8, 2),
+            \f_substr_html('<strong>Hello world</strong> again', 8, 2),
         );
     }
 
