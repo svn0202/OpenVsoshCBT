@@ -412,7 +412,7 @@ count = 1
 file = "admin/config.default/tce_config.php"
 code = "no-ini-set"
 message = "ini_set should not be used."
-count = 4
+count = 2
 
 [[issues]]
 file = "public/code/tce_test_results.php"

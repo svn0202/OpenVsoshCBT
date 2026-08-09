@@ -218,6 +218,5 @@ require_once '../../shared/code/tce_functions_general.php';
 // --- PHP SETTINGS -----------------------------------------------------------
 
 ini_set('memory_limit', K_MAX_MEMORY_LIMIT); // set PHPmemory limit
-ini_set('upload_max_filesize', K_MAX_UPLOAD_SIZE); // set max upload size
-ini_set('post_max_size', K_MAX_UPLOAD_SIZE); // set max post size
+// upload_max_filesize and post_max_size are PHP_INI_PERDIR settings; configure them in PHP/FPM.
 ini_set('session.use_trans_sid', 0); // if =1 use PHPSESSID
