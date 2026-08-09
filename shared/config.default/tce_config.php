@@ -257,7 +257,7 @@ define('K_ENABLE_JSERRORS', false);
  * http://php.net/manual/en/timezones.php
  */
 define('K_TIMEZONE', $openvsosh_bootstrap_timezone);
-date_default_timezone_set(K_TIMEZONE);
+date_default_timezone_set((string) K_TIMEZONE);
 unset(
     $openvsosh_bootstrap,
     $openvsosh_bootstrap_file,
@@ -282,34 +282,43 @@ require_once '../../shared/code/tce_functions_errmsg.php';
 
 // load language resources
 
+/** @var array<string, string> $available_languages */
+$available_languages = unserialize((string) K_AVAILABLE_LANGUAGES);
+/** @var bool $cookie_secure */
+$cookie_secure = K_COOKIE_SECURE;
+/** @var string|null $request_language */
+$request_language = $_REQUEST['lang'] ?? null;
+/** @var string|null $cookie_language */
+$cookie_language = $_COOKIE['SessionUserLang'] ?? null;
+
 // set user's selected language or default language
 if (
-    isset($_REQUEST['lang']) and strlen($_REQUEST['lang']) == 2
-    and array_key_exists($_REQUEST['lang'], unserialize(K_AVAILABLE_LANGUAGES))
+    isset($request_language) and strlen($request_language) === 2
+    and array_key_exists($request_language, $available_languages)
 ) {
     /**
      * Use requested language.
      * @ignore
      */
-    define('K_USER_LANG', $_REQUEST['lang']);
+    define('K_USER_LANG', $request_language);
     // set client cookie
     setcookie(
         'SessionUserLang',
-        K_USER_LANG,
-        time() + K_COOKIE_EXPIRE,
+        (string) K_USER_LANG,
+        time() + (int) K_COOKIE_EXPIRE,
         K_COOKIE_PATH,
         K_COOKIE_DOMAIN,
-        K_COOKIE_SECURE,
+        $cookie_secure,
     );
 } elseif (
-    isset($_COOKIE['SessionUserLang']) and strlen($_COOKIE['SessionUserLang']) == 2
-    and array_key_exists($_COOKIE['SessionUserLang'], unserialize(K_AVAILABLE_LANGUAGES))
+    isset($cookie_language) and strlen($cookie_language) === 2
+    and array_key_exists($cookie_language, $available_languages)
 ) {
     /**
      * Use session language.
      * @ignore
      */
-    define('K_USER_LANG', $_COOKIE['SessionUserLang']);
+    define('K_USER_LANG', $cookie_language);
 } else {
     /**
      * Use default language.
@@ -317,6 +326,7 @@ if (
      */
     define('K_USER_LANG', K_LANGUAGE);
 }
+unset($available_languages, $cookie_language, $cookie_secure, $request_language);
 
 // TMX class
 require_once '../../shared/code/tce_tmx.php';
@@ -324,7 +334,7 @@ require_once '../../shared/code/tce_tmx.php';
 $lang_resources = new TMXResourceBundle(
     K_PATH_TMX_FILE,
     K_USER_LANG,
-    K_PATH_LANG_CACHE . basename(K_PATH_TMX_FILE, '.xml') . '_' . K_USER_LANG . '.php',
+    K_PATH_LANG_CACHE . basename(K_PATH_TMX_FILE, '.xml') . '_' . (string) K_USER_LANG . '.php',
 );
 $l = $lang_resources->getResource(); // language array
 
