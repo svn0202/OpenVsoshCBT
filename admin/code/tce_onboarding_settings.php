@@ -21,7 +21,7 @@ $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
 $appearance_config = openvsosh_get_appearance_settings();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
     }
     $instruction_id = max(0, (int) ($_POST['instruction_test_id'] ?? 0));
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
     }
     $site_result = openvsosh_save_site_settings($_POST);
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_access'])) {
-    if (empty($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
+    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !checkCSRFToken($_POST['csrf_token'])) {
         exit();
     }
 

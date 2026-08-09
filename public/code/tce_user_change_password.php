@@ -22,9 +22,9 @@
 
 require_once '../config/tce_config.php';
 
-$currentpassword = $_POST['currentpassword'] ?? '';
-$newpassword = $_POST['newpassword'] ?? '';
-$newpassword_repeat = $_POST['newpassword_repeat'] ?? '';
+$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword']) ? $_POST['currentpassword'] : '';
+$newpassword = isset($_POST['newpassword']) && is_string($_POST['newpassword']) ? $_POST['newpassword'] : '';
+$newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat']) ? $_POST['newpassword_repeat'] : '';
 
 $pagelevel = K_AUTH_USER_CHANGE_PASSWORD;
 $thispage_title = $l['t_user_change_password'];
@@ -60,7 +60,7 @@ switch ($menu_mode) {
 
                 $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
                 if ($r = F_db_query($sql, $db)) {
-                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, $m['user_password'])) {
+                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))) {
                         F_print_error('WARNING', $l['m_login_wrong']);
                         $formstatus = false;
 

@@ -49,13 +49,15 @@ $testuser_id = isset($_REQUEST['testuser_id']) ? (int) $_REQUEST['testuser_id'] 
 $onlytext = $mode == 5;
 // The ?email= token bypasses the normal authorization check, so it must fail closed when
 // K_RANDOM_SECURITY is still the shipped default (otherwise the token is publicly forgeable).
+$email_token = $_REQUEST['email'] ?? null;
 if (
-    isset($_REQUEST['email'])
+    $email_token !== null
     && (
-        !F_isRandomSecurityConfigured()
+        !is_string($email_token)
+        || !F_isRandomSecurityConfigured()
         || !checkPassword(
             date('Y') . $testuser_id . K_RANDOM_SECURITY . $test_id . date('m') . $user_id,
-            $_REQUEST['email'],
+            $email_token,
         )
     )
 ) {

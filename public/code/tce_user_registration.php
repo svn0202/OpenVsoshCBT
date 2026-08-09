@@ -22,8 +22,10 @@
 
 require_once '../config/tce_config.php';
 
-$newpassword = $_POST['newpassword'] ?? '';
-$newpassword_repeat = $_POST['newpassword_repeat'] ?? '';
+$newpassword = isset($_POST['newpassword']) && is_string($_POST['newpassword']) ? $_POST['newpassword'] : '';
+$newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat'])
+    ? $_POST['newpassword_repeat']
+    : '';
 
 // read submitted form inputs (used by the registration processing path below)
 $user_name = $_REQUEST['user_name'] ?? '';

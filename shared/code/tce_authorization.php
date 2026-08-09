@@ -181,6 +181,7 @@ if (
     && isset($_POST['xuser_name'])
     && isset($_POST['xuser_password'])
 ) {
+    $submitted_password = is_string($_POST['xuser_password']) ? $_POST['xuser_password'] : '';
     $bruteforce = false;
     if (K_BRUTE_FORCE_DELAY_RATIO > 0) {
         // check login attempt from the current client device to avoid brute force attack
@@ -250,7 +251,7 @@ if (
         F_print_error('WARNING', $l['m_login_brute_force'] . ' ' . $wait);
     } else {
         // encode password
-        $xuser_password = getPasswordHash($_POST['xuser_password']);
+        $xuser_password = getPasswordHash($submitted_password);
         // check One-Time-Password if enabled
         $otp = false;
         if (K_OTP_LOGIN) {
@@ -304,7 +305,10 @@ if (
             $sql =
                 'SELECT * FROM ' . K_TABLE_USERS . " WHERE user_name='" . F_escape_sql($db, $_POST['xuser_name']) . "'";
             if ($r = F_db_query($sql, $db)) {
-                if (($m = F_db_fetch_array($r)) && checkPassword($_POST['xuser_password'], $m['user_password'])) {
+                if (
+                    ($m = F_db_fetch_array($r))
+                    && checkPassword($submitted_password, (string) ($m['user_password'] ?? ''))
+                ) {
                     // sets some user's session data
                     $_SESSION['session_user_id'] = $m['user_id'];
                     $_SESSION['session_user_name'] = $m['user_name'];
@@ -597,7 +601,8 @@ if (
 ) {
     require_once '../../shared/code/tce_functions_test.php';
     $tph = F_getTestPassword($_POST['testid']);
-    if (checkPassword($_POST['xtest_password'], $tph)) {
+    $submitted_test_password = is_string($_POST['xtest_password']) ? $_POST['xtest_password'] : '';
+    if (checkPassword($submitted_test_password, $tph)) {
         // test password is correct, save status on a session variable
         $_SESSION['session_test_login'] = getPasswordHash(
             $tph . $_POST['testid'] . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],

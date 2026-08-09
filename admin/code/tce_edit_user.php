@@ -24,8 +24,10 @@ require_once '../config/tce_config.php';
 
 // explicit reads of POST inputs (formerly provided by register-globals emulation)
 $forcedelete = $_POST['forcedelete'] ?? '';
-$newpassword = $_POST['newpassword'] ?? '';
-$newpassword_repeat = $_POST['newpassword_repeat'] ?? '';
+$newpassword = isset($_POST['newpassword']) && is_string($_POST['newpassword']) ? $_POST['newpassword'] : '';
+$newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat'])
+    ? $_POST['newpassword_repeat']
+    : '';
 $user_groups = $_POST['user_groups'] ?? [];
 // editable user fields submitted by the form (loaded from the DB later when editing)
 $user_name = $_POST['user_name'] ?? '';
