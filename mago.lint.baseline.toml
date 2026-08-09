@@ -34,12 +34,6 @@ count = 2
 file = "admin/code/tce_edit_user.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 9
-
-[[issues]]
-file = "admin/code/tce_edit_user.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
 count = 1
 
 [[issues]]
