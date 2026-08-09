@@ -770,8 +770,8 @@ echo
         'new-password',
     )
 ;
-echo getFormRowFixedValue('user_regdate', (string) $l['w_regdate'], (string) $l['h_regdate'], '', $user_regdate);
-echo getFormRowFixedValue('user_ip', (string) $l['w_ip'], (string) $l['h_ip'], '', $user_ip);
+echo get_form_row_fixed_value('user_regdate', (string) $l['w_regdate'], (string) $l['h_regdate'], '', $user_regdate);
+echo get_form_row_fixed_value('user_ip', (string) $l['w_ip'], (string) $l['h_ip'], '', $user_ip);
 echo getFormRowSelectBox('user_level', (string) $l['w_level'], (string) $l['h_level'], '', $user_level, [
     0,
     1,

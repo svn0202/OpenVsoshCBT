@@ -779,7 +779,7 @@ function getFormRowCheckBox(
  * @param $prefix (string) code to be displayed after label.
  * @return string
  */
-function getFormRowFixedValue(
+function get_form_row_fixed_value(
     string $field_name,
     string $name,
     string $description = '',
