@@ -949,18 +949,6 @@ message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 4
 
 [[issues]]
-file = "public/code/tce_user_change_email.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 2
-
-[[issues]]
-file = "public/code/tce_user_change_password.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 2
-
-[[issues]]
 file = "public/code/tce_user_registration.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
