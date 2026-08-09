@@ -341,9 +341,9 @@ function F_tsv_to_text($str): string
 /**
  * Return a string containing an HTML abbreviation for required/not required fields.
  * @param $mode (int) field mode: 1=not required; 2=required.
- * @return html string
+ * @return string HTML marker.
  */
-function showRequiredField($mode = 1)
+function showRequiredField($mode = 1): string
 {
     global $l;
     $str = '';

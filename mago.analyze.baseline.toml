@@ -13826,12 +13826,6 @@ count = 3
 
 [[issues]]
 file = "public/code/tce_user_registration.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 4
@@ -17115,12 +17109,6 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `showRequiredField`: expected `unknown-ref(html)`, but found `truthy-string`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `utrim`: expected `string`, but found `array<array-key, string>|null|string`."
 count = 1
 
@@ -17343,12 +17331,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `showRequiredField` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `utrim` is missing a return type hint."
 count = 1
 
@@ -17525,12 +17507,6 @@ file = "shared/code/tce_functions_general.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `html`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
