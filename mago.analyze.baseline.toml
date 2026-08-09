@@ -22921,18 +22921,6 @@ message = "Undefined variable: `$emailcfg`."
 count = 2
 
 [[issues]]
-file = "shared/config.default/tce_paths.php"
-code = "impossible-type-comparison"
-message = "Impossible condition: variable `$_SERVER['DOCUMENT_ROOT']` (type `non-empty-string`) can never be `empty`."
-count = 1
-
-[[issues]]
-file = "shared/config.default/tce_paths.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 1
-
-[[issues]]
 file = "shared/custom_auth/basic.php"
 code = "missing-return-type"
 message = "Function `custom_auth_basic_check_login` is missing a return type hint."
