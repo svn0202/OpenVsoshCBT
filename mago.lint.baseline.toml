@@ -67,12 +67,6 @@ message = "Function name `F_syncUserGroups` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "function-name"
-message = "Function name `F_getRandomOTPkey` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "function-name"
 message = "Function name `F_addLogAnswers` should be in snake case."

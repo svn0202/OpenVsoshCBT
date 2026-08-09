@@ -25,7 +25,7 @@
  * @return string Base32 encoded key.
  * @throws Random\RandomException When a secure random value cannot be generated.
  */
-function F_getRandomOTPkey(): string
+function f_get_random_otp_key(): string
 {
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
