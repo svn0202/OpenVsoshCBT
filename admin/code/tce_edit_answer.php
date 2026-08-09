@@ -417,7 +417,7 @@ switch ($menu_mode) {
 								AND answer_position='
                                 . $answer_position
                                 . '';
-                        } elseif ($prev_answer_position == 0) {
+                        } elseif ($prev_answer_position === 0) {
                             // right shift positions
                             $sql =
                                 'UPDATE '
@@ -1150,7 +1150,7 @@ for ($ascii = 32; $ascii <= 126; ++$ascii) {
     }
 
     echo '>';
-    if ($ascii == 32) {
+    if ($ascii === 32) {
         echo 'SP';
     } else {
         echo htmlspecialchars(chr($ascii), ENT_NOQUOTES, $l['a_meta_charset']);
