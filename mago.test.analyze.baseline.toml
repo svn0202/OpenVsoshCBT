@@ -49,12 +49,6 @@ message = "This pragma was not used and may be removed."
 count = 3
 
 [[issues]]
-file = "test/ResultPublicationTest.php"
-code = "possibly-false-argument"
-message = "Argument #2 of function `F_tmf_results_are_published` is possibly `false`, but parameter type `int|null` does not accept it."
-count = 5
-
-[[issues]]
 file = "test/SessionFunctionsTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."

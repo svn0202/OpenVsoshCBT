@@ -11,6 +11,9 @@ final class ResultPublicationTest extends TestCase
     public function testPublicationFlagAndWindowAreEnforced(): void
     {
         $now = strtotime('2026-07-27 12:00:00');
+        if ($now === false) {
+            self::fail('Unable to create the publication reference timestamp.');
+        }
         self::assertFalse(\F_tmf_results_are_published(['test_results_to_users' => 0], $now));
         self::assertTrue(\F_tmf_results_are_published(['test_results_to_users' => 1], $now));
         self::assertFalse(\F_tmf_results_are_published([
