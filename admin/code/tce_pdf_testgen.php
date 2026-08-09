@@ -438,7 +438,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         'answers' => $m['tsubset_answers'],
                         'score' => $testdata['test_score_unanswered'] * $mq['question_difficulty'],
                     ];
-                    if ($random_questions || $test_questions_order_mode != 0) {
+                    if ($random_questions || $test_questions_order_mode !== 0) {
                         $questions_data[] = $tmp_data;
                     } else {
                         $questions_data[$mq['question_position']] = $tmp_data;
