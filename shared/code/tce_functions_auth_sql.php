@@ -108,7 +108,7 @@ function f_select_tests_sql(): string
  * @since 2006-06-26
  * @return string sql statement
  */
-function F_select_executed_tests_sql(): string
+function f_select_executed_tests_sql(): string
 {
     global $l;
     require_once '../config/tce_config.php';
