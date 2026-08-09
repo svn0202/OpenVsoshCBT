@@ -383,7 +383,7 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
  * @param string $cid ID of the calling form field.
  * @return false in case of empty database, true otherwise
  */
-function F_show_select_test_popup(
+function f_show_select_test_popup(
     $order_field,
     $orderdir,
     $firstrow,
