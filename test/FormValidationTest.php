@@ -343,6 +343,41 @@ final class FormValidationTest extends TestCase
         $this->assertStringContainsString('<span class="labeldesc" id="desc_level">Choose</span>', $markup);
     }
 
+    public function testTextInputRowPreservesDatetimeAttributesAndFormatLabel(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; $GLOBALS["l"] = ["w_required" => "Required", '
+                    . '"w_datetime_format" => "Date and time", "a_meta_charset" => "UTF-8"]; '
+                    . '$name = function_exists("getFormRowTextInput") '
+                    . '? "getFormRowTextInput" : "get_form_row_text_input"; '
+                    . 'echo $name("starts_at", "Starts", "Start time", "", "2026-08-10 12:34:56", '
+                    . '"", 255, false, true, false, "", true, "off", "email", "Choose & confirm");',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringContainsString(
+            'type="datetime-local" step="1" name="starts_at" id="starts_at" '
+                . 'value="2026-08-10T12:34:56" size="20" maxlength="19" title="Start time" '
+                . 'aria-required="true" autocomplete="off" placeholder="Choose &amp; confirm" '
+                . 'aria-describedby="desc_starts_at"',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            '<span class="labeldesc" id="desc_starts_at">Date and time</span>',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            '<input type="hidden" name="xl_starts_at" id="xl_starts_at" value="Starts" />',
+            $markup,
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
