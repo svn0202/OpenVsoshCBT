@@ -109,6 +109,15 @@ final class FormValidationTest extends TestCase
         $this->assertStringContainsString('<span class="formw">' . K_NEWLINE . '42&nbsp;', $markup);
     }
 
+    public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
+    {
+        $this->assertTrue(\f_form_option_is_selected(1, '1'));
+        $this->assertTrue(\f_form_option_is_selected('01', 1));
+        $this->assertTrue(\f_form_option_is_selected('0', false));
+        $this->assertTrue(\f_form_option_is_selected('', null));
+        $this->assertFalse(\f_form_option_is_selected(1, ['1']));
+    }
+
     public function testFormCurrencyUsesMachineReadableDecimalFormat(): void
     {
         $this->assertSame('1234.50', \f_format_form_currency('1234.5', 2));
