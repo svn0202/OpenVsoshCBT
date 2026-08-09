@@ -50,6 +50,7 @@ function F_db_connect(
     $password = '',
     $database = '',
 ) {
+    // @mago-expect lint:no-error-control-operator -- connection failures follow the DAL's historical false-return contract
     if (!($db = @mysqli_connect($host, $username, $password, $database, $port))) {
         return false;
     }
