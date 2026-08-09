@@ -419,7 +419,7 @@ function f_tcecode_tag(string $text): string
  * @param string $text
  * @return string
  */
-function F_tcecode_tag_arg(string $text): string
+function f_tcecode_tag_arg(string $text): string
 {
     // Patterns and replacements
     $tag = [
