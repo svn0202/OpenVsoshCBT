@@ -7030,7 +7030,7 @@ count = 1
 file = "admin/code/tce_show_all_questions.php"
 code = "mixed-operand"
 message = "Left operand in `==` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
