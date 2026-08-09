@@ -5,8 +5,10 @@
  *
  * The small JSON file keeps this installation-specific choice out of the
  * upstream TCExam database schema.
+ *
+ * @return array{instruction_test_id: int, demo_test_id: int}
  */
-function F_getOnboardingConfig()
+function F_getOnboardingConfig(): array
 {
     $defaults = ['instruction_test_id' => 0, 'demo_test_id' => 0];
     $path = dirname(__DIR__) . '/config/tce_onboarding.json';
@@ -58,7 +60,7 @@ function F_getPendingOnboardingTests($user_id)
     $pending = [];
 
     foreach ($labels as $key => $meta) {
-        $test_id = (int) $config[$key];
+        $test_id = (int) ($config[$key] ?? 0);
         if ($test_id < 1) {
             continue;
         }

@@ -7006,7 +7006,7 @@ count = 24
 file = "admin/code/tce_onboarding_settings.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 4
+count = 2
 
 [[issues]]
 file = "admin/code/tce_onboarding_settings.php"
@@ -16791,12 +16791,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_onboarding.php"
 code = "missing-return-type"
-message = "Function `F_getOnboardingConfig` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "missing-return-type"
 message = "Function `F_getPendingOnboardingTests` is missing a return type hint."
 count = 1
 
@@ -16810,13 +16804,13 @@ count = 1
 file = "shared/code/tce_functions_onboarding.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_onboarding.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_onboarding.php"

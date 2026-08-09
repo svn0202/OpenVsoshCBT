@@ -14,8 +14,7 @@ $settings_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
 $thispage_title = (string) ($l['ov_instance_settings'] ?? 'Настройки площадки');
 require_once 'tce_page_header.php';
 
-$config_candidate = F_getOnboardingConfig();
-$config = is_array($config_candidate) ? $config_candidate : [];
+$config = F_getOnboardingConfig();
 $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
@@ -29,8 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     if ($instruction_id > 0 && $instruction_id === $demo_id) {
         F_print_error('WARNING', 'Для инструкции и демо-теста выберите разные тесты.');
     } elseif (F_saveOnboardingConfig($instruction_id, $demo_id)) {
-        $config_candidate = F_getOnboardingConfig();
-        $config = is_array($config_candidate) ? $config_candidate : [];
+        $config = F_getOnboardingConfig();
         F_print_error('MESSAGE', 'Настройки вводных тестов сохранены.');
     } else {
         F_print_error('ERROR', 'Не удалось сохранить настройки. Проверьте права на shared/config.', false);
@@ -284,13 +282,13 @@ echo '<fieldset class="settings-card"><legend><span aria-hidden="true">04</span>
 echo '<div class="row"><label for="instruction_test_id">1. Тест-инструкция</label>' . K_NEWLINE;
 f_onboarding_test_select(
     'instruction_test_id',
-    (int) ($config['instruction_test_id'] ?? 0),
+    $config['instruction_test_id'],
     $tests,
     $settings_charset,
 );
 echo '<span class="form-help">Объясняет порядок работы и правила прохождения.</span></div>' . K_NEWLINE;
 echo '<div class="row"><label for="demo_test_id">2. Демо-тест</label>' . K_NEWLINE;
-f_onboarding_test_select('demo_test_id', (int) ($config['demo_test_id'] ?? 0), $tests, $settings_charset);
+f_onboarding_test_select('demo_test_id', $config['demo_test_id'], $tests, $settings_charset);
 echo '<span class="form-help">Позволяет участнику проверить вход и интерфейс без риска.</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_onboarding" value="1" class="button">Сохранить</button></div>' . K_NEWLINE;
