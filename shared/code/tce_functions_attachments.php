@@ -191,7 +191,7 @@ function F_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
 /**
  * @return array<int,array<string,mixed>>
  */
-function F_tmf_attachment_list(int $testlog_id): array
+function f_tmf_attachment_list(int $testlog_id): array
 {
     global $db;
     $attachments = [];
