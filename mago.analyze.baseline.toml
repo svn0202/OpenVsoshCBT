@@ -6831,7 +6831,7 @@ count = 40
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_show_select_questions`: expected `false`, but found `true`."
+message = "Invalid return type for function `f_show_select_questions`: expected `false`, but found `true`."
 count = 1
 
 [[issues]]
@@ -6885,7 +6885,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_show_all_questions.php"
 code = "missing-return-type"
-message = "Function `F_show_select_questions` is missing a return type hint."
+message = "Function `f_show_select_questions` is missing a return type hint."
 count = 1
 
 [[issues]]

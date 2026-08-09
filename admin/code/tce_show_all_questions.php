@@ -473,7 +473,7 @@ require_once '../code/tce_page_footer.php';
  * @param $hide_answers (boolean) if true hide answers
  * @return false in case of empty database, true otherwise
  */
-function F_show_select_questions(
+function f_show_select_questions(
     $wherequery,
     $subject_module_id,
     $subject_id,
