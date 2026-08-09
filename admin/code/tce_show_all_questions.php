@@ -509,7 +509,7 @@ function F_show_select_questions(
         $order_field = 'question_description';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {

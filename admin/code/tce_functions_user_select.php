@@ -110,7 +110,7 @@ function F_show_select_user(
         $order_field = 'user_lastname,user_firstname';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {
@@ -528,7 +528,7 @@ function F_show_select_user_popup(
         $order_field = 'user_lastname,user_firstname';
     }
 
-    if ($orderdir == 0) {
+    if ($orderdir === 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
     } else {
