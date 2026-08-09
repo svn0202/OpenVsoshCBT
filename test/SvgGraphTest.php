@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/../shared/code/tce_functions_svg_graph.php';
+
+final class SvgGraphTest extends TestCase
+{
+    public function testBuildsBothSeriesAtRequestedDimensions(): void
+    {
+        $svg = F_getSVGGraphCode('10v20x30v40', 100, 250);
+
+        self::assertStringStartsWith('<?xml version="1.0"', $svg);
+        self::assertStringContainsString('<svg width="100" height="250"', $svg);
+        self::assertStringContainsString('<polyline fill="none" stroke="#ff0000"', $svg);
+        self::assertStringContainsString('<polyline fill="none" stroke="#0000ff"', $svg);
+        self::assertStringEndsWith("</svg>\n", $svg);
+    }
+}

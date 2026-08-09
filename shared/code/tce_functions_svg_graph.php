@@ -25,9 +25,9 @@
  * @param $p (string) String containing point data.
  * @param $w (int) Graph width.
  * @param $h (int) Graph height.
- * @return converted string
+ * @return string Converted SVG document.
  */
-function F_getSVGGraphCode($p, $w = '', $h = '')
+function F_getSVGGraphCode($p, $w = '', $h = ''): string
 {
     // points to graph (values between 0 and 100)
     $points = explode('x', $p);
