@@ -1465,12 +1465,6 @@ message = "Unsafe use of error control operator `@`."
 count = 3
 
 [[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "no-redundant-block"
-message = "Redundant block around statements."
-count = 6
-
-[[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "function-name"
 message = "Function name `F_menu_isChildActive` should be in snake case."

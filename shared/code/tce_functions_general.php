@@ -794,45 +794,33 @@ function F_utf8_normalizer($str, $mode = 'NONE')
 {
     switch ($mode) {
         case 'CUSTOM':
-            {
-                if (function_exists('user_utf8_custom_normalizer')) {
-                    return call_user_func('user_utf8_custom_normalizer', $str);
-                }
-
-                return $str;
-
-                break;
+            if (function_exists('user_utf8_custom_normalizer')) {
+                return call_user_func('user_utf8_custom_normalizer', $str);
             }
+
+            return $str;
+
+            break;
         case 'C':
-            {
-                // Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition
-                return normalizer_normalize($str, Normalizer::FORM_C);
-                break;
-            }
+            // Normalization Form C (NFC) - Canonical Decomposition followed by Canonical Composition
+            return normalizer_normalize($str, Normalizer::FORM_C);
+            break;
         case 'D':
-            {
-                // Normalization Form D (NFD) - Canonical Decomposition
-                return normalizer_normalize($str, Normalizer::FORM_D);
-                break;
-            }
+            // Normalization Form D (NFD) - Canonical Decomposition
+            return normalizer_normalize($str, Normalizer::FORM_D);
+            break;
         case 'KC':
-            {
-                // Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition
-                return normalizer_normalize($str, Normalizer::FORM_KC);
-                break;
-            }
+            // Normalization Form KC (NFKC) - Compatibility Decomposition, followed by Canonical Composition
+            return normalizer_normalize($str, Normalizer::FORM_KC);
+            break;
         case 'KD':
-            {
-                // Normalization Form KD (NFKD) - Compatibility Decomposition
-                return normalizer_normalize($str, Normalizer::FORM_KD);
-                break;
-            }
+            // Normalization Form KD (NFKD) - Compatibility Decomposition
+            return normalizer_normalize($str, Normalizer::FORM_KD);
+            break;
         case 'NONE':
         default:
-            {
-                return $str;
-                break;
-            }
+            return $str;
+            break;
     }
 }
 

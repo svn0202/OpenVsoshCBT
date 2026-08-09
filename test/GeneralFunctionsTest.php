@@ -207,6 +207,19 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertSame('caf', \f_substr_utf8('café', 0, 3));
     }
 
+    public function testUtf8NormalizerModes(): void
+    {
+        $decomposed = "e\u{0301}";
+
+        self::assertSame('plain', \F_utf8_normalizer('plain'));
+        self::assertSame('plain', \F_utf8_normalizer('plain', 'UNKNOWN'));
+        self::assertSame('plain', \F_utf8_normalizer('plain', 'CUSTOM'));
+        self::assertSame('é', \F_utf8_normalizer($decomposed, 'C'));
+        self::assertSame($decomposed, \F_utf8_normalizer('é', 'D'));
+        self::assertSame('fi', \F_utf8_normalizer('ﬁ', 'KC'));
+        self::assertSame('fi', \F_utf8_normalizer('ﬁ', 'KD'));
+    }
+
     public function testUtrim(): void
     {
         $this->assertSame('hi there', \utrim('   hi there   '));
