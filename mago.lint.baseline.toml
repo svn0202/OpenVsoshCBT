@@ -2239,18 +2239,6 @@ message = "Function name `F_getArrayStatistics` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_svg_graph.php"
 code = "function-name"
 message = "Function name `F_getSVGGraphCode` should be in snake case."
