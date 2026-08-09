@@ -11792,12 +11792,6 @@ count = 2
 
 [[issues]]
 file = "public/code/tce_xhtml_header.php"
-code = "redundant-isset-check"
-message = "Redundant condition: variable `$thispage_title` (type `truthy-mixed`) is always considered set (not null)."
-count = 1
-
-[[issues]]
-file = "public/code/tce_xhtml_header.php"
 code = "redundant-null-coalesce"
 message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
 count = 2

@@ -110,7 +110,7 @@ echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
 $is_login_page = (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_login.php'
-    || (isset($thispage_title, $l['t_login_form']) && $thispage_title === $l['t_login_form']));
+    || $thispage_title === ($l['t_login_form'] ?? null));
 $body_classes = ($_SESSION['session_user_level'] < 1 || $is_login_page)
     ? ['login-page']
     : ['app-page', 'theme-light'];
