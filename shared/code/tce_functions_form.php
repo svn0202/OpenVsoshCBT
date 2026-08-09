@@ -863,14 +863,20 @@ function getFormDescriptionLine($name, $description = '', $value = ''): string
 
 /**
  * Print input row form to upluad a file.
- * @param $field_name (string) Name of the form field.
- * @param $field_id (string) ID of the form field.
- * @param $name (string) Label.
- * @param $description (string) Label description (tooltip).
- * @param $onchange (string) Javascript code to execute at onchange event.
+ * @param string $field_name Name of the form field.
+ * @param string $field_id ID of the form field.
+ * @param string $name Label.
+ * @param string $description Label description (tooltip).
+ * @param string $onchange Javascript code to execute at onchange event.
  * @return string
  */
-function getFormUploadFile($field_name, $field_id, $name, $description = '', $onchange = ''): string
+function getFormUploadFile(
+    string $field_name,
+    string $field_id,
+    string $name,
+    string $description = '',
+    string $onchange = '',
+): string
 {
     if (strlen($description) == 0) {
         $description = $name;
