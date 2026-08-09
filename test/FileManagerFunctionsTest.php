@@ -25,7 +25,7 @@ final class FileManagerFunctionsTest extends TestCase
                         . '$l["w_datetime_format"] = "Date format"; $l["w_date"] = "Date"; '
                         . '$l["w_permissions"] = "Permissions"; '
                         . 'echo base64_encode(f_get_dir_table($argv[1], "", "", $argv[1], "[^/]*")), "\n", '
-                        . 'base64_encode(F_getDirVisualTable($argv[1], "", "", $argv[1], "[^/]*"));',
+                        . 'base64_encode(f_get_dir_visual_table($argv[1], "", "", $argv[1], "[^/]*"));',
                     $temporaryDirectory . '/',
                 ],
                 __DIR__ . '/../admin/code',
