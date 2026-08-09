@@ -6,6 +6,49 @@ use PHPUnit\Framework\TestCase;
 
 final class UserSelectFunctionsTest extends TestCase
 {
+    public function testUserEditorAuthorizationBranchesRemainUnchanged(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["queries"] = []; '
+                    . 'function F_count_rows($query) { '
+                    . '$GLOBALS["queries"][] = preg_replace("/\\s+/", " ", trim($query)); return 1; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isAuthorizedEditorForUser|f_is_authorized_editor_for_user)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR; $admin = $qualifiedName(17); '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMINISTRATOR - 1; '
+                    . '$_SESSION["session_user_id"] = "12x"; '
+                    . '$new = $qualifiedName(0); $editor = $qualifiedName("17x"); '
+                    . 'echo json_encode(["admin" => $admin, "new" => $new, '
+                    . '"editor" => $editor, "queries" => $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/admin/code/tce_functions_user_select.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'admin' => true,
+                'new' => true,
+                'editor' => true,
+                'queries' => [
+                    'tce_usrgroups AS ta, tce_usrgroups AS tb '
+                        . 'WHERE ta.usrgrp_group_id=tb.usrgrp_group_id '
+                        . 'AND ta.usrgrp_user_id=17 AND tb.usrgrp_user_id=12 LIMIT 1',
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testGroupEditorAuthorizationBranchesRemainUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
