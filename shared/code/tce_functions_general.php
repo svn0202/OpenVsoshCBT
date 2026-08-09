@@ -222,7 +222,7 @@ function F_compact_string($string, $dquotes = false): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function F_replace_angulars($str): string
+function f_replace_angulars($str): string
 {
     $replaceTable = [
         '<' => '&lt;',
