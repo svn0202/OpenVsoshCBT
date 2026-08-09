@@ -431,7 +431,7 @@ function f_get_dir_table(
         $info = f_get_file_info($file);
         $current_dir = urlencode($dir . $info['basename'] . '/');
         $usrdir_cue = '';
-        if ($file == $usrdir) {
+        if ($file === $usrdir) {
             $out .= '<tr style="background-color:#ddffdd;font-family:monospace;color:#660000;">';
             $usrdir_cue = '<span class="sr-only">(' . $l['w_user'] . ' ' . $l['w_directory'] . ') </span>';
         } else {
