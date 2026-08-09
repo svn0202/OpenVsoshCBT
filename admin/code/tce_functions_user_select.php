@@ -61,7 +61,7 @@ function f_select_user(
  * @param $searchterms (string) Search terms.
  * @return false in case of empty database, true otherwise
  */
-function F_show_select_user(
+function f_show_select_user(
     $order_field,
     $orderdir,
     $firstrow,
