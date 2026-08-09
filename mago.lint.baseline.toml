@@ -1137,12 +1137,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "function-name"
-message = "Function name `F_objects_replacement` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "function-name"
 message = "Function name `F_substrHTML` should be in snake case."
 count = 1
 
