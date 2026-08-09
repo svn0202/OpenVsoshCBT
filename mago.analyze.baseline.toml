@@ -18733,12 +18733,6 @@ message = 'Potentially unhandled exception `Random\RandomException` in `LatexRen
 count = 1
 
 [[issues]]
-file = "shared/code/tce_latexrender.php"
-code = "unused-property"
-message = "Property `$latex_formula` is never used."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_page_timer.php"
 code = "invalid-type-cast"
 message = "Non numeric string of type `string` implicitly cast to `float`."

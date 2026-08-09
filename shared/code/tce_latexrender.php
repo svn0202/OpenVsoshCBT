@@ -185,12 +185,6 @@ class LatexRender
     private string $tmp_filename = '';
 
     /**
-     * Latex formula.
-     * @private
-     */
-    private string $latex_formula = '';
-
-    /**
      * Image width.
      * @private
      */
