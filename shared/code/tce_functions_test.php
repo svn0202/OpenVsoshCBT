@@ -2794,7 +2794,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             $str .= sprintf('% 5.1f', $n_question_score);
             $str .= '</abbr>';
             $str .= '&nbsp;';
-            if ($testlog_id == 0) {
+            if ($testlog_id === 0) {
                 $testlog_id = $m['testlog_id'];
                 $testlog_id_last = $testlog_id;
             }
