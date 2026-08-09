@@ -1155,12 +1155,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "function-name"
-message = "Function name `F_sanitize_mathml_content` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "function-name"
 message = "Function name `F_sanitize_mathml_node` should be in snake case."
 count = 1
 
