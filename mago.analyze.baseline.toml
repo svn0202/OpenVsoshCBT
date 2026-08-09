@@ -16323,12 +16323,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
-message = "Parameter `$onclick` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-parameter-type"
 message = "Parameter `$password` is missing a type hint."
 count = 1
 
@@ -16373,12 +16367,6 @@ file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$value` is missing a type hint."
 count = 7
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `F_close_button` is missing a return type hint."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
@@ -16528,7 +16516,7 @@ count = 2
 file = "shared/code/tce_functions_form.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 74
+count = 73
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"

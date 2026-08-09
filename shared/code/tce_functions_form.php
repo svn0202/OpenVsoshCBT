@@ -248,10 +248,10 @@ function F_check_form_fields(): bool
 
 /**
  * Returns XHTML code string to display a window close button
- * @param $onclick (string) additional javascript code to execute before closing the window.
+ * @param string $onclick additional javascript code to execute before closing the window.
  * @return string XHTML code
  */
-function F_close_button($onclick = '')
+function F_close_button(string $onclick = ''): string
 {
     require_once '../config/tce_config.php';
     global $l;
