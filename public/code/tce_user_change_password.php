@@ -65,7 +65,7 @@ switch ($menu_mode) {
             if ($r = F_db_query($sql, $db)) {
                 if (
                     !($m = F_db_fetch_array($r))
-                    || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))
+                    || !check_password($currentpassword, (string) ($m['user_password'] ?? ''))
                 ) {
                     F_print_error('WARNING', $l['m_login_wrong']);
                     $formstatus = false;

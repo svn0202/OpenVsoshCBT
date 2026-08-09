@@ -308,7 +308,7 @@ if (
             if ($r = F_db_query($sql, $db)) {
                 if (
                     ($m = F_db_fetch_array($r))
-                    && checkPassword($submitted_password, (string) ($m['user_password'] ?? ''))
+                    && check_password($submitted_password, (string) ($m['user_password'] ?? ''))
                 ) {
                     // sets some user's session data
                     $_SESSION['session_user_id'] = $m['user_id'];
@@ -595,7 +595,7 @@ if (
     require_once '../../shared/code/tce_functions_test.php';
     $tph = F_getTestPassword($_POST['testid']);
     $submitted_test_password = is_string($_POST['xtest_password']) ? $_POST['xtest_password'] : '';
-    if (checkPassword($submitted_test_password, $tph)) {
+    if (check_password($submitted_test_password, $tph)) {
         // test password is correct, save status on a session variable
         $_SESSION['session_test_login'] = get_password_hash(
             $tph . $_POST['testid'] . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],

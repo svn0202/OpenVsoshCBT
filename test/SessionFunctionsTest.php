@@ -91,8 +91,8 @@ final class SessionFunctionsTest extends TestCase
         $hash = \get_password_hash('s3cr3t-passphrase');
         $this->assertIsString($hash);
         $this->assertNotSame('s3cr3t-passphrase', $hash); // never stored in clear
-        $this->assertTrue(\checkPassword('s3cr3t-passphrase', $hash));
-        $this->assertFalse(\checkPassword('wrong', $hash));
+        $this->assertTrue(\check_password('s3cr3t-passphrase', $hash));
+        $this->assertFalse(\check_password('wrong', $hash));
     }
 
     public function testNewSessionIdUsesSchemaCompatibleCSPRNGValue(): void
