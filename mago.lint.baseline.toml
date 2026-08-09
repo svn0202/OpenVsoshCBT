@@ -181,12 +181,6 @@ message = "Function name `F_show_select_questions` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tce_show_all_questions.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_users_xlsx.php"
 code = "function-name"
 message = "Function name `F_tmf_users_xlsx_groups_for_user` should be in snake case."
