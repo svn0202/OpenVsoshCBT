@@ -41,25 +41,19 @@ if (isset($menu_mode) && $menu_mode == 'upload' && $_FILES['userfile']['name']) 
         $qimp = false;
         switch ($type) {
             case 1:
-                {
                     // standard TCExam XML format
                     require_once '../code/tce_class_import_xml.php';
                     $qimp = new XMLQuestionImporter(K_PATH_CACHE . $uploadedfile);
                     break;
-                }
             case 2:
-                {
                     // standard TCExam TSV format
                     $qimp = F_TSVQuestionImporter(K_PATH_CACHE . $uploadedfile);
                     break;
-                }
             case 3:
-                {
                     // Custom TCExam XML format
                     require_once '../code/tce_import_custom.php';
                     $qimp = new CustomQuestionImporter(K_PATH_CACHE . $uploadedfile);
                     break;
-                }
         }
 
         if ($qimp) {
