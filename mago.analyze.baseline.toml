@@ -14817,7 +14817,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_zero_to_null` is missing a return type hint."
+message = "Function `f_zero_to_null` is missing a return type hint."
 count = 1
 
 [[issues]]

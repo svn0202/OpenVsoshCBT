@@ -328,7 +328,7 @@ function F_TSVQuestionImporter($tsvfile)
                     $question_explanation = F_empty_to_null(f_tsv_to_text($qdata[3]));
                     $question_type = $qtype[$qdata[4]];
                     $question_difficulty = (int) $qdata[5];
-                    $question_position = isset($qdata[6]) ? F_zero_to_null($qdata[6]) : F_zero_to_null(0);
+                    $question_position = isset($qdata[6]) ? f_zero_to_null($qdata[6]) : f_zero_to_null(0);
 
                     $question_timer = isset($qdata[7]) ? (int) $qdata[7] : 0;
 
@@ -486,7 +486,7 @@ function F_TSVQuestionImporter($tsvfile)
                     $answer_description = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
                     $answer_explanation = F_empty_to_null(f_tsv_to_text($qdata[3]));
                     $answer_isright = (int) $qdata[4];
-                    $answer_position = isset($qdata[5]) ? F_zero_to_null($qdata[5]) : F_zero_to_null(0);
+                    $answer_position = isset($qdata[5]) ? f_zero_to_null($qdata[5]) : f_zero_to_null(0);
 
                     $answer_keyboard_key = isset($qdata[6])
                         ? F_empty_to_null(f_tsv_to_text($qdata[6]))

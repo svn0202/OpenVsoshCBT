@@ -52,6 +52,25 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\F_getBoolean(0));
     }
 
+    #[RunInSeparateProcess]
+    public function testZeroToNullCoercion(): void
+    {
+        define('K_DATABASE_TYPE', 'MYSQL');
+        $workingDirectory = getcwd();
+        self::assertIsString($workingDirectory);
+        chdir(__DIR__ . '/../admin/code');
+
+        try {
+            self::assertSame('NULL', \f_zero_to_null(0));
+            self::assertSame('NULL', \f_zero_to_null('0'));
+            self::assertSame('NULL', \f_zero_to_null(0.0));
+            self::assertSame('NULL', \f_zero_to_null(null));
+            self::assertSame('NULL', \f_zero_to_null(false));
+        } finally {
+            chdir($workingDirectory);
+        }
+    }
+
     public function testPositiveRequestIntegerRejectsStructuredInput(): void
     {
         self::assertSame(7, \f_positive_request_int('7'));

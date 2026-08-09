@@ -545,7 +545,7 @@ class XMLQuestionImporter
             . $this->boolval[$this->level_data['question']['question_enabled']]
             . '\',
 			'
-            . F_zero_to_null((int) $this->level_data['question']['question_position'])
+            . f_zero_to_null((int) $this->level_data['question']['question_position'])
             . ',
 			\''
             . $this->level_data['question']['question_timer']
@@ -660,7 +660,7 @@ class XMLQuestionImporter
                     . $this->boolval[$this->level_data['answer']['answer_enabled']]
                     . '\',
 					'
-                    . F_zero_to_null((int) $this->level_data['answer']['answer_position'])
+                    . f_zero_to_null((int) $this->level_data['answer']['answer_position'])
                     . ',
 					'
                     . F_empty_to_null($this->level_data['answer']['answer_keyboard_key'])
