@@ -66,7 +66,7 @@ function f_tmf_set_matching_reuse_positions(string $description, bool $enabled):
 /**
  * Replace the optional number of permitted audio starts.
  */
-function F_tmf_set_audio_play_limit(string $description, int $limit): string
+function f_tmf_set_audio_play_limit(string $description, int $limit): string
 {
     $description = (string) preg_replace('/\s*<!--TMF_AUDIO_PLAYS:\d{1,2}-->/', '', $description);
     $limit = max(0, min(99, $limit));

@@ -1143,12 +1143,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_tmf_question.php"
 code = "function-name"
-message = "Function name `F_tmf_set_audio_play_limit` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tmf_question.php"
-code = "function-name"
 message = "Function name `F_tmf_set_matching_positions` should be in snake case."
 count = 1
 
