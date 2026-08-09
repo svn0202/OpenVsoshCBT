@@ -17487,7 +17487,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `RuntimeException` in `F_tmf_xlsx_dom`."
+message = "Potentially unhandled exception `RuntimeException` in `f_tmf_xlsx_dom`."
 count = 1
 
 [[issues]]

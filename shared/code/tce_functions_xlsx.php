@@ -297,7 +297,7 @@ function F_tmf_xlsx_read(string $filename): array
     }
 }
 
-function F_tmf_xlsx_dom(string $xml): DOMDocument
+function f_tmf_xlsx_dom(string $xml): DOMDocument
 {
     $document = new DOMDocument();
     $previous = libxml_use_internal_errors(true);
