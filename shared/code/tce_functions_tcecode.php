@@ -910,7 +910,7 @@ function F_objects_replacement($name, $extension, $width = 0, $height = 0, $alt 
  * @param $str (string) text to process
  * @return string without tcecode markup tags
  */
-function F_remove_tcecode($str): mixed
+function f_remove_tcecode($str): mixed
 {
     $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str);
     $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str);
@@ -986,7 +986,7 @@ function F_tcecodeToTitle($str)
     if (F_has_html_markup($str)) {
         $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     } else {
-        $str = F_remove_tcecode($str);
+        $str = f_remove_tcecode($str);
     }
     $str = f_compact_string($str);
     return htmlspecialchars($str, ENT_QUOTES | ENT_COMPAT, $l['a_meta_charset']);
