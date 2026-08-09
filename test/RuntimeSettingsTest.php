@@ -58,4 +58,27 @@ final class RuntimeSettingsTest extends TestCase
         self::assertSame('#000000', \openvsosh_contrast_text('#ffffff'));
         self::assertSame('#ffffff', \openvsosh_contrast_text('#b91c1c'));
     }
+
+    public function testRuntimeTimerColorsKeepTheirStringContract(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_TABLE_PREFIX", "tce_"); define("K_DATABASE_TYPE", "UNSUPPORTED"); '
+                    . 'define("K_LANGUAGE", "ru"); '
+                    . 'define("K_TIMEZONE", "Asia/Yekaterinburg"); '
+                    . 'function F_db_query($sql, $db) { return false; } '
+                    . '$db = new stdClass(); require "tce_functions_openvsosh_settings.php"; '
+                    . '$settings = openvsosh_get_runtime_settings(); '
+                    . 'echo json_encode(['
+                    . 'gettype($settings["timer_warning_color"]), $settings["timer_warning_color"], '
+                    . 'gettype($settings["timer_critical_color"]), $settings["timer_critical_color"]]);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('["string","#b45309","string","#b91c1c"]', $output);
+    }
 }

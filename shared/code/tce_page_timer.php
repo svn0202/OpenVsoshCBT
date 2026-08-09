@@ -31,8 +31,8 @@ if (!isset($_REQUEST['examtime'])) {
 }
 require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
 $timer_settings = openvsosh_get_runtime_settings();
-$timer_warning_text = openvsosh_contrast_text((string) $timer_settings['timer_warning_color']);
-$timer_critical_text = openvsosh_contrast_text((string) $timer_settings['timer_critical_color']);
+$timer_warning_text = openvsosh_contrast_text($timer_settings['timer_warning_color']);
+$timer_critical_text = openvsosh_contrast_text($timer_settings['timer_critical_color']);
 $is_exam_timer = basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php';
 $timer_label = $is_exam_timer ? $l['w_remaining'] : $l['w_time'];
 
