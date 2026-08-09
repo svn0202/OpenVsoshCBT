@@ -77,6 +77,7 @@ if (!isset($_REQUEST['overwrite']) || empty($_REQUEST['overwrite'])) {
 if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
     $logfilename = 'log_import_omr_' . time() . '.txt';
     $logfile = K_PATH_CACHE . 'OMR/' . $logfilename;
+    // @mago-expect lint:no-error-control-operator -- an import directory can disappear after validation
     $dirhdl = @opendir($omrdir);
     if ($dirhdl !== false) {
         while ($file = readdir($dirhdl)) {
@@ -222,6 +223,7 @@ echo
 if (F_file_exists(K_PATH_CACHE . 'OMR')) {
     // directory containing files to import
     $dirs = ['OMR/'];
+    // @mago-expect lint:no-error-control-operator -- an unavailable OMR root is rendered as an empty list
     $dirhdl = @opendir(K_PATH_CACHE . 'OMR/');
     if ($dirhdl !== false) {
         while ($file = readdir($dirhdl)) {
