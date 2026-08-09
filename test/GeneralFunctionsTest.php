@@ -211,13 +211,13 @@ final class GeneralFunctionsTest extends TestCase
     {
         $decomposed = "e\u{0301}";
 
-        self::assertSame('plain', \F_utf8_normalizer('plain'));
-        self::assertSame('plain', \F_utf8_normalizer('plain', 'UNKNOWN'));
-        self::assertSame('plain', \F_utf8_normalizer('plain', 'CUSTOM'));
-        self::assertSame('é', \F_utf8_normalizer($decomposed, 'C'));
-        self::assertSame($decomposed, \F_utf8_normalizer('é', 'D'));
-        self::assertSame('fi', \F_utf8_normalizer('ﬁ', 'KC'));
-        self::assertSame('fi', \F_utf8_normalizer('ﬁ', 'KD'));
+        self::assertSame('plain', \f_utf8_normalizer('plain'));
+        self::assertSame('plain', \f_utf8_normalizer('plain', 'UNKNOWN'));
+        self::assertSame('plain', \f_utf8_normalizer('plain', 'CUSTOM'));
+        self::assertSame('é', \f_utf8_normalizer($decomposed, 'C'));
+        self::assertSame($decomposed, \f_utf8_normalizer('é', 'D'));
+        self::assertSame('fi', \f_utf8_normalizer('ﬁ', 'KC'));
+        self::assertSame('fi', \f_utf8_normalizer('ﬁ', 'KD'));
     }
 
     public function testUtrim(): void

@@ -14547,7 +14547,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "falsable-return-statement"
-message = "Function `F_utf8_normalizer` is declared to return `unknown-ref(normalized)` but possibly returns 'false' (inferred as `false|string`)."
+message = "Function `f_utf8_normalizer` is declared to return `unknown-ref(normalized)` but possibly returns 'false' (inferred as `false|string`)."
 count = 4
 
 [[issues]]
@@ -14607,7 +14607,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_utf8_normalizer`: expected `unknown-ref(normalized)`, but found `false|string`."
+message = "Invalid return type for function `f_utf8_normalizer`: expected `unknown-ref(normalized)`, but found `false|string`."
 count = 4
 
 [[issues]]
@@ -14823,7 +14823,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_utf8_normalizer` is missing a return type hint."
+message = "Function `f_utf8_normalizer` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -15003,7 +15003,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_utf8_normalizer`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_utf8_normalizer`. Saw type `mixed`."
 count = 3
 
 [[issues]]

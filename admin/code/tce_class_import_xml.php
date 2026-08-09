@@ -251,7 +251,7 @@ class XMLQuestionImporter
                             || $this->current_element == 'answer_description'
                         ) {
                             // normalize UTF-8 string based on settings
-                            $this->level_data[$this->level][$this->current_element] = F_utf8_normalizer(
+                            $this->level_data[$this->level][$this->current_element] = f_utf8_normalizer(
                                 $this->level_data[$this->level][$this->current_element],
                                 K_UTF8_NORMALIZATION_MODE,
                             );

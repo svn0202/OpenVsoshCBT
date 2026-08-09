@@ -140,7 +140,7 @@ if (isset($_REQUEST['question_description'])) {
     $question_description = utrim($_REQUEST['question_description']);
     if (function_exists('normalizer_normalize')) {
         // normalize UTF-8 string based on settings
-        $question_description = F_utf8_normalizer($question_description, K_UTF8_NORMALIZATION_MODE);
+        $question_description = f_utf8_normalizer($question_description, K_UTF8_NORMALIZATION_MODE);
     }
     $question_description = F_tmf_set_similarity_threshold(
         $question_description,
