@@ -257,11 +257,11 @@ function F_substr_utf8($str, $start, $length): string
         $char = ord($str[$i]); // get one string character at time
         if ($char <= 0x7F) {
             ++$i;
-        } elseif (($char >> 0x05) == 0x06) { // 2 bytes character (0x06 = 110 BIN)
+        } elseif (($char >> 0x05) === 0x06) { // 2 bytes character (0x06 = 110 BIN)
             $i += 2;
-        } elseif (($char >> 0x04) == 0x0E) { // 3 bytes character (0x0E = 1110 BIN)
+        } elseif (($char >> 0x04) === 0x0E) { // 3 bytes character (0x0E = 1110 BIN)
             $i += 3;
-        } elseif (($char >> 0x03) == 0x1E) { // 4 bytes character (0x1E = 11110 BIN)
+        } elseif (($char >> 0x03) === 0x1E) { // 4 bytes character (0x1E = 11110 BIN)
             $i += 4;
         } else {
             ++$i;
