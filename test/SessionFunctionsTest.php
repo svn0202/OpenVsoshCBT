@@ -121,4 +121,13 @@ final class SessionFunctionsTest extends TestCase
         $this->assertTrue(\checkCSRFTokenForScript($token, $script));
         $this->assertFalse(\checkCSRFTokenForScript($token, '/srv/tcexam/public/code/other.php'));
     }
+
+    public function testDefaultCsrfTokenRoundTrips(): void
+    {
+        $plain = \getPlainCSRFToken();
+        $token = \F_getCSRFToken();
+
+        self::assertNotSame('', $plain);
+        self::assertTrue(\checkCSRFToken($token));
+    }
 }
