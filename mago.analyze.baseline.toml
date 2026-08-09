@@ -17325,12 +17325,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
-message = "Function `F_isURL` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
 message = "Function `F_select_table_header_element` is missing a return type hint."
 count = 1
 
@@ -17344,18 +17338,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "missing-return-type"
 message = "Function `F_zero_to_null` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `bcdechex` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `getContrastColor` is missing a return type hint."
 count = 1
 
 [[issues]]
