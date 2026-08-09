@@ -364,7 +364,7 @@ function getFormRowTextInput(
     $autocomplete = '',
     $inputtype = '',
     $placeholder = '',
-) {
+): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
     if (strlen($description) == 0) {
@@ -507,7 +507,7 @@ function getFormRowTextBox(
     $disabled = false,
     $prefix = '',
     bool $required = false,
-) {
+): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
     if (strlen($description) == 0) {
@@ -568,7 +568,7 @@ function getFormRowSelectBox(
     $items = [],
     $prefix = '',
     bool $required = false,
-) {
+): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
     if (strlen($description) == 0) {
