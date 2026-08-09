@@ -1,24 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "test/DeploymentSecurityTest.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `password_verify` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "test/DeploymentSecurityTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 1
-
-[[issues]]
-file = "test/DeploymentSecurityTest.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$matches`."
-count = 1
-
-[[issues]]
 file = "test/GeneralFunctionsTest.php"
 code = "impossible-type-comparison"
 message = '''Impossible type assertion: `$tsv` of type `unknown-ref(converted)` can never be `string('col1\tcol2\nrow2')`.'''
