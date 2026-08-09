@@ -11997,7 +11997,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_db_connect`: expected `unknown-ref(Oracle)`, but found `false`."
+message = "Invalid return type for function `f_db_connect`: expected `unknown-ref(Oracle)`, but found `false`."
 count = 1
 
 [[issues]]
@@ -12129,7 +12129,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "missing-return-type"
-message = "Function `F_db_connect` is missing a return type hint."
+message = "Function `f_db_connect` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -12261,7 +12261,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_db_connect`. Saw type `truthy-mixed`."
+message = "Could not infer a precise return type for function `f_db_connect`. Saw type `truthy-mixed`."
 count = 1
 
 [[issues]]
