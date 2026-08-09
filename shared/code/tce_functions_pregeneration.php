@@ -251,7 +251,7 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
  *
  * @return list<int>
  */
-function F_tmf_pregeneration_eligible_users(int $test_id): array
+function f_tmf_pregeneration_eligible_users(int $test_id): array
 {
     require_once '../config/tce_config.php';
     global $db;
