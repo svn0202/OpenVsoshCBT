@@ -66,7 +66,7 @@ function f_empty_to_null(mixed $str): mixed
  * @param $num (string) string to check.
  * @return string $num if != 0, NULL otherwise
  */
-function f_zero_to_null($num): mixed
+function f_zero_to_null(mixed $num): mixed
 {
     global $db;
     require_once '../../shared/code/tce_db_dal.php';
@@ -515,7 +515,7 @@ function get_ip_as_string(mixed $ip): string
  * @param $num (float) number to be formatted
  * @return string Formatted number.
  */
-function f_format_float($num): string
+function f_format_float(mixed $num): string
 {
     return sprintf('%.03f', round($num ?? 0, 3));
 }
@@ -526,7 +526,7 @@ function f_format_float($num): string
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string Formatted percentage.
  */
-function f_format_percentage($num, $ratio = true): string
+function f_format_percentage(mixed $num, mixed $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;
@@ -541,7 +541,7 @@ function f_format_percentage($num, $ratio = true): string
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string
  */
-function f_format_pdf_percentage($num, $ratio = true): string
+function f_format_pdf_percentage(mixed $num, mixed $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;
@@ -556,7 +556,7 @@ function f_format_pdf_percentage($num, $ratio = true): string
  * @param $ratio (boolean) Set to true if the number is a ratio between 0 and 1, false if is a percentage number between 0 an 100.
  * @return string
  */
-function f_format_xml_percentage($num, $ratio = true): string
+function f_format_xml_percentage(mixed $num, mixed $ratio = true): string
 {
     if ($ratio) {
         $num = 100 * $num;

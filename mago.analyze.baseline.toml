@@ -14631,20 +14631,8 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "missing-parameter-type"
-message = "Parameter `$num` is missing a type hint."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
 message = "Parameter `$prefix` is missing a type hint."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "missing-parameter-type"
-message = "Parameter `$ratio` is missing a type hint."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
