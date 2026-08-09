@@ -220,7 +220,7 @@ switch ($menu_mode) {
         } elseif (F_file_exists($dir . $newdirname)) {
             F_print_error('WARNING', $l['m_file_already_exist']);
         } elseif (isset($_REQUEST['newdirname'])) {
-            if (F_createMediaDir($dir . $newdirname)) {
+            if (f_create_media_dir($dir . $newdirname)) {
                 $dir = $dir . $newdirname . '/';
                 F_print_error('MESSAGE', $l['m_directory_created']);
             } else {
