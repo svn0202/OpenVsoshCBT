@@ -734,7 +734,7 @@ function F_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
                 $attributes = $node->attributes;
                 foreach ($attributes === null ? [] : iterator_to_array($attributes) as $attribute) {
                     $name = strtolower($attribute->name);
-                    $value = (string) $attribute->value;
+                    $value = $attribute->value;
                     if (
                         !in_array($name, $allowed_attributes, true)
                         || preg_match('/[\x00-\x1f<>&]/', $value) === 1

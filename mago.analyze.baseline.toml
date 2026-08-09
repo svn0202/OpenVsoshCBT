@@ -15836,12 +15836,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_tcecode.php"
 code = "redundant-null-coalesce"
 message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
 count = 1
