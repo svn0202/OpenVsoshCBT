@@ -25,7 +25,7 @@
  * SECURITY: this value MUST be unique and secret for every installation. The installer
  * (install/tce_functions_install.php) replaces the placeholder below with a random value.
  * If it is left at the shipped placeholder (or the historical default), the security
- * sensitive result-access token check fails closed - see F_isRandomSecurityConfigured().
+ * sensitive result-access token check fails closed - see f_is_random_security_configured().
  */
 define('K_RANDOM_SECURITY', 'CHANGE_THIS_K_RANDOM_SECURITY');
 

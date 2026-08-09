@@ -390,7 +390,7 @@ function checkPassword(#[\SensitiveParameter] string $password, string $hash): b
  * @param string|null $secret Secret to check, or null to use K_RANDOM_SECURITY.
  * @return boolean true if the seed is configured, false if it is still the shipped default.
  */
-function F_isRandomSecurityConfigured(#[\SensitiveParameter] ?string $secret = null): bool
+function f_is_random_security_configured(#[\SensitiveParameter] ?string $secret = null): bool
 {
     // Known-insecure values: empty, the current shipped placeholder, and the historical default.
     $insecure = ['', 'CHANGE_THIS_K_RANDOM_SECURITY', 'mkTzxf8WwUxwvj6w'];
