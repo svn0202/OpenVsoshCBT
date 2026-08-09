@@ -466,7 +466,7 @@ function getNormalizedIP($ip): string|false
  * @return string|false 16-byte packed IPv6 address, or false on invalid input.
  * @since 17.1.0 (2026-06-23)
  */
-function getIpAsBytes($ip): string|false
+function get_ip_as_bytes($ip): string|false
 {
     $norm = getNormalizedIP($ip);
     if ($norm === false) {

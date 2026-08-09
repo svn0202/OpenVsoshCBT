@@ -317,7 +317,7 @@ function F_isValidIP($user_ip, $test_ips)
     // Convert the user IP to its packed 16-byte binary form so addresses can be compared
     // losslessly and case-insensitively as fixed-width byte strings. A 64-bit int form would
     // overflow 128-bit IPv6 values and lose precision near range boundaries.
-    $usrip = getIpAsBytes($user_ip);
+    $usrip = get_ip_as_bytes($user_ip);
     if ($usrip === false) {
         return false;
     }
@@ -364,8 +364,8 @@ function F_isValidIP($user_ip, $test_ips)
                 return false;
             }
 
-            $ip_start = getIpAsBytes($ip_range[0]);
-            $ip_end = getIpAsBytes($ip_range[1]);
+            $ip_start = get_ip_as_bytes($ip_range[0]);
+            $ip_end = get_ip_as_bytes($ip_range[1]);
             // byte-wise comparison of the packed fixed-width forms matches numeric order
             if (
                 $ip_start !== false
@@ -375,7 +375,7 @@ function F_isValidIP($user_ip, $test_ips)
             ) {
                 return true;
             }
-        } elseif ($usrip === getIpAsBytes($ipmask)) {
+        } elseif ($usrip === get_ip_as_bytes($ipmask)) {
             // exact address comparison
             return true;
         }
