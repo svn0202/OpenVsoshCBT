@@ -140,7 +140,7 @@ function f_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
  *
  * @return string "none", "activated" or "invalidated"
  */
-function F_tmf_pregeneration_activate(int $test_id, int $user_id): string
+function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
 {
     require_once '../config/tce_config.php';
     global $db;
