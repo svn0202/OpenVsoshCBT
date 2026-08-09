@@ -183,7 +183,7 @@ final class WordImportTest extends TestCase
 
         $data = (new TmfWordImporter($filename))->parse();
         self::assertCount(1, $data['questions']);
-        self::assertSame(5, $data['questions'][0]['type']);
+        self::assertSame(5, $data['questions'][0]['type'] ?? null);
         self::assertSame(3, count($data['questions'][0]['answers']));
         self::assertSame(
             3,
@@ -205,10 +205,10 @@ final class WordImportTest extends TestCase
         self::assertSame('Тестовая тема', $data['topic']);
         self::assertCount(6, $data['questions']);
         self::assertSame([1, 2, 3, 4, 5, 3], array_column($data['questions'], 'type'));
-        self::assertSame(['A', 'C'], $data['questions'][1]['right_keys']);
+        self::assertSame(['A', 'C'], $data['questions'][1]['right_keys'] ?? null);
         self::assertSame(
             3,
-            \F_tmf_question_options($data['questions'][4]['description'])['matching_positions'],
+            \F_tmf_question_options($data['questions'][4]['description'] ?? '')['matching_positions'],
         );
     }
 
@@ -247,16 +247,16 @@ final class WordImportTest extends TestCase
         self::assertCount(1, $data['questions']);
         self::assertSame(
             'ما ناتج ٢ + ٣؟',
-            trim(strip_tags($data['questions'][0]['description'])),
+            trim(strip_tags($data['questions'][0]['description'] ?? '')),
         );
         self::assertSame(
             ['أربعة', 'خمسة'],
             array_map(
                 static fn (array $answer): string => trim(strip_tags($answer['description'])),
-                $data['questions'][0]['answers'],
+                $data['questions'][0]['answers'] ?? [],
             ),
         );
-        self::assertSame(['B'], $data['questions'][0]['right_keys']);
+        self::assertSame(['B'], $data['questions'][0]['right_keys'] ?? null);
     }
 
     public function testQuestionMetadataAndScoringHelpers(): void
