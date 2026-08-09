@@ -6,6 +6,26 @@ use PHPUnit\Framework\TestCase;
 
 final class UploadFunctionsTest extends TestCase
 {
+    public function testReadsLocalFileSizeIncludingLegacyEmptyFileResult(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_upload.php"; '
+                    . '$full = tempnam(sys_get_temp_dir(), "tce-upload-full-"); '
+                    . '$empty = tempnam(sys_get_temp_dir(), "tce-upload-empty-"); '
+                    . 'file_put_contents($full, "abc"); '
+                    . 'try { echo json_encode([f_read_file_size($full), f_read_file_size($empty)]); } '
+                    . 'finally { unlink($full); unlink($empty); }',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('[3,1]', $output);
+    }
+
     public function testAllowedUploadExtensionMatchingIsCaseInsensitive(): void
     {
         [$status, $output] = \F_tcecode_run_process(
