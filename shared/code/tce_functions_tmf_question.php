@@ -268,7 +268,7 @@ function f_tmf_short_answer_score(
  * Apply an optional answer percentage while preserving standard scoring when
  * no percentage was configured.
  */
-function F_tmf_answer_score(int|string|null $weight, bool $is_right, float $right_score, float $wrong_score): float
+function f_tmf_answer_score(int|string|null $weight, bool $is_right, float $right_score, float $wrong_score): float
 {
     if ($weight === null || $weight === '') {
         return $is_right ? $right_score : $wrong_score;

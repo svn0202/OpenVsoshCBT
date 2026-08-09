@@ -14499,7 +14499,7 @@ count = 10
 [[issues]]
 file = "shared/code/tce_functions_regrade.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `F_tmf_answer_score`: expected `int|null|string`, but found `mixed`."
+message = "Invalid argument type for argument #1 of `f_tmf_answer_score`: expected `int|null|string`, but found `mixed`."
 count = 1
 
 [[issues]]
