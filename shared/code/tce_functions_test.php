@@ -1384,7 +1384,7 @@ function F_createTest($test_id, $user_id)
     // get ID of first user's test (if exist)
     $firsttest = F_getFirstTestUser($test_id);
     // select questions
-    if ($test_random_questions_select || $firsttest == 0) {
+    if ($test_random_questions_select || f_legacy_int_equals($firsttest, 0)) {
         // selected questions IDs
         $selected_questions = '0';
         // 2. for each set of subjects
@@ -1452,7 +1452,7 @@ function F_createTest($test_id, $user_id)
 							))))";
                 }
 
-                if ($m['tsubset_type'] == 1) {
+                if (f_legacy_int_equals($m['tsubset_type'], 1)) {
                     // (MCSA : Multiple Choice Single Answer) ----------
                     // get questions with the right number of answers
                     if (empty($right_answers_mcsa_questions_ids)) {
@@ -1495,7 +1495,7 @@ function F_createTest($test_id, $user_id)
                             . $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"]
                             . ')';
                     }
-                } elseif ($m['tsubset_type'] == 2) {
+                } elseif (f_legacy_int_equals($m['tsubset_type'], 2)) {
                     // (MCMA : Multiple Choice Multiple Answers) -------
                     // get questions with the right number of answers
                     if ($m['tsubset_answers'] > 0) {
@@ -1569,7 +1569,7 @@ function F_createTest($test_id, $user_id)
                             'answers' => $m['tsubset_answers'],
                             'score' => $testdata['test_score_unanswered'] * $mq['question_difficulty'],
                         ];
-                        if ($random_questions || $test_questions_order_mode != 0) {
+                        if ($random_questions || $test_questions_order_mode !== 0) {
                             $questions_data[] = $tmp_data;
                         } else {
                             $questions_data[$mq['question_position']] = $tmp_data;
