@@ -709,7 +709,7 @@ function f_sanitize_mathml_content(string $mathml, string $allowed_tag_string): 
  *
  * @param list<string> $allowed_tags
  */
-function F_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
+function f_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
 {
     $allowed_attributes = [
         'accent', 'accentunder', 'align', 'bevelled', 'close', 'columnalign', 'columnlines',
