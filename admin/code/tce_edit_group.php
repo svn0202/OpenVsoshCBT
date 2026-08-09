@@ -117,7 +117,7 @@ switch ($menu_mode) { // process submitted data
     case 'update':
         // Update user
             // check if the confirmation chekbox has been selected
-            if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
+            if (!isset($_REQUEST['confirmupdate']) || !f_legacy_int_equals($_REQUEST['confirmupdate'], 1)) {
                 F_print_error(
                     'WARNING',
                     $l['m_form_missing_fields'] . ': ' . $l['w_confirm'] . ' &rarr; ' . $l['w_update'],
