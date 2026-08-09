@@ -582,7 +582,7 @@ function f_get_utc_offset($timezone): int
  * @param $timezone (string) current user timezone
  * @return string UTC time offset (+HH:mm)
  */
-function F_db_getUTCoffset($timezone): string
+function f_db_get_utc_offset($timezone): string
 {
     $time_offset = f_get_utc_offset($timezone);
     $sign = $time_offset >= 0 ? '+' : '-';
