@@ -41,8 +41,8 @@ $user_ssn = $_POST['user_ssn'] ?? '';
 $user_note = mb_substr(trim((string) ($_POST['user_note'] ?? '')), 0, 5000);
 $user_schedule = mb_substr(trim((string) ($_POST['user_schedule'] ?? '')), 0, 5000);
 // round-tripped hidden fields preserved on UPDATE (overwritten internally in the add branch)
-$user_ip = $_POST['user_ip'] ?? '';
-$user_regdate = $_POST['user_regdate'] ?? '';
+$user_ip = isset($_POST['user_ip']) && is_string($_POST['user_ip']) ? $_POST['user_ip'] : '';
+$user_regdate = isset($_POST['user_regdate']) && is_string($_POST['user_regdate']) ? $_POST['user_regdate'] : '';
 $user_searchterms = trim((string) ($_REQUEST['user_searchterms'] ?? ''));
 
 $pagelevel = K_AUTH_ADMIN_USERS;
@@ -397,7 +397,8 @@ switch ($menu_mode) { // process submitted data
                     break;
                 }
 
-                $user_ip = getNormalizedIP($_SERVER['REMOTE_ADDR']); // get the user's IP number
+                $normalized_user_ip = getNormalizedIP($_SERVER['REMOTE_ADDR']);
+                $user_ip = is_string($normalized_user_ip) ? $normalized_user_ip : ''; // get the user's IP number
                 $user_regdate = date(K_TIMESTAMP_FORMAT); // get the registration date and time
 
                 $sql =
@@ -552,8 +553,8 @@ if ($formstatus && $menu_mode != 'clear') {
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
                 $user_id = $m['user_id'] ?? '';
-                $user_regdate = $m['user_regdate'] ?? '';
-                $user_ip = $m['user_ip'] ?? '';
+                $user_regdate = (string) ($m['user_regdate'] ?? '');
+                $user_ip = (string) ($m['user_ip'] ?? '');
                 $user_name = $m['user_name'] ?? '';
                 $user_email = $m['user_email'] ?? '';
                 $user_password = $m['user_password'] ?? '';
@@ -776,8 +777,8 @@ echo
         'new-password',
     )
 ;
-echo getFormRowFixedValue('user_regdate', $l['w_regdate'], $l['h_regdate'], '', $user_regdate);
-echo getFormRowFixedValue('user_ip', $l['w_ip'], $l['h_ip'], '', $user_ip);
+echo getFormRowFixedValue('user_regdate', (string) $l['w_regdate'], (string) $l['h_regdate'], '', $user_regdate);
+echo getFormRowFixedValue('user_ip', (string) $l['w_ip'], (string) $l['h_ip'], '', $user_ip);
 echo getFormRowSelectBox('user_level', (string) $l['w_level'], (string) $l['h_level'], '', $user_level, [
     0,
     1,
