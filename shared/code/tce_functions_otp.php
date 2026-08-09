@@ -43,7 +43,7 @@ function F_getRandomOTPkey(): string
  * @param string $code Base32 code to be decoded.
  * @return string Decoded key.
  */
-function F_decodeBase32(string $code): string
+function f_decode_base32(string $code): string
 {
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -76,7 +76,7 @@ function F_decodeBase32(string $code): string
 function F_getOTP(string $otpkey, int|float $mtime = 0): int
 {
     // get binary key
-    $binkey = F_decodeBase32($otpkey);
+    $binkey = f_decode_base32($otpkey);
     // get the current timestamp (the one time password changes every 30 seconds)
     if ($mtime === 0 || $mtime === 0.0) {
         $mtime = microtime(true);

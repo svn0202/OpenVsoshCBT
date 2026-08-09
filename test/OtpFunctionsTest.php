@@ -19,7 +19,7 @@ final class OtpFunctionsTest extends TestCase
 
     public function testBase32DecoderMatchesKnownValue(): void
     {
-        self::assertSame('foo', \F_decodeBase32('MZXW6==='));
+        self::assertSame('foo', \f_decode_base32('MZXW6==='));
     }
 
     public function testOtpMatchesRfc6238Sha1VectorAt59Seconds(): void
