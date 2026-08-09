@@ -1395,12 +1395,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
-message = "Function name `F_getUTCoffset` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "function-name"
 message = "Function name `F_html_to_TSV` should be in snake case."
 count = 1
 

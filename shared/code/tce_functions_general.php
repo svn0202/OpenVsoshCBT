@@ -570,7 +570,7 @@ function F_formatXMLPercentage($num, $ratio = true): string
  * @param $timezone (string) current user timezone
  * @return int UTC time offset in seconds
  */
-function F_getUTCoffset($timezone): int
+function f_get_utc_offset($timezone): int
 {
     $user_timezone = new DateTimeZone($timezone);
     $user_datetime = new DateTime('now', $user_timezone);
@@ -584,7 +584,7 @@ function F_getUTCoffset($timezone): int
  */
 function F_db_getUTCoffset($timezone): string
 {
-    $time_offset = F_getUTCoffset($timezone);
+    $time_offset = f_get_utc_offset($timezone);
     $sign = $time_offset >= 0 ? '+' : '-';
     return $sign . gmdate('H:i', abs($time_offset));
 }

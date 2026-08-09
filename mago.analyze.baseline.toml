@@ -15201,7 +15201,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `DateInvalidTimeZoneException` in `F_getUTCoffset`."
+message = "Potentially unhandled exception `DateInvalidTimeZoneException` in `f_get_utc_offset`."
 count = 1
 
 [[issues]]
