@@ -15,7 +15,7 @@ header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 
 /** @param array<string, int|string> $payload */
-function F_tmf_focus_json(int $status_code, array $payload): never
+function f_tmf_focus_json(int $status_code, array $payload): never
 {
     http_response_code($status_code);
     if (ob_get_level() > 0) {
