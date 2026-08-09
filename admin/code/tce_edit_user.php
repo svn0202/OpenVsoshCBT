@@ -657,7 +657,7 @@ if ($user_searchterms !== '') {
     }
 
     $sql .= ' ORDER BY user_lastname, user_firstname, user_name';
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . K_MAX_ROWS_PER_PAGE;
     } else {
         $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
