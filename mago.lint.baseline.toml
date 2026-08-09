@@ -1057,97 +1057,91 @@ message = "Function name `F_tmf_results_are_published` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "file-name"
-message = "Class `TCExamSessionHandler` should be in a file named `TCExamSessionHandler.php`, found `tce_functions_session.php`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_getCSRFToken` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_getSecurityHeaders` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_isRandomSecurityConfigured` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_isSafeLocalRedirectUri` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_sendSecurityHeaders` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `F_session_string_to_array` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `checkCSRFTokenForScript` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `checkCSRFToken` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `checkPassword` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getClientFingerprint` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getLegacyClientFingerprint` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getNewSessionID` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getPasswordHash` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getPlainCSRFTokenForScript` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_session.php"
+file = "shared/code/TCExamSessionHandler.php"
 code = "function-name"
 message = "Function name `getPlainCSRFToken` should be in snake case."
 count = 1
