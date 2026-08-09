@@ -68,7 +68,7 @@ function f_get_security_headers(): array
 }
 
 /** Send baseline security headers before any response body is emitted. */
-function F_sendSecurityHeaders(): void
+function f_send_security_headers(): void
 {
     if (headers_sent()) {
         return;
@@ -79,7 +79,7 @@ function F_sendSecurityHeaders(): void
 }
 
 if (PHP_SAPI !== 'cli') {
-    F_sendSecurityHeaders();
+    f_send_security_headers();
 }
 
 /**
