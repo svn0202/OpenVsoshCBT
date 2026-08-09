@@ -179,7 +179,7 @@ function f_sanitize_html_content(string $html): string
  * @param $parent (DOMNode) branch to sanitize
  * @return void
  */
-function F_sanitize_html_node(DOMNode $parent): void
+function f_sanitize_html_node(DOMNode $parent): void
 {
     $allowed_tags = [
         'a', 'b', 'blockquote', 'br', 'code', 'del', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
