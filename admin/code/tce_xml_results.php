@@ -109,7 +109,7 @@ switch ($output_format) {
  * @author Nicola Asuni
  * @return XML data
  */
-function F_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate = 0, $enddate = 0, $display_mode = 1)
+function f_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate = 0, $enddate = 0, $display_mode = 1)
 {
     global $l, $db;
     require_once '../config/tce_config.php';
