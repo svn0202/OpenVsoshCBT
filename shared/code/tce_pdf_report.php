@@ -1103,8 +1103,8 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         // fixed-size axis labels stay small relative to the viewport. Generating it at
         // the content width (~180 units) would map roughly 1 unit -> 1 mm, blowing the
         // labels up to ~30pt and overlapping them.
-        $svg = F_getSVGGraphCode(substr((string) $svgdata, 1), 800, 450);
-        if (!isset($svg[0]) || $svg[0] !== '<') {
+        $svg = (string) F_getSVGGraphCode(substr((string) $svgdata, 1), 800, 450);
+        if ($svg === '' || $svg[0] !== '<') {
             return;
         }
         // Placement box: full content width, height following the SVG's native aspect

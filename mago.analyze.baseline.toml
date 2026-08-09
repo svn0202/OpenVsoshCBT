@@ -11744,12 +11744,6 @@ count = 4
 
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
-code = "possibly-null-iterator"
-message = "Expression being iterated (type `DOMNodeList<DOMNameSpaceNode|DOMNode>|null`) might be `null` at runtime."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
 code = "possibly-null-operand"
 message = "Possibly null left operand used in string concatenation (type `null|string`)."
 count = 2
@@ -11764,12 +11758,6 @@ count = 1
 file = "admin/code/tmf_word_import_lib.php"
 code = "possibly-null-operand"
 message = "Possibly null right operand used in string concatenation (type `null|string`)."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "possibly-null-property-access"
-message = "Attempting to access a property on a possibly `null` value."
 count = 1
 
 [[issues]]
@@ -13947,12 +13935,6 @@ count = 3
 [[issues]]
 file = "public/code/tce_user_registration.php"
 code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `uniqid`: expected `string`, but found `non-negative-int`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
-code = "invalid-argument"
 message = "Invalid type for the first value."
 count = 1
 
@@ -13961,12 +13943,6 @@ file = "public/code/tce_user_registration.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 4
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
-code = "invalid-assignment"
-message = "Invalid target for assignment."
-count = 1
 
 [[issues]]
 file = "public/code/tce_user_registration.php"
@@ -19448,12 +19424,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
-code = "incompatible-parameter-name"
-message = "Parameter #1 of `TCExamSessionHandler::gc()` is named `$maxlifetime` but parent `SessionHandlerInterface::gc()` names it `$max_lifetime`"
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
 code = "invalid-argument"
 message = "Invalid argument type for argument #1 of `TCExamSessionHandler::gc`: expected `int`, but found `false|string`."
 count = 1
@@ -22718,12 +22688,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
-code = "invalid-property-assignment-value"
-message = "Invalid type for property `$AltBody`: expected `string`, but got `unknown-ref(text)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
 code = "missing-parameter-type"
 message = "Parameter `$user_email` is missing a type hint."
 count = 1
@@ -22774,7 +22738,7 @@ count = 1
 file = "shared/code/tce_functions_user_registration.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 25
+count = 24
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
@@ -22910,12 +22874,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
-code = "non-existent-property"
-message = "Property `$UseMSMailHeaders` does not exist on class `C_mailer`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_registration.php"
 code = "redundant-comparison"
 message = "Redundant `>` comparison: left-hand side is never greater than right-hand side."
 count = 1
@@ -22924,7 +22882,7 @@ count = 1
 file = "shared/code/tce_functions_user_registration.php"
 code = "undefined-variable"
 message = "Undefined variable: `$emailcfg`."
-count = 23
+count = 22
 
 [[issues]]
 file = "shared/code/tce_functions_user_registration.php"
@@ -24014,12 +23972,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
-code = "impossible-nonnull-entry-check"
-message = "Impossible condition: variable `$svg` (type `unknown-ref(converted)`) can never have a non-null entry for key `0`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
 code = "imprecise-type"
 message = "Type `array` in parameter `$d` is imprecise, equivalent to `array<array-key, mixed>`."
 count = 1
@@ -24053,12 +24005,6 @@ file = "shared/code/tce_pdf_report.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 6
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
-code = "invalid-operand"
-message = "Invalid type `never` for right operand in string concatenation."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
@@ -24308,12 +24254,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
-code = "no-value"
-message = "Argument #2 passed to function `preg_match` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
 code = "possibly-false-operand"
 message = "Left operand in `<=` comparison might be `false` (type `false|int`)."
 count = 1
@@ -24501,12 +24441,6 @@ count = 19
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
 code = "redundant-comparison"
-message = "Redundant `!==` comparison: left-hand side is always not identical to right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
-code = "redundant-comparison"
 message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
 count = 1
 
@@ -24514,7 +24448,7 @@ count = 1
 file = "shared/code/tce_pdf_report.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"
@@ -24532,7 +24466,7 @@ count = 1
 file = "shared/code/tce_pdf_report.php"
 code = "redundant-logical-operation"
 message = "Redundant `||` operation: left operand is evaluated and right operand is always truthy."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_pdf_report.php"

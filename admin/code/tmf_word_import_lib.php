@@ -286,6 +286,10 @@ class TmfWordImporter
             return;
         }
         $dom = $this->loadXml($xml, 'document relationships');
+        if ($dom->documentElement === null) {
+            $this->warnings[] = 'Document relationships root element is missing.';
+            return;
+        }
         foreach ($dom->documentElement->childNodes as $node) {
             if (!$node instanceof DOMElement || $node->localName !== 'Relationship') {
                 continue;
@@ -1118,14 +1122,13 @@ class TmfWordImporter
 
     private function relationshipId(DOMElement $element): string
     {
-        return (
-            $element->getAttributeNS(
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
-                'id',
-            ) ?: $element->getAttributeNS(
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
-                'embed',
-            )
+        $id = $element->getAttributeNS(
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+            'id',
+        );
+        return $id !== '' ? $id : $element->getAttributeNS(
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+            'embed',
         );
     }
 }
