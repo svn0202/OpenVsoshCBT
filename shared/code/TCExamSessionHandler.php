@@ -435,13 +435,13 @@ function getPlainCSRFToken(): string
 {
     /** @var non-empty-list<non-empty-string> $inc */
     $inc = get_included_files();
-    return getPlainCSRFTokenForScript($inc[0]);
+    return get_plain_csrf_token_for_script($inc[0]);
 }
 
 /**
  * Generate an unencoded CSRF token for a known same-application script.
  */
-function getPlainCSRFTokenForScript(string $script): string
+function get_plain_csrf_token_for_script(string $script): string
 {
     return $script . (string) session_id() . K_RANDOM_SECURITY . get_client_fingerprint();
 }
@@ -462,7 +462,7 @@ function checkCSRFToken(#[\SensitiveParameter] string $token): bool
  */
 function checkCSRFTokenForScript(#[\SensitiveParameter] string $token, string $script): bool
 {
-    return check_password(getPlainCSRFTokenForScript($script), $token);
+    return check_password(get_plain_csrf_token_for_script($script), $token);
 }
 
 /**
