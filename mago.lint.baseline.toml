@@ -1936,7 +1936,7 @@ count = 13
 file = "shared/code/tce_functions_test.php"
 code = "no-redundant-block"
 message = "Redundant block around statements."
-count = 23
+count = 15
 
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"

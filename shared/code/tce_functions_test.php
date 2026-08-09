@@ -1028,20 +1028,14 @@ function F_selectAnswers(
     $sql_order_by = '';
     switch ($ordmode) {
         case 0:
-            {
                 $sql_order_by = ' AND answer_position>0 ORDER BY answer_position';
                 break;
-            }
         case 1:
-            {
                 $sql_order_by = ' ORDER BY answer_description';
                 break;
-            }
         case 2:
-            {
                 $sql_order_by = ' ORDER BY answer_id';
                 break;
-            }
     }
 
     $sql = 'SELECT answer_id, answer_position
@@ -1339,30 +1333,25 @@ function F_createTest($test_id, $user_id)
     $sql_questions_order_by = '';
     switch ($test_questions_order_mode) {
         case 0:
-            { // position
+            // position
                 $sql_questions_order_by = ' AND question_position>0 ORDER BY question_position';
                 break;
-            }
         case 1:
-            { // alphabetic
+            // alphabetic
                 $sql_questions_order_by = ' ORDER BY question_description';
                 break;
-            }
         case 2:
-            { // ID
+            // ID
                 $sql_questions_order_by = ' ORDER BY question_id';
                 break;
-            }
         case 3:
-            { // type
+            // type
                 $sql_questions_order_by = ' ORDER BY question_type';
                 break;
-            }
         case 4:
-            { // subject ID
+            // subject ID
                 $sql_questions_order_by = ' ORDER BY question_subject_id';
                 break;
-            }
     }
 
     // IDs of MCSA questions with more than one correct answer
