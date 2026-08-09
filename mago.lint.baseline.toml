@@ -537,12 +537,6 @@ count = 1
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
 code = "function-name"
-message = "Function name `F_tmf_word_import_is_batch_id` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "function-name"
 message = "Function name `F_tmf_word_import_remove_directory` should be in snake case."
 count = 1
 
