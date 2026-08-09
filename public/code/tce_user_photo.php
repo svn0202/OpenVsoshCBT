@@ -20,7 +20,7 @@ if (
     http_response_code(403);
     exit;
 }
-$path = F_tmf_user_photo_path($user_id);
+$path = f_tmf_user_photo_path($user_id);
 if (!is_file($path)) {
     http_response_code(404);
     exit;

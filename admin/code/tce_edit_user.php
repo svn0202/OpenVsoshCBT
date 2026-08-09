@@ -146,7 +146,7 @@ switch ($menu_mode) { // process submitted data
                     if (!($r = F_db_query($sql, $db))) {
                         F_display_db_error(false);
                     } else {
-                        $photo_path = F_tmf_user_photo_path((int) $user_id);
+                        $photo_path = f_tmf_user_photo_path((int) $user_id);
                         if (is_file($photo_path)) {
                             unlink($photo_path);
                         }
@@ -597,7 +597,7 @@ if (
     && isset($_FILES['user_photo'])
     && (int) ($_FILES['user_photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE
 ) {
-    $photo_result = F_tmf_user_photo_store($_FILES['user_photo'], (int) $user_id);
+    $photo_result = f_tmf_user_photo_store($_FILES['user_photo'], (int) $user_id);
     F_print_error($photo_result['status'] === 'stored' ? 'MESSAGE' : 'WARNING', $photo_result['message']);
 }
 
@@ -878,7 +878,7 @@ echo
 ;
 echo '<div class="row"><span class="label"><label for="user_photo">Фотография</label></span>'
     . '<span class="formw">';
-if ($user_id > 0 && is_file(F_tmf_user_photo_path((int) $user_id))) {
+if ($user_id > 0 && is_file(f_tmf_user_photo_path((int) $user_id))) {
     echo '<img class="participant-photo-preview" src="../../public/code/tce_user_photo.php?id='
         . (int) $user_id . '" alt="Фотография участника" />';
 }

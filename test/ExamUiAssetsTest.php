@@ -348,6 +348,6 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('K_AUTH_ADMIN_USERS', $controller);
         self::assertStringContainsString("header('Content-Type: image/jpeg')", $controller);
         self::assertStringContainsString('accept="image/jpeg,image/png"', $editor);
-        self::assertStringContainsString('F_tmf_user_photo_store', $editor);
+        self::assertStringContainsString('f_tmf_user_photo_store', $editor);
     }
 }
