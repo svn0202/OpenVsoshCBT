@@ -13267,30 +13267,6 @@ message = "Unreachable else clause"
 count = 1
 
 [[issues]]
-file = "public/code/tce_user_photo.php"
-code = "mixed-operand"
-message = "Right operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_photo.php"
-code = "possibly-false-operand"
-message = "Possibly false right operand used in string concatenation (type `false|non-negative-int`)."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_photo.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 2
-
-[[issues]]
-file = "public/code/tce_user_photo.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 1
-
-[[issues]]
 file = "public/code/tce_user_registration.php"
 code = "array-to-string-conversion"
 message = "Potential array in left operand of string concatenation."
