@@ -27,7 +27,7 @@
  * @param $andwhere (string) additional WHERE statements (e.g.: "module_enabled='1'")
  * @return string sql statement
  */
-function F_select_modules_sql(mixed $andwhere = ''): string
+function f_select_modules_sql(mixed $andwhere = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
