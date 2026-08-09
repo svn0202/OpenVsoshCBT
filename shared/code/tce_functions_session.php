@@ -154,7 +154,7 @@ class TCExamSessionHandler implements SessionHandlerInterface
         // workaround for PHP bug 41230
         if (
             (!isset($db) || !$db)
-            && !($db = @F_db_connect(
+            && !($db = F_db_connect(
                 K_DATABASE_HOST,
                 K_DATABASE_PORT,
                 K_DATABASE_USER_NAME,
