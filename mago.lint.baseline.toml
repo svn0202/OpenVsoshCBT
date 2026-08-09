@@ -674,12 +674,6 @@ count = 10
 
 [[issues]]
 file = "admin/code/tce_show_result_user.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 5
-
-[[issues]]
-file = "admin/code/tce_show_result_user.php"
 code = "no-redundant-block"
 message = "Redundant block around statements."
 count = 6
