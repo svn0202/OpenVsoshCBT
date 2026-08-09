@@ -1769,9 +1769,3 @@ file = "shared/code/tce_pdf_report.php"
 code = "file-name"
 message = "Class `TcePdfReport` should be in a file named `TcePdfReport.php`, found `tce_pdf_report.php`."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_pdf_report.php"
-code = "no-error-control-operator"
-message = "Unsafe use of error control operator `@`."
-count = 3
