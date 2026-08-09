@@ -6,6 +6,35 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthorizationFunctionsTest extends TestCase
 {
+    public function testAdminLoginRedirectPreservesRequestedUri(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_login_form\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval(substr($source, $start, $end - $start)); '
+                    . '$_SERVER["SCRIPT_NAME"] = "/app/admin/code/users.php"; '
+                    . '$_SERVER["REQUEST_METHOD"] = "GET"; '
+                    . '$_SERVER["REQUEST_URI"] = "/app/admin/code/users.php?group=7"; '
+                    . '$_SESSION["session_user_level"] = 0; '
+                    . 'register_shutdown_function(static function (): void { '
+                    . 'echo json_encode(["redirect" => $_SESSION["session_login_redirect"] ?? null]); }); '
+                    . 'F_login_form();',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['redirect' => '/app/admin/code/users.php?group=7'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testLogoutFormRenderingRemainsUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
