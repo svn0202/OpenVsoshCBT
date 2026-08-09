@@ -376,7 +376,7 @@ function utrim($txt)
  * @return string|false IPv6 address in expanded notation or false in case of invalid input.
  * @since 7.1.000 (2009-02-13)
  */
-function getNormalizedIP($ip)
+function getNormalizedIP($ip): string|false
 {
     if ($ip == '0000:0000:0000:0000:0000:0000:0000:0001' || $ip == '::1') {
         // fix localhost problem
