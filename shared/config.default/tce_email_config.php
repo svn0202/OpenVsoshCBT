@@ -21,6 +21,8 @@
  * @since 2005-02-24
  */
 
+/** @var array<string, mixed> $emailcfg */
+
 // Email priority (1 = High, 3 = Normal, 5 = Low). Default value is 3.
 $emailcfg['Priority'] = 3;
 

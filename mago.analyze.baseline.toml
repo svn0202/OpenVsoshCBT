@@ -22301,15 +22301,3 @@ file = "shared/config.default/tce_config.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('timezone')` accessed on `array<array-key, mixed>`."
 count = 1
-
-[[issues]]
-file = "shared/config.default/tce_email_config.php"
-code = "mixed-array-assignment"
-message = "Unsafe array assignment on type `mixed`."
-count = 26
-
-[[issues]]
-file = "shared/config.default/tce_email_config.php"
-code = "undefined-variable"
-message = "Undefined variable: `$emailcfg`."
-count = 2
