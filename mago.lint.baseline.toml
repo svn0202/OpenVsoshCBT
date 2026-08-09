@@ -1177,12 +1177,6 @@ message = "Function name `F_tcecode_tag_arg` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_tcecode.php"
-code = "function-name"
-message = "Function name `F_tcecode_tag` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "function-name"
 message = "Function name `F_addLogAnswers` should be in snake case."
