@@ -985,11 +985,11 @@ function F_tcecodeToTitle($str)
  * Return a substring of XHTML code while making sure no html tags are chopped.
  * It also prevents chopping while a tag is still open.
  * this function is based on a public-domain script posted on www.php.net by fox@conskript.server and mr@bbp.biz
- * @param $htmltext (string)
- * @param $min_length (int) (default=100) the approximate length you want the concatenated text to be
- * @param $offset_length (int) (default=20) the max variation in how long the text can be
+ * @param string $htmltext
+ * @param int $min_length (default=100) the approximate length you want the concatenated text to be
+ * @param int $offset_length (default=20) the max variation in how long the text can be
  */
-function F_substrHTML($htmltext, $min_length = 100, $offset_length = 20)
+function F_substrHTML(string $htmltext, int $min_length = 100, int $offset_length = 20): string
 {
     // Reset tag counter and quote checker
     $tag_counter = 0;
