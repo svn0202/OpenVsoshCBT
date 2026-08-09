@@ -877,6 +877,9 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         if ($r = F_db_query($sql, $db)) {
             $itemcount = 1;
             while ($m = F_db_fetch_array($r)) {
+                /** @var int|numeric-string $raw_question_type */
+                $raw_question_type = $m['question_type'];
+                $question_type = (int) $raw_question_type;
                 $display_time = isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0
                     ? substr($m['testlog_display_time'], 11, 8)
                     : '--:--:--';
@@ -904,7 +907,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 }
                 $html .= '</tr><tr style="text-align:center;">';
                 foreach ([
-                    $itemcount . ' ' . $qtype[$m['question_type'] - 1],
+                    $itemcount . ' ' . $qtype[$question_type - 1],
                     $m['testlog_score'],
                     get_ip_as_string($m['testlog_user_ip']),
                     $display_time,
@@ -926,7 +929,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                         . '</div>';
                 }
 
-                if ($m['question_type'] == 3) {
+                if ($question_type === 3) {
                     // free-text answer
                     $html .=
                         '<div style="font-size:8pt;border:0.5px solid #000000;">'
@@ -970,7 +973,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                         while ($ma = F_db_fetch_array($ra)) {
                             ++$idx;
                             [$marker, $markfill, $index, $idxfill] = $this->answerMarker(
-                                (int) $m['question_type'],
+                                $question_type,
                                 $ma,
                                 $idx,
                             );
