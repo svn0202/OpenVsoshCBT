@@ -3256,7 +3256,7 @@ count = 3
 file = "admin/code/tce_functions_omr.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 5
+count = 3
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
@@ -3375,14 +3375,8 @@ count = 5
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "mixed-operand"
-message = "Left operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "mixed-operand"
 message = "Left operand in `==` comparison has `mixed` type."
-count = 3
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
