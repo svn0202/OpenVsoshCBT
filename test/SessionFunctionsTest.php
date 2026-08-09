@@ -188,7 +188,7 @@ final class SessionFunctionsTest extends TestCase
     public function testDefaultCsrfTokenRoundTrips(): void
     {
         $plain = \get_plain_csrf_token();
-        $token = \F_getCSRFToken();
+        $token = \f_get_csrf_token();
 
         self::assertNotSame('', $plain);
         self::assertTrue(\check_csrf_token($token));

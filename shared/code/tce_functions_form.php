@@ -340,7 +340,7 @@ function f_submit_button(mixed $name, mixed $value, mixed $title = '', mixed $ex
  */
 function F_getCSRFTokenField(): string
 {
-    return '<input type="hidden" name="csrf_token" id="csrf_token" value="' . F_getCSRFToken() . '" />';
+    return '<input type="hidden" name="csrf_token" id="csrf_token" value="' . f_get_csrf_token() . '" />';
 }
 
 /**
