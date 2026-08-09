@@ -857,7 +857,7 @@ function get_form_small_vert_space(): string
  * Print empty form row.
  * @return string
  */
-function getFormSmallDivSpace(): string
+function get_form_small_div_space(): string
 {
     return '<div style="clear:both;height:1px;font-size:1px;">&nbsp;</div>' . K_NEWLINE;
 }
