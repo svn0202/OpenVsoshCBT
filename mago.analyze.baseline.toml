@@ -17384,18 +17384,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
-code = "possibly-false-argument"
-message = "Argument #1 of function `count` is possibly `false`, but parameter type `Countable|array<array-key, mixed>` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "possibly-false-array-access"
-message = "Cannot perform array access on possibly `false` value."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #1 of `session_id`: expected `null|string`, but possibly received `array<array-key, string>|null|string`."
 count = 1
@@ -17420,20 +17408,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_session.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `explode` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
 code = "possibly-null-operand"
 message = "Possibly null left operand used in string concatenation (type `null|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `list<string>`."
 count = 1
 
 [[issues]]

@@ -254,9 +254,11 @@ class TCExamSessionHandler implements SessionHandlerInterface
 function F_session_string_to_array(string $sd): array
 {
     $sess_array = [];
+    /** @var list<string> $vars */
     $vars = preg_split('/[;}]/', $sd);
-    for ($i = 0; $i < (count($vars) - 1); ++$i) {
-        $parts = explode('|', $vars[$i]);
+    array_pop($vars);
+    foreach ($vars as $var) {
+        $parts = explode('|', $var);
         $key = $parts[0];
         $val = unserialize($parts[1] . ';');
         $sess_array[$key] = $val;
