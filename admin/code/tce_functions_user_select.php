@@ -33,7 +33,7 @@
  * @param $searchterms (string) search terms
  * @return true
  */
-function F_select_user(
+function f_select_user(
     $order_field,
     $orderdir,
     $firstrow,
