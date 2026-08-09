@@ -470,7 +470,7 @@ function check_csrf_token_for_script(#[\SensitiveParameter] string $token, strin
  *
  * @return string
  */
-function F_getCSRFToken(): string
+function f_get_csrf_token(): string
 {
     return get_password_hash(get_plain_csrf_token());
 }
