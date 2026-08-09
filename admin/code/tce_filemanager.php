@@ -161,7 +161,7 @@ switch ($menu_mode) {
                 break;
             }
 
-            if (($_POST['forcedelete'] ?? '') == $l['w_delete']) {
+            if (f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')) {
                 // check if this record is used (test_log)
                 if (F_isUsedMediaFile($file)) {
                     F_print_error('WARNING', $l['m_used_file']);
@@ -342,7 +342,9 @@ if (!empty($file)) {
 echo '</fieldset>' . K_NEWLINE;
 
 // change view mode
-echo '<div style="text-align:' . ($l['a_meta_dir'] == 'ltr' ? 'right' : 'left') . ';font-size:75%;">';
+echo '<div style="text-align:'
+    . (f_form_option_is_selected('ltr', $l['a_meta_dir']) ? 'right' : 'left')
+    . ';font-size:75%;">';
 if ($viewmode) {
     // table mode
     echo '<label for="viewmodev">' . $l['w_mode'] . ': </label>';
