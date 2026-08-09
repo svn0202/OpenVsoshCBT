@@ -2764,7 +2764,7 @@ count = 2
 file = "admin/code/tce_filemanager.php"
 code = "invalid-argument"
 message = "Invalid type for the first value."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_filemanager.php"
@@ -3195,12 +3195,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getDirTable`: expected `unknown-ref(html)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_getDirVisualTable`: expected `unknown-ref(html)`, but found `truthy-string`."
 count = 1
 
@@ -3214,13 +3208,13 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$authdirs` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$dir` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -3232,24 +3226,18 @@ count = 1
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$params` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$rootdir` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
 code = "missing-parameter-type"
 message = "Parameter `$selected` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
-code = "missing-return-type"
-message = "Function `F_getDirTable` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3484,7 +3472,7 @@ count = 2
 file = "admin/code/tce_functions_filemanager.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `html`."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
@@ -7108,7 +7096,7 @@ count = 2
 file = "admin/code/tce_select_mediafile.php"
 code = "invalid-argument"
 message = "Invalid type for the first value."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
