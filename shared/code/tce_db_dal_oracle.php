@@ -62,7 +62,7 @@ function F_db_connect(
  * @param $link_identifier (resource) database link identifier.
  * @return bool TRUE on success or FALSE on failure
  */
-function F_db_close($link_identifier)
+function f_db_close($link_identifier)
 {
     return oci_close($link_identifier);
 }
