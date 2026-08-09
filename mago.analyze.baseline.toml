@@ -11000,12 +11000,6 @@ count = 2
 
 [[issues]]
 file = "public/code/tce_user_registration.php"
-code = "less-specific-nested-argument-type"
-message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `list<mixed>` is less specific."
-count = 1
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 2
@@ -11051,12 +11045,6 @@ file = "public/code/tce_user_registration.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
 count = 2
-
-[[issues]]
-file = "public/code/tce_user_registration.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 11
 
 [[issues]]
 file = "public/code/tce_user_registration.php"
