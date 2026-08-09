@@ -127,6 +127,38 @@ final class FormValidationTest extends TestCase
         $this->assertStringEndsWith("</noscript>\n", $markup);
     }
 
+    public function testFixedValueRowPreservesReadonlyValueAndHiddenField(): void
+    {
+        [$status, $markup] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require $argv[1]; '
+                    . '$name = function_exists("getFormRowFixedValue") '
+                    . '? "getFormRowFixedValue" : "get_form_row_fixed_value"; '
+                    . 'echo $name("user_ip", "IP address", "Client IP", "Read only", '
+                    . '"127.0.0.1&local", false, "PREFIX");',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        $this->assertSame(0, $status, $markup);
+        $this->assertStringContainsString(
+            '<label for="DISABLED_user_ip" title="Client IP">IP address</label>',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            'name="DISABLED_user_ip" id="DISABLED_user_ip" class="disabled" '
+                . 'value="127.0.0.1&amp;local" size="20"',
+            $markup,
+        );
+        $this->assertStringContainsString(
+            '<input type="hidden" name="user_ip" id="user_ip" value="127.0.0.1&amp;local" />',
+            $markup,
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
