@@ -16502,12 +16502,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"
-code = "array-to-string-conversion"
-message = "Invalid right operand: cannot use type `array` in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
 count = 1
@@ -16516,18 +16510,6 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_check_form_fields`: expected `false`, but found `true`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_check_required_fields`: expected `array<array-key, mixed>`, but found `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_check_required_fields`: expected `array<array-key, mixed>`, but found `string`."
 count = 1
 
 [[issues]]
@@ -16600,12 +16582,6 @@ count = 6
 file = "shared/code/tce_functions_form.php"
 code = "missing-parameter-type"
 message = "Parameter `$format` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-parameter-type"
-message = "Parameter `$formfields` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -16702,12 +16678,6 @@ count = 1
 file = "shared/code/tce_functions_form.php"
 code = "missing-return-type"
 message = "Function `F_check_form_fields` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "missing-return-type"
-message = "Function `F_check_required_fields` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -16833,12 +16803,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `array_key_exists`: expected `array<array-key, mixed>`, but found `truthy-mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `mixed`."
 count = 2
 
@@ -16859,12 +16823,6 @@ file = "shared/code/tce_functions_form.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 16
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `truthy-mixed`."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_form.php"

@@ -69,7 +69,7 @@ define('K_EMAIL_RE_PATTERN', '^([a-zA-Z0-9_\.\-\+\%]+)@([a-zA-Z0-9\.\-]+)$');
 
 /**
  * Returns an array containing form fields.
- * @return array containing form fields
+ * @return array<array-key, mixed> containing form fields
  */
 function F_decode_form_fields(): array
 {
@@ -79,10 +79,10 @@ function F_decode_form_fields(): array
 /**
  * Check Required Form Fields.<br>
  * Returns a string containing a list of missing fields (comma separated).
- * @param $formfields (string) input array containing form fields
- * @return array containing a list of missing fields (if any)
+ * @param array<array-key, mixed> $formfields input array containing form fields
+ * @return string|false comma-separated missing fields, or false when no fields are required
  */
-function F_check_required_fields($formfields)
+function F_check_required_fields(array $formfields): string|false
 {
     global $l;
     if (
