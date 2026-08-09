@@ -47,7 +47,7 @@ function f_tmf_monitor_status(
     return 'in_progress';
 }
 
-function F_tmf_monitor_attempt_is_authorized(int $testuser_id): bool
+function f_tmf_monitor_attempt_is_authorized(int $testuser_id): bool
 {
     require_once '../config/tce_config.php';
     global $db;
