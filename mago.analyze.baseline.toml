@@ -19814,56 +19814,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "missing-property-type"
-message = "Property `$current_key` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtolower`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtoupper`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `array_key_exists`: expected `array<array-key, mixed>`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `nonnull`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
 count = 1
 
 [[issues]]
@@ -19907,9 +19859,3 @@ file = "shared/code/tce_tmx.php"
 code = "undefined-variable"
 message = "Undefined variable: `$tmx`."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "unused-parameter"
-message = "Parameter `$parser` is never used."
-count = 3
