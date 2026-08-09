@@ -16,7 +16,7 @@ function f_tmf_test_session_unlock(int $test_id): void
     ];
 }
 
-function F_tmf_test_session_is_unlocked(int $test_id): bool
+function f_tmf_test_session_is_unlocked(int $test_id): bool
 {
     $grant = $_SESSION['session_unlocked_tests'][(string) $test_id] ?? null;
     return is_array($grant)
