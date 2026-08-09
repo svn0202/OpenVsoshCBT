@@ -57,7 +57,6 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l[
 
 switch ($menu_mode) { // process submitted data
     case 'delete':
-        {
             // ask confirmation
             if ($_SESSION['session_user_level'] < K_AUTH_DELETE_GROUPS) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
@@ -91,10 +90,8 @@ switch ($menu_mode) { // process submitted data
             echo '</form>' . K_NEWLINE;
             echo '</div>' . K_NEWLINE;
             break;
-        }
 
     case 'forcedelete':
-        {
             // Delete specified user
             if ($_SESSION['session_user_level'] < K_AUTH_DELETE_GROUPS) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
@@ -116,10 +113,9 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'update':
-        { // Update user
+        // Update user
             // check if the confirmation chekbox has been selected
             if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
                 F_print_error(
@@ -157,10 +153,9 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'add':
-        { // Add user
+        // Add user
             if ($formstatus = F_check_form_fields()) { // check submitted form fields
                 // check if name is unique
                 if (!F_check_unique(K_TABLE_GROUPS, "group_name='" . $group_name_db . "'")) {
@@ -201,20 +196,16 @@ switch ($menu_mode) { // process submitted data
             }
 
             break;
-        }
 
     case 'clear':
-        { // Clear form fields
+        // Clear form fields
             $group_name = '';
             $group_name_sl = '';
             $group_name_db = '';
             break;
-        }
 
     default:
-        {
             break;
-        }
 } //end of switch
 
 // --- Initialize variables
