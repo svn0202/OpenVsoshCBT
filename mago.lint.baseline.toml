@@ -193,12 +193,6 @@ message = "Redundant block around statements."
 count = 6
 
 [[issues]]
-file = "admin/code/tce_email_results.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_export_custom.php"
 code = "no-redundant-file"
 message = "Redundant file with no executable code or declarations."
