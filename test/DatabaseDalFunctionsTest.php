@@ -6,6 +6,44 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testSqlEscapingBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['stripped' => ['ab', 'connection'], 'raw' => ['a\\b', 'connection']],
+            'mysqli' => ['stripped' => ['connection', 'ab'], 'raw' => ['connection', 'a\\b']],
+            'oracle' => ['stripped' => ['ab'], 'raw' => ['a\\b']],
+            'postgresql' => ['stripped' => ['connection', 'ab'], 'raw' => ['connection', 'a\\b']],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $escapedFunction = match ($driver) {
+                'mysql' => 'mysql_real_escape_string',
+                'mysqli' => 'mysqli_real_escape_string',
+                default => 'pg_escape_string',
+            };
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-n',
+                    '-r',
+                    'namespace Harness; function ' . $escapedFunction . '(...$arguments) { return $arguments; } '
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_escape_sql/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'if ($end === false) { $end = strlen($source); } '
+                        . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); $input = "a\\\\b"; '
+                        . 'echo json_encode(["stripped" => F_escape_sql("connection", $input), '
+                        . '"raw" => F_escape_sql("connection", $input, false)]);',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseInsertIdBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
