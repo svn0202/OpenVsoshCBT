@@ -5,7 +5,7 @@
  * password. The grant is scoped to the current user session and test ID, so an
  * administrator may rotate the shared token without ejecting participants.
  */
-function F_tmf_test_session_unlock(int $test_id): void
+function f_tmf_test_session_unlock(int $test_id): void
 {
     if (!isset($_SESSION['session_unlocked_tests']) || !is_array($_SESSION['session_unlocked_tests'])) {
         $_SESSION['session_unlocked_tests'] = [];
