@@ -16322,18 +16322,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_svg_graph.php"
-code = "missing-return-statement"
-message = "Missing return statement in function `f_getsvggraph`"
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
-code = "missing-return-type"
-message = "Function `F_getSVGGraph` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `mixed`."
 count = 1
@@ -16354,12 +16342,6 @@ count = 1
 file = "shared/code/tce_functions_svg_graph.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_svg_graph.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `converted`."
 count = 1
 
 [[issues]]

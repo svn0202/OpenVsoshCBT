@@ -18,4 +18,14 @@ final class SvgGraphTest extends TestCase
         self::assertStringContainsString('<polyline fill="none" stroke="#0000ff"', $svg);
         self::assertStringEndsWith("</svg>\n", $svg);
     }
+
+    public function testOutputsGeneratedGraph(): void
+    {
+        ob_start();
+        F_getSVGGraph('10v20x30v40', 100, 250);
+        $svg = (string) ob_get_clean();
+
+        self::assertStringContainsString('<svg width="100" height="250"', $svg);
+        self::assertStringEndsWith("</svg>\n", $svg);
+    }
 }

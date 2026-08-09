@@ -152,9 +152,9 @@ function f_get_svg_graph_code($p, $w = '', $h = ''): string
  * @param $p (string) String containing point data.
  * @param $w (int) Graph width.
  * @param $h (int) Graph height.
- * @return converted string
+ * @return void
  */
-function F_getSVGGraph($p, $w = '', $h = '')
+function F_getSVGGraph($p, $w = '', $h = ''): void
 {
     // send headers
     header('Content-Description: SVG Data');
