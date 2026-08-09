@@ -219,7 +219,9 @@ if ($formstatus && $menu_mode != 'clear') {
         $sql = F_user_group_select_sql('group_id=' . $group_id) . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $group_id = $m['group_id'];
+                /** @var int|numeric-string $stored_group_id */
+                $stored_group_id = $m['group_id'];
+                $group_id = (int) $stored_group_id;
                 $group_name = $m['group_name'];
             } else {
                 $group_name = '';
@@ -252,7 +254,7 @@ echo
         . K_NEWLINE
 ;
 echo '<option value="0" style="background-color:#009900;color:white;"';
-if ($group_id == 0) {
+if ($group_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -281,7 +283,9 @@ if ($group_searchterms !== '') {
 
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
-            if ($m['group_id'] == $group_id) {
+            /** @var int|numeric-string $listed_group_id */
+            $listed_group_id = $m['group_id'];
+            if ((int) $listed_group_id === $group_id) {
                 continue;
             }
 
@@ -337,7 +341,7 @@ echo
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if (isset($group_id) && $group_id > 0) {
+if ($group_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
