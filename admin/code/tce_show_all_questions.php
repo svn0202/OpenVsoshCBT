@@ -205,7 +205,7 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['module_id'] . '"';
-        if ($m['module_id'] == $subject_module_id) {
+        if (f_legacy_int_equals($m['module_id'], (int) $subject_module_id)) {
             echo ' selected="selected"';
         }
 
@@ -256,7 +256,7 @@ if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['subject_id'] . '"';
-        if ($m['subject_id'] == $subject_id) {
+        if (f_legacy_int_equals($m['subject_id'], (int) $subject_id)) {
             echo ' selected="selected"';
         }
 
@@ -571,7 +571,7 @@ function F_show_select_questions(
                 . '" aria-label="'
                 . $l['w_select']
                 . '"';
-            if (isset($_REQUEST['checkall']) && $_REQUEST['checkall'] == 1) {
+            if (isset($_REQUEST['checkall']) && f_legacy_int_equals($_REQUEST['checkall'], 1)) {
                 $questlist .= ' checked="checked"';
             }
 
@@ -828,7 +828,7 @@ function F_show_select_questions(
                 echo '<option value="0" style="color:gray">' . $l['w_subject'] . '</option>' . K_NEWLINE;
                 $prev_module_id = 0;
                 while ($m = F_db_fetch_array($r)) {
-                    if ($m['module_id'] != $prev_module_id) {
+                    if (!f_legacy_int_equals($m['module_id'], (int) $prev_module_id)) {
                         $prev_module_id = $m['module_id'];
                         echo
                             '<option value="0" style="color:gray;font-weight:bold;" disabled="disabled">* '
