@@ -1078,7 +1078,7 @@ function f_get_user_groups($user_id)
  * @return (int) User ID or 0 in case of error.
  * @since 11.3.005 (2012-07-31)
  */
-function F_getUIDfromRegnum($regnum)
+function f_get_uid_from_regnum($regnum)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

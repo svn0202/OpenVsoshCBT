@@ -134,7 +134,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                         // sort answers
                         ksort($omr_answers);
                         // get user ID from user registration code
-                        $user_id = F_getUIDfromRegnum($matches[1]);
+                        $user_id = f_get_uid_from_regnum($matches[1]);
                         // import answers
                         if (
                             $user_id > 0
