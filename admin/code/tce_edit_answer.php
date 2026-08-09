@@ -701,14 +701,18 @@ if ($formstatus && $menu_mode != 'clear') {
                 $stored_answer_id = $m['answer_id'];
                 /** @var int|numeric-string $stored_question_id */
                 $stored_question_id = $m['answer_question_id'];
+                /** @var int|numeric-string $stored_answer_position */
+                $stored_answer_position = $m['answer_position'];
+                /** @var int|numeric-string|null $stored_keyboard_key */
+                $stored_keyboard_key = $m['answer_keyboard_key'];
                 $answer_id = (int) $stored_answer_id;
                 $answer_question_id = (int) $stored_question_id;
                 $answer_description = $m['answer_description'];
                 $answer_explanation = $m['answer_explanation'];
                 $answer_isright = f_get_boolean($m['answer_isright']);
                 $answer_enabled = f_get_boolean($m['answer_enabled']);
-                $answer_position = $m['answer_position'];
-                $answer_keyboard_key = $m['answer_keyboard_key'];
+                $answer_position = (int) $stored_answer_position;
+                $answer_keyboard_key = $stored_keyboard_key === null ? '' : (int) $stored_keyboard_key;
                 $answer_weight = $m['answer_weight'] === null ? null : (int) $m['answer_weight'];
             } else {
                 $answer_description = '';
@@ -1141,7 +1145,7 @@ if ($matching_question_result = F_db_query($matching_question_sql, $db)) {
 echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
 for ($pos = 1; $pos <= $max_position; ++$pos) {
     echo '<option value="' . $pos . '"';
-    if ($pos == $answer_position) {
+    if ($pos === $answer_position) {
         echo ' selected="selected"';
     }
 
@@ -1175,7 +1179,7 @@ echo
 echo '<option value="">&nbsp;</option>' . K_NEWLINE;
 for ($ascii = 32; $ascii <= 126; ++$ascii) {
     echo '<option value="' . $ascii . '"';
-    if ($ascii == $answer_keyboard_key) {
+    if ($ascii === $answer_keyboard_key) {
         echo ' selected="selected"';
     }
 
