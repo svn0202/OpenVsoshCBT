@@ -48,7 +48,7 @@ function F_menu_link($link, $data, $level = 0): ?string
             $str .= ' accesskey="' . (string) $data['key'] . '"';
         }
 
-        if (F_menu_isChildActive($data)) {
+        if (f_menu_is_child_active($data)) {
             $str .= ' class="active"';
         }
 
@@ -108,7 +108,7 @@ function f_menu_icon_svg(string $icon): string
  * Returns true if the menu item has an active child, false otherwise.
  * @param $data (array) link data
  */
-function F_menu_isChildActive($data): bool
+function f_menu_is_child_active($data): bool
 {
     if (isset($data['sub']) && !empty($data['sub'])) {
         if (array_key_exists(basename($_SERVER['SCRIPT_NAME']), $data['sub'])) {
@@ -118,7 +118,7 @@ function F_menu_isChildActive($data): bool
 
         // try sub-trees
         foreach ($data['sub'] as $submenu) {
-            if (F_menu_isChildActive($submenu)) {
+            if (f_menu_is_child_active($submenu)) {
                 return true;
             }
         }
