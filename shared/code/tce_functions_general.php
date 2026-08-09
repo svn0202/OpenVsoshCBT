@@ -595,7 +595,7 @@ function f_db_get_utc_offset($timezone): string
  * @param $level (int) Indentation level.
  * @return string XML data
  */
-function getDataXML($data, $level = 1): string
+function get_data_xml($data, $level = 1): string
 {
     $xml = '';
     $tb = str_repeat("\t", $level);
@@ -608,7 +608,7 @@ function getDataXML($data, $level = 1): string
 
         $xml .= $tb . '<' . $key . '>';
         if (is_array($value)) {
-            $xml .= "\n" . getDataXML($value, $level + 1);
+            $xml .= "\n" . get_data_xml($value, $level + 1);
         } else {
             $xml .= F_text_to_xml($value);
         }

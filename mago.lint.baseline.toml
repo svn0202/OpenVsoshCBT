@@ -1407,12 +1407,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "function-name"
-message = "Function name `getDataXML` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "function-name"
 message = "Function name `getIpAsBytes` should be in snake case."
 count = 1
 
