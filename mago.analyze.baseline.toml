@@ -15004,7 +15004,7 @@ count = 2
 file = "shared/code/tce_functions_menu.php"
 code = "missing-parameter-type"
 message = "Parameter `$data` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_menu.php"
