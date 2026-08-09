@@ -27,9 +27,15 @@
  * @param $firstrow (int) first row number
  * @param $rowsperpage (int) number of max rows per page
  * @param $param_array (string) parameters to pass on url via GET
- * @return mixed the number of pages in case of success, FALSE otherwise
+ * @return mixed the number of pages in case of success, false otherwise
  */
-function F_show_page_navigator($script_name, $sql, $firstrow, $rowsperpage, $param_array)
+function F_show_page_navigator(
+    mixed $script_name,
+    mixed $sql,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $param_array,
+): mixed
 {
     global $l, $db;
     require_once '../config/tce_config.php';
