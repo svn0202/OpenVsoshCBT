@@ -24,6 +24,35 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testSecurityHeadersAreSentInOrderUsingHeaderDefaults(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["calls"] = []; '
+                    . 'function header(...$arguments) { $GLOBALS["calls"][] = $arguments; } '
+                    . 'function f_get_security_headers() { return ["X-First" => "one", "X-Second" => "two"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_sendSecurityHeaders|f_send_security_headers)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualifiedName = __NAMESPACE__ . "\\\\" . $name; $qualifiedName(); '
+                    . 'echo json_encode($GLOBALS["calls"]);',
+                dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [['X-First: one'], ['X-Second: two']],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testSessionCookieConfigurationMatchesApplicationConstants(): void
     {
         self::assertSame('PHPSESSID', session_name());
