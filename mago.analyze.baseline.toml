@@ -13153,12 +13153,6 @@ message = "This condition (type `true`) will always evaluate to true."
 count = 1
 
 [[issues]]
-file = "public/code/tce_test_review.php"
-code = "undefined-variable"
-message = "Undefined variable: `$db`."
-count = 1
-
-[[issues]]
 file = "public/code/tce_test_start.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
