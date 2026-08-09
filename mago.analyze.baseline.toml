@@ -13814,12 +13814,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_auth_sql.php"
-code = "missing-parameter-type"
-message = "Parameter `$andwhere` is missing a type hint."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `truthy-mixed` cannot be reliably used in string concatenation."
 count = 3
