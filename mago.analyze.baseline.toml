@@ -12561,7 +12561,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_answer_save.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_tmf_answer_save_decision` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_tmf_answer_save_decision` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
