@@ -94,7 +94,7 @@ function F_tmf_pregeneration_hash(int $test_id, int $user_id): string
  * A pre-generated attempt is only a prepared variant. It must look like a
  * test that can be started until the participant actually opens it.
  */
-function F_tmf_catalog_test_status(int $test_status, bool $pregenerated): int
+function f_tmf_catalog_test_status(int $test_status, bool $pregenerated): int
 {
     return $pregenerated && $test_status === 1 ? 0 : $test_status;
 }
