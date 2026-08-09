@@ -27,7 +27,7 @@
  * @param $andwhere (string) additional WHERE statements (e.g.: "module_enabled='1'")
  * @return string sql statement
  */
-function F_select_modules_sql($andwhere = ''): string
+function F_select_modules_sql(mixed $andwhere = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -53,7 +53,7 @@ function F_select_modules_sql($andwhere = ''): string
  * @param $andwhere (string) additional WHERE statements (e.g.: "subject_enabled='1'")
  * @return string sql statement
  */
-function F_select_subjects_sql($andwhere = ''): string
+function F_select_subjects_sql(mixed $andwhere = ''): string
 {
     return F_select_module_subjects_sql($andwhere);
 }
@@ -65,7 +65,7 @@ function F_select_subjects_sql($andwhere = ''): string
  * @param $andwhere (string) additional WHERE statements (e.g.: "subject_enabled='1'")
  * @return string sql statement
  */
-function F_select_module_subjects_sql($andwhere = ''): string
+function F_select_module_subjects_sql(mixed $andwhere = ''): string
 {
     global $l;
     require_once '../config/tce_config.php';
