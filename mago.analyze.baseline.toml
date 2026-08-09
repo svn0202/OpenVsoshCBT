@@ -3795,7 +3795,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "missing-return-type"
-message = "Function `F_getUIDfromRegnum` is missing a return type hint."
+message = "Function `f_get_uid_from_regnum` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -3933,7 +3933,7 @@ count = 4
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_getUIDfromRegnum`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_get_uid_from_regnum`. Saw type `mixed`."
 count = 1
 
 [[issues]]
