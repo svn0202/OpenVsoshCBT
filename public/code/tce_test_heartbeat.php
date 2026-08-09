@@ -3,6 +3,7 @@
 ob_start();
 
 require_once '../config/tce_config.php';
+/** @var mixed $db Database connection initialized by tce_config.php. */
 
 $pagelevel = K_AUTH_PUBLIC_TEST_EXECUTE;
 require_once '../../shared/code/tce_authorization.php';
@@ -12,6 +13,9 @@ header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 
+/**
+ * @param array<array-key, mixed> $payload
+ */
 function F_tmf_heartbeat_json(int $status_code, array $payload): never
 {
     http_response_code($status_code);
@@ -45,10 +49,11 @@ if (
     F_tmf_heartbeat_json(403, ['status' => 'forbidden']);
 }
 
+$session_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
 $sql = 'UPDATE ' . K_TABLE_TEST_USER . "
     SET testuser_last_activity='" . date(K_TIMESTAMP_FORMAT) . "'
     WHERE testuser_test_id=" . $test_id . '
-        AND testuser_user_id=' . (int) $_SESSION['session_user_id'] . '
+        AND testuser_user_id=' . $session_user_id . '
         AND testuser_status>0
         AND testuser_status<4';
 $result = F_db_query($sql, $db);

@@ -12542,20 +12542,8 @@ count = 3
 
 [[issues]]
 file = "public/code/tce_test_heartbeat.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$payload` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_heartbeat.php"
 code = "no-value"
 message = "Argument #2 passed to function `F_db_affected_rows` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_heartbeat.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
 count = 1
 
 [[issues]]
@@ -12563,12 +12551,6 @@ file = "public/code/tce_test_heartbeat.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
 count = 1
-
-[[issues]]
-file = "public/code/tce_test_heartbeat.php"
-code = "undefined-variable"
-message = "Undefined variable: `$db`."
-count = 2
 
 [[issues]]
 file = "public/code/tce_test_results.php"
