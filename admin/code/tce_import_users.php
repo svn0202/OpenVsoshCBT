@@ -185,7 +185,10 @@ class XMLUserImporter
     public function __destruct()
     {
         // delete uploaded file
-        @unlink($this->xmlfile);
+        $xmlfile = (string) $this->xmlfile;
+        if (is_file($xmlfile)) {
+            unlink($xmlfile);
+        }
     }
 
     /**
