@@ -99,15 +99,15 @@ if (isset($_POST['xlsx_action'])) {
     }
     if ($_POST['xlsx_action'] === 'preview') {
         try {
+            $xlsx_file = $_FILES['xlsx_file'] ?? null;
             if (
-                !isset($_FILES['xlsx_file'])
-                || !is_array($_FILES['xlsx_file'])
-                || (int) ($_FILES['xlsx_file']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
-                || !is_uploaded_file((string) ($_FILES['xlsx_file']['tmp_name'] ?? ''))
+                !is_array($xlsx_file)
+                || (int) ($xlsx_file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+                || !is_uploaded_file((string) ($xlsx_file['tmp_name'] ?? ''))
             ) {
                 throw new RuntimeException('Выберите XLSX-файл без ошибок загрузки.');
             }
-            $temporary = (string) $_FILES['xlsx_file']['tmp_name'];
+            $temporary = (string) $xlsx_file['tmp_name'];
             $signature = file_get_contents($temporary, false, null, 0, 4);
             if ($signature !== "PK\x03\x04") {
                 throw new RuntimeException('Файл не является XLSX-архивом.');
