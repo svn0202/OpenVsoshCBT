@@ -484,7 +484,7 @@ if (K_AUTH_SSL_LEVEL && K_AUTH_SSL_LEVEL <= $pagelevel) {
             K_TABLE_SSLCERTS,
             "WHERE ssl_hash='" . $client_hash . "' AND ssl_id IN (" . $sslids . ')',
         );
-        if ($valid_ssl == 0) {
+        if (f_legacy_int_equals($valid_ssl, 0)) {
             $thispage_title = $l['t_login_form']; //set page title
             require_once '../code/tce_page_header.php';
             F_print_error('ERROR', $l['m_ssl_certificate_required']);
