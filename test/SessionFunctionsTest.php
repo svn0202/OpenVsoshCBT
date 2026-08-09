@@ -68,8 +68,8 @@ final class SessionFunctionsTest extends TestCase
     public function testSessionStringDecoderPreservesEmptyNullAndNegativeValues(): void
     {
         self::assertSame(
-            ['empty' => '', 'nothing' => null, 'negative' => -3],
-            \F_session_string_to_array('empty|s:0:"";nothing|N;negative|i:-3;'),
+            ['empty' => '', 'nothing' => null, 'negative' => -3, 'ratio' => 1.5],
+            \F_session_string_to_array('empty|s:0:"";nothing|N;negative|i:-3;ratio|d:1.5;'),
         );
     }
 

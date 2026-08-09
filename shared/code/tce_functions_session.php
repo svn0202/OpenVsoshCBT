@@ -258,8 +258,10 @@ function F_session_string_to_array(string $sd): array
     $vars = preg_split('/[;}]/', $sd);
     array_pop($vars);
     foreach ($vars as $var) {
+        /** @var array{0: string, 1: string} $parts */
         $parts = explode('|', $var);
         $key = $parts[0];
+        /** @var null|bool|int|float|string|array<array-key, mixed>|object $val */
         $val = unserialize($parts[1] . ';');
         $sess_array[$key] = $val;
     }
