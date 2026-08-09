@@ -134,24 +134,6 @@ count = 7
 
 [[issues]]
 file = "admin/code/tce_class_import_xml.php"
-code = "imprecise-type"
-message = "Type `array` in property `$boolval` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "imprecise-type"
-message = "Type `array` in property `$level_data` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
-code = "imprecise-type"
-message = "Type `array` in property `$qtype` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_class_import_xml.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 5

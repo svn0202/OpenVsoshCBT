@@ -38,6 +38,7 @@ class XMLQuestionImporter
 
     /**
      * Array to store current level data.
+     * @var array<array-key, mixed>
      * @private
      */
     private array $level_data = [];
@@ -56,6 +57,7 @@ class XMLQuestionImporter
 
     /**
      * Boolean values.
+     * @var array<array-key, mixed>
      * @private
      */
     private array $boolval = [
@@ -65,6 +67,7 @@ class XMLQuestionImporter
 
     /**
      * Type of questions.
+     * @var array<array-key, mixed>
      * @private
      */
     private array $qtype = [
