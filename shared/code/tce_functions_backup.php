@@ -10,7 +10,7 @@ require_once __DIR__ . '/TmfBackupException.php';
  * @param array<string,string> $config
  * @return array<string,string>
  */
-function F_tmf_backup_environment(array $config): array
+function f_tmf_backup_environment(array $config): array
 {
     $environment = getenv();
     if ($config['type'] === 'POSTGRESQL') {

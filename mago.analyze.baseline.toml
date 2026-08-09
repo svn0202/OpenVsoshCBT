@@ -13143,7 +13143,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_tmf_backup_environment`: expected `array<string, string>`, but found `array{'MYSQL_PWD'?: null|string, ...<string, null|string>}`."
+message = "Invalid return type for function `f_tmf_backup_environment`: expected `array<string, string>`, but found `array{'MYSQL_PWD'?: null|string, ...<string, null|string>}`."
 count = 1
 
 [[issues]]
