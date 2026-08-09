@@ -307,12 +307,11 @@ function f_get_media_dir_path_link(mixed $dirpath, mixed $viewmode = true): stri
  * @param $dir (string) the starting directory path
  * @param $rootdir (string) the user root dir.
  * @param $authdirs (string) regular expression containing the authorized dirs.
- * @return an associative array containing sorted 'dirs' and 'files'
+ * @return array{dirs: array<int, string>, files: array<int, string>} sorted directories and files
  */
-function F_getDirFiles($dir, $rootdir = K_PATH_CACHE, $authdirs = '')
+function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authdirs = ''): array
 {
-    $data['dirs'] = [];
-    $data['files'] = [];
+    $data = ['dirs' => [], 'files' => []];
     // open dir
     $dirhdl = @opendir($dir);
     if ($dirhdl === false) {
@@ -419,7 +418,7 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
     $out .= '<th scope="col">' . $l['w_permissions'] . '</th>';
     $out .= '</tr>' . K_NEWLINE;
     $out .= '</thead>';
-    $data = F_getDirFiles($dir, $rootdir, $authdirs);
+    $data = f_get_dir_files($dir, $rootdir, $authdirs);
     $usrdir = $rootdir . $_SESSION['session_user_id'];
     // dirs
     foreach ($data['dirs'] as $file) {
@@ -514,7 +513,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
     $imgformats = ['gif', 'jpg', 'jpeg', 'png', 'svg'];
     $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
     $out = ''; // html string to be returned
-    $data = F_getDirFiles($dir, $rootdir, $authdirs);
+    $data = f_get_dir_files($dir, $rootdir, $authdirs);
     // dirs
     foreach ($data['dirs'] as $file) {
         $info = f_get_file_info($file);
