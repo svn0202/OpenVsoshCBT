@@ -177,7 +177,7 @@ $altusr = F_altLogin();
 // --- check if login information has been submitted
 if (
     isset($_POST['logaction'])
-    && $_POST['logaction'] == 'login'
+    && f_legacy_literal_equals($_POST['logaction'], 'login')
     && isset($_POST['xuser_name'])
     && isset($_POST['xuser_password'])
 ) {
@@ -588,7 +588,7 @@ if ($logged) { //if user is just logged in: reloads page
 // check for test password
 if (
     isset($_POST['testpswaction'])
-    && $_POST['testpswaction'] == 'login'
+    && f_legacy_literal_equals($_POST['testpswaction'], 'login')
     && isset($_POST['xtest_password'])
     && isset($_POST['testid'])
 ) {
