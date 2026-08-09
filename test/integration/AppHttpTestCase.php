@@ -81,6 +81,7 @@ abstract class AppHttpTestCase extends TestCase
         }
 
         $body = file_get_contents($this->base . $path, false, stream_context_create(['http' => $opts]));
+        /** @var list<string> $headers */
         $headers = $http_response_header ?? [];
 
         return [self::statusFrom($headers), (string) $body, $cookies + self::cookiesFrom($headers)];
@@ -92,6 +93,7 @@ abstract class AppHttpTestCase extends TestCase
      * @param array<string,string> $cookies
      * @param array<string,string> $fields
      * @return array{0:int,1:string,2:array<string,string>}
+     * @throws \Random\RandomException
      */
     protected function httpUpload(
         string $path,
@@ -132,6 +134,7 @@ abstract class AppHttpTestCase extends TestCase
             'max_redirects' => 20,
         ]]);
         $response = file_get_contents($this->base . $path, false, $context);
+        /** @var list<string> $headers */
         $headers = $http_response_header ?? [];
         return [self::statusFrom($headers), (string) $response, $cookies + self::cookiesFrom($headers)];
     }
@@ -139,16 +142,26 @@ abstract class AppHttpTestCase extends TestCase
     /** Extract the CSRF token embedded in a form, or null when absent. */
     protected static function extractCsrfToken(string $body): ?string
     {
-        return preg_match('/name="csrf_token"[^>]*value="([^"]+)"/', $body, $m) === 1 ? $m[1] : null;
+        $matches = [];
+        if (preg_match('/name="csrf_token"[^>]*value="([^"]+)"/', $body, $matches) !== 1) {
+            return null;
+        }
+
+        return $matches[1] ?? null;
     }
 
-    /** Extract the HTTP status code from a response header list (last status line wins). */
+    /**
+     * Extract the HTTP status code from a response header list (last status line wins).
+     *
+     * @param list<string> $headers
+     */
     private static function statusFrom(array $headers): int
     {
         $status = 0;
         foreach ($headers as $h) {
-            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $h, $m) === 1) {
-                $status = (int) $m[1];
+            $matches = [];
+            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $h, $matches) === 1 && isset($matches[1])) {
+                $status = (int) $matches[1];
             }
         }
 
@@ -158,14 +171,19 @@ abstract class AppHttpTestCase extends TestCase
     /**
      * Parse Set-Cookie response headers into a name => value map.
      *
+     * @param list<string> $headers
      * @return array<string,string>
      */
     private static function cookiesFrom(array $headers): array
     {
         $cookies = [];
         foreach ($headers as $h) {
-            if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]*)/i', $h, $m) === 1) {
-                $cookies[trim($m[1])] = $m[2];
+            $matches = [];
+            if (
+                preg_match('/^Set-Cookie:\s*([^=]+)=([^;]*)/i', $h, $matches) === 1
+                && isset($matches[1], $matches[2])
+            ) {
+                $cookies[trim($matches[1])] = $matches[2];
             }
         }
 
