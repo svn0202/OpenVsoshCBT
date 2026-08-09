@@ -94,7 +94,7 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
     $mail->Body = str_replace('#TCEXAMURL#', K_PATH_HOST . K_PATH_TCEXAM, $mail->Body);
 
     //compose alternative TEXT message body
-    $mail->AltBody = (string) F_html_to_text($mail->Body, false, true);
+    $mail->AltBody = F_html_to_text($mail->Body, false, true);
 
     $mail->addAddress($user_email, ''); //Adds a "To" address
     if (strlen(K_USRREG_ADMIN_EMAIL) > 0) {
