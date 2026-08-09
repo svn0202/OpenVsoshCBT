@@ -602,12 +602,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_select_mediafile.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 3
