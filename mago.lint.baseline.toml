@@ -627,12 +627,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
-message = "Function name `F_get_field_format_registry` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "function-name"
 message = "Function name `F_submit_button` should be in snake case."
 count = 1
 

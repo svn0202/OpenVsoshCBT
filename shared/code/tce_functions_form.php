@@ -155,7 +155,7 @@ function f_check_required_fields(array $formfields): string|false
  *
  * @return array<string,string> map of field name to un-delimited regular expression
  */
-function F_get_field_format_registry(): array
+function f_get_field_format_registry(): array
 {
     // Canonical, server-authored patterns (the password pattern is admin-configurable).
     $re_email = K_EMAIL_RE_PATTERN;
