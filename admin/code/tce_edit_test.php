@@ -464,7 +464,7 @@ switch ($menu_mode) {
                 }
 
                 $sqlq .= $sql_questions_position;
-                if (K_DATABASE_TYPE == 'ORACLE') {
+                if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $sqlq = 'SELECT * FROM (' . $sqlq . ') WHERE rownum <= ' . $tsubset_quantity . '';
                 } else {
                     $sqlq .= ' LIMIT ' . $tsubset_quantity . '';
