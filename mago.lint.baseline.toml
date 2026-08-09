@@ -1047,12 +1047,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_xlsx.php"
 code = "function-name"
-message = "Function name `F_tmf_xlsx_column_name` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_xlsx.php"
-code = "function-name"
 message = "Function name `F_tmf_xlsx_dom` should be in snake case."
 count = 1
 

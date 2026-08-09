@@ -15,7 +15,7 @@ function F_tmf_xlsx_xml(string $value): string
     return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 }
 
-function F_tmf_xlsx_column_name(int $index): string
+function f_tmf_xlsx_column_name(int $index): string
 {
     $name = '';
     for ($value = $index + 1; $value > 0; $value = intdiv($value - 1, 26)) {
