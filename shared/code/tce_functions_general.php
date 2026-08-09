@@ -743,7 +743,7 @@ function F_select_table_header_element($order_field, $orderdir, $title, $name, $
  * @param $color (string) color in HEX format.
  * @return (string) Color.
  */
-function getContrastColor($color)
+function getContrastColor($color): string
 {
     $r = hexdec(substr($color, 0, 2));
     $g = hexdec(substr($color, 2, 2));
@@ -764,7 +764,7 @@ function getContrastColor($color)
  * @param $str (string) String to check.
  * @return boolean true or false.
  */
-function F_isURL($str)
+function F_isURL($str): bool
 {
     return preg_match('/^(ftp|http|https|mail|sftp|ssh|telnet|vnc)[:][\/][\/]/', $str) > 0 && parse_url($str) !== false;
 }
@@ -830,7 +830,7 @@ function F_utf8_normalizer($str, $mode = 'NONE')
  * @author Nicola Asuni
  * @since 2013-07-02
  */
-function bcdechex($dec)
+function bcdechex($dec): string
 {
     $last = bcmod($dec, 16);
     $remain = bcdiv(bcsub($dec, $last), 16);
