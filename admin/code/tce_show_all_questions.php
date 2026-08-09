@@ -65,7 +65,7 @@ require_once 'tce_functions_questions.php';
 // set default values
 $wherequery = '';
 $order_field = 'question_enabled DESC, question_position,';
-if (K_DATABASE_TYPE == 'ORACLE') {
+if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $order_field .= ' CAST(question_description as varchar2(100))';
 } else {
     $order_field .= ' question_description';
@@ -100,7 +100,7 @@ if (isset($changemodule) && $changemodule > 0 || isset($changecategory) && $chan
     $firstrow = 0;
     $orderdir = 0;
     $order_field = 'question_enabled DESC, question_position,';
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $order_field .= ' CAST(question_description as varchar2(100))';
     } else {
         $order_field .= ' question_description';
@@ -140,7 +140,12 @@ if (isset($changemodule) && $changemodule > 0 || !(isset($subject_id) && $subjec
     }
 }
 
-if (isset($menu_mode) && $menu_mode == 'update' && isset($menu_action) && !empty($menu_action)) {
+if (
+    isset($menu_mode)
+    && f_legacy_literal_equals($menu_mode, 'update')
+    && isset($menu_action)
+    && !empty($menu_action)
+) {
     $istart = 1 + $firstrow;
     $iend = $rowsperpage + $firstrow;
     for ($i = $istart; $i <= $iend; ++$i) {
@@ -533,7 +538,7 @@ function F_show_select_questions(
 		FROM ' . K_TABLE_QUESTIONS . '
 		' . $wherequery . '
 		ORDER BY ' . $full_order_field;
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql =
             'SELECT * FROM ('
             . $sql
