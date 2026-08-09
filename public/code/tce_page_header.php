@@ -130,7 +130,7 @@ if ($is_app_page) {
     );
     $profile = $profile_result ? F_db_fetch_array($profile_result) : [];
     require_once '../../shared/code/tce_functions_user_photo.php';
-    if (is_file(F_tmf_user_photo_path((int) $_SESSION['session_user_id']))) {
+    if (is_file(f_tmf_user_photo_path((int) $_SESSION['session_user_id']))) {
         echo '<img class="participant-photo" src="tce_user_photo.php" alt="Фотография участника" />' . K_NEWLINE;
     }
     echo '<dl>' . K_NEWLINE;

@@ -2941,18 +2941,6 @@ message = "Function name `F_tmf_text_similarity` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "function-name"
-message = "Function name `F_tmf_user_photo_path` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_user_photo.php"
-code = "function-name"
-message = "Function name `F_tmf_user_photo_store` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"
 code = "function-name"
 message = "Function name `F_tmf_users_xlsx_import` should be in snake case."

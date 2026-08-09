@@ -1,6 +1,6 @@
 <?php
 
-function F_tmf_user_photo_path(int $user_id): string
+function f_tmf_user_photo_path(int $user_id): string
 {
     return K_PATH_MAIN . 'shared/config/user-photos/' . max(0, $user_id) . '.jpg';
 }
@@ -12,7 +12,7 @@ function F_tmf_user_photo_path(int $user_id): string
  * @return array{status:string,message:string}
  * @throws Random\RandomException
  */
-function F_tmf_user_photo_store(array $upload, int $user_id): array
+function f_tmf_user_photo_store(array $upload, int $user_id): array
 {
     $source = (string) ($upload['tmp_name'] ?? '');
     if (
@@ -49,7 +49,7 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     imagecopyresampled($target, $image, 0, 0, 0, 0, $target_width, $target_height, $width, $height);
     unset($image);
 
-    $directory = dirname(F_tmf_user_photo_path($user_id));
+    $directory = dirname(f_tmf_user_photo_path($user_id));
     if (!is_dir($directory) && !mkdir($directory, 0o700, true) && !is_dir($directory)) {
         unset($target);
         return ['status' => 'error', 'message' => 'Хранилище фотографий недоступно.'];
@@ -57,12 +57,12 @@ function F_tmf_user_photo_store(array $upload, int $user_id): array
     $temporary = $directory . '/.' . $user_id . '.' . bin2hex(random_bytes(8)) . '.tmp';
     $stored = imagejpeg($target, $temporary, 88);
     unset($target);
-    if (!$stored || !rename($temporary, F_tmf_user_photo_path($user_id))) {
+    if (!$stored || !rename($temporary, f_tmf_user_photo_path($user_id))) {
         if (is_file($temporary)) {
             unlink($temporary);
         }
         return ['status' => 'error', 'message' => 'Не удалось сохранить фотографию.'];
     }
-    chmod(F_tmf_user_photo_path($user_id), 0o600);
+    chmod(f_tmf_user_photo_path($user_id), 0o600);
     return ['status' => 'stored', 'message' => 'Фотография сохранена.'];
 }
