@@ -337,7 +337,7 @@ switch ($menu_mode) {
                 ($formstatus = F_check_form_fields())
                 && (isset($subject_id) && !empty($subject_id) && isset($tsubset_quantity))
             ) {
-                if ($tsubset_type == 3) {
+                if ($tsubset_type === 3) {
                     // free-text questions do not have alternative answers to display
                     $tsubset_answers = 0;
                 } elseif ($tsubset_answers < 2 && $tsubset_difficulty > 0) {
@@ -406,7 +406,7 @@ switch ($menu_mode) {
 								))))';
                 }
 
-                if ($tsubset_type == 1) {
+                if ($tsubset_type === 1) {
                     // single question (MCSA)
                     // check if the selected question has enough answers
                     $sqlq .=
@@ -429,7 +429,7 @@ switch ($menu_mode) {
                     }
 
                     $sqlq .= ' )';
-                } elseif ($tsubset_type == 2) {
+                } elseif ($tsubset_type === 2) {
                     // multiple question (MCMA)
                     // check if the selected question has enough answers
                     $sqlq .= ' AND question_id IN (
@@ -1833,37 +1833,37 @@ if (isset($test_id) && $test_id > 0) {
     echo '<span class="formw">' . K_NEWLINE;
     echo '<select name="tsubset_type" id="tsubset_type" title="' . $l['h_question_type'] . '">' . K_NEWLINE;
     echo '<option value="0"';
-    if ($tsubset_type == 0) {
+    if ($tsubset_type === 0) {
         echo ' selected="selected"';
     }
 
     echo '>*** ' . $l['w_all'] . ' ***</option>' . K_NEWLINE;
     echo '<option value="1"';
-    if ($tsubset_type == 1) {
+    if ($tsubset_type === 1) {
         echo ' selected="selected"';
     }
 
     echo '>' . $l['w_single_answer'] . '</option>' . K_NEWLINE;
     echo '<option value="2"';
-    if ($tsubset_type == 2) {
+    if ($tsubset_type === 2) {
         echo ' selected="selected"';
     }
 
     echo '>' . $l['w_multiple_answers'] . '</option>' . K_NEWLINE;
     echo '<option value="3"';
-    if ($tsubset_type == 3) {
+    if ($tsubset_type === 3) {
         echo ' selected="selected"';
     }
 
     echo '>' . $l['w_free_answer'] . '</option>' . K_NEWLINE;
     echo '<option value="4"';
-    if ($tsubset_type == 4) {
+    if ($tsubset_type === 4) {
         echo ' selected="selected"';
     }
 
     echo '>' . $l['w_ordering_answer'] . '</option>' . K_NEWLINE;
     echo '<option value="5"';
-    if ($tsubset_type == 5) {
+    if ($tsubset_type === 5) {
         echo ' selected="selected"';
     }
 
