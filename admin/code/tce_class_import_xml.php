@@ -276,7 +276,7 @@ class XMLQuestionImporter
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler($parser, $data)
+    private function segContentHandler($parser, $data): void
     {
         if (strlen($this->current_element) > 0) {
             // we are inside an element
