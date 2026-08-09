@@ -45,7 +45,7 @@ your system. The relevant constants include:
 
 To find executable paths on Linux, use `which pdflatex` and `which convert`. On Windows, use
 `dir /x` to find the short (DOS) path to the executables. The renderer implementation lives in
-`shared/code/tce_latexrender.php`.
+`shared/code/LatexRender.php` (the legacy `tce_latexrender.php` path remains a compatibility loader).
 
 ## Notes
 
