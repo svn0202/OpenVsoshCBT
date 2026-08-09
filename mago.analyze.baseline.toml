@@ -16897,12 +16897,6 @@ message = "This control flow is unnecessary"
 count = 6
 
 [[issues]]
-file = "shared/code/tce_functions_html2txt.php"
-code = "possibly-false-operand"
-message = "Left operand in `>` comparison might be `false` (type `false|non-negative-int`)."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_language.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."

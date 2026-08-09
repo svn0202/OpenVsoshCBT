@@ -88,7 +88,12 @@ function F_html_to_text(string $str, bool $preserve_newlines = false, bool $disp
     }
 
     $firstposition = 0;
-    while (($pos = strpos($str, '<ol')) !== false && $pos > $firstposition) {
+    while (true) {
+        $pos = strpos($str, '<ol');
+        if ($pos === false || $pos <= $firstposition) {
+            break;
+        }
+
         $str = preg_replace_callback(
             "/<ol[^>]*?>(.*?)<\/ol>/si",
             static fn(array $subs): string => preg_replace('/<li[^>]*>/i', "<li>\t", $subs[1] ?? '') ?? ($subs[1] ?? ''),
