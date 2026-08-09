@@ -26,7 +26,7 @@
  * @param $where (string) optional where SQL clause (including the WHERE keyword).
  * @return number of rows
  */
-function F_count_rows($dbtable, $where = '')
+function f_count_rows($dbtable, $where = '')
 {
     global $db;
     require_once '../config/tce_config.php';
