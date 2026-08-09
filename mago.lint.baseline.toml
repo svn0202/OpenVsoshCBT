@@ -645,12 +645,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "function-name"
-message = "Function name `F_tmf_backup_create` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_backup.php"
-code = "function-name"
 message = "Function name `F_tmf_backup_restore` should be in snake case."
 count = 1
 
