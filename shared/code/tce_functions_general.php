@@ -644,12 +644,12 @@ function get_data_tsv_header($data, $prefix = ''): string
  * @param $data (array) Array of data.
  * @return string XML data
  */
-function getDataTSV($data): string
+function get_data_tsv($data): string
 {
     $tsv = '';
     foreach ($data as $value) {
         if (is_array($value)) {
-            $tsv .= getDataTSV($value);
+            $tsv .= get_data_tsv($value);
         } else {
             $tsv .= "\t" . F_text_to_tsv($value);
         }
