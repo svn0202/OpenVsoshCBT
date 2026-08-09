@@ -239,7 +239,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                         . $l['w_select']
                         . '"'
                 ;
-                if (isset($_REQUEST['checkall']) && $_REQUEST['checkall'] == 1) {
+                if (isset($_REQUEST['checkall']) && f_legacy_int_equals($_REQUEST['checkall'], 1)) {
                     echo ' checked="checked"';
                 }
 
