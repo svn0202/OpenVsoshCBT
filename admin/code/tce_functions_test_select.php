@@ -31,7 +31,7 @@
  * @param $searchterms (string) search terms
  * @return true
  */
-function F_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
+function f_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
 {
     global $l;
     require_once '../config/tce_config.php';
