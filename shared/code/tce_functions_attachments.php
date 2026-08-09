@@ -68,7 +68,7 @@ function f_tmf_attachment_inspect(string $path, string $original_name): array
 /**
  * @return array<int,array{name:string,tmp_name:string,error:int,size:int}>
  */
-function F_tmf_attachment_normalize_uploads(array $files): array
+function f_tmf_attachment_normalize_uploads(array $files): array
 {
     if (!isset($files['name'])) {
         return [];
