@@ -198,6 +198,18 @@ final class FormValidationTest extends TestCase
         $this->assertSame('<div class="row">&nbsp;</div>' . K_NEWLINE, \get_form_small_vert_space());
     }
 
+    public function testSmallDividerSpacePreservesExactMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $this->assertSame(
+            '<div style="clear:both;height:1px;font-size:1px;">&nbsp;</div>' . K_NEWLINE,
+            \getFormSmallDivSpace(),
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
