@@ -953,7 +953,7 @@ function f_tcecode_to_line(mixed $str): mixed
         $str = f_compact_string($str);
         $str = htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         if (strlen($str) > K_QUESTION_LINE_MAX_LENGTH) {
-            return F_substrHTML($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
+            return f_substr_html($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
         }
 
         return $str;
@@ -972,7 +972,7 @@ function f_tcecode_to_line(mixed $str): mixed
     $str = F_decode_tcecode($str);
     $str = f_compact_string($str);
     if (strlen($str) > K_QUESTION_LINE_MAX_LENGTH) {
-        return F_substrHTML($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
+        return f_substr_html($str, K_QUESTION_LINE_MAX_LENGTH, 20) . ' ...';
     }
 
     return $str;
@@ -1005,7 +1005,7 @@ function F_tcecodeToTitle(mixed $str): string
  * @param int $min_length (default=100) the approximate length you want the concatenated text to be
  * @param int $offset_length (default=20) the max variation in how long the text can be
  */
-function F_substrHTML(string $htmltext, int $min_length = 100, int $offset_length = 20): string
+function f_substr_html(string $htmltext, int $min_length = 100, int $offset_length = 20): string
 {
     // Reset tag counter and quote checker
     $tag_counter = 0;
