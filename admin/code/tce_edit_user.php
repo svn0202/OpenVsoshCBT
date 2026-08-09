@@ -68,7 +68,7 @@ if (isset($_REQUEST['user_id'])) {
 
 if (isset($_REQUEST['group_id'])) {
     $group_id = (int) $_REQUEST['group_id'];
-    if (!F_isAuthorizedEditorForGroup($group_id)) {
+    if (!f_is_authorized_editor_for_group($group_id)) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 }
@@ -293,7 +293,7 @@ switch ($menu_mode) { // process submitted data
                 // remove old groups
                 $old_user_groups = F_get_user_groups($user_id);
                 foreach ($old_user_groups as $group_id) {
-                    if (F_isAuthorizedEditorForGroup($group_id)) {
+                    if (f_is_authorized_editor_for_group($group_id)) {
                         // delete previous groups
                         $sql =
                             'DELETE FROM '
@@ -314,7 +314,7 @@ switch ($menu_mode) { // process submitted data
                 if (!empty($user_groups)) {
                     foreach ($user_groups as $group_id) {
                         $group_id = (int) $group_id;
-                        if (F_isAuthorizedEditorForGroup($group_id)) {
+                        if (f_is_authorized_editor_for_group($group_id)) {
                             $sql =
                                 'INSERT INTO '
                                 . K_TABLE_USERGROUP
@@ -474,7 +474,7 @@ switch ($menu_mode) { // process submitted data
                 if (!empty($user_groups)) {
                     foreach ($user_groups as $group_id) {
                         $group_id = (int) $group_id;
-                        if (F_isAuthorizedEditorForGroup($group_id)) {
+                        if (f_is_authorized_editor_for_group($group_id)) {
                             $sql =
                                 'INSERT INTO '
                                 . K_TABLE_USERGROUP
@@ -894,7 +894,7 @@ $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if (!F_isAuthorizedEditorForGroup($m['group_id'])) {
+        if (!f_is_authorized_editor_for_group($m['group_id'])) {
             echo ' style="text-decoration:line-through;"';
         }
 

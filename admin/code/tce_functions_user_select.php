@@ -929,7 +929,7 @@ function f_is_user_on_group($user_id, $group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function F_isAuthorizedEditorForGroup($group_id)
+function f_is_authorized_editor_for_group($group_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

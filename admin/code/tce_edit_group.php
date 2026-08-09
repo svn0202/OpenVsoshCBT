@@ -38,7 +38,7 @@ $userlevel = (int) $_SESSION['session_user_level'];
 
 if (isset($_REQUEST['group_id'])) {
     $group_id = (int) $_REQUEST['group_id'];
-    if (!F_isAuthorizedEditorForGroup($group_id)) {
+    if (!f_is_authorized_editor_for_group($group_id)) {
         F_print_error('ERROR', $l['m_authorization_denied']);
         exit();
     }

@@ -43,7 +43,7 @@ $rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] 
 $order_field = $_REQUEST['order_field'] ?? 'user_lastname,user_firstname';
 $searchterms = $_REQUEST['searchterms'] ?? '';
 
-if (!F_isAuthorizedEditorForGroup($group_id)) {
+if (!f_is_authorized_editor_for_group($group_id)) {
     F_print_error('ERROR', $l['m_authorization_denied'], true);
 }
 
@@ -156,7 +156,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     if (
                         $_SESSION['session_user_level'] >= K_AUTH_ADMIN_GROUPS
                         && $new_group_id > 0
-                        && F_isAuthorizedEditorForGroup($new_group_id)
+                        && f_is_authorized_editor_for_group($new_group_id)
                     ) {
                         $groups = F_get_user_groups($user_id);
                         if (!in_array($new_group_id, $groups)) {
@@ -185,7 +185,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     if (
                         $_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS
                         && $new_group_id > 0
-                        && F_isAuthorizedEditorForGroup($new_group_id)
+                        && f_is_authorized_editor_for_group($new_group_id)
                     ) {
                         $sql =
                             'DELETE FROM '
@@ -208,10 +208,10 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         $_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS
                         && isset($from_group_id)
                         && $from_group_id > 0
-                        && F_isAuthorizedEditorForGroup($from_group_id)
+                        && f_is_authorized_editor_for_group($from_group_id)
                         && isset($to_group_id)
                         && $to_group_id > 0
-                        && F_isAuthorizedEditorForGroup($to_group_id)
+                        && f_is_authorized_editor_for_group($to_group_id)
                     ) {
                         $groups = F_get_user_groups($user_id);
                         if (!in_array($to_group_id, $groups)) {

@@ -45,7 +45,7 @@ $uids = isset($_REQUEST['uids']) ? preg_replace('/[^x0-9]/', '', $_REQUEST['uids
 // selected user IDs
 $group_id = isset($_REQUEST['group_id']) ? (int) $_REQUEST['group_id'] : 0;
 
-if (!F_isAuthorizedEditorForGroup($group_id)) {
+if (!f_is_authorized_editor_for_group($group_id)) {
     F_print_error('ERROR', $l['m_authorization_denied'], true);
 }
 
