@@ -1869,7 +1869,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $question_right_score = $testdata['test_score_right'] * $question_difficulty;
     $question_wrong_score = $testdata['test_score_wrong'] * $question_difficulty;
     $question_unanswered_score = $testdata['test_score_unanswered'] * $question_difficulty;
-    if ($question_type != 3) {
+    if (!f_legacy_int_equals($question_type, 3)) {
         $sql =
             'SELECT *
 			FROM '
@@ -1893,7 +1893,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             if (empty($answer_id)) {
                                 // unanswered
                                 $answer_score = $question_unanswered_score;
-                                if ($m['logansw_selected'] != -1) {
+                                if (!f_legacy_int_equals($m['logansw_selected'], -1)) {
                                     $answer_changed = true;
                                 }
 
@@ -1908,7 +1908,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                     (float) $question_wrong_score,
                                 );
 
-                                if ($m['logansw_selected'] != 1) {
+                                if (!f_legacy_int_equals($m['logansw_selected'], 1)) {
                                     $answer_changed = true;
                                 }
 
@@ -1916,7 +1916,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             } else {
                                 $unanswered = false;
                                 // unselected
-                                if ($m['logansw_selected'] == 1) {
+                                if (f_legacy_int_equals($m['logansw_selected'], 1)) {
                                     $answer_changed = true;
                                 }
 
@@ -1929,19 +1929,19 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             if (isset($answer_id[$m['logansw_answer_id']])) {
                                 // radiobutton or selected checkbox
                                 $answer_id[$m['logansw_answer_id']] = (int) $answer_id[$m['logansw_answer_id']];
-                                if ($answer_id[$m['logansw_answer_id']] == -1) {
+                                if ($answer_id[$m['logansw_answer_id']] === -1) {
                                     // unanswered
                                     $answer_score += $question_unanswered_score;
                                 } elseif (
                                     f_get_boolean($m['answer_isright'])
-                                    && $answer_id[$m['logansw_answer_id']] == 1
+                                    && $answer_id[$m['logansw_answer_id']] === 1
                                 ) {
                                     // right (selected)
                                     $unanswered = false;
                                     $answer_score += $question_right_score;
                                 } elseif (
                                     !f_get_boolean($m['answer_isright'])
-                                    && $answer_id[$m['logansw_answer_id']] == 0
+                                    && $answer_id[$m['logansw_answer_id']] === 0
                                 ) {
                                     // right (unselected)
                                     $unanswered = false;
@@ -1952,7 +1952,10 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                     $answer_score += $question_wrong_score;
                                 }
 
-                                if ($m['logansw_selected'] != $answer_id[$m['logansw_answer_id']]) {
+                                if (!f_legacy_int_equals(
+                                    $m['logansw_selected'],
+                                    $answer_id[$m['logansw_answer_id']],
+                                )) {
                                     $answer_changed = true;
                                 }
 
@@ -1966,7 +1969,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                     $answer_score += $question_right_score;
                                 }
 
-                                if ($m['logansw_selected'] != 0) {
+                                if (!f_legacy_int_equals($m['logansw_selected'], 0)) {
                                     $answer_changed = true;
                                 }
 

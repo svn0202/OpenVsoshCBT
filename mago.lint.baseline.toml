@@ -1696,13 +1696,13 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 15
+count = 11
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 10
+count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"
