@@ -1111,12 +1111,6 @@ message = "Function name `F_printUserTestStat` should be in snake case."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_tmf_question.php"
-code = "function-name"
-message = "Function name `F_tmf_selection_limit_is_valid` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_users_xlsx.php"
 code = "function-name"
 message = "Function name `F_tmf_users_xlsx_import` should be in snake case."

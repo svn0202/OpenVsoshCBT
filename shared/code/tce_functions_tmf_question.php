@@ -280,7 +280,7 @@ function f_tmf_answer_score(int|string|null $weight, bool $is_right, float $righ
 /**
  * Validate a submitted checkbox set against a per-question selection limit.
  */
-function F_tmf_selection_limit_is_valid(array $answers, int $maximum): bool
+function f_tmf_selection_limit_is_valid(array $answers, int $maximum): bool
 {
     if ($maximum <= 0) {
         return true;
