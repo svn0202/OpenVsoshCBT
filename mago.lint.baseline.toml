@@ -363,12 +363,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_questions.php"
 code = "function-name"
-message = "Function name `F_question_get_position` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_questions.php"
-code = "function-name"
 message = "Function name `F_question_set_enabled` should be in snake case."
 count = 1
 
