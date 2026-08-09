@@ -663,7 +663,7 @@ function get_data_tsv($data): string
  * @param $str (string) HTML string to convert.
  * @return string TSV
  */
-function f_html_to_tsv($str)
+function f_html_to_tsv($str): mixed
 {
     $dollar_replacement = ':.dlr.:'; //string replacement for dollar symbol
     //tags conversion table
