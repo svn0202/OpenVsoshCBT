@@ -4010,12 +4010,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_functions_test_select.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 8
-
-[[issues]]
-file = "admin/code/tce_functions_test_select.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 11
@@ -4372,7 +4366,7 @@ count = 5
 file = "admin/code/tce_functions_user_select.php"
 code = "invalid-argument"
 message = "Invalid type for the first value."
-count = 16
+count = 3
 
 [[issues]]
 file = "admin/code/tce_functions_user_select.php"
@@ -14583,12 +14577,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_general.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_select_table_header_element`: expected `unknown-ref(table)`, but found `truthy-string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `f_utf8_normalizer`: expected `unknown-ref(normalized)`, but found `false|string`."
 count = 4
 
@@ -14786,12 +14774,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_general.php"
-code = "missing-return-type"
-message = "Function `F_select_table_header_element` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `DateTimeZone::__construct`: expected `string`, but found `mixed`."
 count = 1
@@ -14974,12 +14956,6 @@ count = 1
 file = "shared/code/tce_functions_general.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `number`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `table`."
 count = 1
 
 [[issues]]
@@ -17969,12 +17945,6 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-operand"
 message = "Invalid type `unknown-ref(SQL)` for middle operand in string concatenation."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(table)` for right operand in string concatenation."
-count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

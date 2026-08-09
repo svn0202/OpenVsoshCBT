@@ -23,6 +23,29 @@ use PHPUnit\Framework\TestCase;
  */
 final class GeneralFunctionsTest extends TestCase
 {
+    public function testTableHeaderElementRendersCurrentSortDirection(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_general.php"; '
+                    . '$GLOBALS["l"] = ["w_ascent" => "Ascending", "w_descent" => "Descending"]; '
+                    . '$_SERVER["SCRIPT_NAME"] = "/admin/users.php"; '
+                    . 'echo F_select_table_header_element('
+                    . '"user_name", 1, "Sort by name", "Name", "user_name", "group=7");',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(
+            '<th scope="col"><a href="/admin/users.php?group=7&amp;firstrow=0&amp;order_field=user_name'
+                . '&amp;orderdir=1" title="Sort by name">Name</a> <abbr title="Ascending">&gt;</abbr></th>' . "\n",
+            $output,
+        );
+    }
+
     #[RunInSeparateProcess]
     public function testRequiredFieldMarkerUsesConfiguredLabels(): void
     {
