@@ -75,6 +75,29 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\f_get_boolean(0));
     }
 
+    public function testUtf8NormalizerPreservesEveryMode(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'function user_utf8_custom_normalizer($value) { return strtoupper($value); } '
+                    . 'require "tce_functions_general.php"; '
+                    . 'echo json_encode(['
+                    . 'f_utf8_normalizer("unchanged"), '
+                    . 'f_utf8_normalizer("custom", "CUSTOM"), '
+                    . 'f_utf8_normalizer("e\\u{0301}", "C"), '
+                    . 'f_utf8_normalizer("é", "D"), '
+                    . 'f_utf8_normalizer("Ａ", "KC"), '
+                    . 'f_utf8_normalizer("ﬁ", "KD")], JSON_UNESCAPED_UNICODE);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('["unchanged","CUSTOM","é","é","A","fi"]', $output);
+    }
+
     #[RunInSeparateProcess]
     public function testSqlNullHelpersCoercion(): void
     {

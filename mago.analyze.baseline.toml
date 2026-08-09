@@ -14533,12 +14533,6 @@ message = "Potentially unhandled exception `DateInvalidTimeZoneException` in `f_
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_general.php"
-code = "useless-control-flow"
-message = "This control flow is unnecessary"
-count = 6
-
-[[issues]]
 file = "shared/code/tce_functions_menu.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `truthy-mixed`, which is not iterable."
