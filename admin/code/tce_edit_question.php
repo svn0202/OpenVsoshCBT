@@ -429,7 +429,7 @@ switch ($menu_mode) {
                 }
 
                 // arrange positions if necessary
-                if ($question_position != $prev_question_position) {
+                if ($question_position !== $prev_question_position) {
                     if ($question_position > 0) {
                         if ($prev_question_position > 0) {
                             // swap positions
@@ -446,7 +446,7 @@ switch ($menu_mode) {
 								AND question_position='
                                 . $question_position
                                 . '';
-                        } elseif ($prev_question_position == 0) {
+                        } elseif ($prev_question_position === 0) {
                             // right shift positions
                             $sql =
                                 'UPDATE '
