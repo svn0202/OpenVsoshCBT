@@ -142,9 +142,10 @@ function f_create_media_dir(mixed $dirname): bool
     }
 
     if (str_contains($dirname . '/', K_PATH_CACHE)) {
-        $oldumask = @umask(0);
+        $oldumask = umask(0);
+        // @mago-expect lint:no-error-control-operator -- callers consume the boolean result instead of a PHP warning
         $ret = @mkdir($dirname, 0o744, false);
-        @umask($oldumask);
+        umask($oldumask);
         return $ret;
     }
 
@@ -173,6 +174,7 @@ function f_delete_media_dir(mixed $dirname): bool
         return false;
     }
 
+    // @mago-expect lint:no-error-control-operator -- deletion races are reported through the boolean return value
     return @rmdir($dirname);
 }
 
@@ -202,8 +204,11 @@ function f_get_file_info(mixed $file): array
     require_once '../config/tce_config.php';
     $info = pathinfo($file);
     $info['dir'] = is_dir($file);
+    // @mago-expect lint:no-error-control-operator -- preserve stable metadata output if a listed file disappears
     $info['lastmod'] = date('Y-m-d H:i:s', @filemtime($file));
+    // @mago-expect lint:no-error-control-operator -- preserve false owner metadata for inaccessible files
     $info['owner'] = @fileowner($file);
+    // @mago-expect lint:no-error-control-operator -- preserve false permission metadata for inaccessible files
     $info['perms'] = @fileperms($file);
     $info['aperms'] = $info['dir'] ? 'd' : '-';
 
@@ -216,6 +221,7 @@ function f_get_file_info(mixed $file): array
     $info['aperms'] .= ($info['perms'] & 0o0004) !== 0 ? 'r' : '-';
     $info['aperms'] .= ($info['perms'] & 0o0002) !== 0 ? 'w' : '-';
     $info['aperms'] .= ($info['perms'] & 0o0001) !== 0 ? 'x' : '-';
+    // @mago-expect lint:no-error-control-operator -- preserve false size metadata if a listed file disappears
     $info['size'] = @filesize($file);
     $info['link'] = is_link($file);
     if ($info['link']) {
@@ -318,6 +324,7 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
 {
     $data = ['dirs' => [], 'files' => []];
     // open dir
+    // @mago-expect lint:no-error-control-operator -- an unreadable directory is represented by an empty listing
     $dirhdl = @opendir($dir);
     if ($dirhdl === false) {
         return $data;
