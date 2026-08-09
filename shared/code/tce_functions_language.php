@@ -40,7 +40,7 @@ function f_tmx_import_node(DOMDocument $document, DOMNode $node): DOMNode
  * @throws RuntimeException when either TMX document cannot be read or saved.
  * @throws Random\RandomException when a secure temporary filename cannot be generated.
  */
-function F_sync_tmx_translations(string $default_file, string $runtime_file): bool
+function f_sync_tmx_translations(string $default_file, string $runtime_file): bool
 {
     $default = new DOMDocument();
     $runtime = new DOMDocument();
@@ -80,7 +80,7 @@ function F_sync_tmx_translations(string $default_file, string $runtime_file): bo
         $runtime_tu = f_tmx_xpath_query(
             $runtime_xpath,
             '/*[local-name()="tmx"]/*[local-name()="body"]/*[local-name()="tu"][@tuid='
-                . F_tmx_xpath_literal($key) . ']',
+                . f_tmx_xpath_literal($key) . ']',
         )
             ->item(0);
         if (!$runtime_tu instanceof DOMElement) {
@@ -132,7 +132,7 @@ function F_sync_tmx_translations(string $default_file, string $runtime_file): bo
 /**
  * Quote an arbitrary string for use as an XPath literal.
  */
-function F_tmx_xpath_literal(string $value): string
+function f_tmx_xpath_literal(string $value): string
 {
     if (!str_contains($value, "'")) {
         return "'" . $value . "'";

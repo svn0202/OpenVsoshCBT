@@ -25,7 +25,7 @@ final class LanguageSyncTest extends TestCase
         ]));
 
         try {
-            $this->assertTrue(\F_sync_tmx_translations($default, $runtime));
+            $this->assertTrue(\f_sync_tmx_translations($default, $runtime));
             $document = new \DOMDocument();
             $this->assertTrue($document->load($runtime));
             $xpath = new \DOMXPath($document);
@@ -38,7 +38,7 @@ final class LanguageSyncTest extends TestCase
             $this->assertSame('Новый', $xpath->evaluate(
                 'string(//tu[@tuid="new_key"]/tuv[@xml:lang="ru"]/seg)',
             ));
-            $this->assertFalse(\F_sync_tmx_translations($default, $runtime));
+            $this->assertFalse(\f_sync_tmx_translations($default, $runtime));
         } finally {
             if (is_file($default)) {
                 unlink($default);
