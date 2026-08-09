@@ -20,7 +20,7 @@ function f_tmf_offline_payload_encode(array $payload): string
     );
 }
 
-function F_tmf_offline_sign(string $payload_base64, #[\SensitiveParameter] string $secret): string
+function f_tmf_offline_sign(string $payload_base64, #[\SensitiveParameter] string $secret): string
 {
     return hash_hmac('sha256', $payload_base64, $secret);
 }
