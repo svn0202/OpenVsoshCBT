@@ -24,7 +24,9 @@ require_once '../config/tce_config.php';
 
 // explicit reads of POST inputs (formerly provided by register-globals emulation)
 $forcedelete = $_POST['forcedelete'] ?? '';
-$new_test_password = $_POST['new_test_password'] ?? '';
+$new_test_password = isset($_POST['new_test_password']) && is_string($_POST['new_test_password'])
+    ? $_POST['new_test_password']
+    : '';
 $test_password = isset($_POST['test_password']) && is_string($_POST['test_password']) ? $_POST['test_password'] : '';
 $sslcerts = $_POST['sslcerts'] ?? [];
 $user_groups = $_POST['user_groups'] ?? [];

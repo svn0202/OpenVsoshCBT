@@ -52,7 +52,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         && !F_tmf_test_session_is_unlocked($test_id)
         && !checkPassword(
             $tph . $test_id . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],
-            $_SESSION['session_test_login'],
+            (string) ($_SESSION['session_test_login'] ?? ''),
         )
     ) {
         // display login page

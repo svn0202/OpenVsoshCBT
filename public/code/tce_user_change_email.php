@@ -22,7 +22,7 @@
 
 require_once '../config/tce_config.php';
 
-$currentpassword = $_POST['currentpassword'] ?? '';
+$currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword']) ? $_POST['currentpassword'] : '';
 $user_email = $_POST['user_email'] ?? '';
 $user_email_repeat = $_POST['user_email_repeat'] ?? '';
 
@@ -58,7 +58,7 @@ switch ($menu_mode) {
 
                 $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
                 if ($r = F_db_query($sql, $db)) {
-                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, $m['user_password'])) {
+                    if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, (string) ($m['user_password'] ?? ''))) {
                         F_print_error('WARNING', $l['m_login_wrong']);
                         $formstatus = false;
 
