@@ -123,7 +123,7 @@ function F_tmf_backup_finish_process(
  * pg_restore continues successfully but returns 1. Ignore only that exact,
  * single-error diagnostic; every other restore error remains fatal.
  */
-function F_tmf_backup_ignorable_postgresql_restore_diagnostic(string $diagnostic): bool
+function f_tmf_backup_ignorable_postgresql_restore_diagnostic(string $diagnostic): bool
 {
     return preg_match(
         '/\Apg_restore: error: could not execute query: ERROR:\s+'
