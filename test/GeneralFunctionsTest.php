@@ -90,6 +90,17 @@ final class GeneralFunctionsTest extends TestCase
         self::assertFalse(\f_legacy_literal_equals(['login'], 'login'));
     }
 
+    public function testLegacyComparisonPreservesPhpOrderingEquality(): void
+    {
+        self::assertTrue(\f_legacy_equals('operator', 'operator'));
+        self::assertTrue(\f_legacy_equals('01', 1));
+        self::assertTrue(\f_legacy_equals(true, 'operator'));
+        self::assertTrue(\f_legacy_equals(null, 0));
+        self::assertTrue(\f_legacy_equals([], false));
+        self::assertFalse(\f_legacy_equals('operator', 'Operator'));
+        self::assertFalse(\f_legacy_equals([], '0'));
+    }
+
     public function testUtf8NormalizerPreservesEveryMode(): void
     {
         [$status, $output] = \F_tcecode_run_process(

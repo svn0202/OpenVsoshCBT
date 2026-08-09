@@ -105,6 +105,16 @@ function f_legacy_literal_equals(mixed $value, string $expected): bool
 }
 
 /**
+ * Compare legacy values using PHP's ordering rules without the discouraged loose equality operator.
+ */
+function f_legacy_equals(mixed $left, mixed $right): bool
+{
+    // @mago-expect analysis:mixed-operand -- this compatibility boundary intentionally delegates PHP comparison rules
+    // @mago-expect analysis:mixed-operand -- both legacy operands may have any request or database value type
+    return ($left <=> $right) === 0;
+}
+
+/**
  * Prepare field value for SQL query.<br>
  * Returns the num if different from zero, NULL otherwise.
  * @param $num (string) string to check.
