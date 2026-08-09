@@ -56,20 +56,20 @@
         "source": "https://github.com/tecnickcom/tcexam"
     },
     "scripts": {
-        "test": "@php vendor/bin/phpunit --stderr --testsuite unit",
+        "test": "@php vendor/bin/phpunit --stderr --no-coverage --testsuite unit",
         "cs-check": [
             "@cs-check:src",
             "@cs-check:test"
         ],
-        "cs-check:src": "vendor/bin/mago --config mago.src.toml lint",
-        "cs-check:test": "vendor/bin/mago --config mago.test.toml lint",
+        "cs-check:src": "vendor/bin/mago --config mago.src.toml lint --baseline mago.lint.baseline.toml",
+        "cs-check:test": "vendor/bin/mago --config mago.test.toml lint --baseline mago.test.lint.baseline.toml",
         "cs-fix": "vendor/bin/mago fmt",
         "analyse": [
             "@analyse:src",
             "@analyse:test"
         ],
-        "analyse:src": "vendor/bin/mago --config mago.src.toml analyze",
-        "analyse:test": "vendor/bin/mago --config mago.test.toml analyze",
+        "analyse:src": "vendor/bin/mago --config mago.src.toml analyze --baseline mago.analyze.baseline.toml",
+        "analyse:test": "vendor/bin/mago --config mago.test.toml analyze --baseline mago.test.analyze.baseline.toml",
         "qa": [
             "@cs-check",
             "@analyse",

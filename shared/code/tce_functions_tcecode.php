@@ -438,6 +438,9 @@ function F_tcecode_tag_arg($text)
  */
 function F_tcecode_run_process(array $command, string $working_directory): array
 {
+    if ($working_directory === '') {
+        return [1, 'renderer working directory is empty'];
+    }
     $stdout_file = tempnam(sys_get_temp_dir(), 'openvsosh-render-out-');
     $stderr_file = tempnam(sys_get_temp_dir(), 'openvsosh-render-err-');
     if ($stdout_file === false || $stderr_file === false) {
@@ -449,6 +452,15 @@ function F_tcecode_run_process(array $command, string $working_directory): array
         }
         return [1, 'unable to create renderer diagnostic files'];
     }
+    if ($stdout_file === '' || $stderr_file === '') {
+        if ($stdout_file !== '') {
+            unlink($stdout_file);
+        }
+        if ($stderr_file !== '') {
+            unlink($stderr_file);
+        }
+        return [1, 'renderer diagnostic file path is empty'];
+    }
 
     $null_device = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
     $descriptors = [
@@ -457,7 +469,7 @@ function F_tcecode_run_process(array $command, string $working_directory): array
         2 => ['file', $stderr_file, 'w'],
     ];
     $launch_error = '';
-    set_error_handler(static function (int $severity, string $message) use (&$launch_error): bool {
+    set_error_handler(static function (int $_severity, string $message) use (&$launch_error): bool {
         $launch_error = $message;
         return true;
     });
@@ -467,8 +479,13 @@ function F_tcecode_run_process(array $command, string $working_directory): array
     } finally {
         restore_error_handler();
     }
-    $launched = is_resource($process);
-    $status = $launched ? proc_close($process) : 1;
+    if (is_resource($process)) {
+        $launched = true;
+        $status = proc_close($process);
+    } else {
+        $launched = false;
+        $status = 1;
+    }
     $output = (string) file_get_contents($stdout_file) . (string) file_get_contents($stderr_file);
     if (!$launched && $launch_error !== '') {
         $output .= $launch_error;
@@ -487,6 +504,7 @@ function F_tcecode_run_process(array $command, string $working_directory): array
 function F_latex_callback($matches)
 {
     require_once '../../shared/config/tce_latex.php';
+    $picture_path = (string) K_LATEX_PATH_PICTURE;
     // extract latex code and convert some entities
     $latex = unhtmlentities($matches[1], true);
 
@@ -533,7 +551,7 @@ function F_latex_callback($matches)
                 '-interaction=nonstopmode',
                 '-halt-on-error',
                 basename($imgpath . '.tex'),
-            ], K_LATEX_PATH_PICTURE);
+            ], $picture_path);
             if ($ret !== 0) {
                 $error = $output;
             } else {
@@ -550,7 +568,7 @@ function F_latex_callback($matches)
                     '-quality',
                     '100',
                     basename($imgpath . '.' . K_LATEX_IMG_FORMAT),
-                ], K_LATEX_PATH_PICTURE);
+                ], $picture_path);
                 if ($ret !== 0) {
                     $error = $output;
                 } else {

@@ -46,10 +46,10 @@ final class SessionFunctionsTest extends TestCase
     {
         $headers = \F_getSecurityHeaders();
 
-        $this->assertSame('nosniff', $headers['X-Content-Type-Options']);
-        $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options']);
-        $this->assertSame("frame-ancestors 'self'", $headers['Content-Security-Policy']);
-        $this->assertSame('max-age=31536000', $headers['Strict-Transport-Security']);
+        $this->assertSame('nosniff', $headers['X-Content-Type-Options'] ?? null);
+        $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options'] ?? null);
+        $this->assertSame("frame-ancestors 'self'", $headers['Content-Security-Policy'] ?? null);
+        $this->assertSame('max-age=31536000', $headers['Strict-Transport-Security'] ?? null);
     }
 
     #[DataProvider('localRedirectProvider')]
@@ -58,6 +58,7 @@ final class SessionFunctionsTest extends TestCase
         $this->assertSame($expected, \F_isSafeLocalRedirectUri($uri));
     }
 
+    /** @return array<string,array{string,bool}> */
     public static function localRedirectProvider(): array
     {
         return [

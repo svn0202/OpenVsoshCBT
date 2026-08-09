@@ -39,7 +39,13 @@ ini_set('session.cookie_samesite', K_COOKIE_SAMESITE);
  * Keep the CSP deliberately narrow: the legacy UI still contains inline scripts and styles,
  * while frame-ancestors can be enforced independently without breaking those pages.
  *
- * @return array<string,string>
+ * @return array{
+ *   X-Content-Type-Options:string,
+ *   X-Frame-Options:string,
+ *   Referrer-Policy:string,
+ *   Content-Security-Policy:string,
+ *   Strict-Transport-Security?:string
+ * }
  */
 function F_getSecurityHeaders(): array
 {
@@ -333,7 +339,13 @@ function getNewSessionID()
 {
     // The database schema stores 32 characters. Sixteen CSPRNG bytes preserve that shape while
     // providing the full 128 bits of entropy directly, without timestamp- or hash-based mixing.
-    return bin2hex(random_bytes(16));
+    try {
+        return bin2hex(random_bytes(16));
+    } catch (Random\RandomException $exception) {
+        // Session and verification identifiers must fail closed if the operating system CSPRNG
+        // is unavailable. Error is intentionally unchecked by the analyzer and terminates safely.
+        throw new Error('Secure random number generation is unavailable.', 0, $exception);
+    }
 }
 
 /**
@@ -400,7 +412,7 @@ function F_isSafeLocalRedirectUri(string $uri): bool
     return is_array($parts)
         && !isset($parts['scheme'], $parts['host'], $parts['user'], $parts['pass'])
         && isset($parts['path'])
-        && str_starts_with((string) $parts['path'], '/');
+        && str_starts_with($parts['path'], '/');
 }
 
 /**
