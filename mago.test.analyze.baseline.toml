@@ -391,18 +391,6 @@ message = "Possibly undefined array key `string('password_hash')` accessed on `a
 count = 1
 
 [[issues]]
-file = "test/bootstrap.php"
-code = "missing-parameter-type"
-message = "Parameter `$filename` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "test/bootstrap.php"
-code = "missing-return-type"
-message = "Function `F_file_exists` is missing a return type hint."
-count = 1
-
-[[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
