@@ -886,7 +886,7 @@ function f_show_select_user_popup(
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function F_isTestOnGroup($test_id, $group_id)
+function f_is_test_on_group($test_id, $group_id)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

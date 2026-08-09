@@ -1366,7 +1366,7 @@ $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if (isset($test_id) && $test_id > 0 && F_isTestOnGroup($test_id, $m['group_id'])) {
+        if (isset($test_id) && $test_id > 0 && f_is_test_on_group($test_id, $m['group_id'])) {
             echo ' selected="selected"';
         }
 
