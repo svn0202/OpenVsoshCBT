@@ -37,6 +37,7 @@ class TMXResourceBundle
 
     /**
      * Array used to contain key-translation couples.
+     * @var array<array-key, mixed>
      * @private
      */
     private array $resource = [];

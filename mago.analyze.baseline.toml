@@ -19808,12 +19808,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "imprecise-type"
-message = "Type `array` in property `$resource` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `str_replace`: expected `array<array-key, string>|string`, but found `nonnull`."
 count = 1
