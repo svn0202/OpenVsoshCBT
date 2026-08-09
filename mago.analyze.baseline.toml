@@ -11859,7 +11859,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_mysql.php"
 code = "duplicate-definition"
-message = "Function `F_db_datetime_diff_seconds` is already defined elsewhere."
+message = "Function `f_db_datetime_diff_seconds` is already defined elsewhere."
 count = 1
 
 [[issues]]
