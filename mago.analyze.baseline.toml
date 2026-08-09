@@ -16455,7 +16455,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_remove_tcecode`: expected `string`, but found `array<array-key, string>|null|string`."
+message = "Invalid return type for function `f_remove_tcecode`: expected `string`, but found `array<array-key, string>|null|string`."
 count = 1
 
 [[issues]]
@@ -16659,7 +16659,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "nullable-return-statement"
-message = "Function `F_remove_tcecode` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
+message = "Function `f_remove_tcecode` is declared to return `string` but possibly returns a nullable value (inferred as `array<array-key, string>|null|string`)."
 count = 1
 
 [[issues]]

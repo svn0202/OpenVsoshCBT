@@ -901,7 +901,7 @@ if ($r = F_db_query($sql, $db)) {
 
         echo
             ' '
-                . htmlspecialchars(F_remove_tcecode($m['subject_name']), ENT_NOQUOTES, $l['a_meta_charset'])
+                . htmlspecialchars(f_remove_tcecode($m['subject_name']), ENT_NOQUOTES, $l['a_meta_charset'])
                 . '</option>'
                 . K_NEWLINE
         ;
@@ -969,7 +969,7 @@ if ($r = F_db_query($sql, $db)) {
         echo
             ' '
                 . htmlspecialchars(
-                    f_substr_utf8(F_remove_tcecode($m['question_description']), 0, K_SELECT_SUBSTRING),
+                    f_substr_utf8(f_remove_tcecode($m['question_description']), 0, K_SELECT_SUBSTRING),
                     ENT_NOQUOTES,
                     $l['a_meta_charset'],
                 )

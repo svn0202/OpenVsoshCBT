@@ -27,7 +27,7 @@ final class TcecodeFunctionsTest extends TestCase
     {
         self::assertSame(
             'Bold [OBJ] [IMG] [TEX]',
-            \F_remove_tcecode('[b]Bold[/b] [object]file[/object] [img]file[/img] [tex]x[/tex]'),
+            \f_remove_tcecode('[b]Bold[/b] [object]file[/object] [img]file[/img] [tex]x[/tex]'),
         );
     }
 
