@@ -712,13 +712,13 @@ function getFormRowCheckBox(
  * @return string
  */
 function getFormRowFixedValue(
-    $field_name,
-    $name,
-    $description = '',
-    $tip = '',
-    $value = '',
-    $currency = false,
-    $prefix = '',
+    string $field_name,
+    string $name,
+    string $description = '',
+    string $tip = '',
+    string $value = '',
+    bool $currency = false,
+    string $prefix = '',
 ): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
