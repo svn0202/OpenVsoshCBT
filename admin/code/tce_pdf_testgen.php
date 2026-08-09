@@ -642,7 +642,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
     $pdf->page->addContent($out);
 
     // encode data to be printed on the QR-Code (used to create test logs)
-    $qr_test_data = F_encodeOMRTestData($barcode_test_data);
+    $qr_test_data = f_encode_omr_test_data($barcode_test_data);
     // render at natural module size (unstretched) and centre it — a stretched QR-Code scans poorly
     $qrw = (float) $pdf->barcode->getBarcodeObj('QRCODE,L', $qr_test_data)->getArray()['ncols'];
     $qry = ($ph - $qrw) / 2; // vertically centred

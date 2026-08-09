@@ -10,7 +10,7 @@ final class OmrSecurityTest extends TestCase
     {
         $payload = [42, [100, [1 => 501, 2 => 502]], [101, []]];
 
-        $this->assertSame($payload, \F_decodeOMRTestData(\F_encodeOMRTestData($payload)));
+        $this->assertSame($payload, \F_decodeOMRTestData(\f_encode_omr_test_data($payload)));
     }
 
     public function testOmrPayloadRejectsObjects(): void
