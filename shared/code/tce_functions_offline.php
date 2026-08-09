@@ -25,7 +25,7 @@ function f_tmf_offline_sign(string $payload_base64, #[\SensitiveParameter] strin
     return hash_hmac('sha256', $payload_base64, $secret);
 }
 
-function F_tmf_offline_signature_is_valid(
+function f_tmf_offline_signature_is_valid(
     string $payload_base64,
     string $signature,
     #[\SensitiveParameter] string $secret,
