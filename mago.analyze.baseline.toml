@@ -18890,18 +18890,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_otp.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #3 of `hash_hmac`: expected `string`, but found `unknown-ref(Decoded)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_decodeBase32`: expected `unknown-ref(Decoded)`, but found `string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `F_getOTP`: expected `unknown-ref(OTP)`, but found `int<0, 999999>`."
 count = 1
@@ -18928,12 +18916,6 @@ count = 1
 file = "shared/code/tce_functions_otp.php"
 code = "missing-parameter-type"
 message = "Parameter `$otpkey` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "missing-return-type"
-message = "Function `F_decodeBase32` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -18976,12 +18958,6 @@ count = 1
 file = "shared/code/tce_functions_otp.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `Base32`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `Decoded`."
 count = 1
 
 [[issues]]

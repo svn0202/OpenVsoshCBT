@@ -40,9 +40,9 @@ function F_getRandomOTPkey()
 /**
  * Decode a Base32 encoded string.
  * @param $code (string) Base32 code to be decoded.
- * @return Decoded key.
+ * @return string Decoded key.
  */
-function F_decodeBase32($code)
+function F_decodeBase32($code): string
 {
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
