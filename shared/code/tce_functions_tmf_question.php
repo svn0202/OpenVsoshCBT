@@ -14,7 +14,7 @@
 function F_tmf_question_options(string $description): array
 {
     $options = [
-        'checkbox' => str_contains((string) $description, '<!--TMF_CHECKBOX-->'),
+        'checkbox' => str_contains($description, '<!--TMF_CHECKBOX-->'),
         'headers' => ['Утверждение', 'Верно', 'Неверно', 'Без ответа'],
         'max_selections' => 0,
         'similarity_threshold' => 0,
@@ -23,12 +23,12 @@ function F_tmf_question_options(string $description): array
         'audio_play_limit' => 0,
     ];
 
-    if (preg_match('/<!--TMF_MAX_SEL:(\d+)-->/', (string) $description, $match)) {
+    if (preg_match('/<!--TMF_MAX_SEL:(\d+)-->/', $description, $match)) {
         $options['max_selections'] = max(0, (int) $match[1]);
         $options['checkbox'] = $options['checkbox'] || $options['max_selections'] > 0;
     }
 
-    if (preg_match('/<!--TMF_MCMA_HEADER:(.*?)-->/', (string) $description, $match)) {
+    if (preg_match('/<!--TMF_MCMA_HEADER:(.*?)-->/', $description, $match)) {
         $headers = json_decode(html_entity_decode((string) $match[1], ENT_QUOTES, 'UTF-8'), true);
         if (is_array($headers) && count($headers) >= 4) {
             $options['headers'] = array_map(
@@ -123,7 +123,7 @@ function F_tmf_matching_presentation(string $description, int $positions): array
 
         $labels = [];
         foreach ($items[1] as $item) {
-            $label = preg_replace('~<br\s*/?>~iu', ' ', (string) $item);
+            $label = preg_replace('~<br\s*/?>~iu', ' ', $item);
             $label = html_entity_decode(strip_tags((string) $label), ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $label = str_replace("\u{00A0}", ' ', $label);
             $label = trim((string) preg_replace('/\s+/u', ' ', $label));
@@ -236,7 +236,7 @@ function F_tmf_short_answer_score(
     $best_similarity = -1.0;
     $best_weight = null;
     foreach ($keys as $key) {
-        $accepted = (string) $key['answer_description'];
+        $accepted = $key['answer_description'];
         $matches = $binary
             ? $submitted_exact === $accepted
             : mb_strtolower($submitted_exact, 'UTF-8') === mb_strtolower($accepted, 'UTF-8');
@@ -287,7 +287,7 @@ function F_tmf_selection_limit_is_valid(array $answers, int $maximum): bool
     }
 
     $selected = 0;
-    foreach ((array) $answers as $value) {
+    foreach ($answers as $value) {
         if ((int) $value === 1 && ++$selected > $maximum) {
             return false;
         }
