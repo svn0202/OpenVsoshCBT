@@ -12,6 +12,9 @@ header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 
+/**
+ * @param array<array-key, mixed> $payload
+ */
 function F_tmf_answer_json(int $status_code, array $payload): never
 {
     http_response_code($status_code);

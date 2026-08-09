@@ -12566,12 +12566,6 @@ count = 34
 
 [[issues]]
 file = "public/code/tce_test_answer_save.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$payload` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_answer_save.php"
 code = "redundant-logical-operation"
 message = "Redundant `||` operation: left operand is evaluated and right operand is always falsy."
 count = 1
