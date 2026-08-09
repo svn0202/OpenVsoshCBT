@@ -11,7 +11,7 @@
  *
  * @return array{checkbox: bool, headers: list<string>, max_selections: int, similarity_threshold: int, matching_positions: int, matching_reuse_positions: bool, audio_play_limit: int}
  */
-function F_tmf_question_options(string $description): array
+function f_tmf_question_options(string $description): array
 {
     $options = [
         'checkbox' => str_contains($description, '<!--TMF_CHECKBOX-->'),
