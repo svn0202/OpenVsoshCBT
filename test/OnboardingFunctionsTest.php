@@ -10,7 +10,7 @@ final class OnboardingFunctionsTest extends TestCase
 {
     public function testConfigurationHasNormalizedTestIdentifiers(): void
     {
-        $config = \F_getOnboardingConfig();
+        $config = \f_get_onboarding_config();
 
         self::assertSame(['instruction_test_id', 'demo_test_id'], array_keys($config));
         self::assertIsInt($config['instruction_test_id']);

@@ -33,7 +33,7 @@ require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 
-$pending_onboarding = F_getPendingOnboardingTests((int) $_SESSION['session_user_id']);
+$pending_onboarding = f_get_pending_onboarding_tests((int) $_SESSION['session_user_id']);
 $site_settings = openvsosh_get_site_settings();
 
 echo '<div class="container">' . K_NEWLINE;
@@ -73,8 +73,8 @@ if (!empty($pending_onboarding)) {
     echo '<ol class="onboarding-steps">' . K_NEWLINE;
     foreach ($pending_onboarding as $intro_test) {
         echo '<li data-onboarding-test="' . (int) $intro_test['test_id'] . '">';
-        echo '<span>' . htmlspecialchars((string) $intro_test['eyebrow'], ENT_QUOTES, $l['a_meta_charset']) . '</span>';
-        echo '<strong>' . htmlspecialchars((string) $intro_test['label'], ENT_QUOTES, $l['a_meta_charset']) . '</strong>';
+        echo '<span>' . htmlspecialchars($intro_test['eyebrow'], ENT_QUOTES, $l['a_meta_charset']) . '</span>';
+        echo '<strong>' . htmlspecialchars($intro_test['label'], ENT_QUOTES, $l['a_meta_charset']) . '</strong>';
         echo '</li>' . K_NEWLINE;
     }
     echo '</ol></div>' . K_NEWLINE;

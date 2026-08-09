@@ -14,7 +14,7 @@ $settings_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
 $thispage_title = (string) ($l['ov_instance_settings'] ?? 'Настройки площадки');
 require_once 'tce_page_header.php';
 
-$config = F_getOnboardingConfig();
+$config = f_get_onboarding_config();
 $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     $demo_id = max(0, (int) ($_POST['demo_test_id'] ?? 0));
     if ($instruction_id > 0 && $instruction_id === $demo_id) {
         F_print_error('WARNING', 'Для инструкции и демо-теста выберите разные тесты.');
-    } elseif (F_saveOnboardingConfig($instruction_id, $demo_id)) {
-        $config = F_getOnboardingConfig();
+    } elseif (f_save_onboarding_config($instruction_id, $demo_id)) {
+        $config = f_get_onboarding_config();
         F_print_error('MESSAGE', 'Настройки вводных тестов сохранены.');
     } else {
         F_print_error('ERROR', 'Не удалось сохранить настройки. Проверьте права на shared/config.', false);

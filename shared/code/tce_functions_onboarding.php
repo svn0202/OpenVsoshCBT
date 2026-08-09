@@ -8,7 +8,7 @@
  *
  * @return array{instruction_test_id: int, demo_test_id: int}
  */
-function F_getOnboardingConfig(): array
+function f_get_onboarding_config(): array
 {
     $defaults = ['instruction_test_id' => 0, 'demo_test_id' => 0];
     $path = dirname(__DIR__) . '/config/tce_onboarding.json';
@@ -27,7 +27,7 @@ function F_getOnboardingConfig(): array
     ];
 }
 
-function F_saveOnboardingConfig($instruction_test_id, $demo_test_id)
+function f_save_onboarding_config(int $instruction_test_id, int $demo_test_id): bool
 {
     $path = dirname(__DIR__) . '/config/tce_onboarding.json';
     $payload = json_encode(
@@ -41,20 +41,23 @@ function F_saveOnboardingConfig($instruction_test_id, $demo_test_id)
     return file_put_contents($path, $payload . "\n", LOCK_EX) !== false;
 }
 
-function F_getPendingOnboardingTests($user_id)
+/**
+ * @return list<array{kind:string,eyebrow:string,label:string,test_id:int,test_name:string}>
+ */
+function f_get_pending_onboarding_tests(int $user_id): array
 {
     global $db, $l;
-    $config = F_getOnboardingConfig();
+    $config = f_get_onboarding_config();
     $labels = [
         'instruction_test_id' => [
             'kind' => 'instruction',
-            'eyebrow' => $l['ov_onboarding_instruction_eyebrow'],
-            'label' => $l['ov_onboarding_instruction_label'],
+            'eyebrow' => (string) $l['ov_onboarding_instruction_eyebrow'],
+            'label' => (string) $l['ov_onboarding_instruction_label'],
         ],
         'demo_test_id' => [
             'kind' => 'demo',
-            'eyebrow' => $l['ov_onboarding_demo_eyebrow'],
-            'label' => $l['ov_onboarding_demo_label'],
+            'eyebrow' => (string) $l['ov_onboarding_demo_eyebrow'],
+            'label' => (string) $l['ov_onboarding_demo_label'],
         ],
     ];
     $pending = [];
@@ -78,7 +81,7 @@ function F_getPendingOnboardingTests($user_id)
             if ($test = F_db_fetch_array($r)) {
                 $pending[] = $meta + [
                     'test_id' => (int) $test['test_id'],
-                    'test_name' => $test['test_name'],
+                    'test_name' => (string) $test['test_name'],
                 ];
             }
         }
