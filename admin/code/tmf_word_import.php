@@ -81,7 +81,7 @@ try {
             throw new TmfWordImportException('Некорректный идентификатор импорта.');
         }
         if ($menu_mode === 'cancelpreview') {
-            F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+            f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
             $message = 'Предварительный просмотр отменён, временные файлы удалены.';
             $batch_id = '';
             $preview = null;
@@ -91,22 +91,22 @@ try {
                 !is_file($preview_file)
                 || (time() - filemtime($preview_file)) > TMF_WORD_IMPORT_PREVIEW_TTL
             ) {
-                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
                 throw new TmfWordImportException('Предварительный просмотр не найден или устарел.');
             }
             $preview_contents = file_get_contents($preview_file);
             $preview_separator = is_string($preview_contents) ? strpos($preview_contents, "\n") : false;
             if ($preview_separator === false) {
-                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
                 throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
             }
             $preview = json_decode(substr($preview_contents, $preview_separator + 1), true);
             if (!is_array($preview)) {
-                F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+                f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
                 throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
             }
             $counts = F_tmf_import_word_questions($preview);
-            F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id, false);
+            f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id, false);
             $message = sprintf(
                 'Импорт завершён: модуль «%s», тема «%s», вопросов %d, ответов %d.',
                 htmlspecialchars($counts['module_name'], ENT_QUOTES, 'UTF-8'),
@@ -119,7 +119,7 @@ try {
     }
 } catch (Exception $exception) {
     if (isset($menu_mode) && $menu_mode === 'upload' && f_tmf_word_import_is_batch_id($batch_id)) {
-        F_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
+        f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
     }
     $error = $exception->getMessage();
 }

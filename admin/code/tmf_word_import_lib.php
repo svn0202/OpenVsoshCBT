@@ -108,7 +108,7 @@ function f_tmf_word_import_is_batch_id(string $batch_id): bool
  * Remove a preview and its extracted media. Confirmed imports must use
  * $remove_media=false because their question HTML references these files.
  */
-function F_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_id, bool $remove_media = true): bool
+function f_tmf_word_import_cleanup_batch(string $cache_directory, string $batch_id, bool $remove_media = true): bool
 {
     if (!f_tmf_word_import_is_batch_id($batch_id)) {
         return false;
@@ -155,7 +155,7 @@ function F_tmf_word_import_cleanup_stale(
         $preview_file = $preview_directory . '/' . $entry;
         $modified = filemtime($preview_file);
         if ($modified !== false && ($now - $modified) > $maximum_age) {
-            F_tmf_word_import_cleanup_batch($cache_directory, $matches[1]);
+            f_tmf_word_import_cleanup_batch($cache_directory, $matches[1]);
             ++$removed;
         }
     }
