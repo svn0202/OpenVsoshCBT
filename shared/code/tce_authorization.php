@@ -48,7 +48,7 @@ if ($rs = F_db_query($sqls, $db)) {
         // decode session data
         session_decode($ms['cpsession_data']);
         // check for possible session hijacking
-        $legacy_fingerprint = getLegacyClientFingerprint();
+        $legacy_fingerprint = get_legacy_client_fingerprint();
         $fingerprint_matches = isset($_SESSION['session_hash'])
             && (
                 hash_equals((string) $_SESSION['session_hash'], $fingerprintkey)

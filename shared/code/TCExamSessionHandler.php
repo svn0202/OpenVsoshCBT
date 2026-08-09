@@ -309,7 +309,7 @@ function get_client_fingerprint(): string
  * Accept and Upgrade-Insecure-Requests vary between document requests and
  * fetch(), so they must not be part of the current fingerprint.
  */
-function getLegacyClientFingerprint(): string
+function get_legacy_client_fingerprint(): string
 {
     $sid = K_RANDOM_SECURITY;
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
