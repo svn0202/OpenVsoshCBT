@@ -13161,7 +13161,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `F_tmf_backup_finish_process`: expected `array<array-key, mixed>`, but found `mixed`."
+message = "Invalid argument type for argument #2 of `f_tmf_backup_finish_process`: expected `array<array-key, mixed>`, but found `mixed`."
 count = 2
 
 [[issues]]
@@ -13233,7 +13233,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `TmfBackupException` in `F_tmf_backup_finish_process`."
+message = "Potentially unhandled exception `TmfBackupException` in `f_tmf_backup_finish_process`."
 count = 1
 
 [[issues]]

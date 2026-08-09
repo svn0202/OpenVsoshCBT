@@ -68,7 +68,7 @@ function f_tmf_backup_start_process(
  * @param array<mixed>         $pipes
  * @param resource|null        $output
  */
-function F_tmf_backup_finish_process(
+function f_tmf_backup_finish_process(
     mixed $process,
     array $pipes,
     mixed $output = null,
