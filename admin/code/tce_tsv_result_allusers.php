@@ -114,7 +114,7 @@ $table .= F_printTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0
 // convert HTML table to TSV
 echo F_html_to_TSV($table);
 
-if ($user_id == 0) {
+if ($user_id === 0) {
     $users = [];
     foreach ($data['testuser'] as $tu) {
         $users[$tu['user_id']] = $tu['user_id'];

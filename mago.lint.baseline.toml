@@ -793,12 +793,6 @@ message = "Function name `F_tsv_export_questions` should be in snake case."
 count = 1
 
 [[issues]]
-file = "admin/code/tce_tsv_result_allusers.php"
-code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_tsv_users.php"
 code = "function-name"
 message = "Function name `F_tsv_export_users` should be in snake case."
