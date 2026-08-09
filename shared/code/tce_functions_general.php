@@ -472,7 +472,7 @@ function getIpAsBytes($ip): string|false
  * @return string IP address as a readable string.
  * @since 9.0.033 (2009-11-03)
  */
-function getIpAsString($ip)
+function getIpAsString($ip): string
 {
     $norm = getNormalizedIP($ip);
     if ($norm === false || $norm === '') {
@@ -491,7 +491,7 @@ function getIpAsString($ip)
 
     // Unwrap IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1 -> 127.0.0.1) for readability.
     if (preg_match('/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i', $str, $m)) {
-        return $m[1];
+        return $m[1] ?? $str;
     }
 
     return $str;
