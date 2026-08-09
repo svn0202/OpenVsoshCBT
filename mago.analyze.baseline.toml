@@ -18891,12 +18891,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_otp.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getOTP`: expected `unknown-ref(OTP)`, but found `int<0, 999999>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `F_getRandomOTPkey`: expected `unknown-ref(Base32)`, but found `non-empty-string`."
 count = 1
 
@@ -18916,12 +18910,6 @@ count = 1
 file = "shared/code/tce_functions_otp.php"
 code = "missing-parameter-type"
 message = "Parameter `$otpkey` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "missing-return-type"
-message = "Function `F_getOTP` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -18958,12 +18946,6 @@ count = 1
 file = "shared/code/tce_functions_otp.php"
 code = "non-existent-class-like"
 message = "Cannot find class, interface, enum, or type alias `Base32`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `OTP`."
 count = 1
 
 [[issues]]

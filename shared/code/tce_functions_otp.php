@@ -70,9 +70,9 @@ function F_decodeBase32($code): string
  * Get a One Time Password for the specified secret key.
  * @param $otpkey (string) One Time Password secret key.
  * @param $mtime (int) Reference time in microseconds.
- * @return OTP
+ * @return int OTP in the range from 0 to 999999.
  */
-function F_getOTP($otpkey, $mtime = 0)
+function F_getOTP($otpkey, $mtime = 0): int
 {
     // get binary key
     $binkey = F_decodeBase32($otpkey);
