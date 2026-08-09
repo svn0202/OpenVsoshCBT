@@ -65,6 +65,14 @@ final class SessionFunctionsTest extends TestCase
         self::assertSame([], \F_session_string_to_array(''));
     }
 
+    public function testSessionStringDecoderPreservesEmptyNullAndNegativeValues(): void
+    {
+        self::assertSame(
+            ['empty' => '', 'nothing' => null, 'negative' => -3],
+            \F_session_string_to_array('empty|s:0:"";nothing|N;negative|i:-3;'),
+        );
+    }
+
     public function testPasswordHashRoundTrip(): void
     {
         $hash = \getPasswordHash('s3cr3t-passphrase');
