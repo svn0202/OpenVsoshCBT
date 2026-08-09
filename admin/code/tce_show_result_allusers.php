@@ -106,7 +106,7 @@ $filter .= '&amp;display_mode=' . $display_mode;
 if (isset($_REQUEST['show_graph'])) {
     $show_graph = (int) $_REQUEST['show_graph'];
     $filter .= '&amp;show_graph=' . $show_graph;
-    if ($show_graph && $display_mode == 0) {
+    if ($show_graph && $display_mode === 0) {
         $display_mode = 1;
     }
 } else {
@@ -290,14 +290,14 @@ echo
 $sql = F_select_executed_tests_sql();
 if ($r = F_db_query($sql, $db)) {
     echo '<option value="0"';
-    if ($test_id == 0) {
+    if ($test_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['test_id'] . '"';
-        if ($m['test_id'] == $test_id) {
+        if (f_form_option_is_selected($test_id, $m['test_id'])) {
             echo ' selected="selected"';
         }
 
@@ -369,14 +369,14 @@ if ($test_id > 0) {
 $sql .= ' ORDER BY group_name';
 if ($r = F_db_query($sql, $db)) {
     echo '<option value="0"';
-    if ($group_id == 0) {
+    if ($group_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if ($m['group_id'] == $group_id) {
+        if (f_form_option_is_selected($group_id, $m['group_id'])) {
             echo ' selected="selected"';
         }
 
@@ -414,14 +414,14 @@ $sql .= ' GROUP BY user_id, user_lastname, user_firstname, user_name ORDER BY us
 if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     echo '<option value="0"';
-    if ($user_id == 0) {
+    if ($user_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['user_id'] . '"';
-        if ($m['user_id'] == $user_id) {
+        if (f_form_option_is_selected($user_id, $m['user_id'])) {
             echo ' selected="selected"';
         }
 
@@ -461,7 +461,7 @@ echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="display_mode" id="display_mode" title="' . $l['w_mode'] . '">' . K_NEWLINE;
 foreach ($detail_modes as $key => $dmode) {
     echo '<option value="' . $key . '"';
-    if ($key == $display_mode) {
+    if ($key === $display_mode) {
         echo ' selected="selected"';
     }
 
