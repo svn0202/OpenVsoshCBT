@@ -6,6 +6,62 @@ use PHPUnit\Framework\TestCase;
 
 final class DatabaseDalFunctionsTest extends TestCase
 {
+    public function testDatabaseQueryBehaviorRemainsDriverSpecific(): void
+    {
+        $expectations = [
+            'mysql' => ['value' => ['SELECT * FROM t ORDER BY RAND() LIMIT 1', 'connection']],
+            'mysqli' => ['exception' => 'Error'],
+            'oracle' => [
+                'start' => true,
+                'value' => 'statement',
+                'commit' => true,
+                'query' => 'SELECT * FROM t ORDER BY dbms_random.random ',
+                'mode' => 1,
+            ],
+            'postgresql' => ['exception' => 'TypeError'],
+        ];
+
+        foreach ($expectations as $driver => $expected) {
+            $prelude = match ($driver) {
+                'mysql' => 'function mysql_query($query, $link) { return [$query, $link]; } ',
+                'oracle' => 'define("OCI_NO_AUTO_COMMIT", 1); define("OCI_COMMIT_ON_SUCCESS", 2); '
+                    . '$GLOBALS["query"] = ""; $GLOBALS["mode"] = 0; '
+                    . 'function oci_parse($link, $query) { $GLOBALS["query"] = $query; return "statement"; } '
+                    . 'function oci_execute($statement, $mode) { $GLOBALS["mode"] = $mode; return true; } '
+                    . 'function oci_commit($link) { return true; } function oci_rollback($link) { return true; } ',
+                default => '',
+            };
+            $invocation = match ($driver) {
+                'mysql' => 'echo json_encode(["value" => F_db_query('
+                    . '"SELECT * FROM t ORDER BY RAND() LIMIT 1", "connection")]);',
+                'mysqli' => 'try { F_db_query("SELECT 1", mysqli_init()); } '
+                    . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+                'oracle' => '$link = new stdClass(); $start = F_db_query("START TRANSACTION", $link); '
+                    . '$value = F_db_query("SELECT * FROM t ORDER BY RAND() LIMIT 1", $link); '
+                    . '$commit = F_db_query("COMMIT", $link); echo json_encode(["start" => $start, "value" => $value, '
+                    . '"commit" => $commit, "query" => $GLOBALS["query"], "mode" => $GLOBALS["mode"]]);',
+                'postgresql' => 'try { F_db_query("SELECT 1 ORDER BY RAND()", null); } '
+                    . 'catch (Throwable $exception) { echo json_encode(["exception" => get_class($exception)]); }',
+            };
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'error_reporting(E_ALL & ~E_DEPRECATED); ' . $prelude
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_query/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval(substr($source, $start, $end - $start)); ' . $invocation,
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_' . $driver . '.php',
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $driver . ': ' . $output);
+            self::assertSame($expected, json_decode($output, true, 512, JSON_THROW_ON_ERROR), $driver);
+        }
+    }
+
     public function testDatabaseAffectedRowsBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
