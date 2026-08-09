@@ -101,7 +101,7 @@ function F_tmf_user_has_passed_test(int $test_id, int $user_id): bool
  *
  * @param array<int,int> $prerequisite_ids
  */
-function F_tmf_test_prerequisite_would_cycle(int $test_id, array $prerequisite_ids): bool
+function f_tmf_test_prerequisite_would_cycle(int $test_id, array $prerequisite_ids): bool
 {
     global $db;
     $pending = array_values(array_filter(array_map('intval', $prerequisite_ids)));

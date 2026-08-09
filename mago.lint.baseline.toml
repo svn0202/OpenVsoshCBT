@@ -1041,12 +1041,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_access.php"
 code = "function-name"
-message = "Function name `F_tmf_test_prerequisite_would_cycle` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_access.php"
-code = "function-name"
 message = "Function name `F_tmf_unanswered_question_numbers` should be in snake case."
 count = 1
 
