@@ -479,7 +479,7 @@ if (str_contains($requested_script, '/admin/code/')) {
 if (K_AUTH_SSL_LEVEL && K_AUTH_SSL_LEVEL <= $pagelevel) {
     $sslids = preg_replace('/[^0-9,]*/', '', K_AUTH_SSLIDS);
     if (!empty($sslids)) {
-        $client_hash = F_getSSLClientHash();
+        $client_hash = f_get_ssl_client_hash();
         $valid_ssl = F_count_rows(
             K_TABLE_SSLCERTS,
             "WHERE ssl_hash='" . $client_hash . "' AND ssl_id IN (" . $sslids . ')',

@@ -39,7 +39,7 @@ final class AuthorizationFunctionsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getSSLClientHash|f_get_ssl_client_hash)\\(/", '
+                    . 'preg_match("/function (f_get_ssl_client_hash)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

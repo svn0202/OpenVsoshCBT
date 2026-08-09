@@ -552,7 +552,7 @@ function F_getSSLCertificateHash($cert, $pkcs12 = false)
  * @author Nicola Asuni
  * @since 2013-07-01
  */
-function F_getSSLClientHash()
+function f_get_ssl_client_hash(): string
 {
     $crthash = '';
     $crthash .= isset($_SERVER['SSL_CLIENT_M_SERIAL']) ? strtoupper($_SERVER['SSL_CLIENT_M_SERIAL']) : '';

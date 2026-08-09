@@ -398,7 +398,7 @@ function F_isValidSSLCert($test_id)
     }
 
     // get the hash code for the client SSl certificate
-    $client_ssl_hash = F_getSSLClientHash();
+    $client_ssl_hash = f_get_ssl_client_hash();
     // check if the client certificate is enabled for this test
     return (
         F_count_rows(K_TABLE_TEST_SSLCERTS . ', ' . K_TABLE_SSLCERTS, 'WHERE tstssl_ssl_id=ssl_id
