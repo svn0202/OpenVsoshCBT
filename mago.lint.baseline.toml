@@ -10,7 +10,7 @@ count = 1
 file = "admin/code/tce_class_import_xml.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 5
+count = 3
 
 [[issues]]
 file = "admin/code/tce_class_import_xml.php"

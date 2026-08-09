@@ -54,4 +54,31 @@ final class XmlQuestionImporterTest extends TestCase
         self::assertSame(0, $status);
         self::assertSame('null', $output);
     }
+
+    public function testEndElementHandlerStoresQuestionDescription(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; '
+                    . 'require_once "../../shared/code/tce_functions_general.php"; '
+                    . 'require_once "tce_class_import_xml.php"; '
+                    . '$class = new ReflectionClass(XMLQuestionImporter::class); '
+                    . '$importer = $class->newInstanceWithoutConstructor(); '
+                    . '$path = tempnam(sys_get_temp_dir(), "tce-import-"); '
+                    . '$class->getProperty("xmlfile")->setValue($importer, $path); '
+                    . '$class->getProperty("level")->setValue($importer, "question"); '
+                    . '$class->getProperty("current_element")->setValue($importer, "question_description"); '
+                    . '$class->getProperty("current_data")->setValue($importer, " description "); '
+                    . '$class->getMethod("endElementHandler")->invoke($importer, null, "description"); '
+                    . '$data = $class->getProperty("level_data")->getValue($importer); '
+                    . 'echo json_encode($data["question"]["question_description"]);',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('"description"', $output);
+    }
 }
