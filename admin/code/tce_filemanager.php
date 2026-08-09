@@ -242,7 +242,7 @@ switch ($menu_mode) {
             break;
         }
 
-        if (F_deleteMediaDir($dir)) {
+        if (f_delete_media_dir($dir)) {
             $dir = $root_dir;
             F_print_error('MESSAGE', $l['m_deleted']);
         } else {

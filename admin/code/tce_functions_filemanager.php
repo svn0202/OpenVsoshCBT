@@ -155,9 +155,9 @@ function f_create_media_dir(mixed $dirname): bool
  * Delete the specified media directory
  * @author Nicola Asuni
  * @param $dirname (string) the directory name
- * @return true in case of success, false otherwise
+ * @return bool whether the directory was deleted
  */
-function F_deleteMediaDir($dirname)
+function f_delete_media_dir(mixed $dirname): bool
 {
     require_once '../config/tce_config.php';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMIN_DIRS) {

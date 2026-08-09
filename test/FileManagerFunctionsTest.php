@@ -8,6 +8,23 @@ require_once __DIR__ . '/../admin/code/tce_functions_filemanager.php';
 
 final class FileManagerFunctionsTest extends TestCase
 {
+    public function testRejectsDirectoryDeletionOutsideMediaCache(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMIN_DIRS; '
+                    . 'echo json_encode(f_delete_media_dir("/tmp/outside/"));',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame('false', $output);
+    }
+
     public function testRejectsTraversalWhenCreatingMediaDirectory(): void
     {
         [$status, $output] = F_tcecode_run_process(
