@@ -79,7 +79,7 @@ function f_tmf_set_audio_play_limit(string $description, int $limit): string
 /**
  * Replace the optional number of left-side matching positions.
  */
-function F_tmf_set_matching_positions(string $description, int $positions): string
+function f_tmf_set_matching_positions(string $description, int $positions): string
 {
     $description = (string) preg_replace('/\s*<!--TMF_MATCH_POSITIONS:\d{1,3}-->/', '', $description);
     $positions = max(0, min(100, $positions));
