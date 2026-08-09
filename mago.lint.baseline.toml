@@ -370,7 +370,7 @@ count = 1
 file = "admin/code/tce_show_all_questions.php"
 code = "no-redundant-block"
 message = "Redundant block around statements."
-count = 10
+count = 5
 
 [[issues]]
 file = "admin/code/tce_users_xlsx.php"
