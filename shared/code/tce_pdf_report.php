@@ -657,14 +657,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 '<td style="text-align:right;font-weight:bold;font-family:courier;">'
                 . htmlspecialchars(
                     F_formatFloat($tu['total_score']) . ' '
-                        . F_formatPdfPercentage(floatval($tu['total_score_perc']), false),
+                        . f_format_pdf_percentage(floatval($tu['total_score_perc']), false),
                 )
                 . '</td>';
             if ($stats > 0) {
                 foreach (['right', 'wrong', 'unanswered', 'undisplayed', 'unrated'] as $k) {
                     $html .=
                         '<td style="text-align:right;">'
-                        . htmlspecialchars($tu[$k] . ' ' . F_formatPdfPercentage(floatval($tu[$k . '_perc']), false))
+                        . htmlspecialchars($tu[$k] . ' ' . f_format_pdf_percentage(floatval($tu[$k . '_perc']), false))
                         . '</td>';
                 }
             }
@@ -680,7 +680,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             . ';font-weight:bold;"><td>'
             . htmlspecialchars(
                 $l['w_passed'] . ': ' . $data['passed'] . ' '
-                    . F_formatPdfPercentage(floatval($data['passed_perc']), false),
+                    . f_format_pdf_percentage(floatval($data['passed_perc']), false),
             )
             . '</td></tr></table>';
 
@@ -747,7 +747,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 . '), '
                 . ($data['total_score'] ?? 0)
                 . ' '
-                . F_formatPdfPercentage(floatval($data['total_score_perc'] ?? 0), false),
+                . f_format_pdf_percentage(floatval($data['total_score_perc'] ?? 0), false),
         );
 
         if (
@@ -791,7 +791,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 . ' / '
                 . $rec
                 . ' '
-                . F_formatPdfPercentage(floatval($data[$k . '_perc'] ?? 0), false);
+                . f_format_pdf_percentage(floatval($data[$k . '_perc'] ?? 0), false);
         }
 
         $html = '<table border="0.5" cellpadding="3" style="font-size:8pt;">';
@@ -816,7 +816,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 . ' / '
                 . ($data['test']['test_max_score'] ?? '')
                 . ' '
-                . F_formatPdfPercentage(floatval($data['total_score_perc'] ?? 0), false)
+                . f_format_pdf_percentage(floatval($data['total_score_perc'] ?? 0), false)
                 . $passmsg,
             )
             . '</td></tr>';
@@ -1190,6 +1190,6 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      */
     protected function pctOf(array $d, string $key): string
     {
-        return isset($d[$key]) ? ' ' . F_formatPdfPercentage(floatval($d[$key]), false) : '';
+        return isset($d[$key]) ? ' ' . f_format_pdf_percentage(floatval($d[$key]), false) : '';
     }
 }
