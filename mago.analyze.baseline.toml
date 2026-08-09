@@ -18961,12 +18961,6 @@ message = "Possibly undefined array key `non-negative-int` accessed on `array<ar
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_otp.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `F_getRandomOTPkey`.'
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_page.php"
 code = "invalid-destructuring-source"
 message = "Invalid destructuring assignment: Cannot unpack type `unknown-ref(Returns)` into variables."
