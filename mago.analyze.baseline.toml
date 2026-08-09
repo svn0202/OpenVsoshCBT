@@ -3026,12 +3026,6 @@ count = 4
 
 [[issues]]
 file = "admin/code/tce_functions_filemanager.php"
-code = "mixed-operand"
-message = "Right operand in `==` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_filemanager.php"
 code = "no-value"
 message = "Argument #1 passed to function `F_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 2

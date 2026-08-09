@@ -468,7 +468,7 @@ function f_get_dir_table(
         ) {
             $current_file = urlencode($dir . $info['basename']);
             $selected_cue = '';
-            if ($info['basename'] == $selected) {
+            if ($info['basename'] === $selected) {
                 $out .= '<tr style="background-color:#ffffcc;font-family:monospace;">';
                 $selected_cue = '<span class="sr-only">(' . $l['w_selection'] . ') </span>';
             } else {
@@ -571,7 +571,7 @@ function f_get_dir_visual_table(
             && !str_starts_with($info['basename'], 'latex_')
         ) {
             $current_file = urlencode($dir . $info['basename']);
-            $is_selected = $info['basename'] == $selected;
+            $is_selected = $info['basename'] === $selected;
             $bgcolor = $is_selected ? '#009900' : '#333333';
             $selected_cue = $is_selected ? '<span class="sr-only">(' . $l['w_selection'] . ') </span>' : '';
 
