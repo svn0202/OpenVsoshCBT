@@ -159,7 +159,7 @@ function f_tmf_users_xlsx_validate(
         }
         $records[$sheet_row] = [
             'login' => $login,
-            'password_hash' => getPasswordHash($password),
+            'password_hash' => get_password_hash($password),
             'email' => $email,
             'first_name' => trim((string) $values['first_name']),
             'last_name' => trim((string) $values['last_name']),

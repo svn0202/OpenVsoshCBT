@@ -82,7 +82,7 @@ switch ($menu_mode) {
                 . K_TABLE_USERS
                 . ' SET
 				user_password=\''
-                . F_escape_sql($db, getPasswordHash($newpassword))
+                . F_escape_sql($db, get_password_hash($newpassword))
                 . '\'
 				WHERE user_id='
                 . $user_id;

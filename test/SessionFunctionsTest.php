@@ -88,7 +88,7 @@ final class SessionFunctionsTest extends TestCase
 
     public function testPasswordHashRoundTrip(): void
     {
-        $hash = \getPasswordHash('s3cr3t-passphrase');
+        $hash = \get_password_hash('s3cr3t-passphrase');
         $this->assertIsString($hash);
         $this->assertNotSame('s3cr3t-passphrase', $hash); // never stored in clear
         $this->assertTrue(\checkPassword('s3cr3t-passphrase', $hash));
@@ -179,7 +179,7 @@ final class SessionFunctionsTest extends TestCase
     public function testScriptScopedCsrfTokenCanBeCheckedByWorkflowEndpoint(): void
     {
         $script = '/srv/tcexam/public/code/tce_test_execute.php';
-        $token = \getPasswordHash(\getPlainCSRFTokenForScript($script));
+        $token = \get_password_hash(\getPlainCSRFTokenForScript($script));
 
         $this->assertTrue(\checkCSRFTokenForScript($token, $script));
         $this->assertFalse(\checkCSRFTokenForScript($token, '/srv/tcexam/public/code/other.php'));

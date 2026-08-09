@@ -50,7 +50,7 @@ function F_altLogin()
         )
     ) {
         $_POST['xuser_name'] = md5($_SERVER['SSL_CLIENT_M_SERIAL'] . $_SERVER['SSL_CLIENT_I_DN']);
-        $_POST['xuser_password'] = getPasswordHash(
+        $_POST['xuser_password'] = get_password_hash(
             $_SERVER['SSL_CLIENT_M_SERIAL']
             . $_SERVER['SSL_CLIENT_I_DN']
             . K_RANDOM_SECURITY
@@ -114,7 +114,7 @@ function F_altLogin()
         phpCAS::forceAuthentication();
         if (!f_legacy_equals($_SESSION['session_user_name'], phpCAS::getUser())) {
             $_POST['xuser_name'] = phpCAS::getUser();
-            $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'] . K_RANDOM_SECURITY);
+            $_POST['xuser_password'] = get_password_hash($_POST['xuser_name'] . K_RANDOM_SECURITY);
             $_POST['logaction'] = 'login';
             $usr = [];
             $usr['user_email'] = '';
@@ -149,7 +149,7 @@ function F_altLogin()
         )
     ) {
         $_POST['xuser_name'] = $_SERVER['eppn'];
-        $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'] . K_RANDOM_SECURITY);
+        $_POST['xuser_password'] = get_password_hash($_POST['xuser_name'] . K_RANDOM_SECURITY);
         $_POST['logaction'] = 'login';
         $usr = [];
         $usr['user_email'] = $_SERVER['eppn'];

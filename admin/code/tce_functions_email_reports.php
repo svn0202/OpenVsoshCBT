@@ -215,7 +215,7 @@ function f_send_report_emails(
             }
 
             if ($mode === 0) {
-                $pdfkey = getPasswordHash(
+                $pdfkey = get_password_hash(
                     date('Y') . $tu['id'] . K_RANDOM_SECURITY . $tu['test']['test_id'] . date('m') . $tu['user_id'],
                 );
                 // create PDF doc (fetched via tc-lib-file's safe, host-allow-listed HTTP reader)

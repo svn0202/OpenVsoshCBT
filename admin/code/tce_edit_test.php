@@ -618,7 +618,7 @@ switch ($menu_mode) {
                 }
 
                 if (!empty($new_test_password)) {
-                    $test_password = getPasswordHash($new_test_password);
+                    $test_password = get_password_hash($new_test_password);
                 }
 
                 if ($test_score_threshold > $test_max_score) {
@@ -799,7 +799,7 @@ switch ($menu_mode) {
                 }
 
                 if (!empty($new_test_password)) {
-                    $test_password = getPasswordHash($new_test_password);
+                    $test_password = get_password_hash($new_test_password);
                 }
 
                 $sql =

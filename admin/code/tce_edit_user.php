@@ -221,7 +221,7 @@ switch ($menu_mode) { // process submitted data
                 if (!empty($newpassword) || !empty($newpassword_repeat)) {
                     // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
                     if ($newpassword === $newpassword_repeat) {
-                        $user_password = getPasswordHash($newpassword);
+                        $user_password = get_password_hash($newpassword);
                         // update OTP key
                         $user_otpkey = F_getRandomOTPkey();
                     } else { //print message and exit
@@ -378,7 +378,7 @@ switch ($menu_mode) { // process submitted data
                 if (!empty($newpassword) || !empty($newpassword_repeat)) { // update password
                     // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
                     if ($newpassword === $newpassword_repeat) {
-                        $user_password = getPasswordHash($newpassword);
+                        $user_password = get_password_hash($newpassword);
                         // update OTP key
                         $user_otpkey = F_getRandomOTPkey();
                     } else { //print message and exit
