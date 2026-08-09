@@ -21,7 +21,7 @@ function f_tmf_attachment_directory(): string
 /**
  * @return array{original_name:string,mime:string,size:int,sha256:string}
  */
-function F_tmf_attachment_inspect(string $path, string $original_name): array
+function f_tmf_attachment_inspect(string $path, string $original_name): array
 {
     if (!is_file($path) || is_link($path)) {
         throw new RuntimeException('Загруженный файл недоступен.');
