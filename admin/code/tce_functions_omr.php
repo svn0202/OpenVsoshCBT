@@ -374,6 +374,9 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
         if ($rq = F_db_query($sqlq, $db)) {
             if ($mq = F_db_fetch_array($rq)) {
                 // question scores
+                /** @var int|numeric-string $raw_question_type */
+                $raw_question_type = $mq['question_type'];
+                $question_type = (int) $raw_question_type;
                 /** @var int|float|numeric-string $question_difficulty */
                 $question_difficulty = $mq['question_difficulty'];
                 /** @var int|float|numeric-string $test_score_right */
@@ -429,7 +432,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
 
                 $testlog_id = F_db_insert_id($db, K_TABLE_TESTS_LOGS, 'testlog_id');
                 // set initial question score
-                $qscore = $mq['question_type'] == 1 ? $question_unanswered_score : 0;
+                $qscore = $question_type === 1 ? $question_unanswered_score : 0;
 
                 $unanswered = true;
                 $numselected = 0; // count the number of MCSA selected answers
@@ -471,7 +474,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                     }
 
                     // calculate question score
-                    if ($mq['question_type'] < 3) { // MCSA or MCMA
+                    if ($question_type < 3) { // MCSA or MCMA
                         // check if the answer is right
                         $answer_isright = false;
                         $sqla =
@@ -483,7 +486,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                         if ($ra = F_db_query($sqla, $db)) {
                             if ($ma = F_db_fetch_array($ra)) {
                                 $answer_isright = f_get_boolean($ma['answer_isright']);
-                                switch ($mq['question_type']) {
+                                switch ($question_type) {
                                     case 1: // MCSA - Multiple Choice Single Answer
                                         if ($answer_selected === 1) {
                                             ++$numselected;
@@ -530,7 +533,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                 }
 
                 // end for each answer
-                if ($mq['question_type'] == 2) { // MCMA
+                if ($question_type === 2) { // MCMA
                     // normalize score
                     if (f_get_boolean($testdata['test_mcma_partial_score'])) {
                         // use partial scoring for MCMA and ORDER questions
