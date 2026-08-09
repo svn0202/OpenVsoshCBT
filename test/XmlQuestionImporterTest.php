@@ -19,7 +19,6 @@ final class XmlQuestionImporterTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'require_once "../config/tce_config.php"; require_once "tce_class_import_xml.php"; '
-                    . 'set_error_handler(static fn () => true, E_DEPRECATED); '
                     . '$importer = new XMLQuestionImporter($argv[1]); $importer->__destruct(); '
                     . 'echo json_encode(file_exists($argv[1]));',
                 $path,
