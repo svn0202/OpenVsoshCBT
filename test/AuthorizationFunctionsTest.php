@@ -6,6 +6,33 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthorizationFunctionsTest extends TestCase
 {
+    public function testLogoutPageSetsTitleRendersFormAndTerminates(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; require_once "../config/tce_config.php"; '
+                    . '$GLOBALS["l"] = ["t_logout_form" => "Sign out"]; '
+                    . 'function F_logout_form() { return "FORM"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_logout_page\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . 'register_shutdown_function(static function (): void { '
+                    . 'echo json_encode(["title" => $GLOBALS["thispage_title"] ?? null]); }); '
+                    . 'F_logout_page(); echo "unreachable";',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('FORM{"title":"Sign out"}', $output);
+    }
+
     public function testAdminLoginRedirectPreservesRequestedUri(): void
     {
         [$status, $output] = \F_tcecode_run_process(
