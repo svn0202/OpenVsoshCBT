@@ -73,7 +73,7 @@ function F_tmf_xlsx_build(array $sheets): string
                 . 'Target="worksheets/sheet' . $sheet_number . '.xml"/>';
             $zip->addFromString(
                 'xl/worksheets/sheet' . $sheet_number . '.xml',
-                F_tmf_xlsx_sheet_xml((array) $sheet['rows'], (array) ($sheet['widths'] ?? [])),
+                F_tmf_xlsx_sheet_xml($sheet['rows'], $sheet['widths'] ?? []),
             );
         }
         $style_relationship_id = count($sheets) + 1;
