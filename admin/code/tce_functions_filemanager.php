@@ -222,7 +222,7 @@ function F_getFileInfo($file)
  * @param $size (int) size in bytes
  * @return string formatted size
  */
-function F_formatFileSize($size)
+function F_formatFileSize(mixed $size): string
 {
     $out = ''; // string to be returned
     $mult = ['B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']; // multipliers
