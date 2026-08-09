@@ -15255,12 +15255,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "redundant-condition"
-message = "Redundant ternary operator: condition is always truthy."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
 count = 1
 

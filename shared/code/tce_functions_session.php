@@ -25,14 +25,18 @@
 
 // PHP session settings
 //ini_set('session.save_handler', 'user');
-ini_set('session.name', 'PHPSESSID');
+session_name('PHPSESSID');
 //ini_set('session.gc_maxlifetime', K_SESSION_LIFE);
-ini_set('session.cookie_lifetime', 0);
 ini_set('session.use_cookies', true);
 ini_set('session.use_strict_mode', 'On');
-ini_set('session.cookie_httponly', K_COOKIE_HTTPONLY ? 'On' : 'Off');
-ini_set('session.cookie_secure', K_COOKIE_SECURE ? 'On' : 'Off');
-ini_set('session.cookie_samesite', K_COOKIE_SAMESITE);
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => (string) ini_get('session.cookie_path'),
+    'domain' => (string) ini_get('session.cookie_domain'),
+    'secure' => K_COOKIE_SECURE,
+    'httponly' => K_COOKIE_HTTPONLY,
+    'samesite' => K_COOKIE_SAMESITE,
+]);
 
 /**
  * Return the baseline security headers used by every authenticated and public endpoint.
