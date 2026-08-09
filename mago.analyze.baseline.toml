@@ -15255,12 +15255,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_errmsg.php"
 code = "possibly-false-operand"
-message = "Left operand in `==` comparison might be `false` (type `false|string`)."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_errmsg.php"
-code = "possibly-false-operand"
 message = "Possibly false middle operand used in string concatenation (type `false|non-empty-string`)."
 count = 1
 
