@@ -344,7 +344,7 @@ final class WordImportTest extends TestCase
         self::assertTrue(touch($previewDirectory . '/' . $staleBatch . '.php', 100));
         self::assertTrue(touch($previewDirectory . '/' . $freshBatch . '.php', 190));
 
-        self::assertSame(1, \F_tmf_word_import_cleanup_stale($this->temporaryDirectory, 50, 200));
+        self::assertSame(1, \f_tmf_word_import_cleanup_stale($this->temporaryDirectory, 50, 200));
         self::assertFileDoesNotExist($previewDirectory . '/' . $staleBatch . '.php');
         self::assertDirectoryDoesNotExist($this->temporaryDirectory . '/wordimport/' . $staleBatch);
         self::assertFileExists($previewDirectory . '/' . $freshBatch . '.php');

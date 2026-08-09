@@ -42,7 +42,7 @@ $error = '';
 $preview = null;
 $batch_id = '';
 
-F_tmf_word_import_cleanup_stale(K_PATH_CACHE);
+f_tmf_word_import_cleanup_stale(K_PATH_CACHE);
 
 try {
     if (isset($menu_mode) && $menu_mode === 'upload' && !empty($_FILES['userfile']['name'])) {
