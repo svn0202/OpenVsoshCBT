@@ -43,12 +43,6 @@ message = "Redundant block around statements."
 count = 6
 
 [[issues]]
-file = "admin/code/tce_edit_backup.php"
-code = "function-name"
-message = "Function name `F_isValidbackupFile` should be in snake case."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_edit_group.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
