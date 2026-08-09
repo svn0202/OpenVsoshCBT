@@ -377,9 +377,10 @@ function checkPassword(#[\SensitiveParameter] $password, $hash): bool
  * result-access token that bypasses the normal authorization check) MUST fail closed
  * when this returns false, otherwise an attacker who knows the public default can forge
  * a valid token. The installer replaces the placeholder with a random value at install time.
+ * @param string|null $secret Secret to check, or null to use K_RANDOM_SECURITY.
  * @return boolean true if the seed is configured, false if it is still the shipped default.
  */
-function F_isRandomSecurityConfigured(#[\SensitiveParameter] $secret = null): bool
+function F_isRandomSecurityConfigured(#[\SensitiveParameter] ?string $secret = null): bool
 {
     // Known-insecure values: empty, the current shipped placeholder, and the historical default.
     $insecure = ['', 'CHANGE_THIS_K_RANDOM_SECURITY', 'mkTzxf8WwUxwvj6w'];

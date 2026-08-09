@@ -18915,12 +18915,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_session.php"
 code = "missing-parameter-type"
-message = "Parameter `$secret` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_session.php"
-code = "missing-parameter-type"
 message = "Parameter `$token` is missing a type hint."
 count = 2
 
