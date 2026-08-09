@@ -329,7 +329,7 @@ function F_isValidIP($user_ip, $test_ips)
             $ipv4_start = [];
             $ipv4_end = [];
             foreach ($ipv4 as $num) {
-                if ($num == '*') {
+                if ($num === '*') {
                     $ipv4_start[] = 0;
                     $ipv4_end[] = 255;
                 } else {
