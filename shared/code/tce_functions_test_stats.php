@@ -1662,7 +1662,7 @@ function F_printUserTestStat($testuser_id)
             // display question stats
             $ret .= '<strong>[' . $m['testlog_score'] . ']' . K_NEWLINE;
             $ret .= ' (';
-            $ret .= 'IP:' . getIpAsString($m['testlog_user_ip']) . K_NEWLINE;
+            $ret .= 'IP:' . get_ip_as_string($m['testlog_user_ip']) . K_NEWLINE;
             if (isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0) {
                 $ret .= ' | ' . substr($m['testlog_display_time'], 11, 8) . K_NEWLINE;
             } else {
