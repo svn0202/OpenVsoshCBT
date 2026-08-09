@@ -162,7 +162,7 @@ switch ($menu_mode) {
             // check if this record is used (test_log)
             if (F_isUsedMediaFile($file)) {
                 F_print_error('WARNING', $l['m_used_file']);
-            } elseif (F_deleteMediaFile($file)) {
+            } elseif (f_delete_media_file($file)) {
                 $file = '';
                 F_print_error('MESSAGE', $l['m_deleted']);
             } else {

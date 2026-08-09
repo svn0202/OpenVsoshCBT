@@ -24,9 +24,9 @@
  * Delete the selected media file
  * @author Nicola Asuni
  * @param $filename (string) the file name
- * @return true in case of success, false otherwise
+ * @return bool whether the file was deleted
  */
-function F_deleteMediaFile($filename)
+function f_delete_media_file(mixed $filename): bool
 {
     require_once '../config/tce_config.php';
     if ($_SESSION['session_user_level'] < K_AUTH_DELETE_MEDIAFILE) {
