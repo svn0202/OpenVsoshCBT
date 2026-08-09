@@ -28,7 +28,7 @@ $new_test_password = isset($_POST['new_test_password']) && is_string($_POST['new
     ? $_POST['new_test_password']
     : '';
 $test_password = isset($_POST['test_password']) && is_string($_POST['test_password']) ? $_POST['test_password'] : '';
-$sslcerts = $_POST['sslcerts'] ?? [];
+$sslcerts = isset($_POST['sslcerts']) && is_array($_POST['sslcerts']) ? $_POST['sslcerts'] : [];
 $user_groups = $_POST['user_groups'] ?? [];
 $test_name = $_REQUEST['test_name'] ?? '';
 $test_description = $_REQUEST['test_description'] ?? '';
