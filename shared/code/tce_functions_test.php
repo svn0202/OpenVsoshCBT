@@ -439,7 +439,7 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
     }
 
     // check user's group
-    $in_group = (
+    return (
         F_count_rows(K_TABLE_USERGROUP . ', ' . K_TABLE_TEST_GROUPS, 'WHERE usrgrp_group_id=tstgrp_group_id
 			AND tstgrp_test_id='
         . $test_id
@@ -449,7 +449,6 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
         . '
 			LIMIT 1') > 0
     );
-    return $in_group;
 }
 
 /**

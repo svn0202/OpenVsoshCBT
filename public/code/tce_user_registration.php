@@ -84,8 +84,35 @@ $_REQUEST['ff_required_labels'] = implode(',', $reqdesc);
 if ($menu_mode == 'add') { // process submitted data
     foreach ($regfields as $name => $enabled) {
         // disable unauthorized fields
-        if (!$enabled) {
-            ${$name} = '';
+        if ($enabled) {
+            continue;
+        }
+
+        switch ($name) {
+            case 'user_email':
+                $user_email = '';
+                break;
+            case 'user_regnumber':
+                $user_regnumber = '';
+                break;
+            case 'user_firstname':
+                $user_firstname = '';
+                break;
+            case 'user_lastname':
+                $user_lastname = '';
+                break;
+            case 'user_birthdate':
+                $user_birthdate = '';
+                break;
+            case 'user_birthplace':
+                $user_birthplace = '';
+                break;
+            case 'user_ssn':
+                $user_ssn = '';
+                break;
+            case 'user_groups':
+                $user_groups = [];
+                break;
         }
     }
 
@@ -134,7 +161,7 @@ if ($menu_mode == 'add') { // process submitted data
         }
 
         if ($formstatus) {
-            $user_verifycode = md5(uniqid(random_int(0, mt_getrandmax()), true)); // verification code
+            $user_verifycode = md5(uniqid((string) random_int(0, mt_getrandmax()), true)); // verification code
             $user_ip = getNormalizedIP($_SERVER['REMOTE_ADDR']); // get the user's IP number
             $user_regdate = date(K_TIMESTAMP_FORMAT);
             // get the registration date and time

@@ -228,10 +228,10 @@ class TCExamSessionHandler implements SessionHandlerInterface
      * Garbage collector.<br>
      * Deletes expired sessions.<br>
      * NOTE: while time() function returns a 32 bit integer, it works fine until year 2038.
-     * @param int $maxlifetime max session lifetime in seconds.
+     * @param int $max_lifetime max session lifetime in seconds.
      * @return int|false number of deleted sessions or false on failure.
      */
-    public function gc(int $maxlifetime): int|false
+    public function gc(int $max_lifetime): int|false
     {
         global $db;
         $expiry_time = date(K_TIMESTAMP_FORMAT);

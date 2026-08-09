@@ -950,12 +950,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
-code = "no-shorthand-ternary"
-message = "Use of the shorthand ternary operator."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
 code = "single-class-per-file"
 message = "File contains multiple class-like definitions; found class `TmfWordImporter` but class `TmfWordImportException` is already defined in this file."
 count = 1
@@ -2861,12 +2855,6 @@ file = "shared/code/tce_functions_test.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
 count = 13
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "inline-variable-return"
-message = "Variable assignment can be inlined into the return statement."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
