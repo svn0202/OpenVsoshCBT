@@ -337,7 +337,7 @@ function f_text_to_tsv($str): string
  * @param $str (string) input string to convert
  * @return string Converted string.
  */
-function F_tsv_to_text($str): string
+function f_tsv_to_text($str): string
 {
     if (empty($str)) {
         return '';
