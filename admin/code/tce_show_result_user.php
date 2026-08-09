@@ -419,7 +419,7 @@ if (isset($teststat) && !empty($teststat)) {
     echo '</span>' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 
-    echo getFormDescriptionLine($l['w_time_end'] . ':', $l['h_time_end'], $test_end_time);
+    echo get_form_description_line($l['w_time_end'] . ':', $l['h_time_end'], $test_end_time);
 
     if (!isset($test_end_time) || $test_end_time <= 0 || strtotime($test_end_time) < strtotime($test_start_time)) {
         $time_diff = $test_duration_time * 60;
@@ -428,7 +428,7 @@ if (isset($teststat) && !empty($teststat)) {
     }
 
     $time_diff = gmdate('H:i:s', $time_diff);
-    echo getFormDescriptionLine($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
+    echo get_form_description_line($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
     $passmsg = '';
     if ($teststat['testinfo']['test_score_threshold'] > 0) {
         if (
@@ -453,7 +453,7 @@ if (isset($teststat) && !empty($teststat)) {
         $score_all = $teststat['testinfo']['user_score'];
     }
 
-    echo getFormDescriptionLine($l['w_score'] . ':', $l['h_score_total'], $score_all . $passmsg);
+    echo get_form_description_line($l['w_score'] . ':', $l['h_score_total'], $score_all . $passmsg);
 
     $score_right_all =
         $teststat['qstats']['right']
@@ -462,7 +462,7 @@ if (isset($teststat) && !empty($teststat)) {
         . ' ('
         . $teststat['qstats']['right_perc']
         . '%)';
-    echo getFormDescriptionLine($l['w_answers_right'] . ':', $l['h_answers_right'], $score_right_all);
+    echo get_form_description_line($l['w_answers_right'] . ':', $l['h_answers_right'], $score_right_all);
 
     $score_wrong_all =
         $teststat['qstats']['wrong']
@@ -471,7 +471,7 @@ if (isset($teststat) && !empty($teststat)) {
         . ' ('
         . $teststat['qstats']['wrong_perc']
         . '%)';
-    echo getFormDescriptionLine($l['w_answers_wrong'] . ':', $l['h_answers_wrong'], $score_wrong_all);
+    echo get_form_description_line($l['w_answers_wrong'] . ':', $l['h_answers_wrong'], $score_wrong_all);
 
     $score_unanswered_all =
         $teststat['qstats']['unanswered']
@@ -481,7 +481,7 @@ if (isset($teststat) && !empty($teststat)) {
         . $teststat['qstats']['unanswered_perc']
         . '%)';
     echo
-        getFormDescriptionLine($l['w_questions_unanswered'] . ':', $l['h_questions_unanswered'], $score_unanswered_all)
+        get_form_description_line($l['w_questions_unanswered'] . ':', $l['h_questions_unanswered'], $score_unanswered_all)
     ;
 
     $score_undisplayed_all =
@@ -492,7 +492,7 @@ if (isset($teststat) && !empty($teststat)) {
         . $teststat['qstats']['undisplayed_perc']
         . '%)';
     echo
-        getFormDescriptionLine(
+        get_form_description_line(
             $l['w_questions_undisplayed'] . ':',
             $l['h_questions_undisplayed'],
             $score_undisplayed_all,
@@ -506,10 +506,10 @@ if (isset($teststat) && !empty($teststat)) {
         . ' ('
         . $teststat['qstats']['unrated_perc']
         . '%)';
-    echo getFormDescriptionLine($l['w_questions_unrated'] . ':', $l['h_questions_unrated'], $score_unrated_all);
+    echo get_form_description_line($l['w_questions_unrated'] . ':', $l['h_questions_unrated'], $score_unrated_all);
 
     echo
-        getFormDescriptionLine(
+        get_form_description_line(
             $l['w_comment'] . ':',
             $l['h_testcomment'],
             F_decode_tcecode($teststat['testinfo']['user_comment']),

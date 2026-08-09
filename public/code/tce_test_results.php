@@ -67,7 +67,7 @@ $usr_all = htmlspecialchars(
     ENT_NOQUOTES,
     $l['a_meta_charset'],
 );
-echo getFormDescriptionLine($l['w_user'] . ':', $l['w_user'], $usr_all);
+echo get_form_description_line($l['w_user'] . ':', $l['w_user'], $usr_all);
 
 $test_all =
     '<strong>'
@@ -75,10 +75,10 @@ $test_all =
     . '</strong><br />'
     . K_NEWLINE;
 $test_all .= htmlspecialchars($testdata['test_description'], ENT_NOQUOTES, $l['a_meta_charset']);
-echo getFormDescriptionLine($l['w_test'] . ':', $l['w_test'], $test_all);
+echo get_form_description_line($l['w_test'] . ':', $l['w_test'], $test_all);
 
-echo getFormDescriptionLine($l['w_time_begin'] . ':', $l['h_time_begin'], $usrtestdata['test_start_time']);
-echo getFormDescriptionLine($l['w_time_end'] . ':', $l['h_time_end'], $usrtestdata['test_end_time']);
+echo get_form_description_line($l['w_time_begin'] . ':', $l['h_time_begin'], $usrtestdata['test_start_time']);
+echo get_form_description_line($l['w_time_end'] . ':', $l['h_time_end'], $usrtestdata['test_end_time']);
 
 if (!isset($usrtestdata['test_end_time']) || $usrtestdata['test_end_time'] <= 0) {
     $time_diff = $testdata['test_duration_time'] * 60;
@@ -87,7 +87,7 @@ if (!isset($usrtestdata['test_end_time']) || $usrtestdata['test_end_time'] <= 0)
 }
 
 $time_diff = gmdate('H:i:s', $time_diff);
-echo getFormDescriptionLine($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
+echo get_form_description_line($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
 
 $passmsg = '';
 if ($usrtestdata['score_threshold'] > 0) {
@@ -106,7 +106,7 @@ $score_all =
     . round((100 * $usrtestdata['score']) / $usrtestdata['max_score'])
     . '%)'
     . $passmsg;
-echo getFormDescriptionLine($l['w_score'] . ':', $l['h_score_total'], $score_all);
+echo get_form_description_line($l['w_score'] . ':', $l['h_score_total'], $score_all);
 
 $score_right_all =
     $usrtestdata['right']
@@ -115,9 +115,9 @@ $score_right_all =
     . ' ('
     . round((100 * $usrtestdata['right']) / $usrtestdata['all'])
     . '%)';
-echo getFormDescriptionLine($l['w_answers_right'] . ':', $l['h_answers_right'], $score_right_all);
+echo get_form_description_line($l['w_answers_right'] . ':', $l['h_answers_right'], $score_right_all);
 
-echo getFormDescriptionLine($l['w_comment'] . ':', $l['h_testcomment'], F_decode_tcecode($usrtestdata['comment']));
+echo get_form_description_line($l['w_comment'] . ':', $l['h_testcomment'], F_decode_tcecode($usrtestdata['comment']));
 echo '</div>' . K_NEWLINE;
 
 $result_charset = (string) $l['a_meta_charset'];
