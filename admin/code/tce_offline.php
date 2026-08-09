@@ -45,16 +45,16 @@ if (isset($_POST['export_offline'])) {
     $action_status = $issued['status'];
 }
 if (isset($_POST['import_offline'])) {
+    $result_file = $_FILES['result_file'] ?? null;
     if (
-        !isset($_FILES['result_file'])
-        || !is_array($_FILES['result_file'])
-        || (int) ($_FILES['result_file']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
-        || (int) ($_FILES['result_file']['size'] ?? 0) > TMF_OFFLINE_MAX_RESULT_BYTES
-        || !is_uploaded_file((string) ($_FILES['result_file']['tmp_name'] ?? ''))
+        !is_array($result_file)
+        || (int) ($result_file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+        || (int) ($result_file['size'] ?? 0) > TMF_OFFLINE_MAX_RESULT_BYTES
+        || !is_uploaded_file((string) ($result_file['tmp_name'] ?? ''))
     ) {
         $action_status = 'invalid_upload';
     } else {
-        $contents = file_get_contents((string) $_FILES['result_file']['tmp_name']);
+        $contents = file_get_contents((string) $result_file['tmp_name']);
         $imported = F_tmf_offline_import(is_string($contents) ? $contents : '');
         $action_status = $imported['status'];
     }
