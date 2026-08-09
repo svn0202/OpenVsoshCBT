@@ -219,7 +219,7 @@ function f_sanitize_html_node(DOMNode $parent): void
  * @param $tag (string) normalized tag name
  * @return void
  */
-function F_sanitize_html_attributes(DOMElement $element, string $tag): void
+function f_sanitize_html_attributes(DOMElement $element, string $tag): void
 {
     $allowed = ['dir', 'lang', 'style', 'title'];
     if ($tag === 'a') {
