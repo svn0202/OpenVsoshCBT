@@ -16064,12 +16064,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_statistics.php"
-code = "missing-parameter-type"
-message = "Parameter `$data` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `sort`: expected `array<array-key, ('T.sort() extends mixed)>`, but found `mixed`."
 count = 1
