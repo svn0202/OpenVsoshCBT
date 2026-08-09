@@ -164,7 +164,7 @@ function F_show_select_user(
     }
 
     $sql = 'SELECT * FROM ' . K_TABLE_USERS . $wherequery . ' ORDER BY ' . $full_order_field;
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql =
             'SELECT * FROM ('
             . $sql
@@ -582,7 +582,7 @@ function F_show_select_user_popup(
     }
 
     $sql = 'SELECT * FROM ' . K_TABLE_USERS . $wherequery . ' ORDER BY ' . $full_order_field;
-    if (K_DATABASE_TYPE == 'ORACLE') {
+    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
         $sql =
             'SELECT * FROM ('
             . $sql
