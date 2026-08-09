@@ -348,7 +348,7 @@ switch ($menu_mode) {
                 // create a comma separated list of subjects IDs
                 $subjids = '';
                 foreach ($subject_id as $subid) {
-                    if ($subid[0] == '#') {
+                    if (f_legacy_literal_equals($subid[0], '#')) {
                         // module ID
                         $modid = (int) substr($subid, 1);
                         $sqlsm = F_select_subjects_sql('subject_module_id=' . $modid . '');
@@ -1643,6 +1643,7 @@ if (isset($test_id) && $test_id > 0) {
 F_submit_button('add', $l['w_add'], $l['h_add']);
 if (isset($test_id) && $test_id > 0) {
     F_submit_button('delete', $l['w_delete'], $l['h_delete']);
+    // @mago-expect analysis:mixed-argument -- preserve legacy scalar coercion and structured-input TypeError
     if (substr($test_end_time, 0, 1) < $millennium) {
         F_submit_button('unlock', $l['w_unlock'], $l['w_unlock']);
     } else {

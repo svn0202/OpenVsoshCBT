@@ -1640,12 +1640,6 @@ count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `array{0: mixed, ...}`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 74
@@ -1733,12 +1727,6 @@ file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Left operand in `<` comparison has `mixed` type."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "mixed-operand"
-message = "Left operand in `==` comparison has `mixed` type."
-count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
