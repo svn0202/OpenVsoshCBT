@@ -99,12 +99,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_form.php"
 code = "function-name"
-message = "Function name `getFormSmallDivSpace` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_form.php"
-code = "function-name"
 message = "Function name `getFormUploadFile` should be in snake case."
 count = 1
 

@@ -206,7 +206,7 @@ final class FormValidationTest extends TestCase
 
         $this->assertSame(
             '<div style="clear:both;height:1px;font-size:1px;">&nbsp;</div>' . K_NEWLINE,
-            \getFormSmallDivSpace(),
+            \get_form_small_div_space(),
         );
     }
 
