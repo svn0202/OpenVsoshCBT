@@ -4,7 +4,7 @@
  * Checked, shell-free database backup and restore helpers.
  */
 
-class TmfBackupException extends RuntimeException {}
+require_once __DIR__ . '/TmfBackupException.php';
 
 /**
  * @param array<string,string> $config

@@ -638,12 +638,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_backup.php"
-code = "file-name"
-message = "Class `TmfBackupException` should be in a file named `TmfBackupException.php`, found `tce_functions_backup.php`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_backup.php"
 code = "function-name"
 message = "Function name `F_tmf_backup_config_from_constants` should be in snake case."
 count = 1
