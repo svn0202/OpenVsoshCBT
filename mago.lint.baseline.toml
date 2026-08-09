@@ -316,7 +316,7 @@ count = 7
 file = "admin/code/tce_pdf_testgen.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_select_mediafile.php"
