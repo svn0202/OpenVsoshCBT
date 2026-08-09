@@ -20714,24 +20714,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "missing-return-type"
-message = "Function `endElementHandler` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-return-type"
-message = "Function `segContentHandler` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "missing-return-type"
-message = "Function `startElementHandler` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `file_get_contents`: expected `string`, but found `mixed`."
 count = 2
