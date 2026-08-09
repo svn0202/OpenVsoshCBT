@@ -8,6 +8,7 @@ require_once __DIR__ . '/../shared/code/tce_functions_otp.php';
 
 final class OtpFunctionsTest extends TestCase
 {
+    /** @throws \Random\RandomException */
     public function testRandomKeyUsesSixteenBase32Characters(): void
     {
         $key = \F_getRandomOTPkey();

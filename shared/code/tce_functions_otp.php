@@ -23,6 +23,7 @@
 /**
  * Return a random One Time Password Secret Key (Base32 encoded).
  * @return string Base32 encoded key.
+ * @throws Random\RandomException When a secure random value cannot be generated.
  */
 function F_getRandomOTPkey(): string
 {
