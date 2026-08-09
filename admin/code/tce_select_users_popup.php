@@ -70,7 +70,7 @@ echo
 ;
 
 echo '<option value="0"';
-if ($group_id == 0) {
+if ($group_id === 0) {
     echo ' selected="selected"';
 }
 
@@ -79,7 +79,7 @@ $sql = F_user_group_select_sql();
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if ($m['group_id'] == $group_id) {
+        if ((int) $m['group_id'] === $group_id) {
             echo ' selected="selected"';
         }
 
