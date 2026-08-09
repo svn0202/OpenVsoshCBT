@@ -117,7 +117,7 @@ function f_positive_request_int(mixed $value): int
  * @param bool $allow_repeated Whether positive positions may be used more than once.
  * @return array Normalized positions.
  */
-function F_normalizeMatchingPositions(array $positions, bool $allow_repeated = false): array
+function f_normalize_matching_positions(array $positions, bool $allow_repeated = false): array
 {
     $seen = [];
     foreach ($positions as $key => $position) {
