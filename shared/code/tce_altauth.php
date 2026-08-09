@@ -81,7 +81,7 @@ function F_altLogin()
         && (!isset($_SESSION['logout']) || !$_SESSION['logout'])
         && (
             isset($_SERVER['AUTH_TYPE'])
-            && $_SERVER['AUTH_TYPE'] == 'Basic'
+            && f_legacy_literal_equals($_SERVER['AUTH_TYPE'], 'Basic')
             && isset($_SERVER['PHP_AUTH_USER'])
             && isset($_SERVER['PHP_AUTH_PW'])
             && $_SESSION['session_user_name'] != $_SERVER['PHP_AUTH_USER']
@@ -139,7 +139,7 @@ function F_altLogin()
         && (!isset($_SESSION['logout']) || !$_SESSION['logout'])
         && (
             isset($_SERVER['AUTH_TYPE'])
-            && $_SERVER['AUTH_TYPE'] == 'shibboleth'
+            && f_legacy_literal_equals($_SERVER['AUTH_TYPE'], 'shibboleth')
             && (
                 isset($_SERVER['Shib_Session_ID']) && !empty($_SERVER['Shib_Session_ID'])
                 || isset($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER']) && !empty($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'])
@@ -171,7 +171,7 @@ function F_altLogin()
 
     if (
         isset($_POST['logaction'])
-        && $_POST['logaction'] == 'login'
+        && f_legacy_literal_equals($_POST['logaction'], 'login')
         && isset($_POST['xuser_name'])
         && isset($_POST['xuser_password'])
     ) {

@@ -309,12 +309,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_altauth.php"
 code = "identity-comparison"
-message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
 count = 3
 
