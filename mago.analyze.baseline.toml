@@ -11907,7 +11907,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_db_dal_mysqli.php"
 code = "duplicate-definition"
-message = "Function `F_db_affected_rows` is already defined elsewhere."
+message = "Function `f_db_affected_rows` is already defined elsewhere."
 count = 1
 
 [[issues]]
