@@ -643,7 +643,7 @@ function getFormRowCheckBox(
     $selected = false,
     $disabled = false,
     $prefix = '',
-) {
+): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
     if (strlen($description) == 0) {
@@ -719,7 +719,7 @@ function getFormRowFixedValue(
     $value = '',
     $currency = false,
     $prefix = '',
-) {
+): string {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
     if (strlen($description) == 0) {
@@ -780,7 +780,7 @@ function getFormRowFixedValue(
  * Print empty form row.
  * @return string
  */
-function getFormSmallVertSpace()
+function getFormSmallVertSpace(): string
 {
     return '<div class="row">&nbsp;</div>' . K_NEWLINE;
 }
@@ -789,7 +789,7 @@ function getFormSmallVertSpace()
  * Print empty form row.
  * @return string
  */
-function getFormSmallDivSpace()
+function getFormSmallDivSpace(): string
 {
     return '<div style="clear:both;height:1px;font-size:1px;">&nbsp;</div>' . K_NEWLINE;
 }
@@ -798,7 +798,7 @@ function getFormSmallDivSpace()
  * Print empty form row.
  * @return string
  */
-function getFormRowVertSpace()
+function getFormRowVertSpace(): string
 {
     return '<div class="row" style="margin-bottom:5px;"><hr class="dashed"/></div>' . K_NEWLINE;
 }
@@ -808,7 +808,7 @@ function getFormRowVertSpace()
  * @param $title (string) Title to be printed.
  * @return string
  */
-function getFormRowVertDiv($title = '')
+function getFormRowVertDiv($title = ''): string
 {
     return (
         '<div class="row"><hr class="dashed"/></div><div class="row"><div style="color:#666666;text-align:center;">'
@@ -823,7 +823,7 @@ function getFormRowVertDiv($title = '')
  * @param $name (string) Name of the input form field.
  * @return string
  */
-function getFormNoscriptSelect($name = 'selectrecord')
+function getFormNoscriptSelect($name = 'selectrecord'): string
 {
     require_once __DIR__ . '/../config/tce_config.php';
     global $l;
@@ -845,7 +845,7 @@ function getFormNoscriptSelect($name = 'selectrecord')
  * @param $value (string) Initial value.
  * @return string
  */
-function getFormDescriptionLine($name, $description = '', $value = '')
+function getFormDescriptionLine($name, $description = '', $value = ''): string
 {
     if (strlen($description) == 0) {
         $description = $name;
@@ -870,7 +870,7 @@ function getFormDescriptionLine($name, $description = '', $value = '')
  * @param $onchange (string) Javascript code to execute at onchange event.
  * @return string
  */
-function getFormUploadFile($field_name, $field_id, $name, $description = '', $onchange = '')
+function getFormUploadFile($field_name, $field_id, $name, $description = '', $onchange = ''): string
 {
     if (strlen($description) == 0) {
         $description = $name;
