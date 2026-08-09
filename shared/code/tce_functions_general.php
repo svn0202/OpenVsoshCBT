@@ -602,7 +602,7 @@ function getDataXML($data, $level = 1): string
     foreach ($data as $key => $value) {
         $key = strtolower($key);
         $key = preg_replace('/[^a-z0-9]+/', '_', $key);
-        if (is_numeric($key[0]) || $key[0] == '_') {
+        if (is_numeric($key[0]) || $key[0] === '_') {
             $key = 'item' . $key;
         }
 
