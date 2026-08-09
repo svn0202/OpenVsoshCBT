@@ -24,7 +24,7 @@ const TMF_USERS_XLSX_HEADERS = [
  * @param array<string,int> $available_groups
  * @return array{records:array<int,array<string,mixed>>,errors:array<int,array<int,string>>}
  */
-function F_tmf_users_xlsx_validate(
+function f_tmf_users_xlsx_validate(
     array $rows,
     array $existing_logins,
     array $available_groups,
