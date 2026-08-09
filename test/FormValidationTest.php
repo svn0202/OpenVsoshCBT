@@ -222,6 +222,20 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    public function testRowVerticalDividerPreservesTitleAndExactMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        $this->assertSame(
+            '<div class="row"><hr class="dashed"/></div>'
+                . '<div class="row"><div style="color:#666666;text-align:center;">Section</div></div>'
+                . K_NEWLINE,
+            \getFormRowVertDiv('Section'),
+        );
+    }
+
     public function testSelectOptionMatchingPreservesLegacyScalarCoercion(): void
     {
         $this->assertTrue(\f_form_option_is_selected(1, '1'));
