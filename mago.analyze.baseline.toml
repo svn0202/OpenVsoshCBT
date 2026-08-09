@@ -19814,12 +19814,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_tmx.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
 code = "undefined-variable"
 message = "Undefined variable: `$tmx`."
 count = 1

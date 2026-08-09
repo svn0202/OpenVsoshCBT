@@ -106,6 +106,7 @@ class TMXResourceBundle
             if (
                 is_string($cache_header)
                 && preg_match('/^\/\/ SOURCE SIZE: ([0-9]+)$/m', $cache_header, $matches) === 1
+                && isset($matches[1])
             ) {
                 $cached_source_size = (int) $matches[1];
             }
