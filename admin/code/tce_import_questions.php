@@ -335,7 +335,7 @@ function F_TSVQuestionImporter($tsvfile)
                     $sql = 'SELECT question_id
 					FROM ' . K_TABLE_QUESTIONS . '
 					WHERE ';
-                    if (K_DATABASE_TYPE == 'ORACLE') {
+                    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                         $sql .= "dbms_lob.instr(question_description,'" . $question_description . "',1,1)>0";
                     } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
                         $sql .=
@@ -490,7 +490,7 @@ function F_TSVQuestionImporter($tsvfile)
                     $sql = 'SELECT answer_id
 					FROM ' . K_TABLE_ANSWERS . '
 					WHERE ';
-                    if (K_DATABASE_TYPE == 'ORACLE') {
+                    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                         $sql .= "dbms_lob.instr(answer_description, '" . $answer_description . "',1,1)>0";
                     } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
                         $sql .=
