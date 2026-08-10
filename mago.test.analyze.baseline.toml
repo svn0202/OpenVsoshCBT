@@ -395,15 +395,3 @@ file = "test/integration/PregenerationLoadHttpTest.php"
 code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #2 of `array_fill`: expected `non-negative-int`, but possibly received `negative-int|positive-int`."
 count = 2
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `round` is possibly `null`, but parameter type `float|int` does not accept it."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `non-empty-list<float>`."
-count = 1

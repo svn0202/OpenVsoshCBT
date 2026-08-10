@@ -137,6 +137,7 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
             return 0.0;
         }
         $index = (int) ceil((count($values) - 1) * $percentile);
+        assert(isset($values[$index]), 'Percentile index must reference a measured value.');
         return round($values[$index], 3);
     }
 
