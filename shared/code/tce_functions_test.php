@@ -807,7 +807,7 @@ function F_getTestName($test_id)
  * @param $test_id (int) test ID
  * @return int test duration time in seconds
  */
-function F_getTestDuration($test_id)
+function f_get_test_duration($test_id)
 {
     require_once '../config/tce_config.php';
     $test_id = (int) $test_id;
