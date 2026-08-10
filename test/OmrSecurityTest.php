@@ -45,7 +45,7 @@ final class OmrSecurityTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_importOMRTestData|f_import_omr_test_data)\\(/", '
+                    . 'preg_match("/function (f_import_omr_test_data)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strlen($source); '

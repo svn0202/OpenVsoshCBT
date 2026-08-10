@@ -139,7 +139,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                         if (
                             $user_id > 0
                             && f_is_authorized_editor_for_user($user_id)
-                            && F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $overwrite)
+                            && f_import_omr_test_data($user_id, $date, $omr_testdata, $omr_answers, $overwrite)
                         ) {
                             F_print_error(
                                 'MESSAGE',
