@@ -15153,7 +15153,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_newTestLog`: expected `int`, but found `false`."
+message = "Invalid return type for function `f_new_test_log`: expected `int`, but found `false`."
 count = 1
 
 [[issues]]
@@ -15519,7 +15519,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_newTestLog` is missing a return type hint."
+message = "Function `f_new_test_log` is missing a return type hint."
 count = 1
 
 [[issues]]
