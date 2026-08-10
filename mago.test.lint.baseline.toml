@@ -11,15 +11,3 @@ file = "test/bootstrap.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "prefer-early-continue"
-message = "Consider using early continue pattern to reduce nesting."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "no-shorthand-ternary"
-message = "Use of the shorthand ternary operator."
-count = 1
