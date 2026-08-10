@@ -325,6 +325,60 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testStatisticsAverageNormalizationPreservesEveryLevel(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_normalizeTestStatAverages|f_normalize_test_stat_averages)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$answer = ["recurrence" => 2, "right" => 1, "wrong" => 1, "unanswered" => 0]; '
+                    . '$base = ["recurrence" => 4, "qnum" => 2, "average_score" => 10, '
+                    . '"average_score_perc" => 2, "average_time" => 8, "right" => 2, "wrong" => 1, '
+                    . '"unanswered" => 1, "undisplayed" => 0, "unrated" => 0]; '
+                    . '$question = $base + ["anum" => 4, "answer" => ["a" => $answer]]; '
+                    . '$subject = $base + ["question" => ["q" => $question]]; '
+                    . '$module = $base + ["subject" => ["s" => $subject]]; '
+                    . '$data = ["qstats" => ["recurrence" => 8, "qnum" => 4, "average_score" => 20, '
+                    . '"average_score_perc" => 4, "average_time" => 16, "right" => 4, "wrong" => 2, '
+                    . '"unanswered" => 1, "undisplayed" => 1, "unrated" => 0, "module" => ["m" => $module]]]; '
+                    . '$normalized = $qualified($data); $q = $normalized["qstats"]; $m = $q["module"]["m"]; '
+                    . '$s = $m["subject"]["s"]; $question = $s["question"]["q"]; '
+                    . '$a = $question["answer"]["a"]; '
+                    . 'echo json_encode([$qualified(["unchanged" => 1]), '
+                    . '$qualified(["qstats" => ["recurrence" => 0, "marker" => 2]]), '
+                    . '[$q["recurrence_perc"], $q["average_score"], $q["average_score_perc"], '
+                    . '$q["average_time"], $q["right_perc"], $q["wrong_perc"], '
+                    . '$q["unanswered_perc"], $q["undisplayed_perc"], $q["unrated_perc"]], '
+                    . '[$m["recurrence_perc"], $m["average_score"], $m["average_score_perc"], '
+                    . '$m["average_time"], $m["right_perc"], $m["wrong_perc"], $m["unanswered_perc"]], '
+                    . '[$s["recurrence_perc"], $question["recurrence_perc"]], '
+                    . '[$a["recurrence_perc"], $a["right_perc"], $a["wrong_perc"], $a["unanswered_perc"]]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                ['unchanged' => 1],
+                ['qstats' => ['recurrence' => 0, 'marker' => 2]],
+                [100, 5, 50, 4, 50, 25, 13, 13, 0],
+                [50, 5, 50, 4, 50, 25, 25],
+                [50, 50],
+                [50, 50, 50, 0],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
