@@ -33,6 +33,7 @@
  * @param $database (string) Database name.
  * @return MySQL link identifier on success, or FALSE on failure.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
     $host = 'localhost',
     $port = '3306',
@@ -62,6 +63,7 @@ function f_db_connect(
  * @param $link_identifier (resource) database link identifier.
  * @return bool TRUE on success or FALSE on failure
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_close($link_identifier)
 {
     return mysql_close($link_identifier);
@@ -71,6 +73,7 @@ function f_db_close($link_identifier)
  * Returns the text of the error message from previous database operation
  * @return string error message.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_error($link_identifier = null)
 {
     if (empty($link_identifier)) {
@@ -86,6 +89,7 @@ function f_db_error($link_identifier = null)
  * @param $link_identifier (resource) database link identifier.
  * @return false in case of error, TRUE or resource-identifier in case of success.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_query($query, $link_identifier)
 {
     // convert PostgreSQL RANDOM() function to MySQL RAND()
@@ -99,6 +103,7 @@ function f_db_query($query, $link_identifier)
  * @param $result (resource) result resource to the query result.
  * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_array($result)
 {
     return mysql_fetch_array($result);
@@ -110,6 +115,7 @@ function f_db_fetch_array($result)
  * @param $result (resource) result resource to the query result.
  * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_assoc($result)
 {
     return mysql_fetch_assoc($result);
@@ -121,6 +127,7 @@ function f_db_fetch_assoc($result)
  * @param $result (resource) result resource to the query result [UNUSED].
  * @return Number of rows.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_affected_rows($link_identifier, $result)
 {
     return mysql_affected_rows($link_identifier);
@@ -131,6 +138,7 @@ function f_db_affected_rows($link_identifier, $result)
  * @param $result (resource) result resource to the query result.
  * @return Number of affected rows.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_num_rows($result)
 {
     return mysql_num_rows($result);
@@ -143,6 +151,7 @@ function f_db_num_rows($result)
  * @param $fieldname (string) Field name (column name).
  * @return int ID generated from the last INSERT operation.
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     /*
@@ -167,6 +176,7 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
  * Returns the SQL string to calculate the difference in seconds between to datetime fields.
  * @return SQL query string
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
 {
     return 'TIMESTAMPDIFF(SECOND, ' . $start_date_field . ', ' . $end_date_field . ')';
@@ -180,6 +190,7 @@ function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
  * @return string Returns the escaped string, or FALSE on error.
  * @since 5.0.005 2007-12-05
  */
+// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_escape_sql($link_identifier, $str, $stripslashes = true)
 {
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
