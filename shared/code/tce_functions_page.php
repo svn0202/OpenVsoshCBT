@@ -22,23 +22,25 @@
 
 /**
  * Display Pages navigation index.
- * @param $script_name (string) url of the calling page
- * @param $sql (string) sql used to select records
- * @param $firstrow (int) first row number
- * @param $rowsperpage (int) number of max rows per page
- * @param $param_array (string) parameters to pass on url via GET
- * @return mixed the number of pages in case of success, false otherwise
+ * @param string $script_name url of the calling page
+ * @param string $sql sql used to select records
+ * @param int|string $firstrow first row number
+ * @param int|string $rowsperpage number of max rows per page
+ * @param string $param_array parameters to pass on url via GET
+ * @return int|string|false the number of pages in case of success, false otherwise
  */
 function f_show_page_navigator(
-    mixed $script_name,
-    mixed $sql,
-    mixed $firstrow,
-    mixed $rowsperpage,
-    mixed $param_array,
-): mixed
+    string $script_name,
+    string $sql,
+    int|string $firstrow,
+    int|string $rowsperpage,
+    string $param_array,
+): int|string|false
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    /** @var mixed $db */
+    /** @var array{m_search_void: string, w_page: string, w_previous: string, w_next: string} $l */
     $max_pages = 4; // max pages to display on page selector
     $indexbar = ''; // string for selection page html code
     $firstrow = (int) $firstrow;
@@ -47,9 +49,12 @@ function f_show_page_navigator(
         return false;
     }
 
-    if (!($r = F_db_query($sql, $db))) {
+    $r = F_db_query($sql, $db);
+    /** @var \mysqli_result|\PgSql\Result|false $r */
+    if ($r === false) {
         F_display_db_error();
     }
+    /** @var \mysqli_result|\PgSql\Result $r */
 
     // build base url for all links
     $baseaddress = $script_name;
@@ -63,19 +68,23 @@ function f_show_page_navigator(
     $count_rows = preg_match('/GROUP BY/i', $sql); //check if query contain a "GROUP BY"
     $all_updates = (int) F_db_num_rows($r);
     if ($all_updates === 1 && !$count_rows) {
-        [$all_updates] = F_db_fetch_array($r);
+        $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
+        $normalize_count = static fn(mixed $count): int|string => is_int($count) || is_string($count) ? $count : 0;
+        $row = $normalize_row(F_db_fetch_array($r));
+        $all_updates = $normalize_count($row[0] ?? 0);
     }
+    $total_updates = (int) $all_updates;
 
-    if (!$all_updates) {
+    if (!$total_updates) {
         //no records
         F_print_error('MESSAGE', $l['m_search_void']);
-    } elseif ($all_updates > $rowsperpage) {
+    } elseif ($total_updates > $rowsperpage) {
         $indexbar .= '<div class="pageselector">' . $l['w_page'] . ': ';
         $page_range = $max_pages * $rowsperpage;
         if ($firstrow <= $page_range) {
             $page_range = (2 * $page_range) - $firstrow + $rowsperpage;
-        } elseif ($firstrow >= ($all_updates - $page_range)) {
-            $page_range = (2 * $page_range) - ($all_updates - (2 * $rowsperpage) - $firstrow);
+        } elseif ($firstrow >= ($total_updates - $page_range)) {
+            $page_range = (2 * $page_range) - ($total_updates - (2 * $rowsperpage) - $firstrow);
         }
 
         if ($firstrow >= $rowsperpage) {
@@ -94,7 +103,7 @@ function f_show_page_navigator(
 
         $count = 2;
         $x = 0;
-        for ($x = $rowsperpage; $x < ($all_updates - $rowsperpage); $x += $rowsperpage) {
+        for ($x = $rowsperpage; $x < ($total_updates - $rowsperpage); $x += $rowsperpage) {
             if ($x >= ($firstrow - $page_range) && $x <= ($firstrow + $page_range)) {
                 if ($x === $firstrow) {
                     $indexbar .= $count . ' | ';
@@ -115,7 +124,7 @@ function f_show_page_navigator(
             ++$count;
         }
 
-        if (($firstrow + $rowsperpage) < $all_updates) {
+        if (($firstrow + $rowsperpage) < $total_updates) {
             $indexbar .=
                 '<a href="'
                 . $baseaddress
