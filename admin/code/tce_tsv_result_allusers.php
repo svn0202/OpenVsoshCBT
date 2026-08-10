@@ -23,43 +23,43 @@
  */
 
 require_once '../config/tce_config.php';
-$pagelevel = K_AUTH_ADMIN_RESULTS;
+$pagelevel = (int) constant('K_AUTH_ADMIN_RESULTS');
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
 
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$test_id = isset($_REQUEST['test_id']) && is_string($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
+if ($test_id > 0) {
     // check user's authorization
     require_once '../../shared/code/tce_authorization.php';
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit();
     }
-} else {
-    $test_id = 0;
 }
 
-$group_id = isset($_REQUEST['group_id']) && $_REQUEST['group_id'] > 0 ? (int) $_REQUEST['group_id'] : 0;
+$group_id = isset($_REQUEST['group_id']) && is_string($_REQUEST['group_id'])
+    ? max(0, (int) $_REQUEST['group_id']) : 0;
 
-$user_id = isset($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
+$user_id = isset($_REQUEST['user_id']) && is_string($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
 
-if (isset($_REQUEST['startdate'])) {
+if (isset($_REQUEST['startdate']) && is_string($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
     $startdate_time = strtotime($startdate);
-    $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
+    $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time === false ? 0 : $startdate_time);
 } else {
     $startdate = 0;
 }
 
-if (isset($_REQUEST['enddate'])) {
+if (isset($_REQUEST['enddate']) && is_string($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
     $enddate_time = strtotime($enddate);
-    $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
+    $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time === false ? 0 : $enddate_time);
 } else {
     $enddate = 0;
 }
 
 if (
     isset($_REQUEST['order_field'])
+    && is_string($_REQUEST['order_field'])
     && !empty($_REQUEST['order_field'])
     && in_array($_REQUEST['order_field'], [
         'testuser_creation_time',
@@ -68,7 +68,7 @@ if (
         'user_lastname',
         'user_firstname',
         'total_score',
-    ])
+    ], true)
 ) {
     $order_field = $_REQUEST['order_field'];
 } else {
@@ -81,7 +81,8 @@ if (!isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
     $full_order_field = $order_field . ' DESC';
 }
 
-$display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
+$display_mode = isset($_REQUEST['display_mode']) && is_string($_REQUEST['display_mode'])
+    ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
 
 // send headers
 header('Content-Description: TXT File Transfer');
@@ -98,6 +99,7 @@ header('Content-Type: text/tab-separated-values', false);
 header('Content-Disposition: attachment; filename=tcexam_test_results_' . $test_id . '_' . date('YmdHis') . '.tsv;');
 header('Content-Transfer-Encoding: binary');
 
+/** @var array{testuser: list<array{user_id: int|string}>} $data */
 $data = f_get_all_users_test_stat(
     $test_id,
     $group_id,
@@ -109,12 +111,16 @@ $data = f_get_all_users_test_stat(
     $display_mode,
 );
 // format data as HTML table
+/** @var string $table */
 $table = f_print_test_result_stat($data, 1, $order_field, '', false, $display_mode);
-$table .= f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
+/** @var string $test_stat */
+$test_stat = f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
+$table .= $test_stat;
 // convert HTML table to TSV
 echo f_html_to_tsv($table);
 
 if ($user_id === 0) {
+    /** @var array<int|string, int|string> $users */
     $users = [];
     foreach ($data['testuser'] as $tu) {
         $users[$tu['user_id']] = $tu['user_id'];
@@ -126,10 +132,30 @@ if ($user_id === 0) {
         foreach ($users as $uid) {
             echo K_NEWLINE . K_NEWLINE . '### USER' . K_TAB . $uid . K_NEWLINE . K_NEWLINE;
 
-            $usrdata = f_get_all_users_test_stat($test_id, $group_id, $uid, $startdate, $enddate, $full_order_field);
+            /** @var array{testuser: list<array{user_id: int|string}>} $usrdata */
+            $usrdata = f_get_all_users_test_stat(
+                $test_id,
+                $group_id,
+                $uid,
+                $startdate,
+                $enddate,
+                $full_order_field,
+            );
             // format data as HTML table
+            /** @var string $table */
             $table = f_print_test_result_stat($usrdata, 1, $order_field, '', false, $display_mode);
-            $table .= f_print_test_stat($test_id, $group_id, $uid, $startdate, $enddate, 0, $usrdata, $display_mode);
+            /** @var string $test_stat */
+            $test_stat = f_print_test_stat(
+                $test_id,
+                $group_id,
+                $uid,
+                $startdate,
+                $enddate,
+                0,
+                $usrdata,
+                $display_mode,
+            );
+            $table .= $test_stat;
             // convert HTML table to TSV
             echo f_html_to_tsv($table);
         }
