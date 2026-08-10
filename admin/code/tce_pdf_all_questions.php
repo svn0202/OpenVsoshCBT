@@ -26,6 +26,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 define('K_PATH_FONTS', realpath(__DIR__ . '/../../vendor/tecnickcom/tc-lib-pdf-font/target/fonts'));
 
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
@@ -33,19 +34,31 @@ require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/config/tce_pdf.php';
 require_once '../../shared/code/tce_pdf_report.php';
 
+/**
+ * @var array{
+ *     t_questions_list:string,
+ *     hp_select_all_questions:string,
+ *     a_meta_dir:string,
+ *     w_explanation:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var array{expmode?:int|string,module_id?:int|string,subject_id?:int|string,hide_answers?:mixed} $request */
+$request = $_REQUEST;
+
 if (
-    !isset($_REQUEST['expmode'])
-    || $_REQUEST['expmode'] <= 0
-    || !isset($_REQUEST['module_id'])
-    || $_REQUEST['module_id'] <= 0
-    || (!isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
+    !isset($request['expmode'])
+    || $request['expmode'] <= 0
+    || !isset($request['module_id'])
+    || $request['module_id'] <= 0
+    || (!isset($request['subject_id']) || $request['subject_id'] <= 0)
 ) {
     exit();
 }
 
-$expmode = (int) $_REQUEST['expmode'];
-$module_id = (int) $_REQUEST['module_id'];
-$subject_id = (int) $_REQUEST['subject_id'];
+$expmode = (int) $request['expmode'];
+$module_id = (int) $request['module_id'];
+$subject_id = (int) $request['subject_id'];
 
 // check user's authorization for module
 if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
@@ -53,15 +66,42 @@ if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user
 }
 
 $show_answers = true;
-if (isset($_REQUEST['hide_answers']) && f_legacy_int_equals($_REQUEST['hide_answers'], 1)) {
+if (isset($request['hide_answers']) && f_legacy_int_equals($request['hide_answers'], 1)) {
     $show_answers = false;
 }
 
 $doc_title = unhtmlentities($l['t_questions_list']);
 $doc_description = f_compact_string(unhtmlentities($l['hp_select_all_questions']));
 
-$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
-$qright = [' ', '*']; // answer right marker
+$question_type_text = static fn (int $value): string => match ($value) {
+    1 => 'S',
+    2 => 'M',
+    3 => 'T',
+    4 => 'O',
+    5 => 'C',
+    default => '',
+};
+$right_answer_mark = static fn (mixed $value): string => match ((int) f_get_boolean($value)) {
+    0 => ' ',
+    1 => '*',
+};
+$normalize_query_result = static function (mixed $result): mixed {
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+};
+/** @return array<array-key,mixed>|null */
+$normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+/** @var bool $question_explanation_enabled */
+$question_explanation_enabled = K_ENABLE_QUESTION_EXPLANATION;
+/** @var bool $answer_explanation_enabled */
+$answer_explanation_enabled = K_ENABLE_ANSWER_EXPLANATION;
 
 // --- create the PDF document (tc-lib-pdf) ---
 
@@ -87,7 +127,7 @@ switch ($expmode) {
 }
 
 // document metadata
-$pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
+$pdf->setCreator('TCExam ver.' . (string) K_TCEXAM_VERSION);
 $pdf->setAuthor(PDF_AUTHOR);
 $pdf->setTitle($doc_title);
 $pdf->setSubject($doc_description);
@@ -106,8 +146,9 @@ if ($expmode < 3) {
 }
 
 $sqlm = F_select_modules_sql($andmodwhere);
-if ($rm = F_db_query($sqlm, $db)) {
-    while ($mm = F_db_fetch_array($rm)) {
+if ($rm = $normalize_query_result(F_db_query($sqlm, $db))) {
+    while ($mm = $normalize_row(F_db_fetch_array($rm))) {
+        /** @var array{module_id:int,module_name:string} $mm */
         $module_id = $mm['module_id'];
         $module_name = $mm['module_name'];
 
@@ -118,8 +159,9 @@ if ($rm = F_db_query($sqlm, $db)) {
         }
 
         $sqls = F_select_subjects_sql($where_sqls);
-        if ($rs = F_db_query($sqls, $db)) {
-            while ($ms = F_db_fetch_array($rs)) {
+        if ($rs = $normalize_query_result(F_db_query($sqls, $db))) {
+            while ($ms = $normalize_row(F_db_fetch_array($rs))) {
+                /** @var array{subject_id:int,subject_name:string,subject_description:mixed} $ms */
                 $subject_id = $ms['subject_id'];
                 $subject_name = $ms['subject_name'];
                 $subject_description = F_decode_tcecode($ms['subject_description']);
@@ -147,9 +189,24 @@ if ($rm = F_db_query($sqlm, $db)) {
                     . $subject_id
                     . '
 					ORDER BY question_enabled DESC, question_position, question_description';
-                if ($rq = F_db_query($sqlq, $db)) {
+                if ($rq = $normalize_query_result(F_db_query($sqlq, $db))) {
                     $itemcount = 1;
-                    while ($mq = F_db_fetch_array($rq)) {
+                    while ($mq = $normalize_row(F_db_fetch_array($rq))) {
+                        /**
+                         * @var array{
+                         *     question_id:int,
+                         *     question_enabled:mixed,
+                         *     question_type:1|2|3|4|5,
+                         *     question_difficulty:int|float|string,
+                         *     question_position:int,
+                         *     question_timer:int,
+                         *     question_fullscreen:mixed,
+                         *     question_inline_answers:mixed,
+                         *     question_auto_next:mixed,
+                         *     question_description:mixed,
+                         *     question_explanation:mixed
+                         * } $mq
+                         */
                         $disabled = !f_get_boolean($mq['question_enabled']);
                         $rowstyle = $disabled ? 'color:#999999;' : '';
                         $flags =
@@ -166,7 +223,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                             . '"><tr style="text-align:center;">';
                         foreach ([
                             '#' . $itemcount,
-                            $qtype[$mq['question_type'] - 1],
+                            $question_type_text($mq['question_type']),
                             $mq['question_difficulty'],
                             $pos,
                             $flags,
@@ -182,7 +239,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                             . '">'
                             . F_decode_tcecode($mq['question_description'])
                             . '</div>';
-                        if (K_ENABLE_QUESTION_EXPLANATION && !empty($mq['question_explanation'])) {
+                        if ($question_explanation_enabled && !empty($mq['question_explanation'])) {
                             $html .=
                                 '<div style="font-size:7pt;border:0.5px solid #000000;"><b><i><u>'
                                 . htmlspecialchars($l['w_explanation'])
@@ -200,15 +257,25 @@ if ($rm = F_db_query($sqlm, $db)) {
                                 . $mq['question_id']
                                 . '\'
 								ORDER BY answer_position,answer_isright DESC';
-                            if ($ra = F_db_query($sqla, $db)) {
+                            if ($ra = $normalize_query_result(F_db_query($sqla, $db))) {
                                 $html .= '<table border="0.5" cellpadding="2" style="font-size:7pt;">';
                                 $idx = 0;
-                                while ($ma = F_db_fetch_array($ra)) {
+                                while ($ma = $normalize_row(F_db_fetch_array($ra))) {
+                                    /**
+                                     * @var array{
+                                     *     answer_enabled:mixed,
+                                     *     answer_isright:mixed,
+                                     *     answer_position:int,
+                                     *     answer_keyboard_key:int,
+                                     *     answer_description:mixed,
+                                     *     answer_explanation:mixed
+                                     * } $ma
+                                     */
                                     ++$idx;
                                     $adisabled = !f_get_boolean($ma['answer_enabled']);
                                     $astyle = $adisabled ? 'color:#999999;' : '';
                                     $rightmark = !in_array((int) $mq['question_type'], [4, 5], true)
-                                        ? $qright[(int) f_get_boolean($ma['answer_isright'])]
+                                        ? $right_answer_mark($ma['answer_isright'])
                                         : '';
                                     $apos = $ma['answer_position'] > 0 ? $ma['answer_position'] : '';
                                     $akey = $ma['answer_keyboard_key'] > 0
@@ -218,7 +285,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                                     $html .= '<td style="text-align:center;">' . $idx . '</td>';
                                     $html .=
                                         '<td style="text-align:center;">'
-                                        . htmlspecialchars((string) $rightmark)
+                                        . htmlspecialchars($rightmark)
                                         . '</td>';
                                     $html .=
                                         '<td style="text-align:center;">' . htmlspecialchars((string) $apos) . '</td>';
@@ -226,7 +293,7 @@ if ($rm = F_db_query($sqlm, $db)) {
                                         '<td style="text-align:center;">' . htmlspecialchars($akey) . '</td>';
                                     $html .= '<td>' . F_decode_tcecode($ma['answer_description']) . '</td>';
                                     $html .= '</tr>';
-                                    if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                                    if ($answer_explanation_enabled && !empty($ma['answer_explanation'])) {
                                         $html .=
                                             '<tr><td colspan="5" style="font-size:6pt;"><b><i><u>'
                                             . htmlspecialchars($l['w_explanation'])
