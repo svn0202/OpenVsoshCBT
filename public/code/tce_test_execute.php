@@ -158,7 +158,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         require_once '../code/tce_page_header.php';
         echo '<div class="container">' . K_NEWLINE;
 
-        echo '<span class="infolink">' . F_testInfoLink($test_id, $l['w_info']) . '<br /><br /></span>' . K_NEWLINE;
+        echo '<span class="infolink">' . f_test_info_link($test_id, $l['w_info']) . '<br /><br /></span>' . K_NEWLINE;
 
         if (
             $_SERVER['REQUEST_METHOD'] === 'POST'

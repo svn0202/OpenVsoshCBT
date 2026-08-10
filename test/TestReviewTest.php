@@ -31,7 +31,7 @@ final class TestReviewTest extends TestCase
                 'namespace Harness; define("K_TEST_INFO_HEIGHT", 600); define("K_TEST_INFO_WIDTH", 800); '
                     . '$GLOBALS["l"] = ["m_new_window_link" => "New window", "w_info" => "Info"]; '
                     . 'require $argv[2]; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_testInfoLink|f_test_info_link)\\(/", '
+                    . 'preg_match("/function (f_test_info_link)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

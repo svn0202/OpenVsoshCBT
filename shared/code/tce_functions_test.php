@@ -84,7 +84,7 @@ function F_getUserTests()
                     $str .= '<td>';
                 }
 
-                $str .= '<strong>' . F_testInfoLink($m['test_id'], $m['test_name']) . '</strong></td>' . K_NEWLINE;
+                $str .= '<strong>' . f_test_info_link($m['test_id'], $m['test_name']) . '</strong></td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $m['test_begin_time'] . '</td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
@@ -622,7 +622,7 @@ function F_checkTestStatus($user_id, $test_id, $duration)
  * @param $link_name (string) link caption
  * return XHTML code
  */
-function F_testInfoLink($test_id, $link_name = '')
+function f_test_info_link($test_id, $link_name = ''): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
