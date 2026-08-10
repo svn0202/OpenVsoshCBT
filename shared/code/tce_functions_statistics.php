@@ -24,11 +24,13 @@
  * Return an array containing descriptive statistics for the bidimensional input array.
  * @author Nicola Asuni
  * @since 2008-12-25
- * @param $data (array) input data as bidimesional array. The first dimension is a set of data, the second contains data.
- * @return array of statistical results. The keys of the input data are peserved.
+ * @param $data (array) input data as bidimensional array. The first dimension is a set of data,
+ *        the second contains data.
+ * @return array of statistical results. The keys of the input data are preserved.
  */
 function f_get_array_statistics(mixed $data): mixed
 {
+    /** @var array<array-key, non-empty-list<int|float|numeric-string>> $data */
     $stats = [];
     $stats['number'] = []; // number of items
     $stats['sum'] = []; // sum of all elements
@@ -44,38 +46,40 @@ function f_get_array_statistics(mixed $data): mixed
     $stats['kurtosi'] = []; // kurtosi
     foreach ($data as $set => $dataset) {
         sort($dataset);
-        $stats['number'][$set] = 0;
+        $number = count($dataset);
+        $stats['number'][$set] = $number;
         $stats['minimum'][$set] = $dataset[0];
         $stats['sum'][$set] = 0;
         $datastr = [];
         foreach ($dataset as $num => $value) {
-            ++$stats['number'][$set];
             $stats['sum'][$set] += (float) $value;
-            $datastr[] = '' . $value . ''; // convert value to string
+            $datastr[] = (string) $value;
         }
 
-        if ($stats['number'][$set] > 0) {
-            $stats['maximum'][$set] = $dataset[$stats['number'][$set] - 1];
+        if ($number > 0) {
+            $stats['maximum'][$set] = $dataset[$number - 1] ?? 0;
             $stats['range'][$set] = (float) $stats['maximum'][$set] - (float) $stats['minimum'][$set];
-            $stats['mean'][$set] = $stats['sum'][$set] / $stats['number'][$set];
-            $nsdiv = (int) ($stats['number'][$set] / 2);
-            if ($nsdiv > 0 && ($stats['number'][$set] % 2) === 0) {
-                $stats['median'][$set] = ((float) $dataset[$nsdiv] + (float) $dataset[$nsdiv - 1]) / 2;
+            $stats['mean'][$set] = $stats['sum'][$set] / $number;
+            $nsdiv = intdiv($number, 2);
+            if ($nsdiv > 0 && ($number % 2) === 0) {
+                $stats['median'][$set] = (
+                    (float) ($dataset[$nsdiv] ?? 0) + (float) ($dataset[$nsdiv - 1] ?? 0)
+                ) / 2;
             } else {
-                $stats['median'][$set] = (float) $dataset[($stats['number'][$set] - 1) / 2];
+                $stats['median'][$set] = (float) ($dataset[intdiv($number - 1, 2)] ?? 0);
             }
 
             $freq = array_count_values($datastr);
             arsort($freq, SORT_NUMERIC);
             $freq = array_keys($freq);
-            $stats['mode'][$set] = (float) $freq[0];
+            $stats['mode'][$set] = (float) ($freq[0] ?? '0');
             $dev = 0;
             foreach ($dataset as $num => $value) {
                 // deviance
-                $dev += ((float) $value - (float) $stats['mean'][$set]) ** 2;
+                $dev += ((float) $value - $stats['mean'][$set]) ** 2;
             }
 
-            $stats['variance'][$set] = $dev / $stats['number'][$set];
+            $stats['variance'][$set] = $dev / $number;
             $stats['standard_deviation'][$set] = sqrt($stats['variance'][$set]);
             $stats['skewness'][$set] = 0;
             $stats['kurtosi'][$set] = 0;
@@ -86,8 +90,8 @@ function f_get_array_statistics(mixed $data): mixed
                     $stats['kurtosi'][$set] += $tmpval ** 4;
                 }
 
-                $stats['skewness'][$set] /= $stats['number'][$set];
-                $stats['kurtosi'][$set] /= $stats['number'][$set];
+                $stats['skewness'][$set] /= $number;
+                $stats['kurtosi'][$set] /= $number;
             }
         }
     }

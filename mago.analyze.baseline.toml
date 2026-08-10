@@ -13261,66 +13261,6 @@ message = "Potentially unhandled exception `Throwable` in `f_tmf_regrade_test`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "invalid-type-cast"
-message = "Casting `mixed` to `float`."
-count = 7
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `sort`: expected `array<array-key, ('T.sort() extends mixed)>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 6
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "mixed-operand"
-message = "Left operand in binary operation has type `mixed`."
-count = 9
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "mixed-operand"
-message = "Right operand in binary operation has type `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `list<mixed>`."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_functions_statistics.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `list<string>`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_tcecode.php"
 code = "invalid-destructuring-source"
 message = "Invalid destructuring assignment: Cannot unpack type `array{0: int, 1: int, 2: int, 3: string, 'bits': int, 'channels': int, 'mime': string}|false` into variables."
