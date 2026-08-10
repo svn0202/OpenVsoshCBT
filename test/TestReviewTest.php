@@ -132,7 +132,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_db_fetch_array($sql) { preg_match("/logansw_order=([0-9]+)/", $sql, $m); '
                     . 'return ["logansw_answer_id" => 100 + (int) $m[1]]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getAnswerIdFromPosition|f_get_answer_id_from_position)\\(/", '
+                    . 'preg_match("/function (f_get_answer_id_from_position)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

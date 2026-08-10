@@ -1866,7 +1866,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
         return false;
     }
 
-    $answer_id = F_getAnswerIdFromPosition($testlog_id, $answpos);
+    $answer_id = f_get_answer_id_from_position($testlog_id, $answpos);
 
     // calculate question score
     $question_right_score = $testdata['test_score_right'] * $question_difficulty;
@@ -2119,9 +2119,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
  * Returns the answer ID from position
  * @param $testlog_id (int) Test Log ID
  * @param $answpos (array) Answer positions (order in wich they are displayed)
- * @return int answer ID
+ * @return array<int, mixed> Answer values keyed by answer ID.
  */
-function F_getAnswerIdFromPosition($testlog_id, $answpos)
+function f_get_answer_id_from_position($testlog_id, $answpos): array
 {
     require_once '../config/tce_config.php';
     global $db, $l;
