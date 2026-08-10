@@ -61,6 +61,9 @@ require_once '../../shared/code/tce_functions_test.php';
 require_once 'tce_functions_user_select.php';
 require_once 'tce_functions_test_select.php';
 
+/** @var bool $formstatus */
+/** @var string $menu_mode */
+
 $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
     ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
     : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
