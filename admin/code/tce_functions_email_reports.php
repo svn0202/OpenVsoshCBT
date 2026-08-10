@@ -123,7 +123,7 @@ function f_send_report_emails(
     $email_num = 0; // count emails;
 
     // get all data
-    $data = F_getAllUsersTestStat(
+    $data = f_get_all_users_test_stat(
         $test_id,
         $group_id,
         $user_id,

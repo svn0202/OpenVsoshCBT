@@ -1921,7 +1921,7 @@ function f_print_user_test_stat($testuser_id)
  * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
  * return $data array containing test statistics.
  */
-function F_getAllUsersTestStat(
+function f_get_all_users_test_stat(
     $test_id,
     $group_id = 0,
     $user_id = 0,

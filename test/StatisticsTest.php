@@ -103,7 +103,7 @@ final class StatisticsTest extends TestCase
                     . 'function f_format_float($value) { return "FMT:" . $value; } '
                     . 'function f_get_array_statistics($data) { $GLOBALS["statistics"] = $data; return ["done" => true]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getAllUsersTestStat)\\(/", '
+                    . 'preg_match("/function (f_get_all_users_test_stat)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

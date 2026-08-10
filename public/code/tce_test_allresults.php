@@ -308,7 +308,7 @@ echo '<div class="row"><hr /></div>' . K_NEWLINE;
 // ---------------------------------------------------------------------
 $itemcount = 0;
 
-$data = F_getAllUsersTestStat(
+$data = f_get_all_users_test_stat(
     $test_id,
     $group_id,
     $user_id,

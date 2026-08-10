@@ -98,7 +98,7 @@ header('Content-Type: text/tab-separated-values', false);
 header('Content-Disposition: attachment; filename=tcexam_test_results_' . $test_id . '_' . date('YmdHis') . '.tsv;');
 header('Content-Transfer-Encoding: binary');
 
-$data = F_getAllUsersTestStat(
+$data = f_get_all_users_test_stat(
     $test_id,
     $group_id,
     $user_id,
@@ -126,7 +126,7 @@ if ($user_id === 0) {
         foreach ($users as $uid) {
             echo K_NEWLINE . K_NEWLINE . '### USER' . K_TAB . $uid . K_NEWLINE . K_NEWLINE;
 
-            $usrdata = F_getAllUsersTestStat($test_id, $group_id, $uid, $startdate, $enddate, $full_order_field);
+            $usrdata = f_get_all_users_test_stat($test_id, $group_id, $uid, $startdate, $enddate, $full_order_field);
             // format data as HTML table
             $table = F_printTestResultStat($usrdata, 1, $order_field, '', false, $display_mode);
             $table .= F_printTestStat($test_id, $group_id, $uid, $startdate, $enddate, 0, $usrdata, $display_mode);

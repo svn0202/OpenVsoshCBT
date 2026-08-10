@@ -129,7 +129,7 @@ function f_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate 
     $xml .= K_TAB . '</header>' . K_NEWLINE;
     $xml .= K_TAB . '<body>' . K_NEWLINE;
 
-    $data = F_getAllUsersTestStat(
+    $data = f_get_all_users_test_stat(
         $test_id,
         $group_id,
         $user_id,
