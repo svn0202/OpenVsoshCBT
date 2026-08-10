@@ -1055,8 +1055,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'csrf_token' => $token,
         ]);
         $this->assertSame(200, $status);
+        $m = [];
         $this->assertSame(1, preg_match('/name="forcedelete"[^>]*value="([^"]+)"/', $body, $m), 'the confirm form should render a forcedelete button');
-        $forceValue = $m[1];
+        $forceValue = $m[1] ?? '';
 
         // 3) Confirm the deletion (menu_mode 'forcedelete' → runs the converted $_POST read).
         [$status] = $this->http('POST', '/admin/code/tce_edit_group.php', $cookies, [
