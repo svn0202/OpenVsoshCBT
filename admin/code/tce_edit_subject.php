@@ -22,8 +22,30 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_SUBJECTS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     t_subjects_editor:string,w_name:string,a_meta_charset:string,m_authorization_denied:string,
+ *     m_disabled_vs_deleted:string,m_delete_confirm:string,w_delete:string,h_delete:string,w_cancel:string,
+ *     h_cancel:string,m_deleted:string,m_form_missing_fields:string,w_confirm:string,w_update:string,
+ *     m_update_restrict:string,w_record_status:string,w_enabled:string,w_disabled:string,m_duplicate_name:string,
+ *     m_updated:string,t_modules_editor:string,hp_edit_subject:string,w_module:string,w_subject:string,
+ *     h_subject:string,h_subject_name:string,w_description:string,h_preview:string,w_preview:string,
+ *     h_subject_description:string,h_enabled:string,h_update:string,w_add:string,h_add:string,w_clear:string,
+ *     h_clear:string,t_questions_editor:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var string $menu_mode */
+/** @var bool $formstatus */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/** @var array{session_user_id:int|string} $session */
+$session = $_SESSION;
+$session_user_id = (int) $session['session_user_id'];
 
 $thispage_title = $l['t_subjects_editor'];
 require_once '../code/tce_page_header.php';
@@ -35,7 +57,8 @@ require_once '../../shared/code/tce_functions_auth_sql.php';
 // upload multimedia files
 $uploadedfile = [];
 for ($id = 0; $id < 2; ++$id) {
-    if (isset($_POST['sendfile' . $id]) && $_FILES['userfile' . $id]['name']) {
+    $userfile = $_FILES['userfile' . $id] ?? null;
+    if (isset($_POST['sendfile' . $id]) && is_array($userfile) && !empty($userfile['name'])) {
         require_once '../code/tce_functions_upload.php';
         $uploadedfile["'" . $id . "'"] = f_upload_file('userfile' . $id, K_PATH_CACHE);
     }
@@ -56,7 +79,8 @@ $subject_id = isset($_REQUEST['subject_id']) ? (int) $_REQUEST['subject_id'] : 0
 
 $subject_module_id = isset($_REQUEST['subject_module_id']) ? (int) $_REQUEST['subject_module_id'] : 0;
 
-if (isset($_REQUEST['changecategory']) && $_REQUEST['changecategory'] > 0) {
+$requested_change_category = $_REQUEST['changecategory'] ?? null;
+if ($requested_change_category !== null && f_tce_edit_subject_is_positive($requested_change_category)) {
     $changecategory = 1;
 } elseif (isset($_REQUEST['selectcategory'])) {
     $changecategory = 1;
@@ -64,15 +88,18 @@ if (isset($_REQUEST['changecategory']) && $_REQUEST['changecategory'] > 0) {
     $changecategory = 0;
 }
 
-$subject_name = isset($_REQUEST['subject_name']) ? utrim($_REQUEST['subject_name']) : '';
+$subject_name = utrim(f_tce_edit_subject_string($_REQUEST['subject_name'] ?? ''));
 
-$subject_description = isset($_REQUEST['subject_description']) ? utrim($_REQUEST['subject_description']) : '';
+$subject_description = utrim(f_tce_edit_subject_string($_REQUEST['subject_description'] ?? ''));
 
-if ($subject_id > 0) {
+if (f_tce_edit_subject_is_positive($subject_id)) {
     if ($changecategory === 0) {
         $sql = 'SELECT subject_module_id FROM ' . K_TABLE_SUBJECTS . ' WHERE subject_id=' . $subject_id . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+        if ($r) {
+            $m = f_tce_edit_subject_row(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{subject_module_id:int|string} $m */
                 $subject_module_id = (int) $m['subject_module_id'];
                 // check user's authorization for parent module
                 if (
@@ -98,7 +125,8 @@ switch ($menu_mode) {
                 $sql = 'UPDATE ' . K_TABLE_SUBJECTS . ' SET
 				subject_enabled=\'0\'
 				WHERE subject_id=' . $subject_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error();
                 }
 
@@ -109,7 +137,7 @@ switch ($menu_mode) {
                 ?>
             <div class="confirmbox">
             <form action="<?php echo
-                htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
             ; ?>" method="post" enctype="multipart/form-data" id="form_delete">
             <div>
             <input type="hidden" name="subject_id" id="subject_id" value="<?php echo $subject_id; ?>" />
@@ -136,7 +164,8 @@ switch ($menu_mode) {
     case 'forcedelete':
             if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_SUBJECTS . ' WHERE subject_id=' . $subject_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     $subject_id = false;
@@ -173,7 +202,8 @@ switch ($menu_mode) {
 					WHERE subject_id='
                         . $subject_id
                         . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+                    if (!$r) {
                         F_display_db_error(false);
                     } else {
                         $strmsg = $l['w_record_status'] . ': ';
@@ -195,7 +225,7 @@ switch ($menu_mode) {
                 if (!F_check_unique(
                     K_TABLE_SUBJECTS,
                     "subject_name='"
-                    . F_escape_sql($db, $subject_name)
+                    . f_tce_edit_subject_string(F_escape_sql($db, $subject_name))
                     . "' AND subject_module_id="
                     . $subject_module_id
                     . '',
@@ -213,10 +243,10 @@ switch ($menu_mode) {
                     . K_TABLE_SUBJECTS
                     . ' SET
 				subject_name=\''
-                    . F_escape_sql($db, $subject_name)
+                    . f_tce_edit_subject_string(F_escape_sql($db, $subject_name))
                     . '\',
 				subject_description='
-                    . f_empty_to_null($subject_description)
+                    . f_tce_edit_subject_string(f_empty_to_null($subject_description))
                     . ',
 				subject_enabled=\''
                     . (int) $subject_enabled
@@ -227,7 +257,8 @@ switch ($menu_mode) {
 				WHERE subject_id='
                     . $subject_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', $l['m_updated']);
@@ -243,7 +274,7 @@ switch ($menu_mode) {
                 if (!F_check_unique(
                     K_TABLE_SUBJECTS,
                     "subject_name='"
-                    . F_escape_sql($db, $subject_name)
+                    . f_tce_edit_subject_string(F_escape_sql($db, $subject_name))
                     . "' AND subject_module_id="
                     . $subject_module_id
                     . '',
@@ -265,24 +296,26 @@ switch ($menu_mode) {
 				subject_module_id
 				) VALUES (
 				\''
-                    . F_escape_sql($db, $subject_name)
+                    . f_tce_edit_subject_string(F_escape_sql($db, $subject_name))
                     . '\',
 				'
-                    . f_empty_to_null($subject_description)
+                    . f_tce_edit_subject_string(f_empty_to_null($subject_description))
                     . ',
 				\''
                     . (int) $subject_enabled
                     . '\',
 				\''
-                    . (int) $_SESSION['session_user_id']
+                    . $session_user_id
                     . '\',
 				'
                     . $subject_module_id
                     . '
 				)';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
+                    /** @var int|numeric-string $subject_id */
                     $subject_id = F_db_insert_id($db, K_TABLE_SUBJECTS, 'subject_id');
                 }
             }
@@ -302,9 +335,12 @@ switch ($menu_mode) {
 
 // select default module (if not specified)
 if ($subject_module_id <= 0) {
-    $sql = F_select_modules_sql() . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $sql = f_tce_edit_subject_string(F_select_modules_sql()) . ' LIMIT 1';
+    $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = f_tce_edit_subject_row(F_db_fetch_array($r));
+        if ($m) {
+            /** @var array{module_id:int|string} $m */
             /** @var int|numeric-string $default_module_id */
             $default_module_id = $m['module_id'];
             $subject_module_id = (int) $default_module_id;
@@ -324,11 +360,21 @@ if ($formstatus && $menu_mode !== 'clear') {
         $subject_description = '';
         $subject_enabled = true;
     } else {
-        $sql =
-            F_select_subjects_sql('subject_id=' . $subject_id . ' AND subject_module_id=' . $subject_module_id)
-            . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $sql = f_tce_edit_subject_string(
+            F_select_subjects_sql(
+                'subject_id=' . f_tce_edit_subject_string($subject_id) . ' AND subject_module_id=' . $subject_module_id,
+            ),
+        ) . ' LIMIT 1';
+        $r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+        if ($r) {
+            $m = f_tce_edit_subject_row(F_db_fetch_array($r));
+            if ($m) {
+                /**
+                 * @var array{
+                 *     subject_id:int|string,subject_module_id:int|string,subject_name:string,
+                 *     subject_description:string,subject_enabled:mixed
+                 * } $m
+                 */
                 /** @var int|numeric-string $stored_subject_id */
                 $stored_subject_id = $m['subject_id'];
                 /** @var int|numeric-string $stored_module_id */
@@ -372,7 +418,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_subjecteditor">'
         . K_NEWLINE
 ;
@@ -389,10 +435,12 @@ echo
         . '">'
         . K_NEWLINE
 ;
-$sql = F_select_modules_sql();
-if ($r = F_db_query($sql, $db)) {
+$sql = f_tce_edit_subject_string(F_select_modules_sql());
+$r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+if ($r) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while ($m = f_tce_edit_subject_row(F_db_fetch_array($r))) {
+        /** @var array{module_id:int|string,module_name:string,module_enabled:mixed} $m */
         echo '<option value="' . $m['module_id'] . '"';
         /** @var int|numeric-string $listed_module_id */
         $listed_module_id = $m['module_id'];
@@ -447,10 +495,12 @@ if ($subject_id === 0) {
 }
 
 echo '>+</option>' . K_NEWLINE;
-$sql = F_select_subjects_sql('subject_module_id=' . $subject_module_id);
-if ($r = F_db_query($sql, $db)) {
+$sql = f_tce_edit_subject_string(F_select_subjects_sql('subject_module_id=' . $subject_module_id));
+$r = f_tce_edit_subject_query_result(F_db_query($sql, $db));
+if ($r) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while ($m = f_tce_edit_subject_row(F_db_fetch_array($r))) {
+        /** @var array{subject_id:int|string,subject_name:string,subject_enabled:mixed} $m */
         echo '<option value="' . $m['subject_id'] . '"';
         /** @var int|numeric-string $listed_subject_id */
         $listed_subject_id = $m['subject_id'];
@@ -538,7 +588,7 @@ echo get_form_row_checkbox('subject_enabled', $l['w_enabled'], $l['h_enabled'], 
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if ($subject_id > 0) {
+if (f_tce_edit_subject_is_positive($subject_id)) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -567,7 +617,7 @@ echo '<div class="row">' . K_NEWLINE;
 echo '<span class="left">' . K_NEWLINE;
 echo '&nbsp;' . K_NEWLINE;
 
-if ($subject_module_id > 0) {
+if (f_tce_edit_subject_is_positive($subject_module_id)) {
     echo
         '<a href="tce_edit_module.php?module_id='
             . $subject_module_id
@@ -582,12 +632,12 @@ if ($subject_module_id > 0) {
 echo '</span>' . K_NEWLINE;
 echo '<span class="right">' . K_NEWLINE;
 
-if ($subject_id > 0) {
+if (f_tce_edit_subject_is_positive($subject_id)) {
     echo
         '<a href="tce_edit_question.php?subject_module_id='
             . $subject_module_id
             . '&amp;question_subject_id='
-            . $subject_id
+            . f_tce_edit_subject_string($subject_id)
             . '" title="'
             . $l['t_questions_editor']
             . '" class="xmlbutton">'
@@ -620,3 +670,40 @@ echo '<div class="pagehelp">' . $l['hp_edit_subject'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_edit_subject_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** Preserve legacy positive-value comparisons. */
+function f_tce_edit_subject_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+
+    return false;
+}
+
+/** @return object|resource|bool */
+function f_tce_edit_subject_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tce_edit_subject_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
