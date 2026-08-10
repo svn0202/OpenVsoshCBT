@@ -4,19 +4,19 @@ variant = "loose"
 file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 30
+count = 23
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 3
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 4
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -40,7 +40,7 @@ count = 2
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 13
+count = 12
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"

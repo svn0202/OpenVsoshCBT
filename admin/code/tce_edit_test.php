@@ -1289,9 +1289,8 @@ echo '>+</option>' . K_NEWLINE;
 $sql = F_select_tests_sql();
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_test_list_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['test_id'] . '"';
-        /** @var int|numeric-string $listed_test_id */
         $listed_test_id = $m['test_id'];
         if (f_legacy_int_equals($test_id, (int) $listed_test_id)) {
             echo ' selected="selected"';
@@ -2239,6 +2238,21 @@ function f_tce_edit_test_subject_row(mixed $row): ?array
 function f_tce_edit_test_subject_id_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     test_id:int|numeric-string,test_begin_time:string,test_end_time:string,test_name:string
+ * }|null
+ */
+function f_tce_edit_test_list_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     test_id:int|numeric-string,test_begin_time:string,test_end_time:string,test_name:string
+     * }|null $row
+     */
     return $row;
 }
 
