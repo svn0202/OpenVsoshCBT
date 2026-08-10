@@ -23,20 +23,30 @@
 
 require_once '../config/tce_config.php';
 
-$file_type = $_POST['file_type'] ?? '';
+$submitted_file_type = $_POST['file_type'] ?? '';
+$file_type = is_string($submitted_file_type) ? $submitted_file_type : '';
 
-$pagelevel = K_AUTH_IMPORT_USERS;
+$pagelevel = (int) K_AUTH_IMPORT_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *   t_user_importer: string, m_importing_complete: string, w_upload_file: string,
+ *   h_upload_file: string, h_file_type: string, w_type: string, h_file_type_xml: string,
+ *   h_file_type_tsv: string, w_upload: string, h_submit_file: string, hp_import_xml_users: string
+ * } $l
+ */
+/** @var string $menu_mode */
 $thispage_title = $l['t_user_importer'];
 require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
 
 switch ($menu_mode) {
     case 'upload':
-            if ($_FILES['userfile']['name']) {
+            $userfile = $_FILES['userfile'] ?? null;
+            if (is_array($userfile) && !empty($userfile['name'])) {
                 require_once '../code/tce_functions_upload.php';
                 // upload file
+                /** @var false|string $uploadedfile */
                 $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
                 if ($uploadedfile !== false) {
                     switch ($file_type) {
@@ -127,7 +137,7 @@ require_once '../code/tce_page_footer.php';
  */
 class XMLUserImporter
 {
-    public $parser;
+    public \XMLParser $parser;
 
     /**
      * String Current data element.
@@ -139,19 +149,21 @@ class XMLUserImporter
      * String Current data value.
      * @private
      */
-    private $current_data = '';
+    private string $current_data = '';
 
     /**
      * Array Array for storing user data.
      * @private
      */
-    private $user_data = [];
+    /** @var array<string, int|string> */
+    private array $user_data = [];
 
     /**
      * Array for storing user's group data.
      * @private
      */
-    private $group_data = [];
+    /** @var list<int> */
+    private array $group_data = [];
 
     /**
      * Class constructor.
@@ -162,7 +174,7 @@ class XMLUserImporter
          * String XML file
          * @private
          */
-        private $xmlfile,
+        private string $xmlfile,
     ) {
         // creates a new XML parser to be used by the other XML functions
         $this->parser = xml_parser_create();
@@ -173,7 +185,9 @@ class XMLUserImporter
         // sets the character data handler function for the XML parser
         xml_set_character_data_handler($this->parser, $this->segContentHandler(...));
         // start parsing an XML document
-        if (xml_parse($this->parser, file_get_contents($xmlfile)) === 0) {
+        $xml = file_get_contents($xmlfile);
+        // @mago-expect analysis:possibly-false-argument -- xml_parse preserves the constructor's legacy failure mode
+        if (xml_parse($this->parser, $xml) === 0) {
             die(sprintf(
                 'ERROR xmlResourceBundle :: XML error: %s at line %d',
                 xml_error_string(xml_get_error_code($this->parser)),
@@ -185,7 +199,7 @@ class XMLUserImporter
     public function __destruct()
     {
         // delete uploaded file
-        $xmlfile = (string) $this->xmlfile;
+        $xmlfile = $this->xmlfile;
         if (is_file($xmlfile)) {
             unlink($xmlfile);
         }
@@ -195,15 +209,31 @@ class XMLUserImporter
      * Sets the start element handler function for the XML parser parser.start_element_handler.
      * @param $parser (resource) The first parameter, parser, is a reference to the XML parser calling the handler.
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
-     * @param $attribs (array) The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
+     * @param array<string, string> $attribs The element attributes supplied by ext-xml.
      * @private
      */
-    private function startElementHandler($parser, $name, $attribs)
+    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
+    private function startElementHandler(mixed $parser, string $name, array $attribs): void
     {
         $name = strtolower($name);
         switch ($name) {
             case 'user':
-                    $this->user_data = [];
+                    $this->user_data = [
+                        'user_name' => '',
+                        'user_password' => '',
+                        'user_email' => '',
+                        'user_regdate' => '',
+                        'user_ip' => '',
+                        'user_firstname' => '',
+                        'user_lastname' => '',
+                        'user_birthdate' => '',
+                        'user_birthplace' => '',
+                        'user_regnumber' => '',
+                        'user_ssn' => '',
+                        'user_level' => '',
+                        'user_verifycode' => '',
+                        'user_otpkey' => '',
+                    ];
                     $this->group_data = [];
                     $this->current_data = '';
                     break;
@@ -239,7 +269,8 @@ class XMLUserImporter
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler($parser, $name)
+    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
+    private function endElementHandler(mixed $parser, string $name): mixed
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -272,10 +303,14 @@ class XMLUserImporter
 					FROM ' . K_TABLE_GROUPS . '
 					WHERE group_name=\'' . $group_name . '\'
 					LIMIT 1';
-                    if ($r = F_db_query($sql, $db)) {
-                        if ($m = F_db_fetch_array($r)) {
+                    /** @var mixed $r */
+                    $r = F_db_query($sql, $db);
+                    if ($r) {
+                        /** @var mixed $m */
+                        $m = F_db_fetch_array($r);
+                        if (is_array($m)) {
                             // the group has been already added
-                            $this->group_data[] = $m['group_id'];
+                            $this->group_data[] = (int) ($m['group_id'] ?? 0);
                         } else {
                             // add new group
                             $sqli = 'INSERT INTO ' . K_TABLE_GROUPS . ' (
@@ -283,10 +318,12 @@ class XMLUserImporter
 							) VALUES (
 							\'' . $group_name . '\'
 							)';
-                            if (!($ri = F_db_query($sqli, $db))) {
+                            /** @var mixed $ri */
+                            $ri = F_db_query($sqli, $db);
+                            if (!$ri) {
                                 F_display_db_error(false);
                             } else {
-                                $this->group_data[] = F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
+                                $this->group_data[] = (int) F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
                             }
                         }
                     } else {
@@ -302,18 +339,20 @@ class XMLUserImporter
                         }
 
                         if (empty($this->user_data['user_ip'])) {
-                            $this->user_data['user_ip'] = get_normalized_ip($_SERVER['REMOTE_ADDR']);
+                            $this->user_data['user_ip'] = (string) get_normalized_ip($_SERVER['REMOTE_ADDR']);
                         }
 
-                        if (!isset($this->user_data['user_level']) || strlen($this->user_data['user_level']) === 0) {
+                        if ((string) $this->user_data['user_level'] === '') {
                             $this->user_data['user_level'] = 1;
                         }
 
-                        if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+                        $session_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
+                        $session_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
+                        if ($session_user_level < K_AUTH_ADMINISTRATOR) {
                             // you cannot edit a user with a level equal or higher than yours
                             $this->user_data['user_level'] = min(
-                                max(0, $_SESSION['session_user_level'] - 1),
-                                $this->user_data['user_level'],
+                                max(0, $session_user_level - 1),
+                                (int) $this->user_data['user_level'],
                             );
                             // non-administrator can access only to his/her groups
                             if (empty($this->group_data)) {
@@ -321,7 +360,7 @@ class XMLUserImporter
                             }
 
                             $common_groups = array_intersect(
-                                F_get_user_groups($_SESSION['session_user_id']),
+                                F_get_user_groups($session_user_id),
                                 $this->group_data,
                             );
                             if ($common_groups === []) {
@@ -345,13 +384,17 @@ class XMLUserImporter
                             . $this->user_data['user_ssn']
                             . '\'
 						LIMIT 1';
-                        if ($r = F_db_query($sql, $db)) {
-                            if ($m = F_db_fetch_array($r)) {
+                        /** @var mixed $r */
+                        $r = F_db_query($sql, $db);
+                        if ($r) {
+                            /** @var mixed $m */
+                            $m = F_db_fetch_array($r);
+                            if (is_array($m)) {
                                 // the user has been already added
-                                $user_id = $m['user_id'];
+                                $user_id = (int) ($m['user_id'] ?? 0);
                                 if (
-                                    $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR
-                                    || $_SESSION['session_user_level'] > $m['user_level']
+                                    $session_user_level >= K_AUTH_ADMINISTRATOR
+                                    || $session_user_level > (int) ($m['user_level'] ?? 0)
                                 ) {
                                     //update user data
                                     $sqlu =
@@ -410,7 +453,9 @@ class XMLUserImporter
 									WHERE user_id='
                                         . $user_id
                                         . '';
-                                    if (!($ru = F_db_query($sqlu, $db))) {
+                                    /** @var mixed $ru */
+                                    $ru = F_db_query($sqlu, $db);
+                                    if (!$ru) {
                                         F_display_db_error(false);
                                         return false;
                                     }
@@ -482,12 +527,14 @@ class XMLUserImporter
                                     . f_empty_to_null($this->user_data['user_otpkey'])
                                     . '
 								)';
-                                if (!($ru = F_db_query($sqlu, $db))) {
+                                /** @var mixed $ru */
+                                $ru = F_db_query($sqlu, $db);
+                                if (!$ru) {
                                     F_display_db_error(false);
                                     return false;
                                 }
 
-                                $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
+                                $user_id = (int) F_db_insert_id($db, K_TABLE_USERS, 'user_id');
                             }
                         } else {
                             F_display_db_error(false);
@@ -496,7 +543,7 @@ class XMLUserImporter
 
                         // user's groups
                         if (!empty($this->group_data)) {
-                            foreach ($this->group_data as $key => $group_id) {
+                            foreach ($this->group_data as $group_id) {
                                 // check if user-group already exist
                                 $sqls =
                                     'SELECT *
@@ -510,8 +557,12 @@ class XMLUserImporter
                                     . $user_id
                                     . '\'
 								LIMIT 1';
-                                if ($rs = F_db_query($sqls, $db)) {
-                                    if (!($ms = F_db_fetch_array($rs))) {
+                                /** @var mixed $rs */
+                                $rs = F_db_query($sqls, $db);
+                                if ($rs) {
+                                    /** @var mixed $ms */
+                                    $ms = F_db_fetch_array($rs);
+                                    if (!$ms) {
                                         // associate group to user
                                         $sqlg =
                                             'INSERT INTO '
@@ -527,7 +578,9 @@ class XMLUserImporter
                                             . $group_id
                                             . '
 										)';
-                                        if (!($rg = F_db_query($sqlg, $db))) {
+                                        /** @var mixed $rg */
+                                        $rg = F_db_query($sqlg, $db);
+                                        if (!$rg) {
                                             F_display_db_error(false);
                                             return false;
                                         }
@@ -544,6 +597,8 @@ class XMLUserImporter
             default:
                     break;
         }
+
+        return null;
     }
 
     /**
@@ -552,7 +607,8 @@ class XMLUserImporter
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler($parser, $data)
+    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
+    private function segContentHandler(mixed $parser, string $data): void
     {
         if (strlen($this->current_element) > 0) {
             // we are inside an element
@@ -792,7 +848,7 @@ function f_import_tsv_users(mixed $tsvfile): bool
 
         // user's groups
         if (!empty($userdata[15])) {
-            $groups = preg_replace("/[\r\n]+/", '', $userdata[15]);
+            $groups = preg_replace("/[\r\n]+/", '', $userdata[15]) ?? $userdata[15];
             $groups = explode(',', addslashes($groups));
             foreach ($groups as $group_name) {
                 $group_name = F_escape_sql($db, $group_name);
