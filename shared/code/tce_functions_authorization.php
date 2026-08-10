@@ -36,9 +36,19 @@
  * @param username String user name
  * @return string XHTML string for login form
  */
-function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): string
+function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $fenctype, mixed $username): string
 {
     global $l;
+    /** @var array{
+     *   ov_rcoko_alt: string, a_meta_charset: string, ov_login_intro: string,
+     *   ov_login_intro_organization: string, w_username: string, h_login_name: string,
+     *   ov_username_placeholder: string, w_password: string, h_password: string,
+     *   ov_password_placeholder: string, ov_show_password: string, w_otpcode: string,
+     *   h_otpcode: string, w_login: string, h_login_button: string, ov_access_control: string,
+     *   t_user_registration: string, w_forgot_password: string, ov_login_support: string,
+     *   ov_results_site: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/config/tce_user_registration.php';
     require_once '../../shared/code/tce_functions_form.php';
@@ -67,13 +77,13 @@ function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): st
         . '</strong></p>' . K_NEWLINE;
     $str .=
         '<form action="'
-        . $faction
+        . (string) $faction
         . '" method="'
-        . $fmethod
+        . (string) $fmethod
         . '" id="'
-        . $fid
+        . (string) $fid
         . '" enctype="'
-        . $fenctype
+        . (string) $fenctype
         . '">'
         . K_NEWLINE;
     // user name
@@ -82,7 +92,7 @@ function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): st
         $l['w_username'],
         $l['h_login_name'],
         '',
-        $username,
+        (string) $username,
         '',
         255,
         false,
@@ -116,7 +126,9 @@ function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): st
         . htmlspecialchars($l['ov_show_password'], ENT_QUOTES, $l['a_meta_charset']) . '" '
         . 'aria-pressed="false">◉</button>' . K_NEWLINE;
     // One Time Password code (OTP)
-    if (K_OTP_LOGIN) {
+    /** @var bool $otp_login */
+    $otp_login = K_OTP_LOGIN;
+    if ($otp_login) {
         $str .= get_form_row_text_input(
             'xuser_otpcode',
             $l['w_otpcode'],
@@ -191,19 +203,28 @@ function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): st
  * Display login page.
  * NOTE: This function calls exit() after execution.
  */
-function f_login_form()
+function f_login_form(): void
 {
     global $l, $thispage_title;
     global $xuser_name, $xuser_password;
+    /** @var array{
+     *   m_authorization_denied: string, a_meta_language: string, a_meta_dir: string,
+     *   a_meta_charset: string, w_login: string, t_login_form: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
 
     // Keep the administration area from rendering its own copy of the participant login page.
     // Anonymous visitors use the regular public login and return to the requested admin page
     // after a successful operator/administrator login.
+    // @mago-expect analysis:redundant-null-coalesce -- keep the function safe in isolated and non-web execution
+    // @mago-expect analysis:redundant-cast -- server values are normalized at the authorization boundary
     $script_name = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
     $admin_code_pos = strpos($script_name, '/admin/code/');
     if ((int) ($_SESSION['session_user_level'] ?? 0) === 0 && $admin_code_pos !== false) {
+        // @mago-expect analysis:redundant-cast -- preserve normalization if server globals are replaced by a harness
         $request_method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        // @mago-expect analysis:redundant-cast -- preserve normalization if server globals are replaced by a harness
         $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? $script_name);
         $request_path = parse_url($request_uri, PHP_URL_PATH);
         if (
@@ -222,6 +243,8 @@ function f_login_form()
 
     // HTTP-Basic authentication
     require_once '../../shared/config/tce_httpbasic.php';
+    // @mago-expect analysis:redundant-logical-operation -- disabled in this installation, supported by shared code
+    // @mago-expect analysis:impossible-condition -- deployments can enable HTTP Basic authentication in configuration
     if (K_HTTPBASIC_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
         // force HTTP Basic Authentication
         header('WWW-Authenticate: Basic realm="TCExam"');
@@ -234,6 +257,8 @@ function f_login_form()
 
     // Shibboleth authentication
     require_once '../../shared/config/tce_shibboleth.php';
+    // @mago-expect analysis:redundant-logical-operation -- disabled in this installation, supported by shared code
+    // @mago-expect analysis:impossible-condition -- deployments can enable Shibboleth authentication in configuration
     if (K_SHIBBOLETH_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
         // redirect to Shibboleth Login Page
         header('Location: ' . K_SHIBBOLETH_LOGIN);
@@ -257,18 +282,25 @@ function f_login_form()
     require_once '../../shared/code/tce_functions_form.php';
     $thispage_title = $l['t_login_form']; //set page title
     require_once '../code/tce_page_header.php';
-    echo f_login_form_markup($_SERVER['SCRIPT_NAME'], 'form_login', 'post', 'multipart/form-data', $xuser_name);
+    echo f_login_form_markup(
+        $_SERVER['SCRIPT_NAME'],
+        'form_login',
+        'post',
+        'multipart/form-data',
+        $xuser_name,
+    );
     require_once '../code/tce_page_footer.php';
     exit(); //break page here
 }
 
 /**
  * Display logout form.
- * @return XHTML string for logout form.
+ * @return string XHTML string for logout form.
  */
-function f_logout_form()
+function f_logout_form(): string
 {
     global $l;
+    /** @var array{d_logout_desc: string, w_logout: string} $l */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_form.php';
     $str = K_NEWLINE;
@@ -301,9 +333,10 @@ function f_logout_form()
  * Display logout page.
  * NOTE: This function calls exit() after execution.
  */
-function f_logout_page()
+function f_logout_page(): void
 {
     global $l, $thispage_title;
+    /** @var array{t_logout_form: string} $l */
     require_once '../config/tce_config.php';
     $thispage_title = $l['t_logout_form']; // set page title
     require_once '../code/tce_page_header.php';
@@ -322,7 +355,7 @@ function f_logout_page()
  * @param $field_user_id (string) name of the foreign key to to user_id
  * @return boolean true if the user is authorized, false otherwise
  */
-function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id): bool
+function f_is_authorized_user(mixed $table, mixed $field_id_name, mixed $value_id, mixed $field_user_id): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -330,9 +363,9 @@ function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id)
     $field_id_name = F_escape_sql($db, $field_id_name);
     $value_id = (int) $value_id;
     $field_user_id = F_escape_sql($db, $field_user_id);
-    $user_id = (int) $_SESSION['session_user_id'];
+    $user_id = (int) ($_SESSION['session_user_id'] ?? 0);
     // check for administrator
-    if (defined('K_AUTH_ADMINISTRATOR') && $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+    if (defined('K_AUTH_ADMINISTRATOR') && (int) ($_SESSION['session_user_level'] ?? 0) >= K_AUTH_ADMINISTRATOR) {
         return true;
     }
 
@@ -358,9 +391,13 @@ function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id)
     // get author ID
     $author_id = 0;
     $sql = 'SELECT ' . $field_user_id . ' FROM ' . $table . ' WHERE ' . $field_id_name . '=' . $value_id . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            $author_id = $m[0];
+    /** @var mixed $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        /** @var mixed $m */
+        $m = F_db_fetch_array($r);
+        if (is_array($m)) {
+            $author_id = (int) ($m[0] ?? 0);
         }
     } else {
         F_display_db_error();
@@ -392,7 +429,7 @@ function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id)
  * @param $user_id (int) user ID
  * @return string
  */
-function f_get_authorized_users($user_id): string
+function f_get_authorized_users(mixed $user_id): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -402,9 +439,16 @@ function f_get_authorized_users($user_id): string
 		FROM ' . K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb
 		WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
 			AND ta.usrgrp_user_id=' . $user_id . '';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
-            $str .= $m[0] . ',';
+    /** @var mixed $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        while (true) {
+            /** @var mixed $m */
+            $m = F_db_fetch_array($r);
+            if (!is_array($m)) {
+                break;
+            }
+            $str .= (string) ($m[0] ?? '') . ',';
         }
     } else {
         F_display_db_error();
@@ -422,7 +466,7 @@ function f_get_authorized_users($user_id): string
  * @author Nicola Asuni
  * @since 2012-09-11
  */
-function f_sync_user_groups($usrid, $grpids)
+function f_sync_user_groups(mixed $usrid, mixed $grpids): void
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -437,16 +481,26 @@ function f_sync_user_groups($usrid, $grpids)
     } elseif (f_legacy_int_equals($grpids, 0)) {
         // all available groups
         $sqlg = 'SELECT group_id FROM ' . K_TABLE_GROUPS . '';
-        if ($rg = F_db_query($sqlg, $db)) {
-            while ($mg = F_db_fetch_array($rg)) {
-                $newgrps[] = $mg['group_id'];
+        /** @var mixed $rg */
+        $rg = F_db_query($sqlg, $db);
+        if ($rg) {
+            while (true) {
+                /** @var mixed $mg */
+                $mg = F_db_fetch_array($rg);
+                if (!is_array($mg)) {
+                    break;
+                }
+                $newgrps[] = (int) ($mg['group_id'] ?? 0);
             }
         } else {
             F_display_db_error();
         }
-    } elseif ($grpids > 0) {
+    } else {
         // single default group
-        $newgrps[] = (int) $grpids;
+        // @mago-expect analysis:mixed-operand -- alternate-auth configuration retains PHP's legacy scalar comparison
+        if ($grpids > 0) {
+            $newgrps[] = (int) $grpids;
+        }
     }
 
     if ($newgrps === []) {
@@ -456,9 +510,16 @@ function f_sync_user_groups($usrid, $grpids)
     // select existing group IDs
     $usrgrps = [];
     $sqlu = 'SELECT usrgrp_group_id FROM ' . K_TABLE_USERGROUP . ' WHERE usrgrp_user_id=' . $usrid . '';
-    if ($ru = F_db_query($sqlu, $db)) {
-        while ($mu = F_db_fetch_array($ru)) {
-            $usrgrps[] = $mu['usrgrp_group_id'];
+    /** @var mixed $ru */
+    $ru = F_db_query($sqlu, $db);
+    if ($ru) {
+        while (true) {
+            /** @var mixed $mu */
+            $mu = F_db_fetch_array($ru);
+            if (!is_array($mu)) {
+                break;
+            }
+            $usrgrps[] = (int) ($mu['usrgrp_group_id'] ?? 0);
         }
     } else {
         F_display_db_error();
@@ -477,7 +538,9 @@ function f_sync_user_groups($usrid, $grpids)
 				\'' . $usrid . '\',
 				\'' . $grpid . '\'
 				)';
-            if (!($r = F_db_query($sql, $db))) {
+            /** @var mixed $r */
+            $r = F_db_query($sql, $db);
+            if (!$r) {
                 F_display_db_error();
             }
         }
@@ -517,30 +580,37 @@ function f_is_ssl_certificate_valid(): bool
  * @author Nicola Asuni
  * @since 2013-07-01
  */
-function f_get_ssl_certificate_hash($cert, $pkcs12 = false): array
+function f_get_ssl_certificate_hash(string $cert, bool $pkcs12 = false): array
 {
     if ($pkcs12) {
+        /** @var array{cert?: string} $certs */
         $certs = [];
         openssl_pkcs12_read($cert, $certs, '');
-        $cert = $certs['cert'];
+        if (isset($certs['cert']) && is_string($certs['cert'])) {
+            $cert = $certs['cert'];
+        }
     }
 
-    $ssldata = openssl_x509_parse($cert);
+    /** @return array<array-key, mixed> */
+    $normalize_array = static fn(mixed $value): array => is_array($value) ? $value : [];
+    $ssldata = $normalize_array(openssl_x509_parse($cert));
     $sslhash = '';
-    $sslhash .= isset($ssldata['serialNumber']) ? bcdechex($ssldata['serialNumber']) : '';
-    $sslhash .= $ssldata['issuer']['C'] ?? '';
-    $sslhash .= $ssldata['issuer']['ST'] ?? '';
-    $sslhash .= $ssldata['issuer']['O'] ?? '';
-    $sslhash .= $ssldata['issuer']['OU'] ?? '';
-    $sslhash .= $ssldata['issuer']['CN'] ?? '';
-    $sslhash .= $ssldata['issuer']['emailAddress'] ?? '';
-    $sslhash .= $ssldata['subject']['C'] ?? '';
-    $sslhash .= $ssldata['subject']['ST'] ?? '';
-    $sslhash .= $ssldata['subject']['O'] ?? '';
-    $sslhash .= $ssldata['subject']['OU'] ?? '';
-    $sslhash .= $ssldata['subject']['CN'] ?? '';
-    $sslhash .= $ssldata['subject']['emailAddress'] ?? '';
-    $endtime = $ssldata['validTo_time_t'] ?? time();
+    $issuer = $normalize_array($ssldata['issuer'] ?? null);
+    $subject = $normalize_array($ssldata['subject'] ?? null);
+    $sslhash .= isset($ssldata['serialNumber']) ? bcdechex((string) $ssldata['serialNumber']) : '';
+    $sslhash .= (string) ($issuer['C'] ?? '');
+    $sslhash .= (string) ($issuer['ST'] ?? '');
+    $sslhash .= (string) ($issuer['O'] ?? '');
+    $sslhash .= (string) ($issuer['OU'] ?? '');
+    $sslhash .= (string) ($issuer['CN'] ?? '');
+    $sslhash .= (string) ($issuer['emailAddress'] ?? '');
+    $sslhash .= (string) ($subject['C'] ?? '');
+    $sslhash .= (string) ($subject['ST'] ?? '');
+    $sslhash .= (string) ($subject['O'] ?? '');
+    $sslhash .= (string) ($subject['OU'] ?? '');
+    $sslhash .= (string) ($subject['CN'] ?? '');
+    $sslhash .= (string) ($subject['emailAddress'] ?? '');
+    $endtime = isset($ssldata['validTo_time_t']) ? (int) $ssldata['validTo_time_t'] : time();
 
     $sslhash .= $endtime;
     return [md5($sslhash), date(K_TIMESTAMP_FORMAT, $endtime)];
@@ -568,6 +638,6 @@ function f_get_ssl_client_hash(): string
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_OU'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_CN'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_Email'] ?? '';
-    $crthash .= isset($_SERVER['SSL_CLIENT_V_END']) ? strtotime($_SERVER['SSL_CLIENT_V_END']) : '';
+    $crthash .= isset($_SERVER['SSL_CLIENT_V_END']) ? (string) strtotime($_SERVER['SSL_CLIENT_V_END']) : '';
     return md5($crthash);
 }
