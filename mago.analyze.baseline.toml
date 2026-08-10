@@ -10132,7 +10132,7 @@ count = 1
 file = "public/code/tce_test_execute.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 13
+count = 12
 
 [[issues]]
 file = "public/code/tce_test_execute.php"
@@ -15651,12 +15651,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_testInfoLink` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
 message = "Function `F_testLoginForm` is missing a return type hint."
 count = 1
 
@@ -15778,7 +15772,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 131
+count = 130
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
