@@ -22,12 +22,30 @@
  */
 
 require_once '../config/tce_config.php';
+/**
+ * @var array{
+ *     a_meta_charset:string,
+ *     d_admin_index?:string,
+ *     w_day:string,
+ *     w_executed:string,
+ *     w_limit:string,
+ *     w_max:string,
+ *     w_month:string,
+ *     w_over_limit:string,
+ *     w_remaining:string,
+ *     w_remaining_tests:string,
+ *     w_total:string,
+ *     w_under_limit:string,
+ *     w_year:string
+ * } $l
+ */
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_INDEX;
 require_once '../../shared/code/tce_authorization.php';
 $thispage_title = 'Панель управления';
 require_once 'tce_page_header.php';
 $dashboard_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
-$dashboard_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
+$dashboard_charset = $l['a_meta_charset'];
 
 $dashboard_stats = [
     ['label' => 'Участники', 'value' => F_count_rows(K_TABLE_USERS), 'icon' => 'users', 'href' => 'tce_select_users.php', 'level' => K_AUTH_ADMIN_USERS],
@@ -69,11 +87,20 @@ echo '</section>' . K_NEWLINE;
 
 // Display test limits (if any)
 
+$read_test_limit = static fn (string $constant_name): int|false => (
+    static fn (mixed $value): int|false => is_int($value) ? $value : false
+)(constant($constant_name));
+$count_tests = static fn (mixed $count): int => (int) $count;
+$remaining_tests = $read_test_limit('K_REMAINING_TESTS');
+$max_tests_day = $read_test_limit('K_MAX_TESTS_DAY');
+$max_tests_month = $read_test_limit('K_MAX_TESTS_MONTH');
+$max_tests_year = $read_test_limit('K_MAX_TESTS_YEAR');
+
 $limits = '';
-if (K_REMAINING_TESTS !== false) {
+if ($remaining_tests !== false) {
     // count
     $limits .= '<tr';
-    if (K_REMAINING_TESTS <= 0) {
+    if ($remaining_tests <= 0) {
         $limits .= ' style="text-align:right;background-color:#FFCCCC;" title="' . $l['w_over_limit'] . '"';
         $limitstatus = '<span class="sr-only">' . $l['w_over_limit'] . '</span> ';
     } else {
@@ -86,21 +113,21 @@ if (K_REMAINING_TESTS !== false) {
         . $l['w_total']
         . '</td><td>&nbsp;</td><td>&nbsp;</td><td>'
         . $limitstatus
-        . K_REMAINING_TESTS
+        . $remaining_tests
         . '</td></tr>';
 }
 
 $now = time();
 $enddate = date(K_TIMESTAMP_FORMAT, $now);
-if (K_MAX_TESTS_DAY !== false) {
+if ($max_tests_day !== false) {
     // day limit (last 24 hours)
-    $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_DAY);
-    $numtests = F_count_rows(
+    $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_DAY));
+    $numtests = $count_tests(F_count_rows(
         K_TABLE_TESTUSER_STAT,
         "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
-    );
+    ));
     $limits .= '<tr';
-    if ((K_MAX_TESTS_DAY - $numtests) <= 0) {
+    if (($max_tests_day - $numtests) <= 0) {
         $limits .= ' style="text-align:right;background-color:#FFCCCC;" title="' . $l['w_over_limit'] . '"';
         $limitstatus = '<span class="sr-only">' . $l['w_over_limit'] . '</span> ';
     } else {
@@ -112,24 +139,24 @@ if (K_MAX_TESTS_DAY !== false) {
         '><td style="text-align:left;">'
         . $l['w_day']
         . '</td><td>'
-        . K_MAX_TESTS_DAY
+        . $max_tests_day
         . '</td><td>'
         . $numtests
         . '</td><td><strong>'
         . $limitstatus
-        . (K_MAX_TESTS_DAY - $numtests)
+        . ($max_tests_day - $numtests)
         . '</strong></td></tr>';
 }
 
-if (K_MAX_TESTS_MONTH !== false) {
+if ($max_tests_month !== false) {
     // month limit (last 30 days)
-    $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_MONTH);
-    $numtests = F_count_rows(
+    $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_MONTH));
+    $numtests = $count_tests(F_count_rows(
         K_TABLE_TESTUSER_STAT,
         "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
-    );
+    ));
     $limits .= '<tr';
-    if ((K_MAX_TESTS_MONTH - $numtests) <= 0) {
+    if (($max_tests_month - $numtests) <= 0) {
         $limits .= ' style="text-align:right;background-color:#FFCCCC;" title="' . $l['w_over_limit'] . '"';
         $limitstatus = '<span class="sr-only">' . $l['w_over_limit'] . '</span> ';
     } else {
@@ -141,24 +168,24 @@ if (K_MAX_TESTS_MONTH !== false) {
         '><td style="text-align:left;">'
         . $l['w_month']
         . '</td><td>'
-        . K_MAX_TESTS_MONTH
+        . $max_tests_month
         . '</td><td>'
         . $numtests
         . '</td><td><strong>'
         . $limitstatus
-        . (K_MAX_TESTS_MONTH - $numtests)
+        . ($max_tests_month - $numtests)
         . '</strong></td></tr>';
 }
 
-if (K_MAX_TESTS_YEAR !== false) {
+if ($max_tests_year !== false) {
     // year limit (last 365 days)
-    $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_YEAR);
-    $numtests = F_count_rows(
+    $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_YEAR));
+    $numtests = $count_tests(F_count_rows(
         K_TABLE_TESTUSER_STAT,
         "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
-    );
+    ));
     $limits .= '<tr';
-    if ((K_MAX_TESTS_YEAR - $numtests) <= 0) {
+    if (($max_tests_year - $numtests) <= 0) {
         $limits .= ' style="text-align:right;background-color:#FFCCCC;" title="' . $l['w_over_limit'] . '"';
         $limitstatus = '<span class="sr-only">' . $l['w_over_limit'] . '</span> ';
     } else {
@@ -170,12 +197,12 @@ if (K_MAX_TESTS_YEAR !== false) {
         '><td style="text-align:left;">'
         . $l['w_year']
         . '</td><td>'
-        . K_MAX_TESTS_YEAR
+        . $max_tests_year
         . '</td><td>'
         . $numtests
         . '</td><td><strong>'
         . $limitstatus
-        . (K_MAX_TESTS_YEAR - $numtests)
+        . ($max_tests_year - $numtests)
         . '</strong></td></tr>';
 }
 
@@ -201,6 +228,6 @@ if (strlen($limits) > 0) {
 }
 
 echo '<section class="dashboard-guide"><h2>Справка администратора</h2>'
-    . (string) ($l['d_admin_index'] ?? '') . '</section>';
+    . ($l['d_admin_index'] ?? '') . '</section>';
 
 require_once 'tce_page_footer.php';
