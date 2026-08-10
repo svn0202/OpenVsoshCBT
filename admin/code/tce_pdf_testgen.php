@@ -41,9 +41,20 @@ require_once 'tce_functions_omr.php';
 require_once '../../shared/config/tce_pdf.php';
 require_once '../../shared/code/tce_pdf_report.php';
 
+/** @var mixed $db */
+/**
+ * @var array{
+ *     w_test:string,h_test:string,a_meta_dir:string,w_lastname:string,w_firstname:string,w_code:string,
+ *     w_score:string,w_test_score_threshold:string,w_test_time:string,w_minutes:string,w_time_begin:string,
+ *     w_time_end:string,w_score_right:string,w_score_wrong:string,w_score_unanswered:string,w_max_score:string,
+ *     w_true_acronym:string,w_false_acronym:string
+ * } $l
+ */
+
 // --- Initialize variables
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$requested_test_id = $_REQUEST['test_id'] ?? null;
+if ($requested_test_id !== null && f_tce_pdf_testgen_is_positive($requested_test_id)) {
+    $test_id = (int) $requested_test_id;
     // check user's authorization
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit();
@@ -56,18 +67,14 @@ $test_num = isset($_REQUEST['num']) ? (int) $_REQUEST['num'] : 1;
 
 $doc_title = unhtmlentities($l['w_test']);
 $doc_description = f_compact_string(unhtmlentities($l['h_test']));
-$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
-
-$matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
+$database_type = f_tce_pdf_testgen_string(K_DATABASE_TYPE);
+$matching_reuse_condition = $database_type === 'ORACLE'
     ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
     : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
 
 $rtl_doc = $l['a_meta_dir'] === 'rtl';
 $dirlabel = $rtl_doc ? 'left' : 'right';
 $dirvalue = $rtl_doc ? 'right' : 'left';
-
-// RGB array [r,g,b] -> '#rrggbb' for the tc-lib-pdf graph/colour API.
-$rgb = static fn(array $c): string => sprintf('#%02x%02x%02x', $c[0], $c[1], $c[2]);
 
 // --- OMR grid geometry (millimetres) — DO NOT change: read back by the scanner.
 $grid_color = [255, 0, 0];
@@ -84,14 +91,14 @@ $align_mark_length = $line_width * 22;
 $align_mark_shift = $line_width * 8;
 $row_height = $circle_width + (8 * $line_width);
 
-$grid_hex = $rgb($grid_color);
-$grid_bg_hex = $rgb($grid_bg_color);
-$circle_bg_hex = $rgb($circle_bg_color);
-$align_hex = $rgb($align_mark_color);
+$grid_hex = f_tce_pdf_testgen_rgb($grid_color);
+$grid_bg_hex = f_tce_pdf_testgen_rgb($grid_bg_color);
+$circle_bg_hex = f_tce_pdf_testgen_rgb($circle_bg_color);
+$align_hex = f_tce_pdf_testgen_rgb($align_mark_color);
 $omr_line_style = ['lineWidth' => $line_width, 'lineColor' => $grid_hex];
 
 // get test data
-$testdata = f_get_test_data($test_id);
+$testdata = f_tce_pdf_testgen_test_data(f_get_test_data($test_id));
 $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
 $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
 $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
@@ -126,7 +133,7 @@ switch ($test_questions_order_mode) {
 // --- create the PDF document (tc-lib-pdf) ---
 
 $pdf = new TcePdfReport();
-$pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
+$pdf->setCreator('TCExam ver.' . f_tce_pdf_testgen_string(K_TCEXAM_VERSION));
 $pdf->setAuthor(PDF_AUTHOR);
 $pdf->setTitle($doc_title);
 $pdf->setSubject($doc_description);
@@ -147,7 +154,10 @@ $omrText = static function (
     int $fsize,
     string $colorhex,
 ) use ($pdf): string {
+    // @mago-expect analysis:unhandled-thrown-type -- configured PDF fonts are required for this export
     $fnt = $pdf->font->insert($pdf->pon, $fname, $fstyle, $fsize);
+    // @mago-expect analysis:unhandled-thrown-type -- PDF rendering failures retain the legacy fail-fast behavior
+    // @mago-expect analysis:unhandled-thrown-type -- Unicode rendering failures retain the legacy fail-fast behavior
     return (
         $fnt['out']
         . $pdf->color->getPdfColor($colorhex)
@@ -239,7 +249,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
             '<tr><td style="font-weight:bold;" width="40%" align="'
             . $dirlabel
             . '">'
-            . htmlspecialchars((string) $k)
+            . htmlspecialchars($k)
             . ': </td><td align="'
             . $dirvalue
             . '">'
@@ -274,9 +284,16 @@ for ($item = 1; $item <= $test_num; ++$item) {
         . $test_id
         . '
 		ORDER BY tsubset_type, tsubset_difficulty, tsubset_answers DESC';
-    if ($r = F_db_query($sql, $db)) {
-        $questions_data = [];
-        while ($m = F_db_fetch_array($r)) {
+    $questions_data = [];
+    $r = f_tce_pdf_testgen_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while ($m = f_tce_pdf_testgen_row(F_db_fetch_array($r))) {
+            /**
+             * @var array{
+             *     tsubset_type:int|string,tsubset_id:int|string,tsubset_difficulty:int|float|numeric-string,
+             *     tsubset_answers:int|numeric-string,tsubset_quantity:int|numeric-string
+             * } $m
+             */
             /** @var int|numeric-string $raw_subset_type */
             $raw_subset_type = $m['tsubset_type'];
             $subset_type = (int) $raw_subset_type;
@@ -287,8 +304,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 . K_TABLE_SUBJECT_SET
                 . ' WHERE subjset_tsubset_id='
                 . $m['tsubset_id'];
-            if ($rt = F_db_query($sqlt, $db)) {
-                while ($mt = F_db_fetch_array($rt)) {
+            $rt = f_tce_pdf_testgen_query_result(F_db_query($sqlt, $db));
+            if ($rt) {
+                while ($mt = f_tce_pdf_testgen_row(F_db_fetch_array($rt))) {
+                    /** @var array{subjset_subject_id:int|string} $mt */
                     $selected_subjects .= ',' . $mt['subjset_subject_id'];
                 }
             }
@@ -337,8 +356,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         . K_TABLE_ANSWERS
                         . " WHERE answer_enabled='1' AND answer_isright='1'"
                         . $sql_answer_position;
-                    if ($rt = F_db_query($sqlt, $db)) {
-                        while ($mt = F_db_fetch_array($rt)) {
+                    $rt = f_tce_pdf_testgen_query_result(F_db_query($sqlt, $db));
+                    if ($rt) {
+                        while ($mt = f_tce_pdf_testgen_row(F_db_fetch_array($rt))) {
+                            /** @var array{answer_question_id:int|string} $mt */
                             $right_answers_mcsa_questions_ids .= ',' . $mt['answer_question_id'];
                         }
                     }
@@ -346,8 +367,9 @@ for ($item = 1; $item <= $test_num; ++$item) {
 
                 $sqlq .= ' AND question_id IN (' . $right_answers_mcsa_questions_ids . ')';
                 if ($m['tsubset_answers'] > 0) {
-                    if (!isset($wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
-                        $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                    $answers_key = "'" . $m['tsubset_answers'] . "'";
+                    $wrong_answer_ids = $wrong_answers_mcsa_questions_ids[$answers_key] ?? '0';
+                    if (!isset($wrong_answers_mcsa_questions_ids[$answers_key])) {
                         $sqlt =
                             'SELECT answer_question_id FROM '
                             . K_TABLE_ANSWERS
@@ -356,24 +378,24 @@ for ($item = 1; $item <= $test_num; ++$item) {
                             . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='
                             . ($m['tsubset_answers'] - 1)
                             . ')';
-                        if ($rt = F_db_query($sqlt, $db)) {
-                            while ($mt = F_db_fetch_array($rt)) {
-                                $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] .=
-                                    ',' . $mt['answer_question_id'];
+                        $rt = f_tce_pdf_testgen_query_result(F_db_query($sqlt, $db));
+                        if ($rt) {
+                            while ($mt = f_tce_pdf_testgen_row(F_db_fetch_array($rt))) {
+                                /** @var array{answer_question_id:int|string} $mt */
+                                $wrong_answer_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
+                        $wrong_answers_mcsa_questions_ids[$answers_key] = $wrong_answer_ids;
                     }
 
-                    $sqlq .=
-                        ' AND question_id IN ('
-                        . $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"]
-                        . ')';
+                    $sqlq .= ' AND question_id IN (' . $wrong_answer_ids . ')';
                 }
             } elseif ($subset_type === 2) {
                 // (MCMA : Multiple Choice Multiple Answers)
                 if ($m['tsubset_answers'] > 0) {
-                    if (!isset($answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
-                        $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                    $answers_key = "'" . $m['tsubset_answers'] . "'";
+                    $multiple_answer_ids = $answers_mcma_questions_ids[$answers_key] ?? '0';
+                    if (!isset($answers_mcma_questions_ids[$answers_key])) {
                         $sqlt =
                             'SELECT answer_question_id FROM '
                             . K_TABLE_ANSWERS
@@ -382,16 +404,17 @@ for ($item = 1; $item <= $test_num; ++$item) {
                             . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='
                             . $m['tsubset_answers']
                             . ')';
-                        if ($rt = F_db_query($sqlt, $db)) {
-                            while ($mt = F_db_fetch_array($rt)) {
-                                $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] .=
-                                    ',' . $mt['answer_question_id'];
+                        $rt = f_tce_pdf_testgen_query_result(F_db_query($sqlt, $db));
+                        if ($rt) {
+                            while ($mt = f_tce_pdf_testgen_row(F_db_fetch_array($rt))) {
+                                /** @var array{answer_question_id:int|string} $mt */
+                                $multiple_answer_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
+                        $answers_mcma_questions_ids[$answers_key] = $multiple_answer_ids;
                     }
 
-                    $sqlq .=
-                        ' AND question_id IN (' . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] . ')';
+                    $sqlq .= ' AND question_id IN (' . $multiple_answer_ids . ')';
                 }
             } elseif (in_array($subset_type, [4, 5], true)) {
                 // ORDERING / MATCHING
@@ -412,8 +435,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         . K_TABLE_ANSWERS
                         . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)"
                         . $matching_having;
-                    if ($rt = F_db_query($sqlt, $db)) {
-                        while ($mt = F_db_fetch_array($rt)) {
+                    $rt = f_tce_pdf_testgen_query_result(F_db_query($sqlt, $db));
+                    if ($rt) {
+                        while ($mt = f_tce_pdf_testgen_row(F_db_fetch_array($rt))) {
+                            /** @var array{answer_question_id:int|string} $mt */
                             $answer_question_ids .= ',' . $mt['answer_question_id'];
                         }
                     }
@@ -434,16 +459,24 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 $sqlq .= $sql_questions_order_by;
             }
 
-            if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
+            if (f_legacy_literal_equals($database_type, 'ORACLE')) {
                 $sqlq = 'SELECT * FROM (' . $sqlq . ') WHERE rownum <= ' . $m['tsubset_quantity'];
             } else {
                 $sqlq .= ' LIMIT ' . $m['tsubset_quantity'];
             }
 
-            if ($rq = F_db_query($sqlq, $db)) {
-                while ($mq = F_db_fetch_array($rq)) {
+            $rq = f_tce_pdf_testgen_query_result(F_db_query($sqlq, $db));
+            if ($rq) {
+                while ($mq = f_tce_pdf_testgen_row(F_db_fetch_array($rq))) {
+                    /**
+                     * @var array{
+                     *     question_id:int|string,question_type:int|string,question_difficulty:int|float|numeric-string,
+                     *     question_position:int|string,question_description:string
+                     * } $mq
+                     */
                     /** @var int|numeric-string $raw_question_type */
                     $raw_question_type = $mq['question_type'];
+                    /** @var int<1, 5> $normalized_question_type */
                     $normalized_question_type = (int) $raw_question_type;
                     $tmp_data = [
                         'id' => $mq['question_id'],
@@ -494,7 +527,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
             $block .=
                 '<table border="0.5" cellpadding="2" style="width:100%;font-size:8pt;"><tr>'
                 . '<td align="right" style="width:8%;">'
-                . htmlspecialchars($itemcount . ' ' . $qtype[$q['type'] - 1])
+                . htmlspecialchars($itemcount . ' ' . f_tce_pdf_testgen_question_type_label($q['type']))
                 . '</td>'
                 . '<td align="right" style="width:8%;">'
                 . htmlspecialchars((string) ($q['difficulty'] * $testdata['test_score_right']))
@@ -516,8 +549,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
 					WHERE answer_question_id='
                     . $q['id']
                     . " AND answer_enabled='1' AND answer_isright='1'";
-                if ($rsa = F_db_query($sqlsa, $db)) {
-                    while ($msa = F_db_fetch_array($rsa)) {
+                $rsa = f_tce_pdf_testgen_query_result(F_db_query($sqlsa, $db));
+                if ($rsa) {
+                    while ($msa = f_tce_pdf_testgen_row(F_db_fetch_array($rsa))) {
+                        /** @var array{answer_description:string} $msa */
                         $shortanswers .= $msa['answer_description'] . ' ; ';
                     }
                 } else {
@@ -535,8 +570,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 $answers_ids = [];
                 switch ($q['type']) {
                     case 1: // MCSA
-                        $answers_ids += f_select_answers($q['id'], 1, false, 1, 0, $randorder, $test_answers_order_mode);
-                        $answers_ids += f_select_answers(
+                        $answers_ids += f_tce_pdf_testgen_answer_ids(
+                            f_select_answers($q['id'], 1, false, 1, 0, $randorder, $test_answers_order_mode),
+                        );
+                        $answers_ids += f_tce_pdf_testgen_answer_ids(f_select_answers(
                             $q['id'],
                             0,
                             false,
@@ -544,10 +581,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                             1,
                             $randorder,
                             $test_answers_order_mode,
-                        );
+                        ));
                         break;
                     case 2: // MCMA
-                        $answers_ids += f_select_answers(
+                        $answers_ids += f_tce_pdf_testgen_answer_ids(f_select_answers(
                             $q['id'],
                             '',
                             false,
@@ -555,12 +592,14 @@ for ($item = 1; $item <= $test_num; ++$item) {
                             0,
                             $randorder,
                             $test_answers_order_mode,
-                        );
+                        ));
                         break;
                     case 4: // ORDERING
                     case 5: // MATCHING
                         $randorder = true;
-                        $answers_ids += f_select_answers($q['id'], '', true, 0, 0, $randorder, $test_answers_order_mode);
+                        $answers_ids += f_tce_pdf_testgen_answer_ids(
+                            f_select_answers($q['id'], '', true, 0, 0, $randorder, $test_answers_order_mode),
+                        );
                         break;
                 }
 
@@ -581,8 +620,11 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     $barcode_test_data[$question_order][1][$answ_id] = $answer_id;
 
                     $sqla = 'SELECT * FROM ' . K_TABLE_ANSWERS . ' WHERE answer_id=' . $answer_id . ' LIMIT 1';
-                    if ($ra = F_db_query($sqla, $db)) {
-                        if ($ma = F_db_fetch_array($ra)) {
+                    $ra = f_tce_pdf_testgen_query_result(F_db_query($sqla, $db));
+                    if ($ra) {
+                        $ma = f_tce_pdf_testgen_row(F_db_fetch_array($ra));
+                        if ($ma) {
+                            /** @var array{answer_position:int|string,answer_isright:mixed,answer_description:string} $ma */
                             $rightanswer = '';
                             if (in_array((int) $q['type'], [4, 5], true)) {
                                 $rightanswer = $ma['answer_position'];
@@ -625,9 +667,9 @@ for ($item = 1; $item <= $test_num; ++$item) {
     // ====================================================================
     $pdf->enablePageDecoration(false);
     $pdf->addPage(['format' => 'A4', 'orientation' => 'P']);
-    $pg = $pdf->page->getPage($pdf->page->getPageId());
-    $pw = (float) $pg['width'];
-    $ph = (float) $pg['height'];
+    $pg = f_tce_pdf_testgen_page($pdf->page->getPage($pdf->page->getPageId()));
+    $pw = $pg['width'];
+    $ph = $pg['height'];
     $cw = $pw - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
 
     $out = $omrText(
@@ -659,7 +701,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
     // encode data to be printed on the QR-Code (used to create test logs)
     $qr_test_data = f_encode_omr_test_data($barcode_test_data);
     // render at natural module size (unstretched) and centre it — a stretched QR-Code scans poorly
-    $qrw = (float) $pdf->barcode->getBarcodeObj('QRCODE,L', $qr_test_data)->getArray()['ncols'];
+    $qr_data = f_tce_pdf_testgen_barcode_data(
+        $pdf->barcode->getBarcodeObj('QRCODE,L', $qr_test_data)->getArray(),
+    );
+    $qrw = (float) $qr_data['ncols'];
     $qry = ($ph - $qrw) / 2; // vertically centred
     $qrx = ($pw - $qrw) / 2; // horizontally centred
     $pdf->page->addContent($pdf->getBarcode(
@@ -791,9 +836,22 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     $grid_hex,
                 );
                 $x += 9;
-                $question_type = $questions_data[$current_question - 1]['type'];
+                /**
+                 * @var array{
+                 *     id:int|string,type:int<1,5>,difficulty:int|float|numeric-string,description:string,
+                 *     answers:int|numeric-string,score:int|float
+                 * } $omr_question
+                */
+                // @mago-expect analysis:possibly-undefined-int-array-index -- bounded by the generated question count
+                // @mago-expect analysis:possibly-undefined-int-array-index -- the list and keyed-array views share this bound
+                $omr_question = $questions_data[$current_question - 1];
+                $question_type = $omr_question['type'];
                 if ($question_type < 3) { // MCSA or MCMA
-                    $num_answers = count($barcode_test_data[$current_question][1]);
+                    /** @var array{0:int|string,1:array<positive-int,int|string>} $barcode_question */
+                    // @mago-expect analysis:possibly-undefined-int-array-index -- populated with every generated question
+                    // @mago-expect analysis:possibly-undefined-int-array-index -- entry zero is the test identifier, questions start at one
+                    $barcode_question = $barcode_test_data[$current_question];
+                    $num_answers = count($barcode_question[1]);
                     for ($i = 1; $i <= 12; ++$i) {
                         if ($i <= $num_answers) {
                             // print answer number
@@ -908,7 +966,8 @@ for ($item = 1; $item <= $test_num; ++$item) {
 
         // barcode identifying the starting question number — natural width (legacy 0.8 mm/module),
         // centred horizontally; it must NOT be stretched to the content width or the scanner can misread it
-        $bcw = $pdf->barcode->getBarcodeObj('C128C', $qnum)->getArray()['full_width'] * 0.8;
+        $barcode_data = f_tce_pdf_testgen_barcode_data($pdf->barcode->getBarcodeObj('C128C', $qnum)->getArray());
+        $bcw = $barcode_data['full_width'] * 0.8;
         $out .= $pdf->getBarcode('C128C', $qnum, ($pw - $bcw) / 2, $bcy, (int) round($bcw), 10, style: [
             'fillColor' => $align_hex,
         ]);
@@ -918,3 +977,103 @@ for ($item = 1; $item <= $test_num; ++$item) {
 } // end for each test
 
 $pdf->outputReport('tcexam_test_' . $test_id . '_' . date('YmdHis') . '.pdf');
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_pdf_testgen_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** @param array{0:int,1:int,2:int} $color */
+function f_tce_pdf_testgen_rgb(array $color): string
+{
+    return sprintf('#%02x%02x%02x', $color[0], $color[1], $color[2]);
+}
+
+function f_tce_pdf_testgen_question_type_label(int $type): string
+{
+    return match ($type) {
+        1 => 'S',
+        2 => 'M',
+        3 => 'T',
+        4 => 'O',
+        5 => 'C',
+        default => '',
+    };
+}
+
+/**
+ * Preserve the legacy positive-ID request comparison.
+ *
+ * @param int|string|float|bool|array<array-key, mixed>|null $value
+ */
+function f_tce_pdf_testgen_is_positive(int|string|float|bool|array|null $value): bool
+{
+    if (is_array($value)) {
+        return true;
+    }
+
+    return $value !== null && $value > 0;
+}
+
+/**
+ * @return array{
+ *     test_random_questions_select:mixed,test_random_questions_order:mixed,
+ *     test_questions_order_mode:int|string,test_random_answers_select:mixed,test_random_answers_order:mixed,
+ *     test_answers_order_mode:int|string,test_score_threshold:int|float|numeric-string,
+ *     test_duration_time:int|float|string,test_score_right:int|float|numeric-string,
+ *     test_score_wrong:int|float|numeric-string,test_score_unanswered:int|float|numeric-string,
+ *     test_max_score:int|float|numeric-string,test_name:string,test_description:string
+ * }
+ */
+function f_tce_pdf_testgen_test_data(mixed $data): array
+{
+    /** @var array{
+     *     test_random_questions_select:mixed,test_random_questions_order:mixed,
+     *     test_questions_order_mode:int|string,test_random_answers_select:mixed,test_random_answers_order:mixed,
+     *     test_answers_order_mode:int|string,test_score_threshold:int|float|numeric-string,
+     *     test_duration_time:int|float|string,test_score_right:int|float|numeric-string,
+     *     test_score_wrong:int|float|numeric-string,test_score_unanswered:int|float|numeric-string,
+     *     test_max_score:int|float|numeric-string,test_name:string,test_description:string
+     * } $data
+     */
+    return $data;
+}
+
+/**
+ * Preserve the active DAL result type across mutually exclusive database implementations.
+ *
+ * @return object|resource|bool
+ */
+function f_tce_pdf_testgen_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tce_pdf_testgen_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return array<int, int|string> */
+function f_tce_pdf_testgen_answer_ids(mixed $answers): array
+{
+    /** @var array<int, int|string> $answers */
+    return $answers;
+}
+
+/** @return array{width:float,height:float} */
+function f_tce_pdf_testgen_page(mixed $page): array
+{
+    /** @var array{width:float,height:float} $page */
+    return $page;
+}
+
+/** @return array{ncols:int|float,full_width:int|float} */
+function f_tce_pdf_testgen_barcode_data(mixed $data): array
+{
+    /** @var array{ncols:int|float,full_width:int|float} $data */
+    return $data;
+}
