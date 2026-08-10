@@ -53,8 +53,27 @@ function f_send_report_emails(
     require_once '../../shared/code/tce_class_mailer.php';
     require_once 'tce_functions_user_select.php';
 
+    /** @var mixed $db */
+    /**
+     * @var array{
+     *     a_meta_charset:string,a_meta_language:string,a_meta_dir:string,t_result_user:string,w_test:string,
+     *     w_test_score_threshold:string,w_passed:string,w_not_passed:string,w_score:string,w_answers_right:string,
+     *     w_answers_wrong:string,w_questions_unanswered:string,w_questions_undisplayed:string,w_attachment:string,
+     *     t_error:string,m_unknown_email:string
+     * } $l
+     */
+    /**
+     * @var array{
+     *     Priority:int,ContentType:string,Encoding:string,WordWrap:int,Mailer:string,Sendmail:string,Host:string,
+     *     Port:int,Helo:string,SMTPAuth:bool,SMTPSecure:string,Username:string,Password:string,Timeout:int,
+     *     SMTPDebug:int,Sender:string,From:string,FromName:string,Reply:string,ReplyName:string,CharSet:string,
+     *     MsgHeader:string,MsgFooter:string,AttachmentsEncoding:string
+     * } $emailcfg
+     */
+
     $mode = (int) $mode;
-    if ($test_id > 0) {
+    $display_mode = (int) $display_mode;
+    if (f_tce_email_report_is_positive($test_id)) {
         $test_id = (int) $test_id;
         if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
             return;
@@ -63,21 +82,21 @@ function f_send_report_emails(
         $test_id = 0;
     }
 
-    $user_id = $user_id > 0 ? (int) $user_id : 0;
+    $user_id = f_tce_email_report_is_positive($user_id) ? (int) $user_id : 0;
 
-    $testuser_id = $testuser_id > 0 ? (int) $testuser_id : 0;
+    $testuser_id = f_tce_email_report_is_positive($testuser_id) ? (int) $testuser_id : 0;
 
-    $group_id = $group_id > 0 ? (int) $group_id : 0;
+    $group_id = f_tce_email_report_is_positive($group_id) ? (int) $group_id : 0;
 
     if (!empty($startdate)) {
-        $startdate_time = strtotime($startdate);
+        $startdate_time = (int) strtotime(f_tce_email_report_string($startdate));
         $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
     } else {
         $startdate = '';
     }
 
     if (!empty($enddate)) {
-        $enddate_time = strtotime($enddate);
+        $enddate_time = (int) strtotime(f_tce_email_report_string($enddate));
         $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
     } else {
         $enddate = '';
@@ -123,7 +142,7 @@ function f_send_report_emails(
     $email_num = 0; // count emails;
 
     // get all data
-    $data = f_get_all_users_test_stat(
+    $data = f_tce_email_report_data(f_get_all_users_test_stat(
         $test_id,
         $group_id,
         $user_id,
@@ -132,7 +151,7 @@ function f_send_report_emails(
         'total_score',
         false,
         $display_mode,
-    );
+    ));
 
     // SECURITY: the per-user report PDF is rendered by an internal HTTP request to this
     // installation. Fetch it through tc-lib-file's safe HTTP reader (TLS-verified, size-capped,
@@ -145,10 +164,13 @@ function f_send_report_emails(
     }
 
     // defined() guard keeps pre-existing installs working until they merge the new config defaults
-    $allowed_hosts = defined('K_FILE_ALLOWED_HOSTS') ? unserialize(K_FILE_ALLOWED_HOSTS) : [];
-    $allowed_hosts = is_array($allowed_hosts) ? $allowed_hosts : [];
-    $self_host = parse_url(K_PATH_HOST, PHP_URL_HOST);
-    if (is_string($self_host) && $self_host !== '') {
+    $allowed_hosts = f_tce_email_report_allowed_hosts(
+        defined('K_FILE_ALLOWED_HOSTS')
+            ? unserialize(f_tce_email_report_string(K_FILE_ALLOWED_HOSTS))
+            : [],
+    );
+    $self_host = f_tce_email_report_host(parse_url(f_tce_email_report_string(K_PATH_HOST), PHP_URL_HOST));
+    if ($self_host !== null) {
         $allowed_hosts[] = $self_host;
     }
 
@@ -225,7 +247,7 @@ function f_send_report_emails(
                     . 'admin/code/tce_pdf_results.php?mode=3&diplay_mode='
                     . $display_mode
                     . '&show_graph='
-                    . $show_graph
+                    . f_tce_email_report_string($show_graph)
                     . '&test_id='
                     . $tu['test']['test_id']
                     . '&user_id='
@@ -235,7 +257,7 @@ function f_send_report_emails(
                     . '&email='
                     . urlencode($pdfkey);
                 try {
-                    $pdf_content = $pdf_reader->getUrlData($pdf_url);
+                    $pdf_content = f_tce_email_report_pdf_content($pdf_reader->getUrlData($pdf_url));
                 } catch (\Com\Tecnick\File\Exception $e) {
                     $pdf_content = false;
                 }
@@ -316,4 +338,73 @@ function f_send_report_emails(
     $mail->clearAttachments(); // Clears all previously set filesystem, string, and binary attachments
     $mail->clearReplyTos(); // Clears all recipients assigned in the ReplyTo array
     return;
+}
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_email_report_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** Preserve legacy positive-value comparisons before integer normalization. */
+function f_tce_email_report_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+
+    return false;
+}
+
+/** @return list<string> */
+function f_tce_email_report_allowed_hosts(mixed $hosts): array
+{
+    if (!is_array($hosts)) {
+        return [];
+    }
+
+    /** @var list<string> $hosts */
+    return $hosts;
+}
+
+function f_tce_email_report_host(mixed $host): ?string
+{
+    return is_string($host) && $host !== '' ? $host : null;
+}
+
+/**
+ * @return array{testuser:array<array-key,array{
+ *     id:int|string,user_id:int|string,user_email:string,user_name:string,user_firstname?:string,user_lastname?:string,
+ *     testuser_creation_time:string,total_score:int|float,total_score_perc:int|float,right:int|float,
+ *     right_perc:int|float,wrong:int|float,wrong_perc:int|float,unanswered:int|float,
+ *     unanswered_perc:int|float,undisplayed:int|float,undisplayed_perc:int|float,
+ *     test:array{test_id:int|string,test_name:string,test_score_threshold:int|float}
+ * }>}
+ */
+function f_tce_email_report_data(mixed $data): array
+{
+    /**
+     * @var array{testuser:array<array-key,array{
+     *     id:int|string,user_id:int|string,user_email:string,user_name:string,user_firstname?:string,user_lastname?:string,
+     *     testuser_creation_time:string,total_score:int|float,total_score_perc:int|float,right:int|float,
+     *     right_perc:int|float,wrong:int|float,wrong_perc:int|float,unanswered:int|float,
+     *     unanswered_perc:int|float,undisplayed:int|float,undisplayed_perc:int|float,
+     *     test:array{test_id:int|string,test_name:string,test_score_threshold:int|float}
+     * }>} $data
+     */
+    return $data;
+}
+
+function f_tce_email_report_pdf_content(mixed $content): string|false
+{
+    /** @var string|false $content */
+    return $content;
 }
