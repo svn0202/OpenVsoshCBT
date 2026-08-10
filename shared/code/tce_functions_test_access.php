@@ -7,21 +7,53 @@
  */
 function f_tmf_test_session_unlock(int $test_id): void
 {
-    if (!isset($_SESSION['session_unlocked_tests']) || !is_array($_SESSION['session_unlocked_tests'])) {
-        $_SESSION['session_unlocked_tests'] = [];
-    }
-    $_SESSION['session_unlocked_tests'][(string) $test_id] = [
+    $unlocked_tests = f_tmf_test_access_array($_SESSION['session_unlocked_tests'] ?? null);
+    $unlocked_tests[(string) $test_id] = [
         'user_id' => (int) ($_SESSION['session_user_id'] ?? 0),
         'unlocked_at' => time(),
     ];
+    $_SESSION['session_unlocked_tests'] = $unlocked_tests;
 }
 
 function f_tmf_test_session_is_unlocked(int $test_id): bool
 {
-    $grant = $_SESSION['session_unlocked_tests'][(string) $test_id] ?? null;
-    return is_array($grant)
+    $unlocked_tests = f_tmf_test_access_array($_SESSION['session_unlocked_tests'] ?? null);
+    $grant = f_tmf_test_access_row($unlocked_tests[(string) $test_id] ?? null);
+    return $grant !== null
         && (int) ($grant['user_id'] ?? 0) > 0
         && (int) ($grant['user_id'] ?? 0) === (int) ($_SESSION['session_user_id'] ?? 0);
+}
+
+/** @return non-empty-array<array-key, mixed>|null */
+function f_tmf_test_access_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
+/** @return array<array-key, mixed> */
+function f_tmf_test_access_array(mixed $value): array
+{
+    return is_array($value) ? $value : [];
+}
+
+function f_tmf_test_access_float(mixed $value): float
+{
+    return is_scalar($value) ? (float) $value : 0.0;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function f_tmf_test_access_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
 
 /**
@@ -37,12 +69,13 @@ function f_tmf_test_access_status(int $test_id, int $user_id): array
     ) > 0) {
         return ['allowed' => true, 'reason' => 'active_attempt'];
     }
-    $result = F_db_query(
+    $result = f_tmf_test_access_query_result(F_db_query(
         'SELECT test_required_finished_id,test_required_passed_id FROM '
         . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1',
         $db,
-    );
-    if (!$result || !($test = F_db_fetch_array($result))) {
+    ));
+    $test = $result ? f_tmf_test_access_row(F_db_fetch_array($result)) : null;
+    if ($test === null) {
         return ['allowed' => false, 'reason' => 'test_not_found'];
     }
     $required_finished = (int) ($test['test_required_finished_id'] ?? 0);
@@ -66,28 +99,30 @@ function f_tmf_test_access_status(int $test_id, int $user_id): array
 function f_tmf_user_has_passed_test(int $test_id, int $user_id): bool
 {
     global $db;
-    $test_result = F_db_query(
+    $test_result = f_tmf_test_access_query_result(F_db_query(
         'SELECT test_score_threshold,test_max_score FROM ' . K_TABLE_TESTS
         . ' WHERE test_id=' . $test_id . ' LIMIT 1',
         $db,
-    );
-    if (!$test_result || !($test = F_db_fetch_array($test_result))) {
+    ));
+    $test = $test_result ? f_tmf_test_access_row(F_db_fetch_array($test_result)) : null;
+    if ($test === null) {
         return false;
     }
-    $attempt_result = F_db_query(
+    /** @var array{test_score_threshold: int|float|numeric-string, test_max_score: int|float|numeric-string} $test */
+    $attempt_result = f_tmf_test_access_query_result(F_db_query(
         'SELECT testuser_id FROM ' . K_TABLE_TEST_USER
         . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
         . ' AND testuser_status>=4 ORDER BY testuser_id DESC',
         $db,
-    );
-    while ($attempt_result && ($attempt = F_db_fetch_array($attempt_result))) {
-        $score_result = F_db_query(
+    ));
+    while ($attempt_result && ($attempt = f_tmf_test_access_row(F_db_fetch_array($attempt_result))) !== null) {
+        $score_result = f_tmf_test_access_query_result(F_db_query(
             'SELECT SUM(testlog_score) AS total_score FROM ' . K_TABLE_TESTS_LOGS
-            . ' WHERE testlog_testuser_id=' . (int) $attempt['testuser_id'],
+            . ' WHERE testlog_testuser_id=' . (int) ($attempt['testuser_id'] ?? 0),
             $db,
-        );
-        $score_row = $score_result ? F_db_fetch_array($score_result) : false;
-        $score = (float) ($score_row['total_score'] ?? 0);
+        ));
+        $score_row = $score_result ? f_tmf_test_access_row(F_db_fetch_array($score_result)) : null;
+        $score = f_tmf_test_access_float($score_row['total_score'] ?? 0);
         $threshold = (float) $test['test_score_threshold'];
         if ($threshold > 0 ? $score >= $threshold : $score > ((float) $test['test_max_score'] / 2)) {
             return true;
@@ -118,12 +153,12 @@ function f_tmf_test_prerequisite_would_cycle(int $test_id, array $prerequisite_i
         if (count($visited) > 1000) {
             return true;
         }
-        $result = F_db_query(
+        $result = f_tmf_test_access_query_result(F_db_query(
             'SELECT test_required_finished_id,test_required_passed_id FROM '
             . K_TABLE_TESTS . ' WHERE test_id=' . $candidate . ' LIMIT 1',
             $db,
-        );
-        if ($result && ($row = F_db_fetch_array($result))) {
+        ));
+        if ($result && ($row = f_tmf_test_access_row(F_db_fetch_array($result))) !== null) {
             $pending[] = (int) ($row['test_required_finished_id'] ?? 0);
             $pending[] = (int) ($row['test_required_passed_id'] ?? 0);
         }
@@ -137,26 +172,28 @@ function f_tmf_test_prerequisite_would_cycle(int $test_id, array $prerequisite_i
 function f_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = null): array
 {
     global $db;
-    $result = F_db_query(
+    $result = f_tmf_test_access_query_result(F_db_query(
         'SELECT test_minimum_duration_time,test_require_all_answers,'
         . 'test_block_finish_below_threshold,test_score_threshold FROM '
         . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1',
         $db,
-    );
-    if (!$result || !($test = F_db_fetch_array($result))) {
+    ));
+    $test = $result ? f_tmf_test_access_row(F_db_fetch_array($result)) : null;
+    if ($test === null) {
         return ['allowed' => false, 'reason' => 'test_not_found', 'details' => null];
     }
-    $attempt_result = F_db_query(
+    $attempt_result = f_tmf_test_access_query_result(F_db_query(
         'SELECT testuser_id,testuser_creation_time FROM ' . K_TABLE_TEST_USER
         . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
         . ' AND testuser_status<4 ORDER BY testuser_id DESC LIMIT 1',
         $db,
-    );
-    if (!$attempt_result || !($attempt = F_db_fetch_array($attempt_result))) {
+    ));
+    $attempt = $attempt_result ? f_tmf_test_access_row(F_db_fetch_array($attempt_result)) : null;
+    if ($attempt === null) {
         return ['allowed' => false, 'reason' => 'attempt_not_found', 'details' => null];
     }
-    $minimum_seconds = max(0, (int) $test['test_minimum_duration_time']) * 60;
-    $elapsed = ($now ?? time()) - strtotime((string) $attempt['testuser_creation_time']);
+    $minimum_seconds = max(0, (int) ($test['test_minimum_duration_time'] ?? 0)) * 60;
+    $elapsed = ($now ?? time()) - (int) strtotime((string) ($attempt['testuser_creation_time'] ?? ''));
     if ($minimum_seconds > 0 && $elapsed < $minimum_seconds) {
         return [
             'allowed' => false,
@@ -164,25 +201,25 @@ function f_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
             'details' => $minimum_seconds - max(0, $elapsed),
         ];
     }
-    if (f_get_boolean($test['test_require_all_answers'])) {
-        $unanswered = F_count_rows(
+    if (f_get_boolean($test['test_require_all_answers'] ?? false)) {
+        $unanswered = (int) F_count_rows(
             K_TABLE_TESTS_LOGS,
-            'WHERE testlog_testuser_id=' . (int) $attempt['testuser_id']
+            'WHERE testlog_testuser_id=' . (int) ($attempt['testuser_id'] ?? 0)
             . ' AND testlog_change_time IS NULL',
         );
         if ($unanswered > 0) {
             return ['allowed' => false, 'reason' => 'required_answers', 'details' => $unanswered];
         }
     }
-    if (f_get_boolean($test['test_block_finish_below_threshold'])) {
-        $score_result = F_db_query(
+    if (f_get_boolean($test['test_block_finish_below_threshold'] ?? false)) {
+        $score_result = f_tmf_test_access_query_result(F_db_query(
             'SELECT SUM(testlog_score) AS total_score FROM ' . K_TABLE_TESTS_LOGS
-            . ' WHERE testlog_testuser_id=' . (int) $attempt['testuser_id'],
+            . ' WHERE testlog_testuser_id=' . (int) ($attempt['testuser_id'] ?? 0),
             $db,
-        );
-        $score_row = $score_result ? F_db_fetch_array($score_result) : false;
-        $score = (float) ($score_row['total_score'] ?? 0);
-        $threshold = (float) $test['test_score_threshold'];
+        ));
+        $score_row = $score_result ? f_tmf_test_access_row(F_db_fetch_array($score_result)) : null;
+        $score = f_tmf_test_access_float($score_row['total_score'] ?? 0);
+        $threshold = f_tmf_test_access_float($test['test_score_threshold'] ?? 0);
         if ($threshold > 0 && $score < $threshold) {
             return ['allowed' => false, 'reason' => 'score_threshold', 'details' => $threshold];
         }
@@ -198,18 +235,18 @@ function f_tmf_test_completion_status(int $test_id, int $user_id, ?int $now = nu
 function f_tmf_unanswered_question_numbers(int $test_id, int $user_id): array
 {
     global $db;
-    $result = F_db_query(
+    $result = f_tmf_test_access_query_result(F_db_query(
         'SELECT tl.testlog_change_time FROM ' . K_TABLE_TESTS_LOGS . ' tl'
         . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
         . ' WHERE tu.testuser_test_id=' . $test_id . ' AND tu.testuser_user_id=' . $user_id
         . ' AND tu.testuser_status<4 ORDER BY tl.testlog_id',
         $db,
-    );
+    ));
     $missing = [];
     $number = 0;
-    while ($result && ($row = F_db_fetch_array($result))) {
+    while ($result && ($row = f_tmf_test_access_row(F_db_fetch_array($result))) !== null) {
         ++$number;
-        if ($row['testlog_change_time'] === null || $row['testlog_change_time'] === '') {
+        if (!isset($row['testlog_change_time']) || $row['testlog_change_time'] === '') {
             $missing[] = $number;
         }
     }
