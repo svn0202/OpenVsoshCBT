@@ -2653,7 +2653,7 @@ function f_question_form($test_id, $testlog_id, $formname)
             $str .= '//]]>' . K_NEWLINE;
             $str .= '</script>' . K_NEWLINE;
             // display questions menu
-            $str .= F_questionsMenu(
+            $str .= f_questions_menu(
                 $testdata,
                 $m['testlog_testuser_id'],
                 $testlog_id,
@@ -2700,7 +2700,7 @@ function f_question_form($test_id, $testlog_id, $formname)
  * @param $disable (boolean) if TRUE disable the questions list.
  * @return string XHTML code
  */
-function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = false)
+function f_questions_menu($testdata, $testuser_id, $testlog_id = 0, $disable = false)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
