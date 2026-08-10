@@ -82,6 +82,68 @@ final class SessionFunctionsTest extends TestCase
         self::assertSame((int) ini_get('session.gc_maxlifetime'), $handler->received_lifetime);
     }
 
+    public function testDatabaseSessionHandlerPreservesReadWriteDestroyAndGarbageCollection(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_COOKIE_SECURE", false); define("K_COOKIE_HTTPONLY", true); '
+                    . 'define("K_COOKIE_SAMESITE", "Lax"); define("K_TABLE_SESSIONS", "sessions"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "Y-m-d H:i:s"); define("K_SESSION_LIFE", 3600); '
+                    . 'define("K_RANDOM_SECURITY", "secret"); $GLOBALS["db"] = "db-link"; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["query_results"] = []; $GLOBALS["rows"] = []; '
+                    . 'function F_escape_sql($db, $value) { return addslashes($value); } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_db_affected_rows($db, $result) { '
+                    . '$GLOBALS["affected"] = [$db, $result]; return 3; } '
+                    . 'function F_db_connect(...$arguments) { $GLOBALS["connect"] = $arguments; return "connected"; } '
+                    . 'require $argv[1]; $handler = new TCExamSessionHandler(); '
+                    . '$GLOBALS["query_results"] = ["read-result"]; '
+                    . '$GLOBALS["rows"] = [["cpsession_data" => "stored"]]; $read = $handler->read("sid"); '
+                    . '$GLOBALS["query_results"] = ["read-result"]; $GLOBALS["rows"] = [false]; '
+                    . '$missing = $handler->read("missing"); '
+                    . '$GLOBALS["query_results"] = [false]; $failed = $handler->read("failed"); '
+                    . '$GLOBALS["query_results"] = ["select-result", true]; $GLOBALS["rows"] = [["cpsession_id" => "sid"]]; '
+                    . '$updated = $handler->write("sid\'", "payload\'"); '
+                    . '$GLOBALS["query_results"] = ["select-result", true]; $GLOBALS["rows"] = [false]; '
+                    . '$inserted = $handler->write("new", "data"); '
+                    . '$GLOBALS["query_results"] = [true]; $destroyed = $handler->destroy("old"); '
+                    . '$GLOBALS["query_results"] = ["delete-result"]; $collected = $handler->gc(1); '
+                    . 'echo json_encode([[$read, $missing, $failed, $updated, $inserted, $destroyed, $collected], '
+                    . '$GLOBALS["queries"], $GLOBALS["affected"], isset($GLOBALS["connect"])]);',
+                dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /**
+         * @var array{
+         *     0: array{string, string, string, bool, bool, bool, int},
+         *     1: array{string, string, string, string, string, string, string, string, string},
+         *     2: array{string, string},
+         *     3: bool
+         * } $decoded
+         */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(['stored', '', '', true, true, true, 3], $decoded[0]);
+        self::assertStringContainsString("WHERE cpsession_id='sid'", $decoded[1][0]);
+        self::assertStringContainsString("WHERE cpsession_id='missing'", $decoded[1][1]);
+        self::assertStringContainsString("WHERE cpsession_id='failed'", $decoded[1][2]);
+        self::assertStringContainsString("WHERE cpsession_id='sid\\''", $decoded[1][3]);
+        self::assertStringContainsString("UPDATE sessions SET", $decoded[1][4]);
+        self::assertStringContainsString("cpsession_data='payload\\''", $decoded[1][4]);
+        self::assertStringContainsString("WHERE cpsession_id='new'", $decoded[1][5]);
+        self::assertStringContainsString('INSERT INTO sessions', $decoded[1][6]);
+        self::assertSame("DELETE FROM sessions WHERE cpsession_id='old'", $decoded[1][7]);
+        self::assertStringContainsString('DELETE FROM sessions WHERE cpsession_expiry<=', $decoded[1][8]);
+        self::assertSame(['db-link', 'delete-result'], $decoded[2]);
+        self::assertFalse($decoded[3]);
+    }
+
     public function testPlainCsrfTokenUsesEntryScriptSessionAndFingerprint(): void
     {
         $included_files = get_included_files();
