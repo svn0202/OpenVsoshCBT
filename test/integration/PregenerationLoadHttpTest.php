@@ -100,6 +100,7 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         }
 
         $started = hrtime(true);
+        $running = 0;
         do {
             $status = curl_multi_exec($multi, $running);
             if ($status !== CURLM_OK) {
