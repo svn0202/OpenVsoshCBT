@@ -841,7 +841,7 @@ switch ($menu_mode) {
                     break;
                 }
 
-                if (isset($test_id) && $test_id > 0) {
+                if (f_legacy_is_positive($test_id)) {
                     // save previous test_id.
                     $old_test_id = $test_id;
                 }
@@ -1184,10 +1184,10 @@ if ($formstatus && $menu_mode !== 'clear') {
             . f_general_string($test_id)
             . ' LIMIT 1';
         if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
-            if ($m = F_db_fetch_array($r)) {
+            if (($m = f_tce_edit_test_record_row(F_db_fetch_array($r))) !== null) {
                 $test_id = $m['test_id'];
                 $test_name = $m['test_name'];
-                $test_description = (string) ($m['test_description'] ?? '');
+                $test_description = $m['test_description'] ?? '';
                 $test_begin_time = $m['test_begin_time'];
                 $test_end_time = $m['test_end_time'];
                 $test_duration_time = $m['test_duration_time'];
@@ -1254,7 +1254,7 @@ $millennium = substr(date('Y'), 0, 1);
 
 echo '<div class="container">' . K_NEWLINE;
 
-echo f_openvsosh_admin_test_context((int) ($test_id ?? 0), 'settings');
+echo f_openvsosh_admin_test_context((int) $test_id, 'settings');
 
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
@@ -1332,7 +1332,7 @@ echo get_form_noscript_select('selectrecord');
 echo '<nav class="editor-section-nav" aria-label="Разделы настроек">'
     . '<a href="#editor-basics">Основное</a><a href="#editor-audience">Участники и доступ</a>'
     . '<a href="#editor-scoring">Оценивание</a><a href="#editor-behaviour">Проведение</a>'
-    . ($test_id > 0 ? '<a href="#editor-questions">Вопросы</a>' : '') . '</nav>' . K_NEWLINE;
+    . (f_legacy_is_positive($test_id) ? '<a href="#editor-questions">Вопросы</a>' : '') . '</nav>' . K_NEWLINE;
 
 echo '<fieldset class="test-editor-main">' . K_NEWLINE;
 echo '<legend>' . $l['w_test'] . '</legend>' . K_NEWLINE;
@@ -1427,7 +1427,7 @@ $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
-        if (isset($test_id) && $test_id > 0 && f_is_test_on_group($test_id, $m['group_id'])) {
+        if (f_legacy_is_positive($test_id) && f_is_test_on_group($test_id, $m['group_id'])) {
             echo ' selected="selected"';
         }
 
@@ -1452,7 +1452,7 @@ $sql = 'SELECT * FROM ' . K_TABLE_SSLCERTS . ' ORDER BY ssl_name';
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['ssl_id'] . '"';
-        if (isset($test_id) && $test_id > 0 && f_is_test_on_ssl_certs($test_id, $m['ssl_id'])) {
+        if (f_legacy_is_positive($test_id) && f_is_test_on_ssl_certs($test_id, $m['ssl_id'])) {
             echo ' selected="selected"';
         }
 
@@ -1683,7 +1683,7 @@ echo
 
 // show buttons by case
 
-if (isset($test_id) && $test_id > 0) {
+if (f_legacy_is_positive($test_id)) {
     echo '<span class="editor-confirm-update">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -1702,9 +1702,8 @@ if (isset($test_id) && $test_id > 0) {
 }
 
 F_submit_button('add', $l['w_add'], $l['h_add']);
-if (isset($test_id) && $test_id > 0) {
+if (f_legacy_is_positive($test_id)) {
     F_submit_button('delete', $l['w_delete'], $l['h_delete']);
-    // @mago-expect analysis:mixed-argument -- preserve legacy scalar coercion and structured-input TypeError
     if (substr($test_end_time, 0, 1) < $millennium) {
         F_submit_button('unlock', $l['w_unlock'], $l['w_unlock']);
     } else {
@@ -1721,7 +1720,7 @@ echo '</div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 
 // display a list of selected subject_id (topics)
-if (isset($test_id) && $test_id > 0) {
+if (f_legacy_is_positive($test_id)) {
     echo '<div class="row"><br /></div>' . K_NEWLINE;
 
     echo '<fieldset id="editor-questions">' . K_NEWLINE;
@@ -1989,9 +1988,8 @@ if (isset($test_id) && $test_id > 0) {
     echo '<br />' . K_NEWLINE;
     echo '<div class="preview">' . K_NEWLINE;
     $subjlist = '';
-    /** @var int|float|numeric-string $test_score_right */
     $sql = 'SELECT * FROM ' . K_TABLE_TEST_SUBJSET . '
-		WHERE tsubset_test_id=\'' . $test_id . '\'
+		WHERE tsubset_test_id=\'' . f_general_string($test_id) . '\'
 		ORDER BY tsubset_id';
     if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         $subjcount = 0;
@@ -2062,7 +2060,7 @@ if (isset($test_id) && $test_id > 0) {
 
             // update test_max_score
             $test_max_score_new += $test_score_right * $m['tsubset_difficulty'] * $m['tsubset_quantity'];
-            if (isset($test_max_score) && $test_max_score_new !== $test_max_score) {
+            if ($test_max_score_new !== $test_max_score) {
                 $test_max_score = $test_max_score_new;
                 // update max score on test table
                 $sqlup =
@@ -2071,7 +2069,7 @@ if (isset($test_id) && $test_id > 0) {
                     . ' SET test_max_score='
                     . $test_max_score
                     . ' WHERE test_id='
-                    . $test_id
+                    . f_general_string($test_id)
                     . '';
                 if (!($rup = f_legacy_db_query_result(F_db_query($sqlup, $db)))) {
                     F_display_db_error(false);
@@ -2118,13 +2116,13 @@ if (isset($test_id) && $test_id > 0) {
         ;
         echo
             '<a href="tce_pdf_testgen.php?test_id='
-                . $test_id
+                . f_general_string($test_id)
                 . '&amp;num='
                 . $test_num
                 . '" title="'
                 . $l['h_pdf_offline_test']
                 . '" class="xmlbutton" onclick="pdfWindow=window.open(\'tce_pdf_testgen.php?test_id='
-                . $test_id
+                . f_general_string($test_id)
                 . '&amp;num=\' + document.getElementById(\'form_testeditor\').test_num.value + \'\',\'pdfWindow\',\'dependent,menubar=yes,resizable=yes,scrollbars=yes,status=yes,toolbar=yes\'); return false;">'
                 . $l['w_generate']
                 . '</a>'
@@ -2229,5 +2227,37 @@ function f_tce_edit_test_module_subject_row(mixed $row): ?array
 function f_tce_edit_test_subject_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string,subject_name:string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     test_id:int|string,test_name:string,test_description:string|null,test_begin_time:string,test_end_time:string,
+ *     test_duration_time:int|numeric-string,test_ip_range:string,test_results_to_users:mixed,
+ *     test_report_to_users:mixed,test_score_right:int|float|numeric-string,
+ *     test_score_wrong:int|float|numeric-string,test_score_unanswered:int|float|numeric-string,
+ *     test_max_score:int|float|numeric-string,test_score_threshold:int|float|numeric-string,
+ *     test_random_questions_select:mixed,test_random_questions_order:mixed,test_questions_order_mode:int|string,
+ *     test_random_answers_select:mixed,test_random_answers_order:mixed,test_answers_order_mode:int|string,
+ *     test_comment_enabled:mixed,test_menu_enabled:mixed,test_noanswer_enabled:mixed,test_mcma_radio:mixed,
+ *     test_repeatable:int|string,test_mcma_partial_score:mixed,test_logout_on_timeout:mixed,test_password:string|null
+ * }|null
+ */
+function f_tce_edit_test_record_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     test_id:int|string,test_name:string,test_description:string|null,test_begin_time:string,test_end_time:string,
+     *     test_duration_time:int|numeric-string,test_ip_range:string,test_results_to_users:mixed,
+     *     test_report_to_users:mixed,test_score_right:int|float|numeric-string,
+     *     test_score_wrong:int|float|numeric-string,test_score_unanswered:int|float|numeric-string,
+     *     test_max_score:int|float|numeric-string,test_score_threshold:int|float|numeric-string,
+     *     test_random_questions_select:mixed,test_random_questions_order:mixed,test_questions_order_mode:int|string,
+     *     test_random_answers_select:mixed,test_random_answers_order:mixed,test_answers_order_mode:int|string,
+     *     test_comment_enabled:mixed,test_menu_enabled:mixed,test_noanswer_enabled:mixed,test_mcma_radio:mixed,
+     *     test_repeatable:int|string,test_mcma_partial_score:mixed,test_logout_on_timeout:mixed,
+     *     test_password:string|null
+     * }|null $row
+     */
     return $row;
 }
