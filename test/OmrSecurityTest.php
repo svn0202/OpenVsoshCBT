@@ -38,6 +38,32 @@ final class OmrSecurityTest extends TestCase
         );
     }
 
+    public function testOmrImportRejectsMismatchedQuestionAndAnswerCountsBeforeDatabaseAccess(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_importOMRTestData|f_import_omr_test_data)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strlen($source); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode($qualified(7, "2026-08-10 12:00:00", '
+                    . '[42, [100, [1 => 501]], [101, [1 => 502]]], [], false));',
+                dirname(__DIR__) . '/admin/code/tce_functions_omr.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('false', $output);
+    }
+
     public function testQrDecoderRejectsEmptyImagePathBeforeRunningExternalTool(): void
     {
         [$status, $output] = \F_tcecode_run_process(
