@@ -248,7 +248,7 @@ final class StatisticsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_printTestStat)\\(/", '
+                    . 'preg_match("/function (f_print_test_stat)\\(/", '
                     . '$source, $statMatch, PREG_OFFSET_CAPTURE); '
                     . '$statStart = $statMatch[0][1]; $statEnd = strpos($source, "\\n/**", $statStart); '
                     . '$statFunction = substr($source, $statStart, $statEnd - $statStart); '

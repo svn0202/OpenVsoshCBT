@@ -525,7 +525,7 @@ if (isset($teststat) && !empty($teststat)) {
         echo '<div class="rowl">' . K_NEWLINE;
         echo '<hr />' . K_NEWLINE;
         echo '<h2>' . $l['w_stats'] . '</h2>';
-        echo F_printTestStat($test_id, 0, $user_id, 0, 0, $testuser_id, $teststat, 2);
+        echo f_print_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id, $teststat, 2);
         echo '<hr />' . K_NEWLINE;
         echo '</div>' . K_NEWLINE;
     }

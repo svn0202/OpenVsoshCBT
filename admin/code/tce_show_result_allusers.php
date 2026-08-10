@@ -563,7 +563,7 @@ if (isset($_REQUEST['sel'])) {
     if ($display_mode > 1) {
         // display statistics for modules, subjects, questions and answers
         echo '<div class="rowl">' . K_NEWLINE;
-        echo F_printTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
+        echo f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
         echo '<br />' . K_NEWLINE;
         echo '</div>' . K_NEWLINE;
     }
