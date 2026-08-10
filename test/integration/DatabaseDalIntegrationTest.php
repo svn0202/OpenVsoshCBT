@@ -413,6 +413,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         $adminId = (int) $this->dbScalar("SELECT user_id FROM tce_users WHERE user_name='admin'");
         // @mago-expect lint:no-global -- integration test wires the connection expected by the legacy DB helpers
         global $db;
+        /** @var \mysqli|\PgSql\Connection $db */
         $db = $this->db;
         $_SESSION['session_user_id'] = $adminId;
         $docx = tempnam(sys_get_temp_dir(), 'openvsosh-word-db-');
@@ -513,6 +514,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertTrue(mkdir($backupDirectory, 0o700));
         $archive = null;
         $targetDb = null;
+        /** @var \mysqli|\PgSql\Connection $controlDb */
         $controlDb = $this->db;
         $separateControlDb = false;
         $config = [
