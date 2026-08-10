@@ -623,6 +623,71 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestUserAuthorizationPreservesShortCircuitChecks(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_USERGROUP", "user_groups"); '
+                    . 'define("K_TABLE_TEST_GROUPS", "test_groups"); $_SESSION["session_user_id"] = "11"; '
+                    . '$GLOBALS["ip_results"] = [false, true, true, true]; '
+                    . '$GLOBALS["ssl_results"] = [false, true, true]; $GLOBALS["counts"] = [0, 1]; '
+                    . '$GLOBALS["ip_calls"] = []; $GLOBALS["ssl_calls"] = []; $GLOBALS["count_calls"] = []; '
+                    . 'function f_is_valid_ip($userIp, $testIp) { $GLOBALS["ip_calls"][] = [$userIp, $testIp]; '
+                    . 'return array_shift($GLOBALS["ip_results"]); } '
+                    . 'function f_is_valid_ssl_cert($testId) { $GLOBALS["ssl_calls"][] = $testId; '
+                    . 'return array_shift($GLOBALS["ssl_results"]); } '
+                    . 'function F_count_rows($tables, $where) { $GLOBALS["count_calls"][] = [$tables, $where]; '
+                    . 'return array_shift($GLOBALS["counts"]); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isValidTestUser|f_is_valid_test_user)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([['
+                    . '$qualified("7", "user-ip-1", "test-ip-1"), '
+                    . '$qualified("8", "user-ip-2", "test-ip-2"), '
+                    . '$qualified("9", "user-ip-3", "test-ip-3"), '
+                    . '$qualified("10", "user-ip-4", "test-ip-4")], '
+                    . '$GLOBALS["ip_calls"], $GLOBALS["ssl_calls"], $GLOBALS["count_calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [false, false, false, true],
+                [
+                    ['user-ip-1', 'test-ip-1'],
+                    ['user-ip-2', 'test-ip-2'],
+                    ['user-ip-3', 'test-ip-3'],
+                    ['user-ip-4', 'test-ip-4'],
+                ],
+                [8, 9, 10],
+                [
+                    [
+                        'user_groups, test_groups',
+                        "WHERE usrgrp_group_id=tstgrp_group_id\n\t\t\tAND tstgrp_test_id=9\n"
+                            . "\t\t\tAND usrgrp_user_id=11\n\t\t\tLIMIT 1",
+                    ],
+                    [
+                        'user_groups, test_groups',
+                        "WHERE usrgrp_group_id=tstgrp_group_id\n\t\t\tAND tstgrp_test_id=10\n"
+                            . "\t\t\tAND usrgrp_user_id=11\n\t\t\tLIMIT 1",
+                    ],
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
 
 
 
