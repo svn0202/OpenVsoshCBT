@@ -64,7 +64,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
     if (isset($_REQUEST['repeat']) && $_REQUEST['repeat'] === '1') {
         // mark previous test attempts as repeated
-        F_repeatTest($test_id);
+        f_repeat_test($test_id);
     }
 
     if (f_execute_test($test_id)) {
