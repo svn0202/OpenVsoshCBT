@@ -151,6 +151,7 @@ if (isset($_REQUEST['tsubset_id'])) {
 if (isset($_REQUEST['test_duration_time'])) {
     $test_duration_time = (int) $_REQUEST['test_duration_time'];
 }
+/** @var int $test_duration_time */
 
 if (isset($_REQUEST['group_id'])) {
     $group_id = (int) $_REQUEST['group_id'];
