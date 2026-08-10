@@ -29,7 +29,9 @@ $new_test_password = isset($_POST['new_test_password']) && is_string($_POST['new
     : '';
 $test_password = isset($_POST['test_password']) && is_string($_POST['test_password']) ? $_POST['test_password'] : '';
 $sslcerts = isset($_POST['sslcerts']) && is_array($_POST['sslcerts']) ? $_POST['sslcerts'] : [];
+/** @var list<int|string> $sslcerts */
 $user_groups = $_POST['user_groups'] ?? [];
+/** @var list<int|string> $user_groups */
 $test_name = $_REQUEST['test_name'] ?? '';
 /** @var string $test_name */
 $test_description = isset($_REQUEST['test_description']) && is_string($_REQUEST['test_description'])
@@ -124,6 +126,7 @@ if (!isset($_REQUEST['test_report_to_users']) || empty($_REQUEST['test_report_to
 }
 
 $subject_id = !isset($_REQUEST['subject_id']) || empty($_REQUEST['subject_id']) ? [] : $_REQUEST['subject_id'];
+/** @var list<non-empty-string> $subject_id */
 
 if (!isset($_REQUEST['tsubset_type']) || empty($_REQUEST['tsubset_type'])) {
     $tsubset_type = 0;
@@ -349,8 +352,10 @@ switch ($menu_mode) {
 
             // for all selected subjects
             for ($i = 0; $i < $subjcount; ++$i) {
-                if (!empty($_POST['selectsubject' . $i])) {
-                    $selected_tsubset_id = (int) $_POST['selectsubject' . $i];
+                $selected_subject = $_POST['selectsubject' . $i] ?? null;
+                /** @var int|string|null $selected_subject */
+                if (!empty($selected_subject)) {
+                    $selected_tsubset_id = (int) $selected_subject;
                     if ($selected_tsubset_id > 0) {
                         $sql =
                             'DELETE FROM '
@@ -383,7 +388,7 @@ switch ($menu_mode) {
 
             if (
                 ($formstatus = F_check_form_fields())
-                && (isset($subject_id) && !empty($subject_id) && isset($tsubset_quantity))
+                && !empty($subject_id)
             ) {
                 if ($tsubset_type === 3) {
                     // free-text questions do not have alternative answers to display
@@ -401,7 +406,7 @@ switch ($menu_mode) {
                         $modid = (int) substr($subid, 1);
                         $sqlsm = F_select_subjects_sql('subject_module_id=' . $modid . '');
                         if ($rsm = f_legacy_db_query_result(F_db_query($sqlsm, $db))) {
-                            while ($msm = F_db_fetch_array($rsm)) {
+                            while (($msm = f_tce_edit_test_subject_id_row(F_db_fetch_array($rsm))) !== null) {
                                 $subjids .= $msm['subject_id'] . ',';
                             }
                         } else {
@@ -2227,6 +2232,13 @@ function f_tce_edit_test_module_subject_row(mixed $row): ?array
 function f_tce_edit_test_subject_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string,subject_name:string}|null $row */
+    return $row;
+}
+
+/** @return array{subject_id:int|string}|null */
+function f_tce_edit_test_subject_id_row(mixed $row): ?array
+{
+    /** @var array{subject_id:int|string}|null $row */
     return $row;
 }
 
