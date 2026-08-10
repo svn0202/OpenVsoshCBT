@@ -132,7 +132,7 @@ function f_get_test_stat(
     $testuser_id = 0,
     $pubmode = false,
 ) {
-    $data = F_getRawTestStat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, [], $pubmode);
+    $data = f_get_raw_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, [], $pubmode);
     if (isset($data['qstats']['recurrence'])) {
         return f_normalize_test_stat_averages($data);
     }
@@ -152,7 +152,7 @@ function f_get_test_stat(
  * @param $pubmode (boolean) If true filter the results for the public interface.
  * return $data array containing test statistics.
  */
-function F_getRawTestStat(
+function f_get_raw_test_stat(
     $test_id,
     $group_id = 0,
     $user_id = 0,
@@ -252,7 +252,7 @@ function F_getRawTestStat(
 
         foreach ($test_ids as $tid) {
             // select test IDs
-            $data = F_getRawTestStat($tid, $group_id, $user_id, $startdate, $enddate, $testuser_id, $data, $pubmode);
+            $data = f_get_raw_test_stat($tid, $group_id, $user_id, $startdate, $enddate, $testuser_id, $data, $pubmode);
         }
 
         return $data;
