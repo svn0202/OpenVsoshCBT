@@ -15129,7 +15129,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_countUserTest`: expected `unknown-ref(retried)`, but found `unknown-ref(number)`."
+message = "Invalid return type for function `f_count_user_test`: expected `unknown-ref(retried)`, but found `unknown-ref(number)`."
 count = 1
 
 [[issues]]
@@ -15477,7 +15477,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_countUserTest` is missing a return type hint."
+message = "Function `f_count_user_test` is missing a return type hint."
 count = 1
 
 [[issues]]

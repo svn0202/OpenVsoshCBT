@@ -283,7 +283,7 @@ final class TestReviewTest extends TestCase
                     . '$GLOBALS["calls"] = []; function F_count_rows($table, $where) { '
                     . '$GLOBALS["calls"][] = [$table, $where]; return 4; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_countUserTest|f_count_user_test)\\(/", '
+                    . 'preg_match("/function (f_count_user_test)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

@@ -194,7 +194,7 @@ function F_getUserTests()
                         default:
                             // 4 or greater = test can be repeated
                                 if (
-                                    F_countUserTest($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable']
+                                    f_count_user_test($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable']
                                     || f_legacy_int_equals($m['test_repeatable'], 1)
                                 ) {
                                     // print execute test link
@@ -489,7 +489,7 @@ function F_terminateUserTest($test_id, $reason = 'completed')
  * @param $test_id (int) test ID
  * @return retried times
  */
-function F_countUserTest($user_id, $test_id)
+function f_count_user_test($user_id, $test_id)
 {
     return F_count_rows(
         K_TABLE_TEST_USER,
@@ -927,7 +927,7 @@ function F_executeTest($test_id)
             if (
                 $test_status > 4
                 && (
-                    F_countUserTest($_SESSION['session_user_id'], $test_id) < $m['test_repeatable']
+                    f_count_user_test($_SESSION['session_user_id'], $test_id) < $m['test_repeatable']
                     || f_legacy_int_equals($m['test_repeatable'], 1)
                 )
             ) {
