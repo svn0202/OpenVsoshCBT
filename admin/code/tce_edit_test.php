@@ -525,7 +525,7 @@ switch ($menu_mode) {
 
                 $numofrows = 0;
                 if ($rq = f_legacy_db_query_result(F_db_query($sqlq, $db))) {
-                    if ($mq = F_db_fetch_array($rq)) {
+                    if (($mq = f_tce_edit_test_count_row(F_db_fetch_array($rq))) !== null) {
                         $numofrows = $mq['numquestions'];
                     }
                 } else {
@@ -2267,6 +2267,13 @@ function f_tce_edit_test_group_row(mixed $row): ?array
 function f_tce_edit_test_ssl_row(mixed $row): ?array
 {
     /** @var array{ssl_id:int|string,ssl_name:string,ssl_end_date:string}|null $row */
+    return $row;
+}
+
+/** @return array{numquestions:int|numeric-string}|null */
+function f_tce_edit_test_count_row(mixed $row): ?array
+{
+    /** @var array{numquestions:int|numeric-string}|null $row */
     return $row;
 }
 
