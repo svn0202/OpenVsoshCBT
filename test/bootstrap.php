@@ -43,10 +43,15 @@ if (! defined('K_COOKIE_SAMESITE')) {
 // Minimal shim for the file-existence helper used by TMXResourceBundle. The real implementation
 // lives in shared/code/tce_functions_errmsg.php, which registers a global error handler on
 // include; the TMX parser only needs a plain local-file check here.
-if (! function_exists('F_file_exists')) {
-    function F_file_exists(mixed $filename): bool
+if (! function_exists('f_file_exists')) {
+    function f_file_exists(mixed $filename): bool
     {
-        return @file_exists((string) $filename);
+        set_error_handler(static fn (): bool => true);
+        try {
+            return file_exists((string) $filename);
+        } finally {
+            restore_error_handler();
+        }
     }
 }
 
