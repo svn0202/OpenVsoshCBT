@@ -15531,7 +15531,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_getTestDuration` is missing a return type hint."
+message = "Function `f_get_test_duration` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -15873,7 +15873,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_getTestDuration`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_get_test_duration`. Saw type `mixed`."
 count = 1
 
 [[issues]]

@@ -66,7 +66,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_getTestData($id) { $GLOBALS["ids"][] = $id; '
                     . 'return ["test_duration_time" => 5]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getTestDuration|f_get_test_duration)\\(/", '
+                    . 'preg_match("/function (f_get_test_duration)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
