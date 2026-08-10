@@ -45,7 +45,7 @@ if (
     || $testlog_id <= 0
     || !F_tmf_focus_event_is_valid($event_id)
     || !f_is_right_testlog_user($test_id, $testlog_id)
-    || !F_executeTest($test_id)
+    || !f_execute_test($test_id)
 ) {
     F_tmf_focus_json(403, ['status' => 'forbidden']);
 }
