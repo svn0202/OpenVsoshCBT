@@ -35,16 +35,22 @@ $test_description = isset($_REQUEST['test_description']) && is_string($_REQUEST[
     ? $_REQUEST['test_description']
     : '';
 // the native datetime-local control submits an ISO 'T' separator; store it space-separated
-$test_begin_time = str_replace('T', ' ', $_REQUEST['test_begin_time'] ?? '');
-$test_end_time = str_replace('T', ' ', $_REQUEST['test_end_time'] ?? '');
+$test_begin_time_input = $_REQUEST['test_begin_time'] ?? '';
+/** @var array<array-key,string>|string $test_begin_time_input */
+$test_begin_time = str_replace('T', ' ', $test_begin_time_input);
+$test_end_time_input = $_REQUEST['test_end_time'] ?? '';
+/** @var array<array-key,string>|string $test_end_time_input */
+$test_end_time = str_replace('T', ' ', $test_end_time_input);
 $test_ip_range = $_REQUEST['test_ip_range'] ?? '';
 // Number of subject-set rows submitted by the form; bounds the deletesubject checkbox loop.
 $subjcount = isset($_REQUEST['subjcount']) ? (int) $_REQUEST['subjcount'] : 0;
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_TESTS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/config/tce_user_registration.php';
 
+/** @var mixed $db */
 $thispage_title = $l['t_tests_editor'];
 require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
