@@ -23,6 +23,7 @@
 
 // check user's authorization
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_EXPORT_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
@@ -75,13 +76,17 @@ function f_tsv_export_users(): string
     $tsv .= K_TAB . 'user_groups';
 
     $sql = 'SELECT * FROM ' . K_TABLE_USERS . ' WHERE (user_id>1)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    /** @var int|string $session_user_level */
+    $session_user_level = $_SESSION['session_user_level'] ?? 0;
+    /** @var int|string $session_user_id */
+    $session_user_id = $_SESSION['session_user_id'] ?? 0;
+    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
         // filter for level
         $sql .=
             ' AND ((user_level<'
-            . $_SESSION['session_user_level']
+            . $session_user_level
             . ') OR (user_id='
-            . $_SESSION['session_user_id']
+            . $session_user_id
             . '))';
         // filter for groups
         $sql .=
@@ -93,29 +98,47 @@ function f_tsv_export_users(): string
             . ' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
 				AND ta.usrgrp_user_id='
-            . (int) $_SESSION['session_user_id']
+            . (int) $session_user_id
             . '
 				AND tb.usrgrp_user_id=user_id)';
     }
 
     $sql .= ' ORDER BY user_lastname,user_firstname,user_name';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
-            $tsv .= K_NEWLINE . $m['user_id'];
-            $tsv .= K_TAB . $m['user_name'];
+    $r = f_tmf_tsv_users_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while (($m = f_tmf_tsv_users_row(F_db_fetch_array($r))) !== null) {
+            /** @var array{
+             *     user_id: scalar|null,
+             *     user_name: scalar|null,
+             *     user_email: scalar|null,
+             *     user_regdate: scalar|null,
+             *     user_ip: scalar|null,
+             *     user_firstname: scalar|null,
+             *     user_lastname: scalar|null,
+             *     user_birthdate?: scalar|null,
+             *     user_birthplace: scalar|null,
+             *     user_regnumber: scalar|null,
+             *     user_ssn: scalar|null,
+             *     user_level: scalar|null,
+             *     user_verifycode: scalar|null,
+             *     user_otpkey: scalar|null
+             * } $m
+             */
+            $tsv .= K_NEWLINE . (string) $m['user_id'];
+            $tsv .= K_TAB . (string) $m['user_name'];
             $tsv .= K_TAB; // password cannot be exported because is encrypted
-            $tsv .= K_TAB . $m['user_email'];
-            $tsv .= K_TAB . $m['user_regdate'];
-            $tsv .= K_TAB . $m['user_ip'];
-            $tsv .= K_TAB . $m['user_firstname'];
-            $tsv .= K_TAB . $m['user_lastname'];
-            $tsv .= K_TAB . substr($m['user_birthdate'] ?? '', 0, 10);
-            $tsv .= K_TAB . $m['user_birthplace'];
-            $tsv .= K_TAB . $m['user_regnumber'];
-            $tsv .= K_TAB . $m['user_ssn'];
-            $tsv .= K_TAB . $m['user_level'];
-            $tsv .= K_TAB . $m['user_verifycode'];
-            $tsv .= K_TAB . $m['user_otpkey'];
+            $tsv .= K_TAB . (string) $m['user_email'];
+            $tsv .= K_TAB . (string) $m['user_regdate'];
+            $tsv .= K_TAB . (string) $m['user_ip'];
+            $tsv .= K_TAB . (string) $m['user_firstname'];
+            $tsv .= K_TAB . (string) $m['user_lastname'];
+            $tsv .= K_TAB . substr((string) ($m['user_birthdate'] ?? ''), 0, 10);
+            $tsv .= K_TAB . (string) $m['user_birthplace'];
+            $tsv .= K_TAB . (string) $m['user_regnumber'];
+            $tsv .= K_TAB . (string) $m['user_ssn'];
+            $tsv .= K_TAB . (string) $m['user_level'];
+            $tsv .= K_TAB . (string) $m['user_verifycode'];
+            $tsv .= K_TAB . (string) $m['user_otpkey'];
             $tsv .= K_TAB;
             $grp = '';
             // comma separated list of user's groups
@@ -128,12 +151,14 @@ function f_tsv_export_users(): string
                 . '
 				WHERE usrgrp_group_id=group_id
 					AND usrgrp_user_id='
-                . $m['user_id']
+                . (string) $m['user_id']
                 . '
 				ORDER BY group_name';
-            if ($rg = F_db_query($sqlg, $db)) {
-                while ($mg = F_db_fetch_array($rg)) {
-                    $grp .= $mg['group_name'] . ',';
+            $rg = f_tmf_tsv_users_query_result(F_db_query($sqlg, $db));
+            if ($rg) {
+                while (($mg = f_tmf_tsv_users_row(F_db_fetch_array($rg))) !== null) {
+                    /** @var array{group_name: scalar|null} $mg */
+                    $grp .= (string) $mg['group_name'] . ',';
                 }
             } else {
                 F_display_db_error();
@@ -149,4 +174,25 @@ function f_tsv_export_users(): string
     }
 
     return $tsv;
+}
+
+/** @return non-empty-array<array-key, mixed>|null */
+function f_tmf_tsv_users_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function f_tmf_tsv_users_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
