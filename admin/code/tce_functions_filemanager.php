@@ -20,6 +20,18 @@
  * @since 2010-09-20
  */
 
+/** @return list<string> */
+function f_filemanager_allowed_extensions(): array
+{
+    /** @var array<array-key, mixed>|false $extensions */
+    $extensions = unserialize((string) K_ALLOWED_UPLOAD_EXTENSIONS);
+    if (!is_array($extensions)) {
+        return [];
+    }
+
+    return array_values(array_map(static fn(mixed $extension): string => (string) $extension, $extensions));
+}
+
 /**
  * Delete the selected media file
  * @author Nicola Asuni
@@ -29,23 +41,26 @@
 function f_delete_media_file(mixed $filename): bool
 {
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] < K_AUTH_DELETE_MEDIAFILE) {
+    $filename = (string) $filename;
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < (int) K_AUTH_DELETE_MEDIAFILE) {
         // insufficient user level
         return false;
     }
 
-    $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
+    $allowed_extensions = f_filemanager_allowed_extensions();
     $normalized_filename = str_replace('\\', '/', $filename);
     if (preg_match('#(^|/)\.\.(/|$)#', $normalized_filename) === 1) {
         return false;
     }
 
     $path_parts = pathinfo($filename);
-    if (!str_contains($path_parts['dirname'] . '/', K_PATH_CACHE)) {
+    $source_dirname = $path_parts['dirname'] ?? '';
+    $source_extension = $path_parts['extension'] ?? '';
+    if (!str_contains($source_dirname . '/', K_PATH_CACHE)) {
         return false;
     }
 
-    if (!in_array(strtolower($path_parts['extension']), $allowed_extensions)) {
+    if (!in_array(strtolower($source_extension), $allowed_extensions)) {
         return false;
     }
 
@@ -70,12 +85,14 @@ function f_delete_media_file(mixed $filename): bool
 function f_rename_media_file(mixed $filename, mixed $newname): bool
 {
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] < K_AUTH_RENAME_MEDIAFILE) {
+    $filename = (string) $filename;
+    $newname = (string) $newname;
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < (int) K_AUTH_RENAME_MEDIAFILE) {
         // insufficient user level
         return false;
     }
 
-    $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
+    $allowed_extensions = f_filemanager_allowed_extensions();
     $normalized_filename = str_replace('\\', '/', $filename);
     $normalized_newname = str_replace('\\', '/', $newname);
     if (
@@ -87,11 +104,15 @@ function f_rename_media_file(mixed $filename, mixed $newname): bool
 
     $path_parts = pathinfo($filename);
     $path_parts_new = pathinfo($newname);
-    if (!str_contains($path_parts['dirname'] . '/', K_PATH_CACHE)) {
+    $source_dirname = $path_parts['dirname'] ?? '';
+    $source_extension = $path_parts['extension'] ?? '';
+    $target_dirname = $path_parts_new['dirname'] ?? '';
+    $target_extension = $path_parts_new['extension'] ?? '';
+    if (!str_contains($source_dirname . '/', K_PATH_CACHE)) {
         return false;
     }
 
-    if (!in_array(strtolower($path_parts['extension']), $allowed_extensions)) {
+    if (!in_array(strtolower($source_extension), $allowed_extensions)) {
         return false;
     }
 
@@ -103,11 +124,11 @@ function f_rename_media_file(mixed $filename, mixed $newname): bool
         return false;
     }
 
-    if (!str_contains($path_parts_new['dirname'] . '/', K_PATH_CACHE)) {
+    if (!str_contains($target_dirname . '/', K_PATH_CACHE)) {
         return false;
     }
 
-    if (!in_array(strtolower($path_parts_new['extension']), $allowed_extensions)) {
+    if (!in_array(strtolower($target_extension), $allowed_extensions)) {
         return false;
     }
 
@@ -131,7 +152,8 @@ function f_rename_media_file(mixed $filename, mixed $newname): bool
 function f_create_media_dir(mixed $dirname): bool
 {
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMIN_DIRS) {
+    $dirname = (string) $dirname;
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < (int) K_AUTH_ADMIN_DIRS) {
         // insufficient user level
         return false;
     }
@@ -161,7 +183,8 @@ function f_create_media_dir(mixed $dirname): bool
 function f_delete_media_dir(mixed $dirname): bool
 {
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMIN_DIRS) {
+    $dirname = (string) $dirname;
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < (int) K_AUTH_ADMIN_DIRS) {
         // insufficient user level
         return false;
     }
@@ -170,7 +193,9 @@ function f_delete_media_dir(mixed $dirname): bool
         return false;
     }
 
-    if (count(scandir($dirname)) > 2) {
+    $entries = scandir($dirname);
+    // @mago-expect analysis:possibly-false-argument -- preserve the legacy failure if a validated directory disappears
+    if (count($entries) > 2) {
         return false;
     }
 
@@ -202,10 +227,11 @@ function f_delete_media_dir(mixed $dirname): bool
 function f_get_file_info(mixed $file): array
 {
     require_once '../config/tce_config.php';
+    $file = (string) $file;
     $info = pathinfo($file);
     $info['dir'] = is_dir($file);
     // @mago-expect lint:no-error-control-operator -- preserve stable metadata output if a listed file disappears
-    $info['lastmod'] = date('Y-m-d H:i:s', @filemtime($file));
+    $info['lastmod'] = date('Y-m-d H:i:s', (int) @filemtime($file));
     // @mago-expect lint:no-error-control-operator -- preserve false owner metadata for inaccessible files
     $info['owner'] = @fileowner($file);
     // @mago-expect lint:no-error-control-operator -- preserve false permission metadata for inaccessible files
@@ -255,8 +281,12 @@ function f_format_file_size(mixed $size): string
     if ($is_zero_size) {
         $out = '0';
     } else {
-        $i = floor(log($size, 1024));
-        $out .= round($size / (1024 ** $i), $i > 1 ? 2 : 0);
+        /** @var int|float|numeric-string $size */
+        $numeric_size = (float) $size;
+        $i = (int) floor(log($numeric_size, 1024));
+        $out .= round($numeric_size / (1024 ** $i), $i > 1 ? 2 : 0);
+        // @mago-expect analysis:possibly-undefined-int-array-index -- the legacy units cover supported file sizes
+        // @mago-expect analysis:possibly-null-operand -- the legacy units cover supported file sizes
         $out .= ' ' . $mult[$i];
     }
 
@@ -273,7 +303,9 @@ function f_format_file_size(mixed $size): string
 function f_get_media_dir_path_link(mixed $dirpath, mixed $viewmode = true): string
 {
     global $l, $db;
+    /** @var array{w_change_dir: string} $l */
     require_once '../config/tce_config.php';
+    $dirpath = (string) $dirpath;
     $mode = (int) $viewmode;
     $out = ''; //string to be returned
     // write root link
@@ -289,8 +321,8 @@ function f_get_media_dir_path_link(mixed $dirpath, mixed $viewmode = true): stri
     $dirpath = str_replace("\\", '/', $dirpath); // Windows compatibility
     // remove cache root from path
     $dirpath = substr($dirpath, strlen(K_PATH_CACHE));
-    if ($dirpath !== false) {
-        $dirs = preg_split('/[\/]+/', $dirpath, -1, PREG_SPLIT_NO_EMPTY);
+    $dirs = preg_split('/[\/]+/', $dirpath, -1, PREG_SPLIT_NO_EMPTY);
+    if ($dirs !== false) {
         $current_dir = K_PATH_CACHE;
         foreach ($dirs as $dir) {
             $current_dir .= $dir . '/';
@@ -322,6 +354,9 @@ function f_get_media_dir_path_link(mixed $dirpath, mixed $viewmode = true): stri
  */
 function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authdirs = ''): array
 {
+    $dir = (string) $dir;
+    $rootdir = (string) $rootdir;
+    $authdirs = (string) $authdirs;
     $data = ['dirs' => [], 'files' => []];
     // open dir
     // @mago-expect lint:no-error-control-operator -- an unreadable directory is represented by an empty listing
@@ -358,12 +393,13 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
  * Return true if the file is used on question or answer descriptions
  * @author Nicola Asuni
  * @param $file (string) the file to search
- * @return true if the file is used, false otherwise
+ * @return bool true if the file is used, false otherwise
  */
-function f_is_used_media_file($file)
+function f_is_used_media_file(mixed $file): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    $file = (string) $file;
     // remove cache root from file path
     $file = F_escape_sql($db, substr($file, strlen(K_PATH_CACHE)));
     // search on questions
@@ -375,8 +411,12 @@ function f_is_used_media_file($file)
         . "[/object%' OR question_explanation LIKE '%"
         . $file
         . "[/object%' LIMIT 1";
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    /** @var mixed $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        /** @var mixed $m */
+        $m = F_db_fetch_array($r);
+        if (is_array($m)) {
             return true;
         }
     } else {
@@ -392,8 +432,12 @@ function f_is_used_media_file($file)
         . "[/object%' OR answer_explanation LIKE '%"
         . $file
         . "[/object%' LIMIT 1";
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    /** @var mixed $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        /** @var mixed $m */
+        $m = F_db_fetch_array($r);
+        if (is_array($m)) {
             return true;
         }
     } else {
@@ -422,8 +466,19 @@ function f_get_dir_table(
 ): string
 {
     global $l;
+    /** @var array{
+     *   w_directory: string, w_name: string, w_size: string, w_datetime_format: string,
+     *   w_date: string, w_permissions: string, w_user: string, w_change_dir: string,
+     *   w_selection: string, w_select: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
-    $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
+    $dir = (string) $dir;
+    $selected = (string) $selected;
+    $params = (string) $params;
+    $rootdir = (string) $rootdir;
+    $authdirs = (string) $authdirs;
+    $allowed_extensions = f_filemanager_allowed_extensions();
     $out = ''; // html string to be returned
     $out .= '<table class="filemanager">' . K_NEWLINE;
     $out .= '<caption class="sr-only">' . $l['w_directory'] . '</caption>';
@@ -437,7 +492,7 @@ function f_get_dir_table(
     $out .= '</tr>' . K_NEWLINE;
     $out .= '</thead>';
     $data = f_get_dir_files($dir, $rootdir, $authdirs);
-    $usrdir = $rootdir . $_SESSION['session_user_id'];
+    $usrdir = $rootdir . (int) ($_SESSION['session_user_id'] ?? 0);
     // dirs
     foreach ($data['dirs'] as $file) {
         $info = f_get_file_info($file);
@@ -533,9 +588,15 @@ function f_get_dir_visual_table(
 ): string
 {
     global $l;
+    /** @var array{w_change_dir: string, w_selection: string, w_preview: string, w_select: string} $l */
     require_once '../config/tce_config.php';
+    $dir = (string) $dir;
+    $selected = (string) $selected;
+    $params = (string) $params;
+    $rootdir = (string) $rootdir;
+    $authdirs = (string) $authdirs;
     $imgformats = ['gif', 'jpg', 'jpeg', 'png', 'svg'];
-    $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
+    $allowed_extensions = f_filemanager_allowed_extensions();
     $out = ''; // html string to be returned
     $data = f_get_dir_files($dir, $rootdir, $authdirs);
     // dirs
@@ -590,7 +651,17 @@ function f_get_dir_visual_table(
             if (in_array(strtolower($info['extension']), $imgformats)) {
                 $w = 150;
                 $h = 150;
-                $imgicon = F_objects_replacement($info['tcename'], $info['extension'], 0, 0, $l['w_preview'], $w, $h);
+                // @mago-expect analysis:mixed-assignment -- legacy helper updates preview dimensions by reference
+                // @mago-expect analysis:mixed-assignment -- legacy helper updates preview dimensions by reference
+                $imgicon = F_objects_replacement(
+                    $info['tcename'],
+                    $info['extension'],
+                    0,
+                    0,
+                    $l['w_preview'],
+                    $w,
+                    $h,
+                );
             } else {
                 $imgicon =
                     '<img src="'
@@ -657,11 +728,11 @@ function f_get_authorized_dirs(): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_authorization.php';
-    if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+    if ((int) ($_SESSION['session_user_level'] ?? 0) >= K_AUTH_ADMINISTRATOR) {
         return '[^/]*';
     }
 
-    $reg = f_get_authorized_users($_SESSION['session_user_id']);
+    $reg = f_get_authorized_users((int) ($_SESSION['session_user_id'] ?? 0));
     return str_replace(',', '|', $reg);
 }
 
@@ -675,9 +746,12 @@ function f_get_authorized_dirs(): string
 function f_is_authorized_dir(mixed $dir, mixed $rootdir, mixed $authdirs = ''): bool
 {
     require_once '../config/tce_config.php';
+    $dir = (string) $dir;
+    $rootdir = (string) $rootdir;
+    $authdirs = (string) $authdirs;
     if (empty($authdirs)) {
         $authdirs = f_get_authorized_dirs();
     }
 
-    return preg_match('#^' . $rootdir . '(' . $authdirs . ')/#', $dir) > 0;
+    return preg_match('#^' . $rootdir . '(' . $authdirs . ')/#', $dir) === 1;
 }
