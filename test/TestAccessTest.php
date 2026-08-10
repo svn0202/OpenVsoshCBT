@@ -13,6 +13,75 @@ final class TestAccessTest extends TestCase
         unset($_SESSION['session_unlocked_tests'], $_SESSION['session_user_id']);
     }
 
+    public function testDatabaseBackedAccessAndCompletionDecisionsRemainUnchanged(): void
+    {
+        $script = <<<'PHP'
+define('K_TABLE_TESTS', 'tests');
+define('K_TABLE_TEST_USER', 'test_users');
+define('K_TABLE_TESTS_LOGS', 'test_logs');
+$GLOBALS['db'] = 'db';
+$GLOBALS['results'] = [
+    'access', 'passing-test', 'attempts', 'score-1', 'score-2',
+    'cycle-node', 'completion-test', 'current-attempt', 'completion-score', 'logs',
+];
+$GLOBALS['rows'] = [
+    'access' => [['test_required_finished_id' => 9, 'test_required_passed_id' => 10]],
+    'passing-test' => [['test_score_threshold' => 50, 'test_max_score' => 100]],
+    'attempts' => [['testuser_id' => 101], ['testuser_id' => 102], false],
+    'score-1' => [['total_score' => 40]],
+    'score-2' => [['total_score' => 60]],
+    'cycle-node' => [['test_required_finished_id' => 0, 'test_required_passed_id' => 1]],
+    'completion-test' => [[
+        'test_minimum_duration_time' => 5,
+        'test_require_all_answers' => true,
+        'test_block_finish_below_threshold' => true,
+        'test_score_threshold' => 50,
+    ]],
+    'current-attempt' => [['testuser_id' => 201, 'testuser_creation_time' => '2026-08-10 12:00:00']],
+    'completion-score' => [['total_score' => 60]],
+    'logs' => [
+        ['testlog_change_time' => null],
+        ['testlog_change_time' => '2026-08-10 12:01:00'],
+        ['testlog_change_time' => ''],
+        false,
+    ],
+];
+$GLOBALS['counts'] = [0, 1, 0];
+$GLOBALS['queries'] = [];
+function F_db_query($sql, $db) {
+    $GLOBALS['queries'][] = preg_replace('/\s+/', ' ', trim($sql));
+    return array_shift($GLOBALS['results']);
+}
+function F_db_fetch_array($result) { return array_shift($GLOBALS['rows'][$result]); }
+function F_count_rows($table, $where) { return array_shift($GLOBALS['counts']); }
+function f_get_boolean($value) { return (bool) $value; }
+require 'tce_functions_test_access.php';
+$status = F_tmf_test_access_status(20, 7);
+$cycle = F_tmf_test_prerequisite_would_cycle(1, [2]);
+$completion = F_tmf_test_completion_status(20, 7, strtotime('2026-08-10 12:06:00'));
+$unanswered = F_tmf_unanswered_question_numbers(20, 7);
+echo json_encode([$status, $cycle, $completion, $unanswered, count($GLOBALS['queries'])], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertJson($output);
+        self::assertSame(
+            [
+                ['allowed' => true, 'reason' => 'allowed'],
+                true,
+                ['allowed' => true, 'reason' => 'allowed', 'details' => null],
+                [1, 3],
+                10,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testPasswordUnlockIsScopedToTestAndCurrentUser(): void
     {
         $_SESSION['session_user_id'] = 42;
