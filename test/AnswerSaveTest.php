@@ -38,6 +38,67 @@ final class AnswerSaveTest extends TestCase
         self::assertSame('invalid', \F_tmf_answer_save_decision(0, null, -1, str_repeat('a', 32)));
     }
 
+    public function testAtomicSavePreservesTransactionVersionAndLiveScore(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$root = sys_get_temp_dir() . "/openvsosh-answer-save-" . uniqid(); '
+                    . 'mkdir($root . "/shared/code", 0700, true); mkdir($root . "/shared/config", 0700); '
+                    . 'copy($argv[1], $root . "/shared/code/tce_functions_answer_save.php"); '
+                    . 'file_put_contents($root . "/shared/config/tce_config.php", "<?php '
+                    . 'define(\\"K_TABLE_TESTS_LOGS\\", \\"test_logs\\"); '
+                    . 'define(\\"K_TABLE_TEST_USER\\", \\"test_users\\"); '
+                    . 'define(\\"K_TIMESTAMP_FORMAT\\", \\"Y-m-d H:i:s\\");"); '
+                    . '$GLOBALS["db"] = "db-link"; $GLOBALS["queries"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); '
+                    . 'return str_starts_with(trim($sql), "SELECT") ? "row-result" : true; } '
+                    . 'function F_db_fetch_array($result) { return ["testlog_testuser_id" => "55", '
+                    . '"testlog_answer_version" => "2", "testlog_answer_operation" => null]; } '
+                    . 'function f_update_question_log(...$arguments) { $GLOBALS["update"] = $arguments; return true; } '
+                    . 'function F_tmf_live_score($testId, $testUserId) { '
+                    . '$GLOBALS["score"] = [$testId, $testUserId]; return 7.5; } '
+                    . 'chdir($root . "/shared/code"); require "tce_functions_answer_save.php"; '
+                    . '$invalid = f_tmf_save_question_answer(4, 9, [], "", 0, -1, str_repeat("a", 32)); '
+                    . '$queryCount = count($GLOBALS["queries"]); '
+                    . '$saved = f_tmf_save_question_answer(4, 9, [1 => 2], "answer", 123, 2, str_repeat("b", 32)); '
+                    . '$result = [$invalid, $queryCount, $saved, $GLOBALS["queries"], '
+                    . '$GLOBALS["update"], $GLOBALS["score"]]; '
+                    . 'unlink($root . "/shared/code/tce_functions_answer_save.php"); '
+                    . 'unlink($root . "/shared/config/tce_config.php"); '
+                    . 'rmdir($root . "/shared/code"); rmdir($root . "/shared/config"); '
+                    . 'rmdir($root . "/shared"); rmdir($root); echo json_encode($result);',
+                dirname(__DIR__) . '/shared/code/tce_functions_answer_save.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /**
+         * @var array{
+         *     0: array{status: string, version: int},
+         *     1: int,
+         *     2: array{status: string, version: int, live_score: float},
+         *     3: array{string, string, string, string, string},
+         *     4: array{int, int, array<int, int>, string, int},
+         *     5: array{int, int}
+         * } $decoded
+         */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(['status' => 'invalid', 'version' => -1], $decoded[0]);
+        self::assertSame(0, $decoded[1]);
+        self::assertSame(['status' => 'saved', 'version' => 3, 'live_score' => 7.5], $decoded[2]);
+        self::assertSame('START TRANSACTION', $decoded[3][0]);
+        self::assertStringContainsString('WHERE testlog_id=9 FOR UPDATE', $decoded[3][1]);
+        self::assertStringContainsString('SET testlog_answer_version=3', $decoded[3][2]);
+        self::assertStringContainsString('WHERE testuser_id=55 AND testuser_status<4', $decoded[3][3]);
+        self::assertSame('COMMIT', $decoded[3][4]);
+        self::assertSame([4, 9, [1 => 2], 'answer', 123], $decoded[4]);
+        self::assertSame([4, 55], $decoded[5]);
+    }
+
     public function testQuestionLogUpdatePreservesFailuresLimitsAndTextAnswerSql(): void
     {
         [$status, $output] = \F_tcecode_run_process(
