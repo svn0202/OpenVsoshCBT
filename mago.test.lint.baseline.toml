@@ -2,12 +2,6 @@ variant = "loose"
 
 [[issues]]
 file = "test/BackupTest.php"
-code = "explicit-octal"
-message = "Use explicit octal numeral notation."
-count = 1
-
-[[issues]]
-file = "test/BackupTest.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
 count = 2
@@ -16,12 +10,6 @@ count = 2
 file = "test/BackupTest.php"
 code = "prefer-early-continue"
 message = "Consider using early continue pattern to reduce nesting."
-count = 1
-
-[[issues]]
-file = "test/WordImportTest.php"
-code = "explicit-octal"
-message = "Use explicit octal numeral notation."
 count = 1
 
 [[issues]]
@@ -38,20 +26,8 @@ count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "explicit-octal"
-message = "Use explicit octal numeral notation."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "prefer-early-continue"
 message = "Consider using early continue pattern to reduce nesting."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "explicit-octal"
-message = "Use explicit octal numeral notation."
 count = 1
 
 [[issues]]
