@@ -27,7 +27,7 @@
  * @return array of user's data for successful login, false otherwise
  * @since 2012-06-05
  */
-function F_altLogin()
+function f_alt_login()
 {
     global $l, $db;
     require_once '../config/tce_config.php';

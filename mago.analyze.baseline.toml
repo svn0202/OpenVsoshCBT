@@ -11289,7 +11289,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_altauth.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_altLogin`: expected `array<array-key, mixed>`, but found `false`."
+message = "Invalid return type for function `f_alt_login`: expected `array<array-key, mixed>`, but found `false`."
 count = 1
 
 [[issues]]
@@ -11301,7 +11301,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_altauth.php"
 code = "missing-return-type"
-message = "Function `F_altLogin` is missing a return type hint."
+message = "Function `f_alt_login` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -11337,7 +11337,7 @@ count = 3
 [[issues]]
 file = "shared/code/tce_altauth.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `F_altLogin`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `f_alt_login`. Saw type `mixed`."
 count = 1
 
 [[issues]]
