@@ -29,9 +29,16 @@
  * @param $rowsperpage (string) number of rows per page
  * @param $andwhere (string) additional SQL WHERE query conditions
  * @param $searchterms (string) search terms
- * @return true
+ * @return bool
  */
-function f_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
+function f_select_test(
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+): bool
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -48,9 +55,16 @@ function f_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhe
  * @param $rowsperpage (int) Number of rows per page.
  * @param $andwhere (string) Additional SQL WHERE query conditions.
  * @param $searchterms (string) Search terms.
- * @return false in case of empty database, true otherwise
+ * @return bool False in case of empty database, true otherwise.
  */
-function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $andwhere = '', $searchterms = '')
+function f_show_select_test(
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+): bool
 {
     global $l, $db;
     /**
@@ -81,6 +95,19 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
+    $normalize_query_result = static function (mixed $result): mixed {
+        if (
+            is_bool($result)
+            || is_resource($result)
+            || $result instanceof \mysqli_result
+            || $result instanceof \PgSql\Result
+        ) {
+            return $result;
+        }
+        return false;
+    };
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
     $filter = '';
     if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
@@ -90,10 +117,12 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         $numalign = 'right';
     }
 
-    $order_field = F_escape_sql($db, $order_field);
+    $order_field = F_escape_sql($db, (string) $order_field);
     $orderdir = (int) $orderdir;
     $firstrow = (int) $firstrow;
     $rowsperpage = (int) $rowsperpage;
+    $andwhere = (string) $andwhere;
+    $searchterms = (string) $searchterms;
     if (
         empty($order_field)
         || !in_array($order_field, [
@@ -142,16 +171,13 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         return false;
     }
 
-    $wherequery = '';
-    if ($wherequery === '') {
-        $wherequery = ' WHERE';
-    } else {
-        $wherequery .= ' AND';
-    }
-
-    $wherequery .= ' (test_id>0)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($_SESSION['session_user_id']) . ')';
+    $wherequery = ' WHERE (test_id>0)';
+    /** @var array{session_user_level:int,session_user_id:int} $session */
+    $session = $_SESSION;
+    /** @var int $administrator_level */
+    $administrator_level = K_AUTH_ADMINISTRATOR;
+    if ($session['session_user_level'] < $administrator_level) {
+        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($session['session_user_id']) . ')';
     }
 
     if (!empty($andwhere)) {
@@ -172,8 +198,9 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = $normalize_query_result(F_db_query($sql, $db));
+    if ($r) {
+        if ($m = $normalize_row(F_db_fetch_array($r))) {
             // -- Table structure with links:
             echo '<div class="container">';
             echo '<table class="userselect record-table">' . K_NEWLINE;
@@ -232,11 +259,19 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             echo '</thead>' . K_NEWLINE;
             $itemcount = $firstrow;
             do {
+                /** @var array{
+                 *     test_id:int|string,
+                 *     test_begin_time:string,
+                 *     test_end_time:string,
+                 *     test_name:string,
+                 *     test_description:string
+                 * } $m
+                 */
                 ++$itemcount;
                 $edit_url = 'tce_edit_test.php?test_id=' . (int) $m['test_id'];
-                $begin_time = strtotime((string) $m['test_begin_time']);
-                $end_time = strtotime((string) $m['test_end_time']);
-                $is_locked = substr((string) $m['test_end_time'], 0, 1) < substr(date('Y'), 0, 1);
+                $begin_time = strtotime($m['test_begin_time']);
+                $end_time = strtotime($m['test_end_time']);
+                $is_locked = substr($m['test_end_time'], 0, 1) < substr(date('Y'), 0, 1);
                 if ($is_locked) {
                     $status_key = 'locked';
                     $status_label = 'Заблокировано';
@@ -309,7 +344,7 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                 echo '<td><span class="record-status record-status-' . $status_key . '">'
                     . $status_label . '</span></td>' . K_NEWLINE;
                 echo '</tr>' . K_NEWLINE;
-            } while ($m = F_db_fetch_array($r));
+            } while ($m = $normalize_row(F_db_fetch_array($r)));
 
             echo '</table>' . K_NEWLINE;
 
@@ -339,9 +374,7 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             // -- page jumper (menu for successive pages)
             if ($rowsperpage > 0) {
                 $sql = 'SELECT count(*) AS total FROM ' . K_TABLE_TESTS . '' . $wherequery . '';
-                if (!empty($order_field)) {
-                    $param_array = '&amp;order_field=' . urlencode($order_field) . '';
-                }
+                $param_array = '&amp;order_field=' . urlencode($order_field) . '';
 
                 if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir=' . $orderdir . '';
@@ -380,18 +413,18 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
  * @param $rowsperpage (int) Number of rows per page.
  * @param $andwhere (string) Additional SQL WHERE query conditions.
  * @param $searchterms (string) Search terms.
- * @param string $cid ID of the calling form field.
- * @return false in case of empty database, true otherwise
+ * @param mixed $cid ID of the calling form field.
+ * @return bool False in case of empty database, true otherwise.
  */
 function f_show_select_test_popup(
-    $order_field,
-    $orderdir,
-    $firstrow,
-    $rowsperpage,
-    $andwhere = '',
-    $searchterms = '',
-    $cid = 0,
-) {
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+    mixed $cid = 0,
+): bool {
     global $l, $db;
     /**
      * @var array{
@@ -413,6 +446,20 @@ function f_show_select_test_popup(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
+    $normalize_query_result = static function (mixed $result): mixed {
+        if (
+            is_bool($result)
+            || is_resource($result)
+            || $result instanceof \mysqli_result
+            || $result instanceof \PgSql\Result
+        ) {
+            return $result;
+        }
+        return false;
+    };
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+    $cid = (string) $cid;
     $filter = 'cid=' . $cid;
     if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
@@ -422,10 +469,12 @@ function f_show_select_test_popup(
         $numalign = 'right';
     }
 
-    $order_field = F_escape_sql($db, $order_field);
+    $order_field = F_escape_sql($db, (string) $order_field);
     $orderdir = (int) $orderdir;
     $firstrow = (int) $firstrow;
     $rowsperpage = (int) $rowsperpage;
+    $andwhere = (string) $andwhere;
+    $searchterms = (string) $searchterms;
     if (
         empty($order_field)
         || !in_array($order_field, [
@@ -474,16 +523,13 @@ function f_show_select_test_popup(
         return false;
     }
 
-    $wherequery = '';
-    if ($wherequery === '') {
-        $wherequery = ' WHERE';
-    } else {
-        $wherequery .= ' AND';
-    }
-
-    $wherequery .= ' (test_id>0)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($_SESSION['session_user_id']) . ')';
+    $wherequery = ' WHERE (test_id>0)';
+    /** @var array{session_user_level:int,session_user_id:int} $session */
+    $session = $_SESSION;
+    /** @var int $administrator_level */
+    $administrator_level = K_AUTH_ADMINISTRATOR;
+    if ($session['session_user_level'] < $administrator_level) {
+        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($session['session_user_id']) . ')';
     }
 
     if (!empty($andwhere)) {
@@ -504,8 +550,9 @@ function f_show_select_test_popup(
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = $normalize_query_result(F_db_query($sql, $db));
+    if ($r) {
+        if ($m = $normalize_row(F_db_fetch_array($r))) {
             // -- Table structure with links:
             echo '<div class="container">';
             echo '<table class="userselect" style="font-size:80%;">' . K_NEWLINE;
@@ -561,6 +608,14 @@ function f_show_select_test_popup(
             echo '</thead>' . K_NEWLINE;
             $itemcount = 0;
             do {
+                /** @var array{
+                 *     test_id:int|string,
+                 *     test_begin_time:string,
+                 *     test_end_time:string,
+                 *     test_name:string,
+                 *     test_description:string
+                 * } $m
+                 */
                 ++$itemcount;
                 // on click the user ID will be returned on the calling form field
                 $jsaction =
@@ -576,7 +631,6 @@ function f_show_select_test_popup(
                         . '</td>'
                         . K_NEWLINE
                 ;
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
@@ -585,7 +639,6 @@ function f_show_select_test_popup(
                         . '</td>'
                         . K_NEWLINE
                 ;
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
@@ -598,7 +651,6 @@ function f_show_select_test_popup(
                         . '</button></td>'
                         . K_NEWLINE
                 ;
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches test rows as arrays
                 echo
                     '<td style="text-align:'
                         . $txtalign
@@ -608,7 +660,7 @@ function f_show_select_test_popup(
                         . K_NEWLINE
                 ;
                 echo '</tr>' . K_NEWLINE;
-            } while ($m = F_db_fetch_array($r));
+            } while ($m = $normalize_row(F_db_fetch_array($r)));
 
             echo '</table>' . K_NEWLINE;
             echo '<input type="hidden" name="order_field" id="order_field" value="' . $order_field . '" />' . K_NEWLINE;
@@ -622,9 +674,7 @@ function f_show_select_test_popup(
             // -- page jumper (menu for successive pages)
             if ($rowsperpage > 0) {
                 $sql = 'SELECT count(*) AS total FROM ' . K_TABLE_TESTS . '' . $wherequery . '';
-                if (!empty($order_field)) {
-                    $param_array = '&amp;order_field=' . urlencode($order_field) . '';
-                }
+                $param_array = '&amp;order_field=' . urlencode($order_field) . '';
 
                 if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir=' . $orderdir . '';
@@ -668,5 +718,26 @@ function f_is_test_on_ssl_certs(mixed $test_id, mixed $ssl_id): mixed
         . ' AND tstssl_ssl_id='
         . (int) $ssl_id
         . ' LIMIT 1';
-    return ($r = F_db_query($sql, $db)) && ($m = F_db_fetch_array($r));
+    $r = f_tmf_test_select_query_result(F_db_query($sql, $db));
+    return $r && f_tmf_test_select_row(F_db_fetch_array($r));
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_test_select_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_test_select_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
