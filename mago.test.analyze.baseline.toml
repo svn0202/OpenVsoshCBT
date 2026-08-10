@@ -208,12 +208,6 @@ count = 1
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(SQL)` for middle operand in string concatenation."
 count = 1
 
 [[issues]]
@@ -232,10 +226,4 @@ count = 4
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 1
