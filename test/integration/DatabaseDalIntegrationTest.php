@@ -342,8 +342,8 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertStringContainsString('complete; pending handled:', $stdout);
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
-        $row = \F_db_fetch_assoc($result);
-        $this->assertSame(15, (int) $row['n']);
+        $row = self::dalRow(\F_db_fetch_assoc($result));
+        $this->assertSame(15, (int) ($row['n'] ?? null));
 
         $verifyPipes = [];
         $verify = proc_open(
