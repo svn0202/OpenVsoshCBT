@@ -22,6 +22,8 @@ const TMF_USERS_XLSX_HEADERS = [
  * @param array<int,array<int,string>> $rows
  * @param array<string,bool> $existing_logins
  * @param array<string,int> $available_groups
+ * @param array<string,bool> $existing_registration_numbers
+ * @param array<string,bool> $existing_ssns
  * @return array{records:array<int,array<string,mixed>>,errors:array<int,array<int,string>>}
  */
 function f_tmf_users_xlsx_validate(
@@ -37,9 +39,12 @@ function f_tmf_users_xlsx_validate(
     if ($rows === []) {
         return ['records' => [], 'errors' => [1 => ['Файл пуст.']]];
     }
+    /** @mago-expect analysis:possibly-undefined-int-array-index */
+    /** @var array<int,string> $header_row */
+    $header_row = $rows[0];
     $headers = array_map(
-        static fn (mixed $value): string => strtolower(trim($value)),
-        $rows[0],
+        static fn (string $value): string => strtolower(trim($value)),
+        $header_row,
     );
     if ($headers !== TMF_USERS_XLSX_HEADERS) {
         return [
@@ -56,14 +61,28 @@ function f_tmf_users_xlsx_validate(
         $sheet_row = $offset + 1;
         $row = array_pad(array_values($row), count(TMF_USERS_XLSX_HEADERS), '');
         $values = array_combine(TMF_USERS_XLSX_HEADERS, array_slice($row, 0, count(TMF_USERS_XLSX_HEADERS)));
-        if ($values === false || count(array_filter($values, static fn ($value): bool => trim($value) !== '')) === 0) {
+        /** @var array{
+         *     login:string,
+         *     password:string,
+         *     email:string,
+         *     first_name:string,
+         *     last_name:string,
+         *     birth_date:string,
+         *     birth_place:string,
+         *     registration_number:string,
+         *     ssn:string,
+         *     level:string,
+         *     groups:string
+         * } $values
+         */
+        if (count(array_filter($values, static fn (string $value): bool => trim($value) !== '')) === 0) {
             continue;
         }
-        $login = trim((string) $values['login']);
-        $password = (string) $values['password'];
-        $email = trim((string) $values['email']);
+        $login = trim($values['login']);
+        $password = $values['password'];
+        $email = trim($values['email']);
         $level = filter_var(
-            trim((string) $values['level']),
+            trim($values['level']),
             FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => max(1, $maximum_level)]],
         );
@@ -89,7 +108,7 @@ function f_tmf_users_xlsx_validate(
         if ($level === false) {
             $row_errors[] = 'Уровень должен быть целым числом от 1 до ' . max(1, $maximum_level) . '.';
         }
-        $birth_date = trim((string) $values['birth_date']);
+        $birth_date = trim($values['birth_date']);
         if ($birth_date !== '' && is_numeric($birth_date)) {
             $serial = (float) $birth_date;
             if ($serial >= 1 && $serial <= 100_000) {
@@ -114,7 +133,11 @@ function f_tmf_users_xlsx_validate(
                 'label' => 'SSN',
             ],
         ] as $field => &$identifier) {
-            $identifier_value = trim((string) $values[$field]);
+            /** @var array{existing:array<string,bool>,seen:array<string,int>,label:string} $identifier */
+            /** @mago-expect analysis:possibly-undefined-string-array-index */
+            /** @var string $identifier_value */
+            $identifier_value = $values[$field];
+            $identifier_value = trim($identifier_value);
             if ($identifier_value === '') {
                 continue;
             }
@@ -132,12 +155,15 @@ function f_tmf_users_xlsx_validate(
         foreach ([
             'email', 'first_name', 'last_name', 'birth_place', 'registration_number', 'ssn',
         ] as $field) {
-            if (mb_strlen((string) $values[$field]) > 255) {
+            /** @mago-expect analysis:possibly-undefined-string-array-index */
+            /** @var string $field_value */
+            $field_value = $values[$field];
+            if (mb_strlen($field_value) > 255) {
                 $row_errors[] = 'Поле ' . $field . ' длиннее 255 символов.';
             }
         }
         $group_ids = [];
-        $groups = preg_split('/[,;]+/u', (string) $values['groups']);
+        $groups = preg_split('/[,;]+/u', $values['groups']);
         $group_names = array_values(array_filter(array_map(
             'trim',
             $groups === false ? [] : $groups,
@@ -150,6 +176,7 @@ function f_tmf_users_xlsx_validate(
             if (!isset($available_groups[$group_key])) {
                 $row_errors[] = 'Неизвестная группа: ' . $group_name . '.';
             } else {
+                /** @mago-expect analysis:possibly-undefined-string-array-index */
                 $group_ids[] = $available_groups[$group_key];
             }
         }
@@ -161,12 +188,12 @@ function f_tmf_users_xlsx_validate(
             'login' => $login,
             'password_hash' => get_password_hash($password),
             'email' => $email,
-            'first_name' => trim((string) $values['first_name']),
-            'last_name' => trim((string) $values['last_name']),
+            'first_name' => trim($values['first_name']),
+            'last_name' => trim($values['last_name']),
             'birth_date' => $birth_date,
-            'birth_place' => trim((string) $values['birth_place']),
-            'registration_number' => trim((string) $values['registration_number']),
-            'ssn' => trim((string) $values['ssn']),
+            'birth_place' => trim($values['birth_place']),
+            'registration_number' => trim($values['registration_number']),
+            'ssn' => trim($values['ssn']),
             'level' => (int) $level,
             'group_ids' => array_values(array_unique($group_ids)),
             'group_names' => $group_names,
@@ -180,15 +207,31 @@ function f_tmf_users_xlsx_validate(
 
 /**
  * @param array<int,array<string,mixed>> $records
+ * @throws Throwable
  */
 function f_tmf_users_xlsx_import(array $records): int
 {
     global $db;
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!f_tmf_users_xlsx_query_succeeded(F_db_query('START TRANSACTION', $db))) {
         throw new RuntimeException('Не удалось начать импорт.');
     }
     try {
         foreach ($records as $record) {
+            /** @var array{
+             *     login:string,
+             *     password_hash:string,
+             *     email:string,
+             *     registration_number:string,
+             *     first_name:string,
+             *     last_name:string,
+             *     birth_date:string,
+             *     birth_place:string,
+             *     ssn:string,
+             *     level:int,
+             *     group_ids:list<int>,
+             *     group_names:list<string>
+             * } $record
+             */
             $fields = [
                 'user_regdate' => date(K_TIMESTAMP_FORMAT),
                 'user_ip' => get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),
@@ -215,7 +258,7 @@ function f_tmf_users_xlsx_import(array $records): int
             }
             $sql = 'INSERT INTO ' . K_TABLE_USERS . ' (' . implode(',', array_keys($fields))
                 . ') VALUES (' . implode(',', $values) . ')';
-            if (!F_db_query($sql, $db)) {
+            if (!f_tmf_users_xlsx_query_succeeded(F_db_query($sql, $db))) {
                 throw new RuntimeException('Не удалось создать пользователя ' . $record['login'] . '.');
             }
             $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
@@ -223,12 +266,12 @@ function f_tmf_users_xlsx_import(array $records): int
                 $sql = 'INSERT INTO ' . K_TABLE_USERGROUP
                     . ' (usrgrp_user_id,usrgrp_group_id) VALUES ('
                     . (int) $user_id . ',' . (int) $group_id . ')';
-                if (!F_db_query($sql, $db)) {
+                if (!f_tmf_users_xlsx_query_succeeded(F_db_query($sql, $db))) {
                     throw new RuntimeException('Не удалось назначить группу пользователю ' . $record['login'] . '.');
                 }
             }
         }
-        if (!F_db_query('COMMIT', $db)) {
+        if (!f_tmf_users_xlsx_query_succeeded(F_db_query('COMMIT', $db))) {
             throw new RuntimeException('Не удалось завершить импорт.');
         }
     } catch (Throwable $exception) {
@@ -236,4 +279,23 @@ function f_tmf_users_xlsx_import(array $records): int
         throw $exception;
     }
     return count($records);
+}
+
+function f_tmf_users_xlsx_query_succeeded(mixed $result): bool
+{
+    return (bool) f_tmf_users_xlsx_query_result($result);
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_users_xlsx_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
