@@ -155,4 +155,55 @@ final class TestAccessTest extends TestCase
         self::assertSame(4, $queryCount);
         self::assertSame(1, $errors);
     }
+
+    public function testTestLoginFormPreservesMarkupFieldsAndPasswordInputArguments(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_NEWLINE", "\\n"); '
+                    . '$GLOBALS["l"] = ["w_test_password" => "Test password", '
+                    . '"h_test_password" => "Enter password", "w_login" => "Open test", '
+                    . '"h_login_button" => "Submit password", "hp_test_password" => "Password help"]; '
+                    . '$GLOBALS["field_calls"] = []; '
+                    . 'function get_form_row_text_input(...$arguments) { '
+                    . '$GLOBALS["field_calls"][] = $arguments; return "<PASSWORD-FIELD>"; } '
+                    . 'function f_get_csrf_token_field() { return "<CSRF-FIELD>"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_testLoginForm)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$markup = $qualified("/start?x=1&y=2", "password-form", "post", '
+                    . '"multipart/form-data", "007"); '
+                    . 'echo json_encode([$markup, $GLOBALS["field_calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: string, 1: list<list<mixed>>} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$markup, $fieldCalls] = $decoded;
+        self::assertStringContainsString(
+            '<form action="/start?x=1&y=2" method="post" id="password-form" enctype="multipart/form-data">',
+            $markup,
+        );
+        self::assertStringContainsString('<PASSWORD-FIELD>', $markup);
+        self::assertStringContainsString('value="Open test" title="Submit password"', $markup);
+        self::assertStringContainsString('name="testpswaction" id="testpswaction" value="login"', $markup);
+        self::assertStringContainsString('name="testid" id="testid" value="7"', $markup);
+        self::assertStringContainsString("<CSRF-FIELD>\n</form>", $markup);
+        self::assertStringContainsString('<div class="pagehelp">Password help</div>', $markup);
+        self::assertSame(
+            [['xtest_password', 'Test password', 'Enter password', '', '', '', 255, false, false, true, '']],
+            $fieldCalls,
+        );
+    }
 }
