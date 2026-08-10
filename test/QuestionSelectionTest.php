@@ -90,4 +90,66 @@ final class QuestionSelectionTest extends TestCase
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
+
+    public function testAnswerSelectionPreservesOrderingKeysQueriesAndFailureResult(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_ANSWERS", "answers"); '
+                    . 'define("K_DATABASE_TYPE", "MYSQL"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . '$GLOBALS["query_results"] = [[['
+                    . '"answer_id" => 101, "answer_position" => 3], '
+                    . '["answer_id" => 102, "answer_position" => 1]], [['
+                    . '"answer_id" => 21, "answer_position" => 4], '
+                    . '["answer_id" => 17, "answer_position" => 2]], false]; '
+                    . 'function F_escape_sql($db, $value) { return (string) $value; } '
+                    . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . '$rows = array_shift($GLOBALS["query_results"]); if ($rows === false) { return false; } '
+                    . '$GLOBALS["rows"] = $rows; return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error($show = true) { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_selectAnswers)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$byPosition = $qualified("07", 1, false, 2, 0, false, 0); '
+                    . '$byId = $qualified(8, "", false, 0, 5, false, 2); '
+                    . '$failed = $qualified(9, "", false, 0, 0, false, 1); '
+                    . 'echo json_encode([$byPosition, $byId, $failed, '
+                    . '$GLOBALS["queries"], $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [3 => 101, 1 => 102],
+                [21 => 21, 17 => 17],
+                false,
+                [
+                    "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=7\n"
+                        . "\t\tAND answer_enabled='1' AND answer_isright='1'"
+                        . ' AND answer_position>0 ORDER BY answer_position LIMIT 2',
+                    "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=8\n"
+                        . "\t\tAND answer_enabled='1' ORDER BY answer_id",
+                    "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=9\n"
+                        . "\t\tAND answer_enabled='1' ORDER BY answer_description",
+                ],
+                1,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
 }
