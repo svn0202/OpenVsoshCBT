@@ -4,9 +4,26 @@ namespace Test;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+use Test\Integration\DatabaseDalIntegrationTest;
+
+require_once __DIR__ . '/integration/DatabaseDalIntegrationTest.php';
 
 final class DatabaseDalIntegrationHelpersTest extends TestCase
 {
+    public function testPipeReaderReturnsContentsAndClosesResource(): void
+    {
+        $pipe = fopen('php://temp', 'w+');
+        self::assertIsResource($pipe);
+        fwrite($pipe, 'migration output');
+        rewind($pipe);
+        $method = new ReflectionMethod(DatabaseDalIntegrationTest::class, 'readAndClosePipe');
+
+        self::assertSame('migration output', $method->invoke(null, $pipe, 'Test'));
+        $this->expectException(\TypeError::class);
+        fread($pipe, 1);
+    }
+
     /**
      * @return iterable<string,array{array<int,int|string>|false,int|string|null}>
      */

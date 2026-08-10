@@ -116,6 +116,19 @@ final class DatabaseDalIntegrationTest extends TestCase
         return null;
     }
 
+    private static function readAndClosePipe(mixed $pipe, string $description): string
+    {
+        if (!is_resource($pipe)) {
+            self::fail($description . ' pipe must be available.');
+        }
+        $contents = stream_get_contents($pipe);
+        fclose($pipe);
+        if ($contents === false) {
+            self::fail($description . ' pipe must be readable.');
+        }
+        return $contents;
+    }
+
     /** Load the DAL implementation matching the configured database type. */
     private static function loadDal(string $type): void
     {
@@ -309,10 +322,8 @@ final class DatabaseDalIntegrationTest extends TestCase
         $pipes = [];
         $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname(__DIR__, 2));
         $this->assertIsResource($process);
-        $stdout = stream_get_contents($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
+        $stdout = self::readAndClosePipe($pipes[1] ?? null, 'Migration stdout');
+        $stderr = self::readAndClosePipe($pipes[2] ?? null, 'Migration stderr');
         $this->assertSame(0, proc_close($process), $stderr);
         $this->assertStringContainsString('complete; pending handled:', $stdout);
 
@@ -328,10 +339,8 @@ final class DatabaseDalIntegrationTest extends TestCase
             dirname(__DIR__, 2)
         );
         $this->assertIsResource($verify);
-        $verifyOut = stream_get_contents($verifyPipes[1]);
-        $verifyErr = stream_get_contents($verifyPipes[2]);
-        fclose($verifyPipes[1]);
-        fclose($verifyPipes[2]);
+        $verifyOut = self::readAndClosePipe($verifyPipes[1] ?? null, 'Verification stdout');
+        $verifyErr = self::readAndClosePipe($verifyPipes[2] ?? null, 'Verification stderr');
         $this->assertSame(0, proc_close($verify), $verifyErr);
         $this->assertStringContainsString('already applied openvsosh_result_publication.sql', $verifyOut);
         $this->assertStringContainsString('pending handled: 0', $verifyOut);

@@ -275,39 +275,3 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "no-value"
 message = "Argument #2 passed to function `f_db_affected_rows` has type `never`, meaning it cannot produce a value."
 count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-false-argument"
-message = 'Argument #2 of method `PHPUnit\Framework\Assert::assertStringContainsString` is possibly `false`, but parameter type `string` does not accept it.'
-count = 3
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-false-argument"
-message = 'Argument #3 of method `PHPUnit\Framework\Assert::assertSame` is possibly `false`, but parameter type `string` does not accept it.'
-count = 2
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `fclose` is possibly `null`, but parameter type `resource` does not accept it."
-count = 4
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `stream_get_contents` is possibly `null`, but parameter type `resource` does not accept it."
-count = 4
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key 1 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
-count = 4
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key 2 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
-count = 4
