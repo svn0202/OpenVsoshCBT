@@ -453,7 +453,7 @@ function f_is_valid_test_user($test_id, $user_ip, $test_ip): bool
  * @param $test_id (int) test ID
  * @since 4.0.000 (2006-09-27)
  */
-function F_terminateUserTest($test_id, $reason = 'completed')
+function f_terminate_user_test($test_id, $reason = 'completed'): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;

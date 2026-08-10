@@ -15573,12 +15573,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_terminateUserTest` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
 message = "Function `F_testComment` is missing a return type hint."
 count = 1
 
