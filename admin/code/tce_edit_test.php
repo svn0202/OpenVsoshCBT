@@ -849,6 +849,8 @@ switch ($menu_mode) {
                     $test_password = get_password_hash($new_test_password);
                 }
 
+                /** @var array{session_user_id:int|string} $session */
+                $session = $_SESSION;
                 $sql =
                     'INSERT INTO '
                     . K_TABLE_TESTS
@@ -919,7 +921,7 @@ switch ($menu_mode) {
                     . $test_max_score
                     . '\',
 				\''
-                    . (int) $_SESSION['session_user_id']
+					. (int) $session['session_user_id']
                     . '\',
 				\''
                     . $test_score_threshold

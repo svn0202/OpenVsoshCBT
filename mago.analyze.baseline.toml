@@ -147,12 +147,6 @@ count = 2
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `truthy-lowercase-string` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
 count = 1
 
