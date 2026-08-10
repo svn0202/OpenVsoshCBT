@@ -149,7 +149,11 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         }
         self::assertGreaterThanOrEqual(2, $participantCount);
         self::assertLessThanOrEqual(500, $participantCount);
-        $maximumP95 = (float) (getenv('TMF_PREGEN_LOAD_MAX_P95_MS') ?: 10_000);
+        $maximumP95Setting = getenv('TMF_PREGEN_LOAD_MAX_P95_MS');
+        if (!$maximumP95Setting) {
+            $maximumP95Setting = 10_000;
+        }
+        $maximumP95 = (float) $maximumP95Setting;
 
         $suffix = bin2hex(random_bytes(5));
         $adminPassword = 'itest-load-admin-' . $suffix;

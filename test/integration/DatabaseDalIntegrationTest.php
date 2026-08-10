@@ -148,9 +148,11 @@ final class DatabaseDalIntegrationTest extends TestCase
             'K_TABLE_QUESTIONS' => 'questions',
             'K_TABLE_ANSWERS' => 'answers',
         ] as $constant => $suffix) {
-            if (! \defined($constant)) {
-                \define($constant, \K_TABLE_PREFIX . $suffix);
+            if (\defined($constant)) {
+                continue;
             }
+
+            \define($constant, \K_TABLE_PREFIX . $suffix);
         }
     }
 
