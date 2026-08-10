@@ -35,7 +35,8 @@ function f_tmf_answer_save_decision(
 /**
  * Save an answer atomically and reject stale or replayed operations.
  *
- * @return array{status:string,version:int}
+ * @param array<array-key, mixed> $answer_positions
+ * @return array{status:string,version:int,live_score?:float}
  */
 function f_tmf_save_question_answer(
     int $test_id,
@@ -48,11 +49,13 @@ function f_tmf_save_question_answer(
 ): array {
     require_once '../config/tce_config.php';
     global $db;
+    $query_succeeded = static fn(mixed $result): bool => $result !== false;
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
 
     if (!f_tmf_answer_operation_is_valid($operation_id) || $expected_version < 0) {
         return ['status' => 'invalid', 'version' => $expected_version];
     }
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!$query_succeeded(F_db_query('START TRANSACTION', $db))) {
         return ['status' => 'error', 'version' => $expected_version];
     }
 
@@ -62,16 +65,19 @@ function f_tmf_save_question_answer(
 			WHERE testlog_id=' . $testlog_id . '
 			FOR UPDATE';
         $result = F_db_query($sql, $db);
-        $row = $result ? F_db_fetch_array($result) : false;
-        if (!is_array($row)) {
+        /** @var \mysqli_result|\PgSql\Result|false $result */
+        $row = $result === false ? null : $normalize_row(F_db_fetch_array($result));
+        if ($row === null) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'version' => $expected_version];
         }
 
-        $current_version = (int) $row['testlog_answer_version'];
-        $current_operation = $row['testlog_answer_operation'] === null
+        $current_version = (int) ($row['testlog_answer_version'] ?? 0);
+        /** @var mixed $operation_value */
+        $operation_value = $row['testlog_answer_operation'] ?? null;
+        $current_operation = $operation_value === null
             ? null
-            : (string) $row['testlog_answer_operation'];
+            : (string) $operation_value;
         $decision = F_tmf_answer_save_decision(
             $current_version,
             $current_operation,
@@ -93,6 +99,7 @@ function f_tmf_save_question_answer(
         }
 
         $new_version = $current_version + 1;
+        $testuser_id = (int) ($row['testlog_testuser_id'] ?? 0);
         $saved_at = date(K_TIMESTAMP_FORMAT);
         $sql = 'UPDATE ' . K_TABLE_TESTS_LOGS . '
 			SET testlog_answer_version=' . $new_version . ",
@@ -102,20 +109,24 @@ function f_tmf_save_question_answer(
 				AND testlog_answer_version=' . $current_version;
         $activity_sql = 'UPDATE ' . K_TABLE_TEST_USER . "
 			SET testuser_last_activity='" . $saved_at . "'
-			WHERE testuser_id=" . (int) $row['testlog_testuser_id'] . '
+			WHERE testuser_id=" . $testuser_id . '
 				AND testuser_status<4';
-        if (
-            !F_db_query($sql, $db)
-            || !F_db_query($activity_sql, $db)
-            || !F_db_query('COMMIT', $db)
-        ) {
+        if (!$query_succeeded(F_db_query($sql, $db))) {
+            F_db_query('ROLLBACK', $db);
+            return ['status' => 'error', 'version' => $current_version];
+        }
+        if (!$query_succeeded(F_db_query($activity_sql, $db))) {
+            F_db_query('ROLLBACK', $db);
+            return ['status' => 'error', 'version' => $current_version];
+        }
+        if (!$query_succeeded(F_db_query('COMMIT', $db))) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'version' => $current_version];
         }
 
         $response = ['status' => 'saved', 'version' => $new_version];
         if (function_exists('F_tmf_live_score')) {
-            $live_score = F_tmf_live_score($test_id, (int) $row['testlog_testuser_id']);
+            $live_score = F_tmf_live_score($test_id, $testuser_id);
             if ($live_score !== null) {
                 $response['live_score'] = $live_score;
             }
