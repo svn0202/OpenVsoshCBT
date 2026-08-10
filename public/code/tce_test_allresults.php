@@ -48,7 +48,7 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
     }
 
     $filter .= '&amp;test_id=' . $test_id . '';
-    $test_group_ids = F_getTestGroups($test_id);
+    $test_group_ids = f_get_test_groups($test_id);
 } else {
     $test_id = 0;
 }

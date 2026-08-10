@@ -3221,7 +3221,7 @@ function F_testLoginForm($faction, $fid, $fmethod, $fenctype, $test_id)
  * @param $test_id (int) ID of the selected test
  * @return string containing a comma separated list fo group IDs.
  */
-function F_getTestGroups($test_id)
+function f_get_test_groups($test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
