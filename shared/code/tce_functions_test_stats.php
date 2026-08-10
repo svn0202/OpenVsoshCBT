@@ -2238,7 +2238,7 @@ function f_lock_user_test($test_id, $user_id): void
  */
 function f_get_test_id_results($test_id, $user_id): string
 {
-    return F_getTestIDs($test_id, $user_id, 'test_results_to_users');
+    return f_get_test_ids($test_id, $user_id, 'test_results_to_users');
 }
 
 /**
@@ -2248,7 +2248,7 @@ function f_get_test_id_results($test_id, $user_id): string
  */
 function f_get_test_id_reports($test_id, $user_id): string
 {
-    return F_getTestIDs($test_id, $user_id, 'test_report_to_users');
+    return f_get_test_ids($test_id, $user_id, 'test_report_to_users');
 }
 
 /**
@@ -2256,7 +2256,7 @@ function f_get_test_id_reports($test_id, $user_id): string
  * @param $test_id (int) Test ID.
  * @return string
  */
-function F_getTestIDs($test_id, $user_id, $filter = 'test_results_to_users')
+function f_get_test_ids($test_id, $user_id, $filter = 'test_results_to_users'): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';

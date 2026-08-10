@@ -101,7 +101,7 @@ final class StatisticsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $GLOBALS["calls"] = []; '
-                    . 'function F_getTestIDs($testId, $userId, $filter) { '
+                    . 'function f_get_test_ids($testId, $userId, $filter) { '
                     . '$GLOBALS["calls"][] = [$testId, $userId, $filter]; return "ids:" . $filter; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_id_results)\\(/", '
@@ -148,7 +148,7 @@ final class StatisticsTest extends TestCase
                     . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getTestIDs|f_get_test_ids)\\(/", '
+                    . 'preg_match("/function (f_get_test_ids)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); if ($end === false) { $end = strlen($source); } '
