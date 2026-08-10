@@ -186,6 +186,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         );
         $this->assertNotFalse($res, 'querying the seeded schema/data should succeed');
 
+        /** @var array<string,int> $levels */
         $levels = [];
         $row = \F_db_fetch_assoc($res);
         while (is_array($row)) {
@@ -196,8 +197,8 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertGreaterThanOrEqual(2, \F_db_num_rows($res));
         $this->assertArrayHasKey('anonymous', $levels);
         $this->assertArrayHasKey('admin', $levels);
-        $this->assertSame(0, $levels['anonymous']);
-        $this->assertSame(10, $levels['admin']);
+        $this->assertSame(0, $levels['anonymous'] ?? null);
+        $this->assertSame(10, $levels['admin'] ?? null);
     }
 
     public function testEscapeSqlRoundTripsThroughTheServer(): void
