@@ -13,6 +13,7 @@ function f_tmf_offline_table(): string
     return K_TABLE_PREFIX . 'offline_packages';
 }
 
+/** @param array<array-key,mixed> $payload */
 function f_tmf_offline_payload_encode(array $payload): string
 {
     return base64_encode(
@@ -49,10 +50,36 @@ function f_tmf_offline_scalar(mixed $value): string
     return (string) $value;
 }
 
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_offline_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_offline_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+function f_tmf_offline_string(mixed $value): ?string
+{
+    return is_string($value) ? $value : null;
+}
+
 /**
  * Issue one package for an existing generated attempt.
  *
  * @return array{status:string,envelope?:array{format:string,payload_b64:string,signature:string},filename?:string}
+ * @throws Random\RandomException
  */
 function f_tmf_offline_issue(int $testuser_id): array
 {
@@ -73,11 +100,23 @@ function f_tmf_offline_issue(int $testuser_id): array
             AND tu.testuser_status>0
             AND tu.testuser_status<4
         LIMIT 1';
-    $result = F_db_query($sql, $db);
-    $attempt = $result ? F_db_fetch_array($result) : false;
+    $result = F_tmf_offline_query_result(F_db_query($sql, $db));
+    $attempt = $result ? F_tmf_offline_row(F_db_fetch_array($result)) : null;
     if (!is_array($attempt)) {
         return ['status' => 'invalid_state'];
     }
+    /**
+     * @var array{
+     *     testuser_test_id:mixed,
+     *     testuser_user_id:mixed,
+     *     test_end_time:mixed,
+     *     test_duration_time:mixed,
+     *     test_name:mixed,
+     *     user_name:mixed,
+     *     user_firstname:mixed,
+     *     user_lastname:mixed
+     * } $attempt
+     */
 
     $questions = [];
     $logs_sql = 'SELECT tl.testlog_id, tl.testlog_order, q.question_type, q.question_description
@@ -85,8 +124,9 @@ function f_tmf_offline_issue(int $testuser_id): array
         INNER JOIN ' . K_TABLE_QUESTIONS . ' q ON q.question_id=tl.testlog_question_id
         WHERE tl.testlog_testuser_id=' . $testuser_id . '
         ORDER BY tl.testlog_order, tl.testlog_id';
-    $logs_result = F_db_query($logs_sql, $db);
-    while ($logs_result && ($log = F_db_fetch_array($logs_result))) {
+    $logs_result = F_tmf_offline_query_result(F_db_query($logs_sql, $db));
+    while ($logs_result && ($log = F_tmf_offline_row(F_db_fetch_array($logs_result)))) {
+        /** @var array{testlog_id:mixed,testlog_order:mixed,question_type:mixed,question_description:mixed} $log */
         $question = [
             'testlog_id' => (int) $log['testlog_id'],
             'order' => (int) $log['testlog_order'],
@@ -99,8 +139,9 @@ function f_tmf_offline_issue(int $testuser_id): array
             INNER JOIN ' . K_TABLE_ANSWERS . ' a ON a.answer_id=la.logansw_answer_id
             WHERE la.logansw_testlog_id=' . (int) $log['testlog_id'] . '
             ORDER BY la.logansw_order';
-        $answers_result = F_db_query($answers_sql, $db);
-        while ($answers_result && ($answer = F_db_fetch_array($answers_result))) {
+        $answers_result = F_tmf_offline_query_result(F_db_query($answers_sql, $db));
+        while ($answers_result && ($answer = F_tmf_offline_row(F_db_fetch_array($answers_result)))) {
+            /** @var array{logansw_order:mixed,answer_description:mixed} $answer */
             $question['answers'][] = [
                 'order' => (int) $answer['logansw_order'],
                 'description' => F_tmf_offline_scalar($answer['answer_description']),
@@ -112,8 +153,8 @@ function f_tmf_offline_issue(int $testuser_id): array
     $now = time();
     $test_end = strtotime((string) $attempt['test_end_time']);
     $duration_seconds = (int) $attempt['test_duration_time'] * K_SECONDS_IN_MINUTE;
-    $duration_end = $now + ($duration_seconds > 0 ? $duration_seconds : (7 * K_SECONDS_IN_DAY));
-    $expires = $test_end === false ? $duration_end : min($test_end, $duration_end);
+    $duration_end = (int) ($now + ($duration_seconds > 0 ? $duration_seconds : (7 * K_SECONDS_IN_DAY)));
+    $expires = $test_end === false ? $duration_end : (int) min($test_end, $duration_end);
     if ($expires <= $now) {
         return ['status' => 'expired'];
     }
@@ -142,7 +183,7 @@ function f_tmf_offline_issue(int $testuser_id): array
     $issued_at = date(K_TIMESTAMP_FORMAT, $now);
     $expires_at = date(K_TIMESTAMP_FORMAT, $expires);
 
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!F_tmf_offline_query_result(F_db_query('START TRANSACTION', $db))) {
         return ['status' => 'error'];
     }
     $revoke_sql = 'UPDATE ' . F_tmf_offline_table() . "
@@ -166,16 +207,16 @@ function f_tmf_offline_issue(int $testuser_id): array
         SET testuser_pregenerated='0'
         WHERE testuser_id=" . $testuser_id;
     if (
-        !F_db_query($revoke_sql, $db)
-        || !F_db_query($insert_sql, $db)
-        || !F_db_query($claim_sql, $db)
-        || !F_db_query('COMMIT', $db)
+        !F_tmf_offline_query_result(F_db_query($revoke_sql, $db))
+        || !F_tmf_offline_query_result(F_db_query($insert_sql, $db))
+        || !F_tmf_offline_query_result(F_db_query($claim_sql, $db))
+        || !F_tmf_offline_query_result(F_db_query('COMMIT', $db))
     ) {
-        F_db_query('ROLLBACK', $db);
+        F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
         return ['status' => 'error'];
     }
 
-    $safe_user = preg_replace('/[^a-zA-Z0-9_-]+/', '-', (string) $attempt['user_name']);
+    $safe_user = (string) preg_replace('/[^a-zA-Z0-9_-]+/', '-', (string) $attempt['user_name']);
     return [
         'status' => 'issued',
         'envelope' => [
@@ -202,7 +243,7 @@ function f_tmf_offline_import(string $result_json): array
         return ['status' => 'invalid'];
     }
     try {
-        $result = json_decode($result_json, true, 64, JSON_THROW_ON_ERROR);
+        $result = F_tmf_offline_row(json_decode($result_json, true, 64, JSON_THROW_ON_ERROR));
     } catch (JsonException) {
         return ['status' => 'invalid'];
     }
@@ -215,6 +256,7 @@ function f_tmf_offline_import(string $result_json): array
     ) {
         return ['status' => 'invalid'];
     }
+    /** @var array{format:string,payload_b64:string,signature:string,answers:array<array-key,mixed>} $result */
     $payload_base64 = $result['payload_b64'];
     $signature = $result['signature'];
     if (!F_tmf_offline_signature_is_valid(
@@ -229,9 +271,12 @@ function f_tmf_offline_import(string $result_json): array
         return ['status' => 'invalid'];
     }
     try {
-        $payload = json_decode($payload_json, true, 64, JSON_THROW_ON_ERROR);
+        $payload = F_tmf_offline_row(json_decode($payload_json, true, 64, JSON_THROW_ON_ERROR));
     } catch (JsonException) {
         return ['status' => 'invalid'];
+    }
+    if (!is_array($payload)) {
+        return ['status' => 'forbidden'];
     }
     $package_id = is_string($payload['package_id'] ?? null) ? $payload['package_id'] : '';
     $testuser_id = isset($payload['testuser_id']) ? (int) $payload['testuser_id'] : 0;
@@ -257,7 +302,7 @@ function f_tmf_offline_import(string $result_json): array
     }
     $result_hash = hash('sha256', $payload_base64 . "\n" . $answers_json);
 
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!F_tmf_offline_query_result(F_db_query('START TRANSACTION', $db))) {
         return ['status' => 'error'];
     }
     try {
@@ -265,105 +310,121 @@ function f_tmf_offline_import(string $result_json): array
             FROM ' . F_tmf_offline_table() . "
             WHERE offline_package_id='" . $package_id . "'
             FOR UPDATE";
-        $package_result = F_db_query($package_sql, $db);
-        $package = $package_result ? F_db_fetch_array($package_result) : false;
+        $package_result = F_tmf_offline_query_result(F_db_query($package_sql, $db));
+        $package = $package_result ? F_tmf_offline_row(F_db_fetch_array($package_result)) : null;
         if (!is_array($package)) {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return ['status' => 'not_found'];
         }
+        /**
+         * @var array{
+         *     offline_testuser_id:mixed,
+         *     offline_test_id:mixed,
+         *     offline_user_id:mixed,
+         *     offline_payload_hash:mixed,
+         *     offline_status:mixed,
+         *     offline_result_hash:mixed,
+         *     offline_expires_at:mixed
+         * } $package
+         */
         if (
             (int) $package['offline_testuser_id'] !== $testuser_id
             || (int) $package['offline_test_id'] !== $test_id
             || (int) $package['offline_user_id'] !== $user_id
             || !hash_equals((string) $package['offline_payload_hash'], hash('sha256', $payload_base64))
         ) {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return ['status' => 'binding_failed'];
         }
         if ((string) $package['offline_status'] === 'imported') {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return hash_equals((string) $package['offline_result_hash'], $result_hash)
                 ? ['status' => 'duplicate', 'package_id' => $package_id]
                 : ['status' => 'conflict', 'package_id' => $package_id];
         }
+        $package_expires = strtotime((string) $package['offline_expires_at']);
         if (
             (string) $package['offline_status'] !== 'issued'
-            || strtotime((string) $package['offline_expires_at']) < time()
+            || $package_expires === false
+            || $package_expires < time()
         ) {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return ['status' => 'expired_or_revoked', 'package_id' => $package_id];
         }
 
         $allowed_logs = [];
-        $logs_result = F_db_query(
+        $logs_result = F_tmf_offline_query_result(F_db_query(
             'SELECT testlog_id FROM ' . K_TABLE_TESTS_LOGS . '
             WHERE testlog_testuser_id=' . $testuser_id,
             $db,
-        );
-        while ($logs_result && ($log = F_db_fetch_array($logs_result))) {
+        ));
+        while ($logs_result && ($log = F_tmf_offline_row(F_db_fetch_array($logs_result)))) {
+            /** @var array{testlog_id:mixed} $log */
             $allowed_logs[(int) $log['testlog_id']] = [];
         }
-        $orders_result = F_db_query(
+        $orders_result = F_tmf_offline_query_result(F_db_query(
             'SELECT la.logansw_testlog_id, la.logansw_order
             FROM ' . K_TABLE_LOG_ANSWER . ' la
             INNER JOIN ' . K_TABLE_TESTS_LOGS . ' tl ON tl.testlog_id=la.logansw_testlog_id
             WHERE tl.testlog_testuser_id=' . $testuser_id,
             $db,
-        );
-        while ($orders_result && ($order = F_db_fetch_array($orders_result))) {
+        ));
+        while ($orders_result && ($order = F_tmf_offline_row(F_db_fetch_array($orders_result)))) {
+            /** @var array{logansw_testlog_id:mixed,logansw_order:mixed} $order */
             $allowed_logs[(int) $order['logansw_testlog_id']][(int) $order['logansw_order']] = true;
         }
         if (count($result['answers']) !== count($allowed_logs)) {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return ['status' => 'invalid'];
         }
 
+        $answers = array_filter($result['answers'], 'is_array');
+        if (count($answers) !== count($result['answers'])) {
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
+            return ['status' => 'invalid'];
+        }
         $seen = [];
-        foreach ($result['answers'] as $answer) {
-            if (!is_array($answer)) {
-                F_db_query('ROLLBACK', $db);
-                return ['status' => 'invalid'];
-            }
+        foreach ($answers as $answer) {
             $testlog_id = isset($answer['testlog_id']) ? (int) $answer['testlog_id'] : 0;
-            $positions = $answer['positions'] ?? [];
-            $text = $answer['text'] ?? '';
+            $positions = F_tmf_offline_row($answer['positions'] ?? []);
+            $text = F_tmf_offline_string($answer['text'] ?? '');
             $reaction_time = isset($answer['reaction_time']) ? max(0, (int) $answer['reaction_time']) : 0;
             if (
                 !isset($allowed_logs[$testlog_id])
                 || isset($seen[$testlog_id])
-                || !is_array($positions)
-                || !is_string($text)
+                || $positions === null
+                || $text === null
                 || strlen($text) > 1_048_576
             ) {
-                F_db_query('ROLLBACK', $db);
+                F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
                 return ['status' => 'invalid'];
             }
             $clean_positions = [];
-            foreach ($positions as $position => $value) {
+            foreach (array_keys($positions) as $position) {
                 if (
                     !is_numeric($position)
-                    || !is_numeric($value)
+                    || !is_numeric($positions[$position] ?? null)
                     || !isset($allowed_logs[$testlog_id][(int) $position])
                 ) {
-                    F_db_query('ROLLBACK', $db);
+                    F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
                     return ['status' => 'invalid'];
                 }
-                $clean_positions[(int) $position] = (int) $value;
+                $clean_positions[(int) $position] = (int) $positions[$position];
             }
             if (!f_update_question_log($test_id, $testlog_id, $clean_positions, $text, $reaction_time)) {
-                F_db_query('ROLLBACK', $db);
+                F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
                 return ['status' => 'error'];
             }
             $saved_at = date(K_TIMESTAMP_FORMAT);
-            if (!F_db_query(
+            if (!F_tmf_offline_query_result(F_db_query(
                 'UPDATE ' . K_TABLE_TESTS_LOGS . "
                 SET testlog_answer_version=testlog_answer_version+1,
                     testlog_answer_operation='" . $package_id . "',
                     testlog_answer_saved_at='" . $saved_at . "'
                 WHERE testlog_id=" . $testlog_id,
                 $db,
-            )) {
-                F_db_query('ROLLBACK', $db);
+            ))) {
+                F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
                 return ['status' => 'error'];
             }
             $seen[$testlog_id] = true;
@@ -390,23 +451,26 @@ function f_tmf_offline_import(string $result_json): array
             WHERE offline_package_id='" . $package_id . "'
                 AND offline_status='issued'";
         if (
-            !F_db_query($attempt_sql, $db)
-            || !F_db_query($revoke_sql, $db)
-            || !F_db_query($package_update_sql, $db)
-            || !F_db_query('COMMIT', $db)
+            !F_tmf_offline_query_result(F_db_query($attempt_sql, $db))
+            || !F_tmf_offline_query_result(F_db_query($revoke_sql, $db))
+            || !F_tmf_offline_query_result(F_db_query($package_update_sql, $db))
+            || !F_tmf_offline_query_result(F_db_query('COMMIT', $db))
         ) {
-            F_db_query('ROLLBACK', $db);
+            F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
             return ['status' => 'error'];
         }
         return ['status' => 'imported', 'package_id' => $package_id];
     } catch (Throwable) {
-        F_db_query('ROLLBACK', $db);
+        F_tmf_offline_query_result(F_db_query('ROLLBACK', $db));
         return ['status' => 'error'];
     }
 }
 
 /**
  * Build a self-contained, network-free HTML exam from a signed envelope.
+ *
+ * @param array{format:string,payload_b64:string,signature:string} $envelope
+ * @throws Random\RandomException
  */
 function f_tmf_offline_html(array $envelope): string
 {

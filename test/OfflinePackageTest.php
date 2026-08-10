@@ -39,6 +39,7 @@ final class OfflinePackageTest extends TestCase
         self::assertFalse(\F_tmf_offline_signature_is_valid($payload, str_repeat('0', 64), $secret));
     }
 
+    /** @throws \Random\RandomException */
     public function testOfflineHtmlHasNoNetworkOrPersistentBrowserCache(): void
     {
         $payload = \F_tmf_offline_payload_encode([
