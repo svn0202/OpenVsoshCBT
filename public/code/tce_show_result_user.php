@@ -85,7 +85,7 @@ if (!F_tmf_results_are_published($teststat['testinfo'])) {
 }
 
 //lock user's test
-F_lockUserTest($test_id, $_SESSION['session_user_id']);
+f_lock_user_test($test_id, $_SESSION['session_user_id']);
 
 echo '<div class="container">' . K_NEWLINE;
 

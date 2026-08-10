@@ -16443,12 +16443,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "missing-return-type"
-message = "Function `F_lockUserTest` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-return-type"
 message = "Function `F_normalizeTestStatAverages` is missing a return type hint."
 count = 1
 
