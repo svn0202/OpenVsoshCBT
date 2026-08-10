@@ -2160,7 +2160,7 @@ function f_get_answer_id_from_position($testlog_id, $answpos): array
  * @param $formname (string) form name (form ID)
  * @return string XHTML code
  */
-function F_questionForm($test_id, $testlog_id, $formname)
+function f_question_form($test_id, $testlog_id, $formname)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
