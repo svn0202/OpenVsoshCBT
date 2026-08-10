@@ -90,7 +90,7 @@ function F_getUserTests()
                 // status
                 $str .= '<td';
                 if ($catalog_test_status >= 4 && F_tmf_results_are_published($m)) {
-                    $usrtestdata = F_getUserTestStat($m['test_id'], $user_id, $testuser_id);
+                    $usrtestdata = f_get_user_test_stat($m['test_id'], $user_id, $testuser_id);
                     $passmsg = '';
                     if (
                         isset($usrtestdata['user_score'])

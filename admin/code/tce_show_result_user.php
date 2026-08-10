@@ -403,7 +403,7 @@ echo get_form_noscript_select('selectrecord');
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 if (isset($teststat) && !empty($teststat)) {
-    $teststat['testinfo'] = F_getUserTestStat($test_id, $user_id, $testuser_id);
+    $teststat['testinfo'] = f_get_user_test_stat($test_id, $user_id, $testuser_id);
 
     echo '<div class="row">' . K_NEWLINE;
     echo '<span class="label">' . K_NEWLINE;
