@@ -260,7 +260,7 @@ function f_decode_omr_page($image)
  * @param $overwrite (boolean) If true overwrites the previous answers on non-repeatable tests.
  * @return boolean TRUE in case of success, FALSE otherwise.
  */
-function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $overwrite = false)
+function f_import_omr_test_data($user_id, $date, $omr_testdata, $omr_answers, $overwrite = false)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';

@@ -86,7 +86,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && $user_id > 0 && $_FILES !== 
         // sort answers
         ksort($omr_answers);
         // import answers
-        if (F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $overwrite)) {
+        if (f_import_omr_test_data($user_id, $date, $omr_testdata, $omr_answers, $overwrite)) {
             F_print_error(
                 'MESSAGE',
                 $l['m_import_ok']

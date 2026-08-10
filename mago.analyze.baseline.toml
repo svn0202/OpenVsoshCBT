@@ -2979,7 +2979,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "missing-return-type"
-message = "Function `F_importOMRTestData` is missing a return type hint."
+message = "Function `f_import_omr_test_data` is missing a return type hint."
 count = 1
 
 [[issues]]
