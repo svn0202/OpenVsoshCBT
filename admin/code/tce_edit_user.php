@@ -23,31 +23,55 @@
 require_once '../config/tce_config.php';
 
 // explicit reads of POST inputs (formerly provided by register-globals emulation)
-$forcedelete = $_POST['forcedelete'] ?? '';
+$forcedelete = f_tce_edit_user_string($_POST['forcedelete'] ?? '');
 $newpassword = isset($_POST['newpassword']) && is_string($_POST['newpassword']) ? $_POST['newpassword'] : '';
 $newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['newpassword_repeat'])
     ? $_POST['newpassword_repeat']
     : '';
-$user_groups = $_POST['user_groups'] ?? [];
+$user_groups = f_tce_edit_user_string_list($_POST['user_groups'] ?? []);
 // editable user fields submitted by the form (loaded from the DB later when editing)
-$user_name = $_POST['user_name'] ?? '';
-$user_email = $_POST['user_email'] ?? '';
-$user_regnumber = $_POST['user_regnumber'] ?? '';
-$user_firstname = $_POST['user_firstname'] ?? '';
-$user_lastname = $_POST['user_lastname'] ?? '';
-$user_birthdate = $_POST['user_birthdate'] ?? '';
-$user_birthplace = $_POST['user_birthplace'] ?? '';
-$user_ssn = $_POST['user_ssn'] ?? '';
-$user_note = mb_substr(trim((string) ($_POST['user_note'] ?? '')), 0, 5000);
-$user_schedule = mb_substr(trim((string) ($_POST['user_schedule'] ?? '')), 0, 5000);
+$user_name = f_tce_edit_user_string($_POST['user_name'] ?? '');
+$user_email = f_tce_edit_user_string($_POST['user_email'] ?? '');
+$user_password = f_tce_edit_user_string($_POST['user_password'] ?? '');
+$user_regnumber = f_tce_edit_user_string($_POST['user_regnumber'] ?? '');
+$user_firstname = f_tce_edit_user_string($_POST['user_firstname'] ?? '');
+$user_lastname = f_tce_edit_user_string($_POST['user_lastname'] ?? '');
+$user_birthdate = f_tce_edit_user_string($_POST['user_birthdate'] ?? '');
+$user_birthplace = f_tce_edit_user_string($_POST['user_birthplace'] ?? '');
+$user_ssn = f_tce_edit_user_string($_POST['user_ssn'] ?? '');
+$user_note = mb_substr(trim(f_tce_edit_user_string($_POST['user_note'] ?? '')), 0, 5000);
+$user_schedule = mb_substr(trim(f_tce_edit_user_string($_POST['user_schedule'] ?? '')), 0, 5000);
+$user_level = isset($_POST['user_level']) ? (int) $_POST['user_level'] : 0;
+$user_otpkey = f_tce_edit_user_string($_POST['user_otpkey'] ?? '');
 // round-tripped hidden fields preserved on UPDATE (overwritten internally in the add branch)
 $user_ip = isset($_POST['user_ip']) && is_string($_POST['user_ip']) ? $_POST['user_ip'] : '';
 $user_regdate = isset($_POST['user_regdate']) && is_string($_POST['user_regdate']) ? $_POST['user_regdate'] : '';
-$user_searchterms = trim((string) ($_REQUEST['user_searchterms'] ?? ''));
+$user_searchterms = trim(f_tce_edit_user_string($_REQUEST['user_searchterms'] ?? ''));
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_USERS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/config/tce_user_registration.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,d_password_length:string,h_add:string,h_birth_date:string,h_birth_place:string,
+ *     h_cancel:string,h_clear:string,h_delete:string,h_firstname:string,h_fiscal_code:string,h_ip:string,
+ *     h_lastname:string,h_level:string,h_login_name:string,h_otpkey:string,h_password:string,
+ *     h_password_repeat:string,h_regcode:string,h_regdate:string,h_update:string,h_usered_email:string,
+ *     hp_edit_user:string,m_authorization_denied:string,m_delete_anonymous:string,m_delete_confirm:string,
+ *     m_different_passwords:string,m_duplicate_name:string,m_duplicate_regnumber:string,m_duplicate_ssn:string,
+ *     m_empty_password:string,m_form_missing_fields:string,m_user_deleted:string,m_user_updated:string,
+ *     t_user_editor:string,w_add:string,w_birth_date:string,w_birth_place:string,w_cancel:string,w_clear:string,
+ *     w_confirm:string,w_date_format:string,w_delete:string,w_email:string,w_firstname:string,w_fiscal_code:string,
+ *     w_groups:string,w_ip:string,w_lastname:string,w_level:string,w_name:string,w_otp_qrcode:string,w_otpkey:string,
+ *     w_password:string,w_regcode:string,w_regdate:string,w_repeat:string,w_search:string,w_select:string,
+ *     w_update:string,w_user:string,w_username:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
 
 $thispage_title = $l['t_user_editor'];
 require_once '../code/tce_page_header.php';
@@ -57,8 +81,14 @@ require_once '../../shared/code/tce_functions_otp.php';
 require_once '../../shared/code/tce_functions_user_photo.php';
 require_once 'tce_functions_user_select.php';
 
+$formstatus = f_tce_edit_user_bool($formstatus ?? false);
+$menu_mode = f_tce_edit_user_string($menu_mode ?? '');
+
 $user_id = 0;
 $session_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
+$session_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
+$administrator_level = (int) K_AUTH_ADMINISTRATOR;
+$delete_users_level = (int) K_AUTH_DELETE_USERS;
 if (isset($_REQUEST['user_id'])) {
     $user_id = (int) $_REQUEST['user_id'];
     if (!f_is_authorized_editor_for_user($user_id)) {
@@ -75,8 +105,8 @@ if (isset($_REQUEST['group_id'])) {
 
 if (isset($_REQUEST['user_level'])) {
     $user_level = (int) $_REQUEST['user_level'];
-    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
-        if (f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])) {
+    if ($session_user_level < $administrator_level) {
+        if (f_legacy_int_equals($user_id, $session_user_id)) {
             // you cannot change your own level
             $user_level = $session_user_level;
         } else {
@@ -94,8 +124,8 @@ switch ($menu_mode) { // process submitted data
     case 'delete':
             // ask confirmation
             if (
-                $session_user_level < K_AUTH_DELETE_USERS
-                || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+                $session_user_level < $delete_users_level
+                || f_legacy_int_equals($user_id, $session_user_id)
                 || f_legacy_int_equals($user_id, 1)
             ) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
@@ -106,12 +136,12 @@ switch ($menu_mode) { // process submitted data
             ?>
         <div class="confirmbox">
         <form action="<?php echo
-            htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+            htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         ; ?>" method="post" enctype="multipart/form-data" id="form_delete">
         <div>
         <input type="hidden" name="user_id" id="user_id" value="<?php echo $user_id; ?>" />
         <input type="hidden" name="user_name" id="user_name" value="<?php echo
-            htmlspecialchars(stripslashes((string) $user_name), ENT_QUOTES, $l['a_meta_charset'])
+            htmlspecialchars(stripslashes($user_name), ENT_QUOTES, $l['a_meta_charset'])
         ; ?>" />
         <?php
 
@@ -129,8 +159,8 @@ switch ($menu_mode) { // process submitted data
     case 'forcedelete':
             // Delete specified user
             if (
-                $session_user_level < K_AUTH_DELETE_USERS
-                || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+                $session_user_level < $delete_users_level
+                || f_legacy_int_equals($user_id, $session_user_id)
                 || f_legacy_int_equals($user_id, 1)
             ) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
@@ -142,7 +172,8 @@ switch ($menu_mode) { // process submitted data
                     F_print_error('WARNING', $l['m_delete_anonymous']);
                 } else {
                     $sql = 'DELETE FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                    if (!$r) {
                         F_display_db_error(false);
                     } else {
                         $photo_path = f_tmf_user_photo_path((int) $user_id);
@@ -185,8 +216,7 @@ switch ($menu_mode) { // process submitted data
 
                 // check if registration number is unique
                 if (
-                    isset($user_regnumber)
-                    && strlen($user_regnumber) > 0
+                    strlen($user_regnumber) > 0
                     && !F_check_unique(
                         K_TABLE_USERS,
                         "user_regnumber='" . F_escape_sql($db, $user_regnumber) . "'",
@@ -202,8 +232,7 @@ switch ($menu_mode) { // process submitted data
 
                 // check if ssn is unique
                 if (
-                    isset($user_ssn)
-                    && strlen($user_ssn) > 0
+                    strlen($user_ssn) > 0
                     && !F_check_unique(
                         K_TABLE_USERS,
                         "user_ssn='" . F_escape_sql($db, $user_ssn) . "'",
@@ -284,14 +313,15 @@ switch ($menu_mode) { // process submitted data
 				WHERE user_id='
                     . $user_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', stripslashes($user_name) . ': ' . $l['m_user_updated']);
                 }
 
                 // remove old groups
-                $old_user_groups = F_get_user_groups($user_id);
+                $old_user_groups = f_tce_edit_user_id_list(F_get_user_groups($user_id));
                 foreach ($old_user_groups as $group_id) {
                     if (f_is_authorized_editor_for_group($group_id)) {
                         // delete previous groups
@@ -302,9 +332,10 @@ switch ($menu_mode) { // process submitted data
 						WHERE usrgrp_user_id='
                             . $user_id
                             . ' AND usrgrp_group_id='
-                            . $group_id
+                            . f_tce_edit_user_string($group_id)
                             . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error(false);
                         }
                     }
@@ -329,7 +360,8 @@ switch ($menu_mode) { // process submitted data
                                 . $group_id
                                 . '\'
 							)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                            if (!$r) {
                                 F_display_db_error(false);
                             }
                         }
@@ -352,8 +384,7 @@ switch ($menu_mode) { // process submitted data
 
                 // check if registration number is unique
                 if (
-                    isset($user_regnumber)
-                    && strlen($user_regnumber) > 0
+                    strlen($user_regnumber) > 0
                     && !F_check_unique(K_TABLE_USERS, "user_regnumber='" . F_escape_sql($db, $user_regnumber) . "'")
                 ) {
                     F_print_error('WARNING', $l['m_duplicate_regnumber']);
@@ -364,8 +395,7 @@ switch ($menu_mode) { // process submitted data
 
                 // check if ssn is unique
                 if (
-                    isset($user_ssn)
-                    && strlen($user_ssn) > 0
+                    strlen($user_ssn) > 0
                     && !F_check_unique(K_TABLE_USERS, "user_ssn='" . F_escape_sql($db, $user_ssn) . "'")
                 ) {
                     F_print_error('WARNING', $l['m_duplicate_ssn']);
@@ -464,7 +494,8 @@ switch ($menu_mode) { // process submitted data
                     . f_empty_to_null($user_otpkey)
                     . '
 				)';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
@@ -489,7 +520,8 @@ switch ($menu_mode) { // process submitted data
                                 . $group_id
                                 . '\'
 							)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+                            if (!$r) {
                                 F_display_db_error(false);
                             }
                         }
@@ -543,24 +575,25 @@ if ($formstatus && $menu_mode !== 'clear') {
         $user_otpkey = '';
     } else {
         $sql = 'SELECT * FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
-                $user_id = $m['user_id'] ?? '';
-                $user_regdate = (string) ($m['user_regdate'] ?? '');
-                $user_ip = (string) ($m['user_ip'] ?? '');
-                $user_name = $m['user_name'] ?? '';
-                $user_email = $m['user_email'] ?? '';
-                $user_password = $m['user_password'] ?? '';
-                $user_regnumber = $m['user_regnumber'] ?? '';
-                $user_firstname = $m['user_firstname'] ?? '';
-                $user_lastname = $m['user_lastname'] ?? '';
-                $user_birthdate = substr($m['user_birthdate'] ?? '', 0, 10);
-                $user_birthplace = $m['user_birthplace'] ?? '';
-                $user_ssn = $m['user_ssn'] ?? '';
-                $user_note = $m['user_note'] ?? '';
-                $user_schedule = $m['user_schedule'] ?? '';
-                $user_level = $m['user_level'] ?? '';
-                $user_otpkey = $m['user_otpkey'] ?? '';
+        $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+        if ($r) {
+            if (($m = f_tce_edit_user_row(F_db_fetch_array($r))) !== null) {
+                $user_id = (int) $m['user_id'];
+                $user_regdate = f_tce_edit_user_string($m['user_regdate']);
+                $user_ip = f_tce_edit_user_string($m['user_ip']);
+                $user_name = f_tce_edit_user_string($m['user_name']);
+                $user_email = f_tce_edit_user_string($m['user_email']);
+                $user_password = f_tce_edit_user_string($m['user_password']);
+                $user_regnumber = f_tce_edit_user_string($m['user_regnumber']);
+                $user_firstname = f_tce_edit_user_string($m['user_firstname']);
+                $user_lastname = f_tce_edit_user_string($m['user_lastname']);
+                $user_birthdate = substr(f_tce_edit_user_string($m['user_birthdate']), 0, 10);
+                $user_birthplace = f_tce_edit_user_string($m['user_birthplace']);
+                $user_ssn = f_tce_edit_user_string($m['user_ssn']);
+                $user_note = f_tce_edit_user_string($m['user_note']);
+                $user_schedule = f_tce_edit_user_string($m['user_schedule']);
+                $user_level = (int) $m['user_level'];
+                $user_otpkey = f_tce_edit_user_string($m['user_otpkey']);
             } else {
                 $user_regdate = '';
                 $user_ip = '';
@@ -590,7 +623,7 @@ if (
     && isset($_FILES['user_photo'])
     && (int) ($_FILES['user_photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE
 ) {
-    $photo_result = f_tmf_user_photo_store($_FILES['user_photo'], (int) $user_id);
+    $photo_result = f_tce_edit_user_photo_result(f_tmf_user_photo_store($_FILES['user_photo'], (int) $user_id));
     F_print_error($photo_result['status'] === 'stored' ? 'MESSAGE' : 'WARNING', $photo_result['message']);
 }
 
@@ -599,7 +632,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_usereditor">'
         . K_NEWLINE
 ;
@@ -620,10 +653,10 @@ if (f_legacy_int_equals($user_id, 0)) {
 echo '>+</option>' . K_NEWLINE;
 // Do not preload the whole users table here. The adjacent popup provides
 // server-side search and pagination; this select only needs the current user.
-if ($user_id > 0) {
+if ((int) $user_id > 0) {
     echo
         '<option value="'
-            . $user_id
+            . f_tce_edit_user_string($user_id)
             . '" selected="selected">'
             . htmlspecialchars(
                 trim($user_lastname . ' ' . $user_firstname) . ' - ' . $user_name,
@@ -638,21 +671,22 @@ if ($user_id > 0) {
 if ($user_searchterms !== '') {
     $sql = 'SELECT user_id, user_name, user_email, user_firstname, user_lastname, user_level FROM '
         . K_TABLE_USERS . ' WHERE (user_id>1)';
-    foreach (preg_split('/\s+/u', $user_searchterms, -1, PREG_SPLIT_NO_EMPTY) as $word) {
-        $word = F_escape_sql($db, $word);
+    $words = preg_split('/\s+/u', $user_searchterms, -1, PREG_SPLIT_NO_EMPTY);
+    foreach ($words === false ? [] : $words as $word) {
+        $word = f_tce_edit_user_string(F_escape_sql($db, $word));
         $sql .= " AND ((user_name LIKE '%" . $word . "%')"
             . " OR (user_email LIKE '%" . $word . "%')"
             . " OR (user_firstname LIKE '%" . $word . "%')"
             . " OR (user_lastname LIKE '%" . $word . "%'))";
     }
 
-    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
+    if ($session_user_level < $administrator_level) {
         $sql .= ' AND ((user_level<' . $session_user_level . ') OR (user_id='
-            . (int) $_SESSION['session_user_id'] . '))';
+            . $session_user_id . '))';
         $sql .= ' AND user_id IN (SELECT tb.usrgrp_user_id FROM '
             . K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb'
             . ' WHERE ta.usrgrp_group_id=tb.usrgrp_group_id'
-            . ' AND ta.usrgrp_user_id=' . (int) $_SESSION['session_user_id']
+            . ' AND ta.usrgrp_user_id=' . $session_user_id
             . ' AND tb.usrgrp_user_id=user_id)';
     }
 
@@ -663,14 +697,21 @@ if ($user_searchterms !== '') {
         $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    $r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while (($m = f_tce_edit_user_search_row(F_db_fetch_array($r))) !== null) {
             if ((int) $m['user_id'] === $user_id) {
                 continue;
             }
 
-            $display_name = trim((string) $m['user_lastname'] . ' ' . (string) $m['user_firstname']);
-            $option_parts = array_filter([$display_name, (string) $m['user_name'], (string) $m['user_email']], 'strlen');
+            $display_name = trim(
+                f_tce_edit_user_string($m['user_lastname']) . ' ' . f_tce_edit_user_string($m['user_firstname']),
+            );
+            $option_parts = array_filter([
+                $display_name,
+                f_tce_edit_user_string($m['user_name']),
+                f_tce_edit_user_string($m['user_email']),
+            ], static fn (string $value): bool => strlen($value) > 0);
             echo '<option value="' . (int) $m['user_id'] . '">'
                 . htmlspecialchars(implode(' — ', $option_parts), ENT_NOQUOTES, $l['a_meta_charset'])
                 . '</option>' . K_NEWLINE;
@@ -770,9 +811,9 @@ echo
         'new-password',
     )
 ;
-echo get_form_row_fixed_value('user_regdate', (string) $l['w_regdate'], (string) $l['h_regdate'], '', $user_regdate);
-echo get_form_row_fixed_value('user_ip', (string) $l['w_ip'], (string) $l['h_ip'], '', $user_ip);
-echo get_form_row_select_box('user_level', (string) $l['w_level'], (string) $l['h_level'], '', $user_level, [
+echo get_form_row_fixed_value('user_regdate', $l['w_regdate'], $l['h_regdate'], '', $user_regdate);
+echo get_form_row_fixed_value('user_ip', $l['w_ip'], $l['h_ip'], '', $user_ip);
+echo get_form_row_select_box('user_level', $l['w_level'], $l['h_level'], '', $user_level, [
     0,
     1,
     2,
@@ -871,7 +912,7 @@ echo
 ;
 echo '<div class="row"><span class="label"><label for="user_photo">Фотография</label></span>'
     . '<span class="formw">';
-if ($user_id > 0 && is_file(f_tmf_user_photo_path((int) $user_id))) {
+if ((int) $user_id > 0 && is_file(f_tmf_user_photo_path((int) $user_id))) {
     echo '<img class="participant-photo-preview" src="../../public/code/tce_user_photo.php?id='
         . (int) $user_id . '" alt="Фотография участника" />';
 }
@@ -879,10 +920,10 @@ echo '<input type="file" name="user_photo" id="user_photo" accept="image/jpeg,im
     . '<small>JPEG или PNG, до 5 МБ. Файл будет безопасно перекодирован.</small></span></div>';
 echo '<div class="row"><span class="label"><label for="user_note">Заметка</label></span>'
     . '<span class="formw"><textarea name="user_note" id="user_note" rows="4" maxlength="5000">'
-    . htmlspecialchars((string) $user_note, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
+    . htmlspecialchars($user_note, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
 echo '<div class="row"><span class="label"><label for="user_schedule">Расписание</label></span>'
     . '<span class="formw"><textarea name="user_schedule" id="user_schedule" rows="4" maxlength="5000">'
-    . htmlspecialchars((string) $user_schedule, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
+    . htmlspecialchars($user_schedule, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea></span></div>';
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -891,8 +932,9 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple">' . K_NEWLINE;
 $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
+$r = f_tce_edit_user_query_result(F_db_query($sql, $db));
+if ($r) {
+    while (($m = f_tce_edit_user_group_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['group_id'] . '"';
         if (!f_is_authorized_editor_for_group($m['group_id'])) {
             echo ' style="text-decoration:line-through;"';
@@ -919,7 +961,7 @@ echo get_form_row_text_input('user_otpkey', $l['w_otpkey'], $l['h_otpkey'], '', 
 // display QR-Code for Google authenticator
 if (!empty($user_otpkey)) {
     require_once '../../vendor/autoload.php'; // Composer-managed tc-lib-barcode
-    $host = preg_replace('/[h][t][t][p][s]?[:][\/][\/]/', '', K_PATH_HOST);
+    $host = f_tce_edit_user_string(preg_replace('/[h][t][t][p][s]?[:][\/][\/]/', '', K_PATH_HOST));
     $barcode = new Com\Tecnick\Barcode\Barcode();
     $qrcode = $barcode->getBarcodeObj(
         'QRCODE,H',
@@ -943,11 +985,11 @@ if (!empty($user_otpkey)) {
 
 echo '<div class="row">' . K_NEWLINE;
 // show buttons by case
-if (isset($user_id) && $user_id > 0) {
+if ((int) $user_id > 0) {
     if (
-        $user_level < $session_user_level
-        || f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
-        || $session_user_level >= K_AUTH_ADMINISTRATOR
+        (int) $user_level < $session_user_level
+        || f_legacy_int_equals($user_id, $session_user_id)
+        || $session_user_level >= $administrator_level
     ) {
         echo '<span style="background-color:#999999;">';
         echo
@@ -966,9 +1008,9 @@ if (isset($user_id) && $user_id > 0) {
     }
 
     if (
-        $user_id > 1
-        && $session_user_level >= K_AUTH_DELETE_USERS
-        && !f_legacy_int_equals($user_id, (int) $_SESSION['session_user_id'])
+        (int) $user_id > 1
+        && $session_user_level >= $delete_users_level
+        && !f_legacy_int_equals($user_id, $session_user_id)
     ) {
         // your account and anonymous user can't be deleted
         F_submit_button('delete', $l['w_delete'], $l['h_delete']);
@@ -989,3 +1031,131 @@ echo '<div class="pagehelp">' . $l['hp_edit_user'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+function f_tce_edit_user_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+function f_tce_edit_user_bool(mixed $value): bool
+{
+    if (is_array($value)) {
+        return $value !== [];
+    }
+    if (is_object($value) || is_resource($value)) {
+        return true;
+    }
+    return is_bool($value) || is_int($value) || is_float($value) || is_string($value)
+        ? (bool) $value
+        : false;
+}
+
+/** @return list<string> */
+function f_tce_edit_user_string_list(mixed $value): array
+{
+    if (!is_array($value)) {
+        return [];
+    }
+    return array_values(array_map(f_tce_edit_user_string(...), $value));
+}
+
+/** @return list<int|string> */
+function f_tce_edit_user_id_list(mixed $value): array
+{
+    if (!is_array($value)) {
+        return [];
+    }
+    /** @var list<int|string> $value */
+    return $value;
+}
+
+/** @return object|resource|bool */
+function f_tce_edit_user_query_result(mixed $value): mixed
+{
+    /** @var object|resource|bool $value */
+    return $value;
+}
+
+/**
+ * @return array{
+ *     user_id:int|string,
+ *     user_regdate:string|null,
+ *     user_ip:string|null,
+ *     user_name:string|null,
+ *     user_email:string|null,
+ *     user_password:string|null,
+ *     user_regnumber:string|null,
+ *     user_firstname:string|null,
+ *     user_lastname:string|null,
+ *     user_birthdate:string|null,
+ *     user_birthplace:string|null,
+ *     user_ssn:string|null,
+ *     user_note:string|null,
+ *     user_schedule:string|null,
+ *     user_level:int|string|null,
+ *     user_otpkey:string|null
+ * }|null
+ */
+function f_tce_edit_user_row(mixed $value): ?array
+{
+    /**
+     * @var array{
+     *     user_id:int|string,
+     *     user_regdate:string|null,
+     *     user_ip:string|null,
+     *     user_name:string|null,
+     *     user_email:string|null,
+     *     user_password:string|null,
+     *     user_regnumber:string|null,
+     *     user_firstname:string|null,
+     *     user_lastname:string|null,
+     *     user_birthdate:string|null,
+     *     user_birthplace:string|null,
+     *     user_ssn:string|null,
+     *     user_note:string|null,
+     *     user_schedule:string|null,
+     *     user_level:int|string|null,
+     *     user_otpkey:string|null
+     * }|null $value
+     */
+    return $value;
+}
+
+/**
+ * @return array{
+ *     user_id:int|string,
+ *     user_name:string|null,
+ *     user_email:string|null,
+ *     user_firstname:string|null,
+ *     user_lastname:string|null,
+ *     user_level:int|string|null
+ * }|null
+ */
+function f_tce_edit_user_search_row(mixed $value): ?array
+{
+    /**
+     * @var array{
+     *     user_id:int|string,
+     *     user_name:string|null,
+     *     user_email:string|null,
+     *     user_firstname:string|null,
+     *     user_lastname:string|null,
+     *     user_level:int|string|null
+     * }|null $value
+     */
+    return $value;
+}
+
+/** @return array{group_id:int|string,group_name:string}|null */
+function f_tce_edit_user_group_row(mixed $value): ?array
+{
+    /** @var array{group_id:int|string,group_name:string}|null $value */
+    return $value;
+}
+
+/** @return array{status:string,message:string} */
+function f_tce_edit_user_photo_result(mixed $value): array
+{
+    /** @var array{status:string,message:string} $value */
+    return $value;
+}
