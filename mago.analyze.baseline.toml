@@ -4329,7 +4329,7 @@ count = 2
 [[issues]]
 file = "admin/code/tce_import_questions.php"
 code = "invalid-return-statement"
-message = "Function `F_TSVQuestionImporter` is declared to return `bool` but no return value was specified."
+message = "Function `f_tsv_question_importer` is declared to return `bool` but no return value was specified."
 count = 4
 
 [[issues]]
@@ -4341,7 +4341,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_import_questions.php"
 code = "missing-return-type"
-message = "Function `F_TSVQuestionImporter` is missing a return type hint."
+message = "Function `f_tsv_question_importer` is missing a return type hint."
 count = 1
 
 [[issues]]
