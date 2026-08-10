@@ -95,4 +95,35 @@ final class OnboardingFunctionsTest extends TestCase
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
+
+    public function testSettingsTestSelectorEscapesNamesAndSkipsInvalidRows(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_NEWLINE", "\\n"); '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function f_onboarding_test_select"); '
+                    . '$end = strpos($source, "\\necho " . chr(39) . "<div class=" . chr(34) . "container", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . 'ob_start(); f_onboarding_test_select("demo_test_id", 22, ['
+                    . '["test_id" => 11, "test_name" => "Welcome <all>"], "invalid", '
+                    . '["test_id" => "22", "test_name" => "Demo & practice"]], "UTF-8"); '
+                    . 'echo ob_get_clean();',
+                dirname(__DIR__) . '/admin/code/tce_onboarding_settings.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            "<select name=\"demo_test_id\" id=\"demo_test_id\">\n"
+                . "<option value=\"0\">— не назначен —</option>\n"
+                . "<option value=\"11\">Welcome &lt;all&gt;</option>\n"
+                . "<option value=\"22\" selected=\"selected\">Demo &amp; practice</option>\n"
+                . "</select>\n",
+            $output,
+        );
+    }
 }
