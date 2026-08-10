@@ -2,38 +2,62 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_OPERATOR;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 
+/** @var array{
+ *     m_login_wrong:string,
+ *     a_meta_charset:string,
+ *     w_firstname:string,
+ *     w_lastname:string,
+ *     w_current_password:string,
+ *     h_password:string,
+ *     w_change_email:string,
+ *     w_change_password:string
+ * } $l
+ */
+/** @var mixed $db */
 $thispage_title = 'Мой профиль';
 require_once 'tce_page_header.php';
 
+/** @mago-expect analysis:possibly-undefined-string-array-index */
 $user_id = (int) $_SESSION['session_user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
-    if (empty($_POST['csrf_token']) || !check_csrf_token((string) $_POST['csrf_token'])) {
+    /** @var string $csrf_token */
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if ($csrf_token === '' || !check_csrf_token($csrf_token)) {
         http_response_code(403);
         exit();
     }
-    $firstname = trim((string) ($_POST['user_firstname'] ?? ''));
-    $lastname = trim((string) ($_POST['user_lastname'] ?? ''));
-    $password = (string) ($_POST['currentpassword'] ?? '');
+    /** @var string $firstname_input */
+    $firstname_input = $_POST['user_firstname'] ?? '';
+    /** @mago-expect analysis:redundant-cast */
+    $firstname = trim((string) $firstname_input);
+    /** @var string $lastname_input */
+    $lastname_input = $_POST['user_lastname'] ?? '';
+    /** @mago-expect analysis:redundant-cast */
+    $lastname = trim((string) $lastname_input);
+    /** @var string $password */
+    $password = $_POST['currentpassword'] ?? '';
     if (mb_strlen($firstname) > 255 || mb_strlen($lastname) > 255) {
         F_print_error('WARNING', 'Имя и фамилия не должны превышать 255 символов.');
     } else {
-        $result = F_db_query(
+        $result = f_tmf_self_profile_query_result(F_db_query(
             'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id . ' LIMIT 1',
             $db,
-        );
-        $user = $result ? F_db_fetch_array($result) : false;
-        if (!$user || !check_password($password, (string) $user['user_password'])) {
+        ));
+        $user = $result ? f_tmf_self_profile_row(F_db_fetch_array($result)) : null;
+        /** @var array{user_password?:mixed}|null $user */
+        if ($user === null || !check_password($password, (string) ($user['user_password'] ?? ''))) {
             F_print_error('WARNING', $l['m_login_wrong']);
         } else {
             $sql = 'UPDATE ' . K_TABLE_USERS . "
                 SET user_firstname='" . F_escape_sql($db, $firstname) . "',
                     user_lastname='" . F_escape_sql($db, $lastname) . "'
                 WHERE user_id=" . $user_id;
-            if (F_db_query($sql, $db)) {
+            if (f_tmf_self_profile_query_result(F_db_query($sql, $db))) {
                 $_SESSION['session_user_firstname'] = urlencode($firstname);
                 $_SESSION['session_user_lastname'] = urlencode($lastname);
                 F_print_error('MESSAGE', 'Профиль обновлён.');
@@ -44,22 +68,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
     }
 }
 
-$result = F_db_query(
+$result = f_tmf_self_profile_query_result(F_db_query(
     'SELECT user_name,user_email,user_firstname,user_lastname,user_level
     FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id . ' LIMIT 1',
     $db,
-);
-$user = $result ? F_db_fetch_array($result) : [];
+));
+$user = $result ? f_tmf_self_profile_row(F_db_fetch_array($result)) : null;
+/** @var array{
+ *     user_name?:mixed,
+ *     user_email?:mixed,
+ *     user_firstname?:mixed,
+ *     user_lastname?:mixed,
+ *     user_level?:mixed
+ * }|null $user
+ */
+$user ??= [];
+/** @var list<string> $groups */
 $groups = [];
-$group_result = F_db_query(
+$group_result = f_tmf_self_profile_query_result(F_db_query(
     'SELECT g.group_name
     FROM ' . K_TABLE_GROUPS . ' g
     INNER JOIN ' . K_TABLE_USERGROUP . ' ug ON ug.usrgrp_group_id=g.group_id
     WHERE ug.usrgrp_user_id=' . $user_id . '
     ORDER BY g.group_name',
     $db,
-);
-while ($group_result && ($group = F_db_fetch_array($group_result))) {
+));
+while ($group_result && ($group = f_tmf_self_profile_row(F_db_fetch_array($group_result)))) {
+    /** @var array{group_name:mixed} $group */
     $groups[] = (string) $group['group_name'];
 }
 
@@ -113,3 +148,22 @@ echo '</div>' . K_NEWLINE;
 
 require_once 'tce_page_footer.php';
 
+/** @return array<array-key,mixed>|null */
+function f_tmf_self_profile_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_self_profile_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
