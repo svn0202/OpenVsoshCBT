@@ -187,7 +187,7 @@ function f_tmf_monitor_apply_action(
         }
 
         if ($action === 'reset') {
-            if (!F_createTest($test_id, $target_user_id)) {
+            if (!f_create_test($test_id, $target_user_id)) {
                 F_db_query('ROLLBACK', $db);
                 return ['status' => 'error', 'testuser_id' => $testuser_id];
             }

@@ -208,7 +208,7 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
         }
 
         $hash = F_tmf_pregeneration_hash($test_id, $user_id);
-        if (!F_createTest($test_id, $user_id)) {
+        if (!f_create_test($test_id, $user_id)) {
             F_db_query('ROLLBACK', $db);
             return 'error';
         }

@@ -915,7 +915,7 @@ function f_execute_test($test_id)
                 (int) $_SESSION['session_user_id'],
             );
             if ($pregeneration === 'invalidated') {
-                return F_createTest($test_id, (int) $_SESSION['session_user_id']);
+                return f_create_test($test_id, (int) $_SESSION['session_user_id']);
             }
             // the user's IP is valid, check test status
             [$test_status, $testuser_id] = f_check_test_status(
@@ -931,14 +931,14 @@ function f_execute_test($test_id)
                     || f_legacy_int_equals($m['test_repeatable'], 1)
                 )
             ) {
-                return F_createTest($test_id, $_SESSION['session_user_id']);
+                return f_create_test($test_id, $_SESSION['session_user_id']);
             }
 
             switch ($test_status) {
                 case 0:
                     // 0 = test is not yet created
                         // create new test session for the current user
-                        return F_createTest($test_id, $_SESSION['session_user_id']);
+                        return f_create_test($test_id, $_SESSION['session_user_id']);
                 case 1: // 1 = the test has been successfully created
                 case 2: // 2 = all questions have been displayed to the user
                 case 3:
@@ -1298,7 +1298,7 @@ function f_update_testuser_stat($date): void
  * @param $user_id (int) user ID.
  * @return boolean TRUE in case of success, FALSE otherwise.
  */
-function F_createTest($test_id, $user_id)
+function f_create_test($test_id, $user_id)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';

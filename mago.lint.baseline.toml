@@ -3,12 +3,6 @@ variant = "loose"
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "function-name"
-message = "Function name `F_createTest` should be in snake case."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "function-name"
 message = "Function name `F_questionForm` should be in snake case."
 count = 1
 
