@@ -1027,13 +1027,14 @@ switch ($menu_mode) {
                     }
                 }
 
-                if (isset($old_test_id) && $old_test_id > 0) {
+                $previous_test_id = f_tce_edit_test_optional_id($old_test_id ?? null);
+                if (f_legacy_is_positive($previous_test_id)) {
                     // copy here previous selected questions to this new test
                     $sql = 'SELECT *
 					FROM ' . K_TABLE_TEST_SUBJSET . '
-					WHERE tsubset_test_id=\'' . $old_test_id . "'";
+					WHERE tsubset_test_id=\'' . f_general_string($previous_test_id) . "'";
                     if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
-                        while ($m = F_db_fetch_array($r)) {
+                        while (($m = f_tce_edit_test_subject_set_row(F_db_fetch_array($r))) !== null) {
                             // insert new subject
                             $sqlu =
                                 'INSERT INTO '
@@ -1074,7 +1075,7 @@ switch ($menu_mode) {
                                     . $m['tsubset_id']
                                     . "'";
                                 if ($rs = f_legacy_db_query_result(F_db_query($sqls, $db))) {
-                                    while ($ms = F_db_fetch_array($rs)) {
+                                    while (($ms = f_tce_edit_test_subject_link_row(F_db_fetch_array($rs))) !== null) {
                                         $sqlp =
                                             'INSERT INTO '
                                             . K_TABLE_SUBJECT_SET
@@ -1795,8 +1796,12 @@ if (f_legacy_is_positive($test_id)) {
 					AND question_enabled=\'1\'
 				GROUP BY question_type, question_difficulty';
             if ($rn = f_legacy_db_query_result(F_db_query($sqln, $db))) {
-                while ($mn = F_db_fetch_array($rn)) {
-                    $qstat .= ' ' . $mn['numquestions'] . $qtype[$mn['question_type'] - 1] . $mn['question_difficulty'];
+                while (($mn = f_tce_edit_test_question_count_row(F_db_fetch_array($rn))) !== null) {
+                    $qstat .=
+                        ' '
+                        . $mn['numquestions']
+                        . f_tce_edit_test_question_type_label($qtype, $mn['question_type'])
+                        . $mn['question_difficulty'];
                     // count min and max alternative answers
                     $amin = 999_999;
                     $amax = 0;
@@ -1821,7 +1826,7 @@ if (f_legacy_is_positive($test_id)) {
 							AND answer_enabled=\'1\'
 						GROUP BY question_id';
                     if ($ra = f_legacy_db_query_result(F_db_query($sqla, $db))) {
-                        while ($ma = F_db_fetch_array($ra)) {
+                        while (($ma = f_tce_edit_test_answer_count_row(F_db_fetch_array($ra))) !== null) {
                             if ($ma['numanswers'] < $amin) {
                                 $amin = $ma['numanswers'];
                             }
@@ -2045,7 +2050,7 @@ if (f_legacy_is_positive($test_id)) {
                 '<abbr class="offbox" title="' . $l['h_num_questions'] . '">' . $m['tsubset_quantity'] . '</abbr> ';
             $subjlist .= '<abbr class="offbox" title="' . $l['h_question_type'] . '">';
             if ($m['tsubset_type'] > 0) {
-                $subjlist .= $qtype[$m['tsubset_type'] - 1];
+                $subjlist .= f_tce_edit_test_question_type_label($qtype, $m['tsubset_type']);
             } else {
                 // all question types
                 $subjlist .= '*';
@@ -2112,7 +2117,7 @@ if (f_legacy_is_positive($test_id)) {
         echo '<span class="formw">' . K_NEWLINE;
         echo
             '<input type="text" name="test_num" id="test_num" value="'
-                . $test_num
+                . f_general_string($test_num)
                 . '" size="4" maxlength="10" title="'
                 . $l['h_pdf_offline_test']
                 . '" />'
@@ -2122,7 +2127,7 @@ if (f_legacy_is_positive($test_id)) {
             '<a href="tce_pdf_testgen.php?test_id='
                 . f_general_string($test_id)
                 . '&amp;num='
-                . $test_num
+                . f_general_string($test_num)
                 . '" title="'
                 . $l['h_pdf_offline_test']
                 . '" class="xmlbutton" onclick="pdfWindow=window.open(\'tce_pdf_testgen.php?test_id='
@@ -2275,6 +2280,48 @@ function f_tce_edit_test_count_row(mixed $row): ?array
 {
     /** @var array{numquestions:int|numeric-string}|null $row */
     return $row;
+}
+
+/** @return array{subjset_subject_id:int|string}|null */
+function f_tce_edit_test_subject_link_row(mixed $row): ?array
+{
+    /** @var array{subjset_subject_id:int|string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     question_type:int|numeric-string,question_difficulty:int|numeric-string,numquestions:int|numeric-string
+ * }|null
+ */
+function f_tce_edit_test_question_count_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     question_type:int|numeric-string,question_difficulty:int|numeric-string,numquestions:int|numeric-string
+     * }|null $row
+     */
+    return $row;
+}
+
+/** @return array{numanswers:int|numeric-string}|null */
+function f_tce_edit_test_answer_count_row(mixed $row): ?array
+{
+    /** @var array{numanswers:int|numeric-string}|null $row */
+    return $row;
+}
+
+/** @param list{string,string,string,string,string} $types */
+function f_tce_edit_test_question_type_label(array $types, mixed $question_type): string
+{
+    $index = (int) $question_type - 1;
+    return f_general_string($types[$index] ?? null);
+}
+
+function f_tce_edit_test_optional_id(mixed $value): int|string|null
+{
+    /** @var int|string|null $value */
+    return $value;
 }
 
 /**
