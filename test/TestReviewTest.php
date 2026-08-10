@@ -791,7 +791,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_count_rows($table, $where) { return array_shift($GLOBALS["counts"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_checkTestStatus)\\(/", '
+                    . 'preg_match("/function (f_check_test_status)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
