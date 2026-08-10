@@ -134,7 +134,7 @@ function f_get_test_stat(
 ) {
     $data = F_getRawTestStat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, [], $pubmode);
     if (isset($data['qstats']['recurrence'])) {
-        return F_normalizeTestStatAverages($data);
+        return f_normalize_test_stat_averages($data);
     }
 
     return $data;
@@ -688,7 +688,7 @@ function F_getRawTestStat(
  * @param $data (array) Raw data array.
  * return $data (array) Processed array.
  */
-function F_normalizeTestStatAverages($data)
+function f_normalize_test_stat_averages($data)
 {
     if (!isset($data['qstats']['recurrence']) || $data['qstats']['recurrence'] <= 0) {
         return $data;

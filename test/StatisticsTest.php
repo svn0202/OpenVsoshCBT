@@ -190,7 +190,7 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["raw_calls"] = []; $GLOBALS["normalized"] = []; '
                     . 'function F_getRawTestStat(...$args) { $GLOBALS["raw_calls"][] = $args; '
                     . 'return array_shift($GLOBALS["raw"]); } '
-                    . 'function F_normalizeTestStatAverages($data) { $GLOBALS["normalized"][] = $data; '
+                    . 'function f_normalize_test_stat_averages($data) { $GLOBALS["normalized"][] = $data; '
                     . '$data["normalized"] = true; return $data; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_stat)\\(/", '
@@ -332,7 +332,7 @@ final class StatisticsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_normalizeTestStatAverages|f_normalize_test_stat_averages)\\(/", '
+                    . 'preg_match("/function (f_normalize_test_stat_averages)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
