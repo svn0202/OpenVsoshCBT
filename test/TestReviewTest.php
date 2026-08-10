@@ -710,11 +710,69 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testNewTestLogPreservesInsertIdAndFailureBehavior(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS_LOGS", "test_logs"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "timestamp-format"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["results"] = [true, false]; $GLOBALS["queries"] = []; '
+                    . '$GLOBALS["errors"] = []; $GLOBALS["insert_calls"] = []; '
+                    . 'function date($format) { return "2026-08-10 12:34:56"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function F_db_insert_id(...$arguments) { $GLOBALS["insert_calls"][] = $arguments; return 55; } '
+                    . 'function F_display_db_error(...$arguments) { $GLOBALS["errors"][] = $arguments; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_newTestLog)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$success = $qualified("07", "08", "2.50", "09", "010"); '
+                    . '$failure = $qualified(11, 12, -1, 13, 4); '
+                    . 'echo json_encode([$success, $failure, $GLOBALS["queries"], '
+                    . '$GLOBALS["insert_calls"], $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                55,
+                false,
+                [
+                    $this->newTestLogInsertSql(7, 8, '2.5', '09', '010'),
+                    $this->newTestLogInsertSql(11, 12, '-1', '13', '4'),
+                ],
+                [['db', 'test_logs', 'testlog_id']],
+                [[false]],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     private function logAnswersInsertSql(string $values): string
     {
         return "INSERT INTO log_answers (\n\t\t\tlogansw_testlog_id,\n"
             . "\t\t\tlogansw_answer_id,\n\t\t\tlogansw_selected,\n\t\t\tlogansw_order\n"
             . "\t\t\t) VALUES " . $values;
+    }
+
+    private function newTestLogInsertSql(int $testUserId, int $questionId, string $score, string $order, string $answers): string
+    {
+        return "INSERT INTO test_logs (\n\t\ttestlog_testuser_id,\n\t\ttestlog_question_id,\n"
+            . "\t\ttestlog_score,\n\t\ttestlog_creation_time,\n\t\ttestlog_reaction_time,\n"
+            . "\t\ttestlog_order,\n\t\ttestlog_num_answers\n\t\t) VALUES (\n\t\t"
+            . $testUserId . ",\n\t\t" . $questionId . ",\n\t\t" . $score
+            . ",\n\t\t'2026-08-10 12:34:56',\n\t\t0,\n\t\t" . $order . ",\n\t\t" . $answers . "\n\t\t)";
     }
 
     public function testTestUserAuthorizationPreservesShortCircuitChecks(): void
