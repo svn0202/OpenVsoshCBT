@@ -25,9 +25,28 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_BACKUP;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *     t_backup_editor: string,
+ *     m_restore_confirm: string,
+ *     w_restore: string,
+ *     h_restore: string,
+ *     w_cancel: string,
+ *     h_cancel: string,
+ *     m_restore_completed: string,
+ *     a_meta_charset: string,
+ *     m_backup_completed: string,
+ *     w_backup_file: string,
+ *     w_backup: string,
+ *     h_backup: string,
+ *     w_download: string,
+ *     h_download: string,
+ *     hp_edit_backups: string
+ * } $l
+ */
 $thispage_title = $l['t_backup_editor'];
 
 require_once '../../shared/code/tce_functions_form.php';
@@ -56,10 +75,11 @@ $backup_file = $_REQUEST['backup_file'] ?? '';
 if (!is_string($backup_file) || $backup_file !== '' && !f_is_valid_backup_file($backup_file)) {
     F_print_error('ERROR', 'SECURITY ERROR', true);
 }
+/** @var string $backup_file */
 
 switch ($menu_mode) { // process submitted data
     case 'restore':
-        if (isset($backup_file) && !empty($backup_file)) {
+        if (!empty($backup_file)) {
             F_print_error('WARNING', $l['m_restore_confirm'] . ': ' . $backup_file);
             echo '<div class="confirmbox">' . K_NEWLINE;
             echo
@@ -112,6 +132,7 @@ switch ($menu_mode) { // process submitted data
         break;
 
     case 'download':
+        /** @mago-expect analysis:redundant-logical-operation */
         if (K_DOWNLOAD_BACKUPS && $backup_file !== '') {
             $file_to_download = '';
             try {
@@ -137,7 +158,7 @@ switch ($menu_mode) { // process submitted data
             // use the Content-Disposition header to supply a recommended filename
             header('Content-Disposition: attachment; filename=' . $backup_file . ';');
             header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . filesize($file_to_download));
+            header('Content-Length: ' . (string) filesize($file_to_download));
             echo file_get_contents($file_to_download);
             exit();
         }
@@ -168,9 +189,11 @@ echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="backup_file" id="backup_file">' . K_NEWLINE;
 
 // read directory for backup files.
+/** @var resource $handle */
 $handle = opendir(K_PATH_BACKUP);
 echo '<option value="">&nbsp;</option>' . K_NEWLINE;
 // get backup files
+/** @var list<string> $files_list */
 $files_list = [];
 while (false !== ($file = readdir($handle))) {
     if (f_is_valid_backup_file($file) && is_file(K_PATH_BACKUP . $file)) {
@@ -198,6 +221,7 @@ echo '<div class="row">' . K_NEWLINE;
 
 F_submit_button('backup', $l['w_backup'], $l['h_backup']);
 F_submit_button('restore', $l['w_restore'], $l['h_restore']);
+/** @mago-expect analysis:redundant-condition */
 if (K_DOWNLOAD_BACKUPS) {
     F_submit_button('download', $l['w_download'], $l['h_download']);
 }
