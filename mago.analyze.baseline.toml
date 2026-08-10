@@ -13821,7 +13821,7 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_monitoring.php"
 code = "no-value"
-message = "Argument #1 passed to function `F_createTest` has type `never`, meaning it cannot produce a value."
+message = "Argument #1 passed to function `f_create_test` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -13833,7 +13833,7 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_monitoring.php"
 code = "no-value"
-message = "Argument #2 passed to function `F_createTest` has type `never`, meaning it cannot produce a value."
+message = "Argument #2 passed to function `f_create_test` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]
@@ -15453,7 +15453,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_createTest` is missing a return type hint."
+message = "Function `f_create_test` is missing a return type hint."
 count = 1
 
 [[issues]]
