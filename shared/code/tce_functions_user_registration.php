@@ -36,7 +36,39 @@ function f_send_user_reg_email(mixed $user_id, mixed $user_email, mixed $user_ve
     require_once '../../shared/config/tce_user_registration.php';
     require_once '../../shared/code/tce_functions_html2txt.php';
 
+    /** @var array{
+     *     Priority:int,
+     *     CharSet:string,
+     *     ContentType:string,
+     *     Encoding:string,
+     *     WordWrap:int,
+     *     Mailer:string,
+     *     Sendmail:string,
+     *     Host:string,
+     *     Port:int,
+     *     Helo:string,
+     *     SMTPAuth:bool,
+     *     SMTPSecure:string,
+     *     Username:string,
+     *     Password:string,
+     *     Timeout:int,
+     *     SMTPDebug:int,
+     *     Sender:string,
+     *     From:string,
+     *     FromName:string,
+     *     Reply:string,
+     *     ReplyName:string
+     * } $emailcfg
+     */
+    /** @var array{
+     *     a_meta_charset:string,
+     *     w_registration_verification:string,
+     *     m_email_registration:string
+     * } $l
+     */
     $user_id = (int) $user_id;
+    $user_email = (string) $user_email;
+    $user_verifycode = (string) $user_verifycode;
 
     // Instantiate C_mailer class
     $mail = new C_mailer();
@@ -98,9 +130,11 @@ function f_send_user_reg_email(mixed $user_id, mixed $user_email, mixed $user_ve
     $mail->AltBody = F_html_to_text($mail->Body, false, true);
 
     $mail->addAddress($user_email, ''); //Adds a "To" address
-    if (strlen(K_USRREG_ADMIN_EMAIL) > 0) {
+    /** @var string $admin_email */
+    $admin_email = K_USRREG_ADMIN_EMAIL;
+    if ($admin_email !== '') {
         // add administrator to BCC field
-        $mail->addBCC(K_USRREG_ADMIN_EMAIL);
+        $mail->addBCC($admin_email);
     }
 
     if (!$mail->send()) { //send email to user
