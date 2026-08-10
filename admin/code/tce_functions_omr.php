@@ -358,7 +358,7 @@ function f_import_omr_test_data($user_id, $date, $omr_testdata, $omr_answers, $o
 
     // get inserted ID
     $testuser_id = F_db_insert_id($db, K_TABLE_TEST_USER, 'testuser_id');
-    F_updateTestuserStat($date);
+    f_update_testuser_stat($date);
 
     // 3. create test log entries
     $num_questions = count($omr_testdata) - 1;
