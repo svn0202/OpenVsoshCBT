@@ -1120,7 +1120,7 @@ function F_addLogAnswers($testlog_id, $answers_ids)
  * @param $test_id (int) test ID
  * @return int testuser ID
  */
-function F_getFirstTestUser($test_id)
+function f_get_first_test_user($test_id)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -1385,7 +1385,7 @@ function F_createTest($test_id, $user_id)
     F_updateTestuserStat($date);
 
     // get ID of first user's test (if exist)
-    $firsttest = F_getFirstTestUser($test_id);
+    $firsttest = f_get_first_test_user($test_id);
     // select questions
     if ($test_random_questions_select || f_legacy_int_equals($firsttest, 0)) {
         // selected questions IDs
