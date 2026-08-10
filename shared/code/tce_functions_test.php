@@ -300,7 +300,7 @@ function F_repeatTest($test_id)
  * @param $test_ips (string) comma separated list of valid test IP addresses. The '*' character may be used to indicate any number in IPv4 addresses. Intervals must be specified using the '-' character.
  * @return bool true if IP is valid, false otherwise
  */
-function F_isValidIP($user_ip, $test_ips)
+function f_is_valid_ip($user_ip, $test_ips): bool
 {
     if (empty($user_ip) || empty($test_ips)) {
         return false;
@@ -426,7 +426,7 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     // check user's IP
-    if (!F_isValidIP($user_ip, $test_ip)) {
+    if (!f_is_valid_ip($user_ip, $test_ip)) {
         return false;
     }
 
