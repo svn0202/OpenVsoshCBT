@@ -688,6 +688,59 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestTerminationPreservesReasonsUpdateAndErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "\\\\F\\\\I\\\\X\\\\E\\\\D"); '
+                    . '$_SESSION["session_user_id"] = "11"; $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["results"] = [true, false, true]; $GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_terminateUserTest|f_terminate_user_test)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("7"), $qualified("8", "timeout"), '
+                    . '$qualified("9", "unexpected")], $GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [null, null, null],
+                1,
+                [
+                    $this->terminationUpdateSql(7, 'completed'),
+                    $this->terminationUpdateSql(8, 'timeout'),
+                    $this->terminationUpdateSql(9, 'completed'),
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+    private function terminationUpdateSql(int $testId, string $reason): string
+    {
+        return "UPDATE test_user\n\t\tSET testuser_status=4,\n"
+            . "\t\t\ttestuser_close_reason='" . $reason . "',\n"
+            . "\t\t\ttestuser_last_activity='FIXED'\n"
+            . "\t\tWHERE testuser_test_id=" . $testId . "\n"
+            . "\t\t\tAND testuser_user_id=11\n\t\t\tAND testuser_status<4";
+    }
+
 
 
 
