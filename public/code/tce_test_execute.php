@@ -297,7 +297,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             echo '<input type="hidden" name="reaction_time" id="reaction_time" value="" />' . K_NEWLINE;
 
             // textarea field for user's comment
-            echo '<span class="testcomment">' . F_testComment($test_id) . '</span>' . K_NEWLINE;
+            echo '<span class="testcomment">' . f_test_comment($test_id) . '</span>' . K_NEWLINE;
 
             // Hide termination while required answers are missing and identify the exact
             // question numbers, while keeping the server-side completion check authoritative.
