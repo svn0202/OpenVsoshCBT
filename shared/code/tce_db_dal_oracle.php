@@ -33,15 +33,21 @@
  * @param $password (string) Password of the user that owns the server process.
  * @param $database (string) Database name.
  * @return Oracle link identifier on success, or FALSE on failure.
+ * @mago-expect analysis:invalid-return-statement(2) -- remove after dependent baselines
  */
 function f_db_connect(
-    $host = 'localhost',
-    $port = '1521',
-    $username = 'root',
+    mixed $host = 'localhost',
+    mixed $port = '1521',
+    mixed $username = 'root',
     #[\SensitiveParameter]
-    $password = '',
-    $database = '',
-) {
+    mixed $password = '',
+    mixed $database = '',
+): mixed {
+    /** @var string $host */
+    /** @var string $port */
+    /** @var string $username */
+    /** @var string $password */
+    /** @var string $database */
     $dbstring = '//' . $host . ':' . $port;
     if (!empty($database)) {
         $dbstring .= '/' . $database;
@@ -60,20 +66,22 @@ function f_db_connect(
 /**
  * Closes the non-persistent connection to a database associated with the given connection resource.
  * @param $link_identifier (resource) database link identifier.
- * @return bool TRUE on success or FALSE on failure
+ * @return bool True on success or false on failure.
  */
-function f_db_close($link_identifier)
+function f_db_close(mixed $link_identifier): mixed
 {
     return oci_close($link_identifier);
 }
 
 /**
  * Returns the text of the error message from previous database operation
- * @return string error message.
+ * @return string Error message.
  */
-function f_db_error($link_identifier = null)
+function f_db_error(mixed $link_identifier = null): mixed
 {
+    unset($link_identifier);
     $e = oci_error();
+    /** @var array{code:int|string,message:string} $e */
     return '[' . $e['code'] . ']: ' . $e['message'] . '';
 }
 
@@ -83,9 +91,13 @@ function f_db_error($link_identifier = null)
  * @param $query (string) The query tosend. The query string should not end with a semicolon.
  * @param $link_identifier (resource) database link identifier.
  * @return false in case of error, TRUE or resource-identifier in case of success.
+ * @mago-expect analysis:invalid-return-statement(2),less-specific-return-statement(2) -- legacy shared DAL contract
  */
-function f_db_query($query, $link_identifier)
+function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
+    /** @var string $query */
+    /** @var object|resource $link_identifier */
+    /** @var array<int,bool> $transactions */
     static $transactions = [];
     $connection_id = is_object($link_identifier)
         ? spl_object_id($link_identifier)
@@ -111,6 +123,7 @@ function f_db_query($query, $link_identifier)
     // convert MySQL RAND() function to Oracle dbms_random.random
     $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY dbms_random.random', $query);
     // remove last limit clause
+    // @mago-expect analysis:possibly-null-argument -- the fixed pattern is valid and the asserted input is a string
     $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
 
     // @mago-expect lint:no-error-control-operator -- invalid SQL follows the DAL's false-return contract
@@ -133,12 +146,15 @@ function f_db_query($query, $link_identifier)
  * Note: This function sets NULL fields to PHP NULL value.
  * @param $result (resource) result resource to the query result.
  * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
+ * @mago-expect analysis:falsable-return-statement,invalid-return-statement -- legacy shared DAL contract
  */
-function f_db_fetch_array($result)
+function f_db_fetch_array(mixed $result): mixed
 {
     $arr = oci_fetch_array($result, OCI_BOTH + OCI_RETURN_NULLS + OCI_RETURN_LOBS);
     if ($arr !== false) {
+        // @mago-expect analysis:less-specific-argument -- OCI_BOTH intentionally returns numeric and string keys
         $arr = array_change_key_case($arr, CASE_LOWER);
+        // @mago-expect analysis:possibly-invalid-argument -- OCI values use weak scalar conversion in this legacy DAL
         $arr = array_map('stripslashes', $arr);
     }
 
@@ -150,12 +166,14 @@ function f_db_fetch_array($result)
  * Note: This function sets NULL fields to PHP NULL value.
  * @param $result (resource) result resource to the query result.
  * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
+ * @mago-expect analysis:falsable-return-statement,invalid-return-statement -- legacy shared DAL contract
  */
-function f_db_fetch_assoc($result)
+function f_db_fetch_assoc(mixed $result): mixed
 {
     $arr = oci_fetch_assoc($result);
     if ($arr !== false) {
         $arr = array_change_key_case($arr, CASE_LOWER);
+        // @mago-expect analysis:possibly-invalid-argument -- OCI values use weak scalar conversion in this legacy DAL
         $arr = array_map('stripslashes', $arr);
     }
 
@@ -167,9 +185,11 @@ function f_db_fetch_assoc($result)
  * @param $link_identifier (resource) database link identifier [UNUSED].
  * @param $result (resource) result resource to the query result.
  * @return Number of rows.
+ * @mago-expect analysis:invalid-return-statement -- legacy shared DAL contract
  */
-function f_db_affected_rows($link_identifier, $result)
+function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
+    unset($link_identifier);
     return oci_num_rows($result);
 }
 
@@ -177,8 +197,9 @@ function f_db_affected_rows($link_identifier, $result)
  * Get number of rows in result.
  * @param $result (resource) result resource to the query result.
  * @return Number of affected rows.
+ * @mago-expect analysis:invalid-return-statement -- legacy shared DAL contract
  */
-function f_db_num_rows($result)
+function f_db_num_rows(mixed $result): mixed
 {
     $output = [];
     set_error_handler(static fn (): bool => true);
@@ -196,18 +217,26 @@ function f_db_num_rows($result)
  * @param $tablename (string) Table name.
  * @param $fieldname (string) Field name (column name).
  * @return int ID generated from the last INSERT operation.
+ * @mago-expect analysis:nullable-return-statement,invalid-return-statement -- Oracle may return a numeric string
  */
-function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
+    /** @var string $tablename */
+    unset($fieldname);
     $query = 'SELECT ' . $tablename . '_seq.currval FROM dual';
     set_error_handler(static fn (): bool => true);
     try {
+        /** @var object|resource|bool $r */
         $r = F_db_query($query, $link_identifier);
     } finally {
         restore_error_handler();
     }
-    if ($r && ($m = oci_fetch_array($r, OCI_NUM))) {
-        return $m[0];
+    if ($r) {
+        $m = oci_fetch_array($r, OCI_NUM);
+        if ($m !== false) {
+            /** @var array{0:int|string|null} $m */
+            return $m[0];
+        }
     }
 
     return 0;
@@ -216,9 +245,12 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 /**
  * Returns the SQL string to calculate the difference in seconds between to datetime fields.
  * @return SQL query string
+ * @mago-expect analysis:invalid-return-statement -- legacy shared DAL contract
  */
-function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
+function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
+    /** @var string $start_date_field */
+    /** @var string $end_date_field */
     return '(' . $end_date_field . ' – ' . $start_date_field . ')*86400';
 }
 
@@ -227,11 +259,14 @@ function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
  * @param $link_identifier (resource) database link identifier.
  * @param $str (string) The string that is to be escaped.
  * @param $stripslashes (boolean) if true strip slashes from string
- * @return string Returns the escaped string, or FALSE on error.
+ * @return string Escaped value, or false on error.
  * @since 5.0.005 2007-12-05
  */
-function f_escape_sql($link_identifier, $str, $stripslashes = true)
+function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
+    /** @var string $str */
+    /** @var bool $stripslashes */
+    unset($link_identifier);
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
     if ($stripslashes) {
         $str = stripslashes($str);

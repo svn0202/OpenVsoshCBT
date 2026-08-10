@@ -5,7 +5,7 @@ php-version = "8.2.0"
 [source]
 workspace = "."
 paths = ["admin", "public", "shared", "index.php"]
-includes = ["vendor"]
+includes = ["vendor", "tools/mago-stubs"]
 # Bundled third-party libraries are excluded until they are externalised via
 # Composer (see plan Stage 2); generated caches and live config are never linted.
 excludes = [
