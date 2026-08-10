@@ -45,7 +45,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     /** Current vertical cursor (mm) for the next content block. */
     protected float $cursorY = 0.0;
 
-    /** Cached default content font handle (['out' => ...]). */
+    /** @var array<string,mixed>|null Cached default content font handle. */
     protected ?array $contentFont = null;
 
     /** Header title (left, bold). */
@@ -68,16 +68,17 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Constructor: A4 portrait, millimetres, unicode, compressed.
+     * @throws \Throwable When the PDF engine cannot initialize the document.
      */
     public function __construct()
     {
         // All engine options are configurable via TCExam config (shared/config tce_pdf.php),
         // falling back to sensible defaults when a constant is not defined.
-        $unit = defined('PDF_UNIT') ? (string) PDF_UNIT : 'mm';
-        $unicode = defined('K_PDF_UNICODE') ? (bool) K_PDF_UNICODE : true;
-        $subsetfont = defined('K_PDF_SUBSET_FONT') ? (bool) K_PDF_SUBSET_FONT : false;
-        $compress = defined('K_PDF_COMPRESS') ? (bool) K_PDF_COMPRESS : true;
-        $mode = defined('K_PDF_MODE') ? (string) K_PDF_MODE : '';
+        $unit = self::stringValue(self::configValue('PDF_UNIT', 'mm'));
+        $unicode = self::boolValue(self::configValue('K_PDF_UNICODE', true));
+        $subsetfont = self::boolValue(self::configValue('K_PDF_SUBSET_FONT', false));
+        $compress = self::boolValue(self::configValue('K_PDF_COMPRESS', true));
+        $mode = self::stringValue(self::configValue('K_PDF_MODE', ''));
         parent::__construct($unit, $unicode, $subsetfont, $compress, $mode, null, self::buildFileOptions());
         // A4 portrait default; refined from the real page in addReportPage().
         $this->contentW = 210.0 - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
@@ -93,32 +94,35 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * Reads the K_DIGSIG_* constants (shared/config tce_pdf.php) and maps them onto the
      * tc-lib-pdf setSignature() contract. A no-op unless K_DIGSIG_ENABLE is true and a signing
      * certificate is configured; the actual signing is performed by the engine at output time.
+     * @throws \Throwable When the PDF engine rejects the signing configuration.
      */
     protected function applyDigitalSignature(): void
     {
-        if (!defined('K_DIGSIG_ENABLE') || !K_DIGSIG_ENABLE) {
+        if (!self::boolValue(self::configValue('K_DIGSIG_ENABLE', false))) {
             return;
         }
-        $signcert = defined('K_DIGSIG_CERTIFICATE') ? (string) K_DIGSIG_CERTIFICATE : '';
+        $signcert = self::stringValue(self::configValue('K_DIGSIG_CERTIFICATE', ''));
         if ($signcert === '') {
             return;
         }
         $data = [
             'signcert' => $signcert,
-            'privkey' => defined('K_DIGSIG_PRIVATE_KEY') ? (string) K_DIGSIG_PRIVATE_KEY : $signcert,
-            'password' => defined('K_DIGSIG_PASSWORD') ? (string) K_DIGSIG_PASSWORD : '',
-            'cert_type' => defined('K_DIGSIG_CERT_TYPE') ? (int) K_DIGSIG_CERT_TYPE : 2,
+            'privkey' => self::stringValue(self::configValue('K_DIGSIG_PRIVATE_KEY', $signcert)),
+            'password' => self::stringValue(self::configValue('K_DIGSIG_PASSWORD', '')),
+            'cert_type' => self::intValue(self::configValue('K_DIGSIG_CERT_TYPE', 2)),
             'info' => [
-                'Name' => defined('K_DIGSIG_NAME') ? (string) K_DIGSIG_NAME : '',
-                'Location' => defined('K_DIGSIG_LOCATION') ? (string) K_DIGSIG_LOCATION : '',
-                'Reason' => defined('K_DIGSIG_REASON') ? (string) K_DIGSIG_REASON : '',
-                'ContactInfo' => defined('K_DIGSIG_CONTACT') ? (string) K_DIGSIG_CONTACT : '',
+                'Name' => self::stringValue(self::configValue('K_DIGSIG_NAME', '')),
+                'Location' => self::stringValue(self::configValue('K_DIGSIG_LOCATION', '')),
+                'Reason' => self::stringValue(self::configValue('K_DIGSIG_REASON', '')),
+                'ContactInfo' => self::stringValue(self::configValue('K_DIGSIG_CONTACT', '')),
             ],
         ];
         // Optional bundle of extra certificates (only pass when configured).
-        if (defined('K_DIGSIG_EXTRA_CERTS') && (string) K_DIGSIG_EXTRA_CERTS !== '') {
-            $data['extracerts'] = (string) K_DIGSIG_EXTRA_CERTS;
+        $extraCerts = self::stringValue(self::configValue('K_DIGSIG_EXTRA_CERTS', ''));
+        if ($extraCerts !== '') {
+            $data['extracerts'] = $extraCerts;
         }
+        // @mago-expect analysis:possibly-invalid-argument -- setSignature merges this valid partial configuration with its defaults
         $this->setSignature($data);
     }
 
@@ -128,13 +132,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * hosts and download size limit are configurable (see shared/config tce_pdf.php).
      * Returns null when no constants are defined, so the library defaults apply.
      *
-     * @return array<string,mixed>|null
+     * @return array{allowedPaths?:list<string>,allowedHosts?:list<string>,maxRemoteSize?:int}|null
      */
     protected static function buildFileOptions(): ?array
     {
         $opts = [];
         if (defined('K_PDF_ALLOWED_PATHS')) {
             // @mago-expect lint:no-error-control-operator -- malformed optional configuration falls back to library defaults
+            // @mago-expect analysis:mixed-assignment -- unserialize is checked immediately below
             $paths = @unserialize((string) K_PDF_ALLOWED_PATHS, ['allowed_classes' => false]);
             if (is_array($paths) && $paths !== []) {
                 $opts['allowedPaths'] = array_values(array_filter(array_map('strval', $paths)));
@@ -142,6 +147,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         }
         if (defined('K_PDF_ALLOWED_HOSTS')) {
             // @mago-expect lint:no-error-control-operator -- malformed optional configuration keeps remote loading disabled
+            // @mago-expect analysis:mixed-assignment -- unserialize is checked immediately below
             $hosts = @unserialize((string) K_PDF_ALLOWED_HOSTS, ['allowed_classes' => false]);
             if (is_array($hosts)) {
                 // Empty list keeps remote loading disabled (SSRF-safe default).
@@ -182,15 +188,16 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Add a new content page and reset the content cursor below the header.
+     * @throws \Throwable When the PDF engine cannot create the page.
      */
     public function addReportPage(): void
     {
         $data = [];
-        if (defined('PDF_PAGE_FORMAT')) {
-            $data['format'] = (string) PDF_PAGE_FORMAT;
+        if (self::hasConfig('PDF_PAGE_FORMAT')) {
+            $data['format'] = self::stringValue(self::configValue('PDF_PAGE_FORMAT', ''));
         }
-        if (defined('PDF_PAGE_ORIENTATION')) {
-            $data['orientation'] = (string) PDF_PAGE_ORIENTATION;
+        if (self::hasConfig('PDF_PAGE_ORIENTATION')) {
+            $data['orientation'] = self::stringValue(self::configValue('PDF_PAGE_ORIENTATION', ''));
         }
         // Reserve the header/footer bands as page margins so the HTML engine's
         // writable region (and therefore the automatic page-break resume position)
@@ -205,9 +212,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         ];
         $this->addPage($data);
         $page = $this->page->getPage($this->page->getPageId());
-        if (isset($page['width'])) {
-            $this->contentW = (float) $page['width'] - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
-        }
+        $this->contentW = $page['width'] - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
         $this->cursorY = $this->contentTop;
     }
 
@@ -223,13 +228,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Ensure a default content font is active (required before HTML/text output).
+     * @throws \Throwable When the PDF engine cannot load or activate the font.
      */
     protected function ensureContentFont(): void
     {
         if ($this->contentFont === null) {
             $this->contentFont = $this->font->insert($this->pon, PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
         }
-        $this->page->addContent($this->contentFont['out']);
+        $this->page->addContent(self::stringValue($this->contentFont['out'] ?? ''));
     }
 
     /**
@@ -237,6 +243,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * The tc-lib-pdf HTML engine handles wrapping and internal page breaks.
      *
      * @param string $html HTML content to render.
+     * @throws \Throwable When the PDF engine cannot render the content.
      */
     public function writeReportHTML(string $html): void
     {
@@ -253,9 +260,9 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         // next page. A fresh page always has the full region height, so this cannot
         // loop. See defaultPageContent() for the reserved header/footer bands.
         $region = $this->page->getRegion();
-        $regionTop = (float) $region['RY'];
-        $regionBottom = $regionTop + (float) $region['RH'];
-        $minBlockRoom = 0.15 * (float) $region['RH'];
+        $regionTop = $region['RY'];
+        $regionBottom = $regionTop + $region['RH'];
+        $minBlockRoom = 0.15 * $region['RH'];
         if ($this->cursorY > ($regionTop + 0.1) && ($regionBottom - $this->cursorY) < $minBlockRoom) {
             $this->addReportPage();
         }
@@ -263,6 +270,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $html = $this->resolveHtmlImagePaths($html);
         $this->addHTMLCell(html: $html, posx: $this->contentX, posy: $this->cursorY, width: $this->contentW);
         $bbox = $this->getLastBBox();
+        /** @var array{y:int|float,h:int|float} $bbox */
         $this->cursorY = (float) ($bbox['y'] + $bbox['h']) + 1.5;
     }
 
@@ -296,6 +304,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * Output the report to the browser as a downloadable PDF.
      *
      * @param string $filename Suggested download file name.
+     * @throws \Throwable When the PDF engine cannot build or send the document.
      */
     public function outputReport(string $filename = 'tcexam_report.pdf'): void
     {
@@ -311,6 +320,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * @param int $pid Page index.
      *
      * @return string Raw PDF content stream prepended to the page.
+     * @throws \Throwable When the PDF engine cannot render the decoration.
      */
     public function defaultPageContent(int $pid = -1): string
     {
@@ -325,9 +335,9 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         // dimensions, so barcode/rect helpers (which resolve Y against $this->graph->pageh) would
         // otherwise position against a stale/zero page height and draw the QR back-link off-page.
         // Set the current page geometry on the graph now so the QR lands inside the header.
-        $this->graph->setPageWidth((float) $page['width']);
-        $this->graph->setPageHeight((float) $page['height']);
-        $pw = (float) $page['width'];
+        $this->graph->setPageWidth($page['width']);
+        $this->graph->setPageHeight($page['height']);
+        $pw = $page['width'];
         $lm = (float) PDF_MARGIN_LEFT;
         $rm = $pw - (float) PDF_MARGIN_RIGHT;
         $tw = $rm - $lm;
@@ -369,7 +379,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                     (float) PDF_MARGIN_HEADER,
                     $logoW,
                     $logoH,
-                    (float) $page['height'],
+                    $page['height'],
                 );
                 $textX = $lm + $logoW + $gap;
             } catch (\Throwable) {
@@ -434,7 +444,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
         // Footer: separator line, branding (left) and page number (right).
         $footerMargin = defined('PDF_MARGIN_FOOTER') ? (float) PDF_MARGIN_FOOTER : 10.0;
-        $footerY = (float) $page['height'] - $footerMargin;
+        $footerY = $page['height'] - $footerMargin;
         $ffont = $this->font->insert($this->pon, PDF_FONT_NAME_DATA, '', max(5, PDF_FONT_SIZE_DATA - 1));
         $out .= $ffont['out'];
         $out .= $this->graph->getLine($lm, $footerY - 1.0, $rm, $footerY - 1.0, [
@@ -472,15 +482,23 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Print question statistics as an HTML table.
-     * @param array $stats        Data to print.
+     * @param array<array-key,mixed> $stats Data to print.
      * @param int   $display_mode 2 = module; 3 = + subject; 4 = + question; 5 = + answer.
+     * @throws \Throwable When the PDF engine cannot render the statistics.
      */
-    public function printQuestionStats($stats, $display_mode = 2): void
+    public function printQuestionStats(array $stats, int $display_mode = 2): void
     {
         if ($display_mode < 2 || empty($stats)) {
             return;
         }
         global $l;
+        /**
+         * @var array{
+         *     w_all:string,w_answer:string,w_answer_time:string,w_answers_right_th:string,w_answers_wrong_th:string,
+         *     w_module:string,w_question:string,w_questions_unanswered_th:string,w_questions_undisplayed_th:string,
+         *     w_questions_unrated_th:string,w_recurrence:string,w_score:string,w_statistics:string,w_subject:string
+         * } $l
+         */
 
         $title = $l['w_statistics'] . ' [' . $l['w_all'] . ' + ' . $l['w_module'];
         if ($display_mode > 2) {
@@ -508,12 +526,12 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $html = '<table border="0.5" cellpadding="2" style="font-size:7pt;">';
         $html .=
             '<tr><td colspan="9" style="text-align:center;font-weight:bold;border-bottom:0.5px solid #000;">'
-            . htmlspecialchars((string) $title)
+            . htmlspecialchars($title)
             . '</td></tr>';
         $html .= '<tr style="background-color:#cccccc;font-weight:bold;text-align:center;">';
         $html .= '<td>#</td>';
         foreach ($cols as $c) {
-            $html .= '<td>' . htmlspecialchars((string) $c) . '</td>';
+            $html .= '<td>' . htmlspecialchars($c) . '</td>';
         }
         $html .= '</tr>';
 
@@ -521,35 +539,51 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $html .= $this->statsRow('#ffeeee', $l['w_all'], $stats, true);
 
         $num_module = 0;
-        foreach ($stats['module'] as $module) {
+        foreach (self::rows($stats['module'] ?? []) as $module) {
             ++$num_module;
             $mcode = 'M' . $num_module;
             $html .= $this->statsRow('#ddeeff', $mcode, $module, true);
-            $html .= $this->statsNameRow('#ddeeff', F_decode_tcecode($module['name']));
+            $html .= $this->statsNameRow(
+                '#ddeeff',
+                self::stringValue(F_decode_tcecode(self::stringValue($module['name'] ?? ''))),
+            );
 
             if ($display_mode > 2) {
                 $num_subject = 0;
-                foreach ($module['subject'] as $subject) {
+                foreach (self::rows($module['subject'] ?? []) as $subject) {
                     ++$num_subject;
                     $scode = $mcode . 'S' . $num_subject;
                     $html .= $this->statsRow('#ddffdd', $scode, $subject, true);
-                    $html .= $this->statsNameRow('#ddffdd', F_decode_tcecode($subject['name']));
+                    $html .= $this->statsNameRow(
+                        '#ddffdd',
+                        self::stringValue(F_decode_tcecode(self::stringValue($subject['name'] ?? ''))),
+                    );
 
                     if ($display_mode > 3) {
                         $num_question = 0;
-                        foreach ($subject['question'] as $question) {
+                        foreach (self::rows($subject['question'] ?? []) as $question) {
                             ++$num_question;
                             $qcode = $scode . 'Q' . $num_question;
                             $html .= $this->statsRow('#fffacd', $qcode, $question, true);
-                            $html .= $this->statsNameRow('#fffacd', F_decode_tcecode($question['description']));
+                            $html .= $this->statsNameRow(
+                                '#fffacd',
+                                self::stringValue(
+                                    F_decode_tcecode(self::stringValue($question['description'] ?? '')),
+                                ),
+                            );
 
                             if ($display_mode > 4) {
                                 $num_answer = 0;
-                                foreach ($question['answer'] as $answer) {
+                                foreach (self::rows($question['answer'] ?? []) as $answer) {
                                     ++$num_answer;
                                     $acode = $qcode . 'A' . $num_answer;
                                     $html .= $this->statsRow('#ffffff', $acode, $answer, false);
-                                    $html .= $this->statsNameRow('#ffffff', F_decode_tcecode($answer['description']));
+                                    $html .= $this->statsNameRow(
+                                        '#ffffff',
+                                        self::stringValue(
+                                            F_decode_tcecode(self::stringValue($answer['description'] ?? '')),
+                                        ),
+                                    );
                                 }
                             }
                         }
@@ -580,15 +614,25 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Print the test results statistics table.
-     * @param array $data    Test statistics.
+     * @param array<array-key,mixed> $data Test statistics.
      * @param bool  $pubmode If true, filter for the public interface (hide user column).
      * @param int   $stats   2 = full stats; 1 = user stats; 0 = disabled.
+     * @throws \Throwable When the PDF engine cannot render the statistics.
      */
-    public function printTestResultStat($data, $pubmode = false, $stats = 2): void
+    public function printTestResultStat(array $data, bool $pubmode = false, int $stats = 2): void
     {
         global $l;
+        /**
+         * @var array{
+         *     a_meta_dir:string,w_answers_right_th:string,w_answers_wrong_th:string,w_firstname:string,w_kurtosi:string,
+         *     w_lastname:string,w_mean:string,w_median:string,w_mode:string,w_passed:string,
+         *     w_questions_unanswered_th:string,w_questions_undisplayed_th:string,w_questions_unrated_th:string,
+         *     w_results:string,w_score:string,w_skewness:string,w_standard_deviation:string,w_test:string,
+         *     w_time:string,w_time_begin:string,w_user:string
+         * } $l
+         */
         $this->setBookmark($l['w_results']);
-        $rtl = ($l['a_meta_dir'] ?? '') === 'rtl';
+        $rtl = $l['a_meta_dir'] === 'rtl';
 
         $headers = ['#', $l['w_time_begin'], $l['w_time'], $l['w_test']];
         if (!$pubmode) {
@@ -636,22 +680,33 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             . $this->colGroup($mainCols)
             . '<thead><tr style="background-color:#cccccc;font-weight:bold;text-align:center;">';
         foreach ($headers as $h) {
-            $html .= '<th>' . htmlspecialchars((string) $h) . '</th>';
+            $html .= '<th>' . htmlspecialchars($h) . '</th>';
         }
         $html .= '</tr></thead><tbody>';
 
-        foreach ($data['testuser'] as $tu) {
-            $bg = !empty($tu['passmsg']) ? '#ddffdd' : '#ffeeee';
+        foreach (self::rows($data['testuser'] ?? []) as $tu) {
+            $bg = self::boolValue($tu['passmsg'] ?? false) ? '#ddffdd' : '#ffeeee';
+            $test = self::row($tu['test'] ?? []);
             $html .= '<tr style="background-color:' . $bg . ';">';
-            $html .= '<td style="text-align:right;">' . htmlspecialchars((string) $tu['num']) . '</td>';
+            $html .= '<td style="text-align:right;">'
+                . htmlspecialchars(self::stringValue($tu['num'] ?? '')) . '</td>';
             $html .=
-                '<td style="text-align:right;">' . htmlspecialchars((string) $tu['testuser_creation_time']) . '</td>';
-            $html .= '<td style="text-align:right;">' . htmlspecialchars((string) $tu['time_diff']) . '</td>';
-            $html .= '<td>' . htmlspecialchars((string) $tu['test']['test_name']) . '</td>';
+                '<td style="text-align:right;">'
+                . htmlspecialchars(self::stringValue($tu['testuser_creation_time'] ?? ''))
+                . '</td>';
+            $html .= '<td style="text-align:right;">'
+                . htmlspecialchars(self::stringValue($tu['time_diff'] ?? '')) . '</td>';
+            $html .= '<td>' . htmlspecialchars(self::stringValue($test['test_name'] ?? '')) . '</td>';
             if (!$pubmode) {
                 $html .=
                     '<td>'
-                    . htmlspecialchars($tu['user_name'] . ' - ' . $tu['user_lastname'] . ', ' . $tu['user_firstname'])
+                    . htmlspecialchars(
+                        self::stringValue($tu['user_name'] ?? '')
+                        . ' - '
+                        . self::stringValue($tu['user_lastname'] ?? '')
+                        . ', '
+                        . self::stringValue($tu['user_firstname'] ?? ''),
+                    )
                     . '</td>';
             }
             // Monospace + fixed 3-decimal score + space-padded percentage so the numbers
@@ -659,15 +714,19 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             $html .=
                 '<td style="text-align:right;font-weight:bold;font-family:courier;">'
                 . htmlspecialchars(
-                    f_format_float($tu['total_score']) . ' '
-                        . f_format_pdf_percentage(floatval($tu['total_score_perc']), false),
+                    f_format_float(self::floatValue($tu['total_score'] ?? 0)) . ' '
+                        . f_format_pdf_percentage(self::floatValue($tu['total_score_perc'] ?? 0), false),
                 )
                 . '</td>';
             if ($stats > 0) {
                 foreach (['right', 'wrong', 'unanswered', 'undisplayed', 'unrated'] as $k) {
                     $html .=
                         '<td style="text-align:right;">'
-                        . htmlspecialchars($tu[$k] . ' ' . f_format_pdf_percentage(floatval($tu[$k . '_perc']), false))
+                        . htmlspecialchars(
+                            self::stringValue($tu[$k] ?? '')
+                            . ' '
+                            . f_format_pdf_percentage(self::floatValue($tu[$k . '_perc'] ?? 0), false),
+                        )
                         . '</td>';
                 }
             }
@@ -676,14 +735,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $html .= '</tbody></table>';
 
         // passed summary
-        $bg = $data['passed_perc'] > 50 ? '#ddffdd' : '#ffeeee';
+        $bg = self::floatValue($data['passed_perc'] ?? 0) > 50 ? '#ddffdd' : '#ffeeee';
         $html .=
             '<table border="0.5" cellpadding="2" style="font-size:8pt;"><tr style="background-color:'
             . $bg
             . ';font-weight:bold;"><td>'
             . htmlspecialchars(
-                $l['w_passed'] . ': ' . $data['passed'] . ' '
-                    . f_format_pdf_percentage(floatval($data['passed_perc']), false),
+                $l['w_passed'] . ': ' . self::stringValue($data['passed'] ?? '') . ' '
+                    . f_format_pdf_percentage(self::floatValue($data['passed_perc'] ?? 0), false),
             )
             . '</td></tr></table>';
 
@@ -691,7 +750,8 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $printstat = ['mean', 'median', 'mode', 'standard_deviation', 'skewness', 'kurtosi'];
         $noperc = ['skewness', 'kurtosi'];
         $srows = '';
-        foreach ($data['statistics'] as $row => $col) {
+        foreach (self::rows($data['statistics'] ?? []) as $row => $col) {
+            $row = self::stringValue($row);
             if (!in_array($row, $printstat, true)) {
                 continue;
             }
@@ -701,13 +761,16 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                 if ($i > 0 && $stats <= 0) {
                     break;
                 }
-                $cells[] = in_array($row, $noperc, true) ? f_format_float($col[$k]) : round($col[$k]) . '%';
+                $value = self::floatValue($col[$k] ?? 0);
+                $cells[] = in_array($row, $noperc, true) ? f_format_float($value) : round($value) . '%';
             }
             $srows .=
-                '<tr><td style="font-weight:bold;text-align:right;">' . htmlspecialchars($l['w_' . $row]) . '</td>';
+                '<tr><td style="font-weight:bold;text-align:right;">'
+                . htmlspecialchars(self::stringValue($l['w_' . $row] ?? ''))
+                . '</td>';
             foreach ($cells as $c) {
                 $srows .=
-                    '<td style="text-align:right;font-family:courier;">' . htmlspecialchars((string) $c) . '</td>';
+                    '<td style="text-align:right;font-family:courier;">' . htmlspecialchars($c) . '</td>';
             }
             $srows .= '</tr>';
         }
@@ -733,51 +796,64 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Print the test/user info box followed by the per-question details.
-     * @param array $data     Testuser data.
+     * @param array<array-key,mixed> $data Testuser data.
      * @param bool  $onlytext If true, print only free-text questions.
+     * @throws \Throwable When the PDF engine cannot render the user report.
      */
-    public function printTestUserInfo($data, $onlytext = false): void
+    public function printTestUserInfo(array $data, bool $onlytext = false): void
     {
         global $l;
-        $rtl = ($l['a_meta_dir'] ?? '') === 'rtl';
+        /**
+         * @var array{
+         *     a_meta_dir:string,w_answers_right:string,w_answers_wrong:string,w_comment:string,w_firstname:string,
+         *     w_lastname:string,w_not_passed:string,w_passed:string,w_questions_unanswered:string,
+         *     w_questions_undisplayed:string,w_questions_unrated:string,w_score:string,w_test:string,
+         *     w_test_score_threshold:string,w_time:string,w_time_begin:string,w_time_end:string,w_user:string
+         * } $l
+         */
+        $test = self::row($data['test'] ?? []);
+        $rtl = $l['a_meta_dir'] === 'rtl';
 
         $this->setBookmark(
-            ($data['user_lastname'] ?? '')
+            self::stringValue($data['user_lastname'] ?? '')
                 . ' '
-                . ($data['user_firstname'] ?? '')
+                . self::stringValue($data['user_firstname'] ?? '')
                 . ' ('
-                . ($data['user_name'] ?? '')
+                . self::stringValue($data['user_name'] ?? '')
                 . '), '
-                . ($data['total_score'] ?? 0)
+                . self::stringValue($data['total_score'] ?? 0)
                 . ' '
-                . f_format_pdf_percentage(floatval($data['total_score_perc'] ?? 0), false),
+                . f_format_pdf_percentage(self::floatValue($data['total_score_perc'] ?? 0), false),
         );
 
+        $test_end_time = self::stringValue($test['user_test_end_time'] ?? '');
+        $test_start_time = self::stringValue($test['user_test_start_time'] ?? '');
+        $test_end_timestamp = (int) strtotime($test_end_time);
+        $test_start_timestamp = (int) strtotime($test_start_time);
         if (
-            !isset($data['test']['user_test_end_time'])
-            || $data['test']['user_test_end_time'] <= 0
-            || strtotime($data['test']['user_test_end_time']) < strtotime($data['test']['user_test_start_time'])
+            self::isNonPositiveString($test_end_time)
+            || $test_end_timestamp < $test_start_timestamp
         ) {
-            $time_diff = ($data['test']['test_duration_time'] ?? 0) * 60;
+            $time_diff = self::intValue($test['test_duration_time'] ?? 0) * 60;
         } else {
-            $time_diff =
-                strtotime($data['test']['user_test_end_time']) - strtotime($data['test']['user_test_start_time']);
+            $time_diff = $test_end_timestamp - $test_start_timestamp;
         }
 
-        $rec = $data['recurrence'] ?? '';
+        $rec = self::stringValue($data['recurrence'] ?? '');
         $info = [
-            $l['w_lastname'] => $data['user_lastname'] ?? '',
-            $l['w_firstname'] => $data['user_firstname'] ?? '',
-            $l['w_user'] => $data['user_name'] ?? '',
-            $l['w_time_begin'] => $data['test']['user_test_start_time'] ?? '',
-            $l['w_time_end'] => $data['test']['user_test_end_time'] ?? '',
+            $l['w_lastname'] => self::stringValue($data['user_lastname'] ?? ''),
+            $l['w_firstname'] => self::stringValue($data['user_firstname'] ?? ''),
+            $l['w_user'] => self::stringValue($data['user_name'] ?? ''),
+            $l['w_time_begin'] => $test_start_time,
+            $l['w_time_end'] => $test_end_time,
             $l['w_time'] => gmdate('H:i:s', $time_diff),
         ];
 
         $passmsg = '';
-        if (($data['test']['test_score_threshold'] ?? 0) > 0) {
-            $info[$l['w_test_score_threshold']] = $data['test']['test_score_threshold'];
-            $passmsg = $data['total_score'] >= $data['test']['test_score_threshold']
+        $score_threshold = self::floatValue($test['test_score_threshold'] ?? 0);
+        if ($score_threshold > 0) {
+            $info[$l['w_test_score_threshold']] = self::stringValue($test['test_score_threshold'] ?? '');
+            $passmsg = self::floatValue($data['total_score'] ?? 0) >= $score_threshold
                 ? ' - ' . $l['w_passed']
                 : ' - ' . $l['w_not_passed'];
         }
@@ -789,25 +865,25 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             'undisplayed' => 'w_questions_undisplayed',
             'unrated' => 'w_questions_unrated',
         ] as $k => $label) {
-            $info[$l[$label]] =
-                ($data[$k] ?? '')
+            $info[self::stringValue($l[$label] ?? '')] =
+                self::stringValue($data[$k] ?? '')
                 . ' / '
                 . $rec
                 . ' '
-                . f_format_pdf_percentage(floatval($data[$k . '_perc'] ?? 0), false);
+                . f_format_pdf_percentage(self::floatValue($data[$k . '_perc'] ?? 0), false);
         }
 
         $html = '<table border="0.5" cellpadding="3" style="font-size:8pt;">';
         $html .=
             '<tr style="background-color:#cccccc;font-weight:bold;"><td colspan="2">'
-            . htmlspecialchars(($l['w_test'] ?? '') . ': ' . ($data['test']['test_name'] ?? ''))
+            . htmlspecialchars($l['w_test'] . ': ' . self::stringValue($test['test_name'] ?? ''))
             . '</td></tr>';
         foreach ($info as $k => $v) {
             $html .=
                 '<tr><td style="font-weight:bold;width:35%;">'
-                . htmlspecialchars((string) $k)
+                . htmlspecialchars($k)
                 . '</td><td>'
-                . htmlspecialchars((string) $v)
+                . htmlspecialchars($v)
                 . '</td></tr>';
         }
         $html .=
@@ -815,25 +891,26 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             . htmlspecialchars($l['w_score'])
             . '</td><td>'
             . htmlspecialchars(
-                ($data['total_score'] ?? '')
+                self::stringValue($data['total_score'] ?? '')
                 . ' / '
-                . ($data['test']['test_max_score'] ?? '')
+                . self::stringValue($test['test_max_score'] ?? '')
                 . ' '
-                . f_format_pdf_percentage(floatval($data['total_score_perc'] ?? 0), false)
+                . f_format_pdf_percentage(self::floatValue($data['total_score_perc'] ?? 0), false)
                 . $passmsg,
             )
             . '</td></tr>';
         $html .= '</table>';
 
-        if (!empty($data['test']['test_description'])) {
-            $html .= '<div style="font-size:8pt;">' . $data['test']['test_description'] . '</div>';
+        if (self::boolValue($test['test_description'] ?? '')) {
+            $html .= '<div style="font-size:8pt;">'
+                . self::stringValue($test['test_description'] ?? '') . '</div>';
         }
-        if (!empty($data['test']['user_comment'])) {
+        if (self::boolValue($test['user_comment'] ?? '')) {
             $html .=
                 '<div style="font-size:8pt;"><b>'
                 . htmlspecialchars($l['w_comment'])
                 . '</b>: '
-                . $data['test']['user_comment']
+                . self::stringValue($test['user_comment'] ?? '')
                 . '</div>';
         }
 
@@ -847,12 +924,15 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Print the per-question test details for the selected user.
-     * @param array $data     Testuser data.
+     * @param array<array-key,mixed> $data Testuser data.
      * @param bool  $onlytext If true, print only free-text questions.
+     * @throws \Throwable When the PDF engine cannot render the test details.
      */
-    public function printUserTestDetails($data, $onlytext = false): void
+    public function printUserTestDetails(array $data, bool $onlytext = false): void
     {
         global $db, $l;
+        /** @var mixed $db */
+        /** @var array{w_end:string,w_explanation:string,w_ip:string,w_reaction:string,w_score:string,w_start:string,w_time:string} $l */
         $testuser_id = (int) ($data['id'] ?? 0);
         $qtype = ['S', 'M', 'T', 'O', 'C'];
 
@@ -877,23 +957,25 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         }
         $sql .= ' ORDER BY testlog_id';
 
-        if ($r = F_db_query($sql, $db)) {
+        $r = self::queryResult(F_db_query($sql, $db));
+        if ($r) {
             $itemcount = 1;
-            while ($m = F_db_fetch_array($r)) {
-                /** @var int|numeric-string $raw_question_type */
-                $raw_question_type = $m['question_type'];
-                $question_type = (int) $raw_question_type;
-                $display_time = isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0
-                    ? substr($m['testlog_display_time'], 11, 8)
+            while (($m = self::questionLogRow(F_db_fetch_array($r))) !== null) {
+                $question_type = (int) $m['question_type'];
+                $display_value = self::stringValue($m['testlog_display_time']);
+                $change_value = self::stringValue($m['testlog_change_time']);
+                $reaction_value = self::stringValue($m['testlog_reaction_time']);
+                $display_time = strlen($display_value) > 0
+                    ? substr($display_value, 11, 8)
                     : '--:--:--';
-                $change_time = isset($m['testlog_change_time']) && strlen($m['testlog_change_time']) > 0
-                    ? substr($m['testlog_change_time'], 11, 8)
+                $change_time = strlen($change_value) > 0
+                    ? substr($change_value, 11, 8)
                     : '--:--:--';
-                $diff_time = isset($m['testlog_display_time'], $m['testlog_change_time'])
-                    ? date('i:s', strtotime($m['testlog_change_time']) - strtotime($m['testlog_display_time']))
+                $diff_time = $m['testlog_display_time'] !== null && $m['testlog_change_time'] !== null
+                    ? date('i:s', (int) strtotime($change_value) - (int) strtotime($display_value))
                     : '--:--';
-                $reaction_time = isset($m['testlog_reaction_time']) && strlen($m['testlog_reaction_time']) > 0
-                    ? $m['testlog_reaction_time'] / 1000
+                $reaction_time = strlen($reaction_value) > 0
+                    ? self::floatValue($m['testlog_reaction_time']) / 1000
                     : '';
 
                 $html = '<table border="0.5" cellpadding="2" style="font-size:8pt;"><tr style="background-color:#cccccc;font-weight:bold;text-align:center;">';
@@ -906,11 +988,11 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                     $l['w_time'],
                     $l['w_reaction'] . ' [sec]',
                 ] as $h) {
-                    $html .= '<td>' . htmlspecialchars((string) $h) . '</td>';
+                    $html .= '<td>' . htmlspecialchars($h) . '</td>';
                 }
                 $html .= '</tr><tr style="text-align:center;">';
                 foreach ([
-                    $itemcount . ' ' . $qtype[$question_type - 1],
+                    $itemcount . ' ' . ($qtype[$question_type - 1] ?? ''),
                     $m['testlog_score'],
                     get_ip_as_string($m['testlog_user_ip']),
                     $display_time,
@@ -918,17 +1000,18 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                     $diff_time,
                     $reaction_time,
                 ] as $c) {
-                    $html .= '<td>' . htmlspecialchars((string) $c) . '</td>';
+                    $html .= '<td>' . htmlspecialchars(self::stringValue($c)) . '</td>';
                 }
                 $html .= '</tr></table>';
 
-                $html .= '<div style="font-size:8pt;">' . F_decode_tcecode($m['question_description']) . '</div>';
-                if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
+                $html .= '<div style="font-size:8pt;">'
+                    . self::stringValue(F_decode_tcecode($m['question_description'])) . '</div>';
+                if (self::boolValue(K_ENABLE_QUESTION_EXPLANATION) && $m['question_explanation'] !== '') {
                     $html .=
                         '<div style="font-size:8pt;border:0.5px solid #000000;"><b><i><u>'
                         . htmlspecialchars($l['w_explanation'])
                         . '</u></i></b><br/>'
-                        . F_decode_tcecode($m['question_explanation'])
+                        . self::stringValue(F_decode_tcecode($m['question_explanation']))
                         . '</div>';
                 }
 
@@ -936,20 +1019,20 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                     // free-text answer
                     $html .=
                         '<div style="font-size:8pt;border:0.5px solid #000000;">'
-                        . F_decode_tcecode($m['testlog_answer_text'])
+                        . self::stringValue(F_decode_tcecode($m['testlog_answer_text']))
                         . '</div>';
                     require_once __DIR__ . '/tce_functions_attachments.php';
-                    $attachments = F_tmf_attachment_list((int) $m['testlog_id']);
+                    $attachments = self::attachmentRows(F_tmf_attachment_list((int) $m['testlog_id']));
                     if ($attachments !== []) {
                         $html .= '<div style="font-size:8pt;"><b>Вложения:</b><ul>';
                         foreach ($attachments as $attachment) {
-                            $html .= '<li>' . htmlspecialchars((string) $attachment['attachment_original_name'])
-                                . ' — ' . htmlspecialchars((string) $attachment['attachment_mime'])
+                            $html .= '<li>' . htmlspecialchars($attachment['attachment_original_name'])
+                                . ' — ' . htmlspecialchars($attachment['attachment_mime'])
                                 . ', ' . number_format((int) $attachment['attachment_size'] / 1024, 1, '.', ' ')
                                 . ' КБ</li>';
-                            $path = F_tmf_attachment_path($attachment);
+                            $path = self::stringValue(F_tmf_attachment_path($attachment));
                             if (
-                                str_starts_with((string) $attachment['attachment_mime'], 'image/')
+                                str_starts_with($attachment['attachment_mime'], 'image/')
                                 && $path !== ''
                                 && is_file($path)
                             ) {
@@ -966,14 +1049,15 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                         . ', '
                         . K_TABLE_ANSWERS
                         . ' WHERE logansw_answer_id=answer_id AND logansw_testlog_id='
-                        . $m['testlog_id']
+                        . self::stringValue($m['testlog_id'])
                         . ' ORDER BY logansw_order';
-                    if ($ra = F_db_query($sqla, $db)) {
+                    $ra = self::queryResult(F_db_query($sqla, $db));
+                    if ($ra) {
                         // width:100% so the answer rows span the full content width,
                         // visually consistent with the full-width stats/info tables.
                         $html .= '<table border="0.5" cellpadding="2" style="width:100%;font-size:8pt;">';
                         $idx = 0;
-                        while ($ma = F_db_fetch_array($ra)) {
+                        while (($ma = self::answerLogRow(F_db_fetch_array($ra))) !== null) {
                             ++$idx;
                             [$marker, $markfill, $index, $idxfill] = $this->answerMarker(
                                 $question_type,
@@ -987,24 +1071,25 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                                 '<td style="width:6%;text-align:center;'
                                 . $mbg
                                 . '">'
-                                . htmlspecialchars((string) $marker)
+                                . htmlspecialchars($marker)
                                 . '</td>';
                             $html .=
                                 '<td style="width:6%;text-align:center;'
                                 . $ibg
                                 . '">'
-                                . htmlspecialchars((string) $index)
+                                . htmlspecialchars($index)
                                 . '</td>';
                             // Explicit width so the three columns sum to 100%: an auto column would
                             // otherwise default to availableWidth/cols and leave the table ~45% wide.
-                            $html .= '<td style="width:88%;">' . F_decode_tcecode($ma['answer_description']) . '</td>';
+                            $html .= '<td style="width:88%;">'
+                                . self::stringValue(F_decode_tcecode($ma['answer_description'])) . '</td>';
                             $html .= '</tr>';
-                            if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                            if (self::boolValue(K_ENABLE_ANSWER_EXPLANATION) && $ma['answer_explanation'] !== '') {
                                 $html .=
                                     '<tr><td colspan="3" style="font-size:7pt;"><b><i><u>'
                                     . htmlspecialchars($l['w_explanation'])
                                     . '</u></i></b><br/>'
-                                    . F_decode_tcecode($ma['answer_explanation'])
+                                    . self::stringValue(F_decode_tcecode($ma['answer_explanation']))
                                     . '</td></tr>';
                             }
                         }
@@ -1014,10 +1099,10 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
                     }
                 }
 
-                if (strlen($m['testlog_comment'] ?? '') > 0) {
+                if (strlen(self::stringValue($m['testlog_comment'])) > 0) {
                     $html .=
                         '<div style="font-size:8pt;color:#ff0000;border:0.5px solid #000000;">'
-                        . F_decode_tcecode($m['testlog_comment'])
+                        . self::stringValue(F_decode_tcecode(self::stringValue($m['testlog_comment'])))
                         . '</div>';
                 }
 
@@ -1028,8 +1113,18 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             F_display_db_error();
         }
 
-        $stats = f_get_test_stat($data['test']['test_id'] ?? 0, 0, $data['user_id'] ?? 0, 0, 0, $data['id'] ?? 0);
-        $this->printQuestionStats($stats['qstats'], 1);
+        $test = self::row($data['test'] ?? []);
+        $stats = self::row(
+            f_get_test_stat(
+                self::intValue($test['test_id'] ?? 0),
+                0,
+                self::intValue($data['user_id'] ?? 0),
+                0,
+                0,
+                self::intValue($data['id'] ?? 0),
+            ),
+        );
+        $this->printQuestionStats(self::row($stats['qstats'] ?? []), 1);
     }
 
     /**
@@ -1037,7 +1132,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      * Mirrors the legacy selected/right/position logic.
      *
      * @param int   $qtype Question type (1=MCSA, 2=MCMA, 4=ordering, 5=matching).
-     * @param array $ma    Answer log record.
+     * @param array<string,int|string|bool> $ma Answer log record.
      * @param int   $idx   1-based answer index.
      *
      * @return array{0:string,1:bool,2:string,3:bool} [marker, markerFilled, index, indexFilled]
@@ -1046,13 +1141,13 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     {
         $marker = ' ';
         $markfill = false;
-        $right = f_get_boolean($ma['answer_isright']);
+        $right = f_get_boolean($ma['answer_isright'] ?? false);
 
         if (in_array($qtype, [4, 5], true)) {
             /** @var int|numeric-string $raw_log_position */
-            $raw_log_position = $ma['logansw_position'];
+            $raw_log_position = $ma['logansw_position'] ?? 0;
             /** @var int|numeric-string $raw_answer_position */
-            $raw_answer_position = $ma['answer_position'];
+            $raw_answer_position = $ma['answer_position'] ?? 0;
             $log_position = (int) $raw_log_position;
             $answer_position = (int) $raw_answer_position;
             $marker = $log_position > 0 ? (string) $log_position : ' ';
@@ -1063,7 +1158,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         }
 
         /** @var int|numeric-string $raw_selected */
-        $raw_selected = $ma['logansw_selected'];
+        $raw_selected = $ma['logansw_selected'] ?? 0;
         $selected = (int) $raw_selected;
         if ($selected > 0) {
             $marker = $right ? '+' : '-';
@@ -1082,11 +1177,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     /**
      * Print an SVG statistics graph with a coloured legend.
      * @param string $svgdata SVG graph data (legacy f_get_svg_graph_code input).
+     * @throws \Throwable When the PDF engine cannot render the legend.
      */
-    public function printSVGStatsGraph($svgdata): void
+    public function printSVGStatsGraph(string $svgdata): void
     {
         global $l;
-        if (preg_match_all('/[x]/', (string) $svgdata, $match) <= 1) {
+        /** @var array{w_answers_right:string,w_score:string,w_tests:string} $l */
+        $match = [];
+        if ((int) preg_match_all('/[x]/', $svgdata, $match) <= 1) {
             return;
         }
         $legend =
@@ -1118,7 +1216,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         // fixed-size axis labels stay small relative to the viewport. Generating it at
         // the content width (~180 units) would map roughly 1 unit -> 1 mm, blowing the
         // labels up to ~30pt and overlapping them.
-        $svg = f_get_svg_graph_code(substr((string) $svgdata, 1), 800, 450);
+        $svg = self::stringValue(f_get_svg_graph_code(substr($svgdata, 1), 800, 450));
         if ($svg === '' || $svg[0] !== '<') {
             return;
         }
@@ -1126,12 +1224,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         // so the graph is not distorted regardless of the number of plotted points.
         $natW = 800.0;
         $natH = 450.0;
+        $mm = [];
         if (
-            preg_match('/<svg\b[^>]*?\bwidth="([0-9.]+)"[^>]*?\bheight="([0-9.]+)"/', $svg, $mm)
-            && (float) $mm[1] > 0.0
+            preg_match('/<svg\b[^>]*?\bwidth="([0-9.]+)"[^>]*?\bheight="([0-9.]+)"/', $svg, $mm) === 1
+            && isset($mm[1], $mm[2])
+            && self::floatValue($mm[1]) > 0.0
         ) {
-            $natW = (float) $mm[1];
-            $natH = (float) $mm[2];
+            $natW = self::floatValue($mm[1]);
+            $natH = self::floatValue($mm[2]);
         }
         $w = $this->contentW;
         $h = ($w * $natH) / $natW;
@@ -1140,14 +1240,14 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             // writable region (footer band) — addSVG draws a single block the
             // engine does not paginate.
             $region = $this->page->getRegion();
-            $regionTop = (float) $region['RY'];
-            $regionBottom = $regionTop + (float) $region['RH'];
+            $regionTop = $region['RY'];
+            $regionBottom = $regionTop + $region['RH'];
             if ($this->cursorY > ($regionTop + 0.1) && ($regionBottom - $this->cursorY) < ($h + 2.0)) {
                 $this->addReportPage();
             }
             $this->ensureContentFont();
             $page = $this->page->getPage($this->page->getPageId());
-            $pageHeight = (float) ($page['height'] ?? 0.0);
+            $pageHeight = $page['height'];
             // Pass the SVG inline via the '@' prefix (image-from-string) rather than a
             // temp file: a file path must live in a writable dir that is also inside the
             // engine's allowed-paths, which fails under Apache (PrivateTmp / restricted
@@ -1167,22 +1267,23 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      *
      * @param string $bgcolor Row background colour.
      * @param string $code    Row label (#, M1, M1S1, ...).
-     * @param array  $d       Stats record.
+     * @param array<array-key,mixed> $d Stats record.
      * @param bool   $full    If false, score/time/undisplayed/unrated are blank (answer rows).
      */
     protected function statsRow(string $bgcolor, string $code, array $d, bool $full): string
     {
         $cells = [
-            ($d['recurrence'] ?? '') . $this->pctOf($d, 'recurrence_perc'),
+            self::stringValue($d['recurrence'] ?? '') . $this->pctOf($d, 'recurrence_perc'),
             $full
-                ? number_format((float) ($d['average_score'] ?? 0), 3, '.', '') . $this->pctOf($d, 'average_score_perc')
+                ? number_format(self::floatValue($d['average_score'] ?? 0), 3, '.', '')
+                    . $this->pctOf($d, 'average_score_perc')
                 : '',
-            $full ? date('i:s', (int) ($d['average_time'] ?? 0)) : '',
-            ($d['right'] ?? '') . $this->pctOf($d, 'right_perc'),
-            ($d['wrong'] ?? '') . $this->pctOf($d, 'wrong_perc'),
-            ($d['unanswered'] ?? '') . $this->pctOf($d, 'unanswered_perc'),
-            $full ? ($d['undisplayed'] ?? '') . $this->pctOf($d, 'undisplayed_perc') : '',
-            $full ? ($d['unrated'] ?? '') . $this->pctOf($d, 'unrated_perc') : '',
+            $full ? date('i:s', self::intValue($d['average_time'] ?? 0)) : '',
+            self::stringValue($d['right'] ?? '') . $this->pctOf($d, 'right_perc'),
+            self::stringValue($d['wrong'] ?? '') . $this->pctOf($d, 'wrong_perc'),
+            self::stringValue($d['unanswered'] ?? '') . $this->pctOf($d, 'unanswered_perc'),
+            $full ? self::stringValue($d['undisplayed'] ?? '') . $this->pctOf($d, 'undisplayed_perc') : '',
+            $full ? self::stringValue($d['unrated'] ?? '') . $this->pctOf($d, 'unrated_perc') : '',
         ];
         $row = '<tr style="background-color:' . $bgcolor . ';">';
         $row .= '<td style="font-family:courier;font-weight:bold;">' . htmlspecialchars($code) . '</td>';
@@ -1202,9 +1303,177 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
 
     /**
      * Format the percentage suffix for a given key, or '' when absent.
+     * @param array<array-key,mixed> $d
      */
     protected function pctOf(array $d, string $key): string
     {
-        return isset($d[$key]) ? ' ' . f_format_pdf_percentage(floatval($d[$key]), false) : '';
+        return isset($d[$key]) ? ' ' . f_format_pdf_percentage(self::floatValue($d[$key]), false) : '';
+    }
+
+    private static function stringValue(mixed $value): string
+    {
+        return is_array($value) ? 'Array' : (string) $value;
+    }
+
+    private static function hasConfig(string $name): bool
+    {
+        return defined($name);
+    }
+
+    private static function configValue(string $name, mixed $default): mixed
+    {
+        return defined($name) ? constant($name) : $default;
+    }
+
+    private static function floatValue(mixed $value): float
+    {
+        if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+            return (float) $value;
+        }
+        if (is_array($value)) {
+            return $value === [] ? 0.0 : 1.0;
+        }
+        if (is_object($value)) {
+            return 1.0;
+        }
+        if (is_resource($value)) {
+            return (float) (int) $value;
+        }
+        return 0.0;
+    }
+
+    private static function intValue(mixed $value): int
+    {
+        if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+            return (int) $value;
+        }
+        if (is_array($value)) {
+            return $value === [] ? 0 : 1;
+        }
+        if (is_object($value)) {
+            return 1;
+        }
+        if (is_resource($value)) {
+            return (int) $value;
+        }
+        return 0;
+    }
+
+    private static function isNonPositiveString(string $value): bool
+    {
+        return $value <= 0;
+    }
+
+    private static function boolValue(mixed $value): bool
+    {
+        if (is_array($value)) {
+            return $value !== [];
+        }
+        if (is_object($value) || is_resource($value)) {
+            return true;
+        }
+        return is_bool($value) || is_int($value) || is_float($value) || is_string($value)
+            ? (bool) $value
+            : false;
+    }
+
+    /** @return array<string,mixed> */
+    private static function row(mixed $value): array
+    {
+        /** @var array<string,mixed> $value */
+        return $value;
+    }
+
+    /** @return object|resource|bool */
+    private static function queryResult(mixed $value): mixed
+    {
+        /** @var object|resource|bool $value */
+        return $value;
+    }
+
+    /**
+     * @return array{
+     *     question_type:int|string,
+     *     testlog_display_time:string|null,
+     *     testlog_change_time:string|null,
+     *     testlog_reaction_time:int|float|string|null,
+     *     testlog_score:int|float|string|null,
+     *     testlog_user_ip:mixed,
+     *     question_description:string,
+     *     question_explanation:string,
+     *     testlog_answer_text:string,
+     *     testlog_id:int|string,
+     *     testlog_comment:string|null
+     * }|null
+     */
+    private static function questionLogRow(mixed $value): ?array
+    {
+        /**
+         * @var array{
+         *     question_type:int|string,
+         *     testlog_display_time:string|null,
+         *     testlog_change_time:string|null,
+         *     testlog_reaction_time:int|float|string|null,
+         *     testlog_score:int|float|string|null,
+         *     testlog_user_ip:mixed,
+         *     question_description:string,
+         *     question_explanation:string,
+         *     testlog_answer_text:string,
+         *     testlog_id:int|string,
+         *     testlog_comment:string|null
+         * }|null $value
+         */
+        return $value;
+    }
+
+    /**
+     * @return array<array-key,array{
+     *     attachment_original_name:string,
+     *     attachment_mime:string,
+     *     attachment_size:int|string
+     * }>
+     */
+    private static function attachmentRows(mixed $value): array
+    {
+        /**
+         * @var array<array-key,array{
+         *     attachment_original_name:string,
+         *     attachment_mime:string,
+         *     attachment_size:int|string
+         * }> $value
+         */
+        return $value;
+    }
+
+    /**
+     * @return array{
+     *     answer_isright:int|string|bool,
+     *     logansw_position:int|string,
+     *     answer_position:int|string,
+     *     logansw_selected:int|string|bool,
+     *     answer_description:string,
+     *     answer_explanation:string
+     * }|null
+     */
+    private static function answerLogRow(mixed $value): ?array
+    {
+        /**
+         * @var array{
+         *     answer_isright:int|string|bool,
+         *     logansw_position:int|string,
+         *     answer_position:int|string,
+         *     logansw_selected:int|string|bool,
+         *     answer_description:string,
+         *     answer_explanation:string
+         * }|null $value
+         */
+        return $value;
+    }
+
+    /** @return array<array-key,array<string,mixed>> */
+    private static function rows(mixed $value): array
+    {
+        /** @var array<array-key,array<string,mixed>> $value */
+        return $value;
     }
 }
