@@ -11,6 +11,52 @@ require_once __DIR__ . '/integration/DatabaseDalIntegrationTest.php';
 
 final class DatabaseDalIntegrationHelpersTest extends TestCase
 {
+    public function testInsertFetchDeleteRoundTripUsesGeneratedRow(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$GLOBALS["queries"] = []; $GLOBALS["affected"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = [$sql, $db]; '
+                    . 'return "result-" . count($GLOBALS["queries"]); } '
+                    . 'function F_db_affected_rows($db, $result) { '
+                    . '$GLOBALS["affected"][] = [$db, $result]; return 1; } '
+                    . 'function F_db_insert_id($db, $table, $column) { '
+                    . '$GLOBALS["insert_id"] = [$db, $table, $column]; return 17; } '
+                    . 'function F_db_num_rows($result) { return 1; } '
+                    . 'function F_db_fetch_assoc($result) { '
+                    . 'return ["group_name" => "itest_group_1", "group_id" => "17"]; } '
+                    . 'define("K_TABLE_GROUPS", "tce_user_groups"); require $argv[1]; require $argv[2]; '
+                    . '$test = new Test\\Integration\\DatabaseDalIntegrationTest("testInsertFetchAndDeleteRoundTrip"); '
+                    . '$property = new ReflectionProperty($test, "db"); $property->setValue($test, "db-link"); '
+                    . '$test->testInsertFetchAndDeleteRoundTrip(); echo json_encode(['
+                    . '"queries" => $GLOBALS["queries"], "affected" => $GLOBALS["affected"], '
+                    . '"insert_id" => $GLOBALS["insert_id"]]);',
+                dirname(__DIR__) . '/vendor/autoload.php',
+                __DIR__ . '/integration/DatabaseDalIntegrationTest.php',
+            ],
+            dirname(__DIR__),
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'queries' => [
+                    ["INSERT INTO tce_user_groups (group_name) VALUES ('itest_group_1')", 'db-link'],
+                    ["SELECT group_id, group_name FROM tce_user_groups WHERE group_name = 'itest_group_1'", 'db-link'],
+                    ["DELETE FROM tce_user_groups WHERE group_name = 'itest_group_1'", 'db-link'],
+                ],
+                'affected' => [
+                    ['db-link', 'result-1'],
+                    ['db-link', 'result-3'],
+                ],
+                'insert_id' => ['db-link', 'tce_user_groups', 'group_id'],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEscapedSqlRoundTripUsesEscapedValueAndOriginalResult(): void
     {
         [$status, $output] = \F_tcecode_run_process(
