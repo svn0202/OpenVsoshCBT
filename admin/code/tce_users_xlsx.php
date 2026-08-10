@@ -2,10 +2,13 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_IMPORT_USERS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_users_xlsx.php';
+
+/** @var mixed $db */
 
 function f_tmf_users_xlsx_send(string $bytes, string $name): never
 {
@@ -21,14 +24,19 @@ function f_tmf_users_xlsx_send(string $bytes, string $name): never
 function f_tmf_users_xlsx_groups_for_user(int $user_id): string
 {
     global $db;
+    /** @var list<string> $groups */
     $groups = [];
+    /** @var callable(mixed): ?array<array-key, mixed> $normalize_row */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+    /** @var \mysqli_result|\PgSql\Result|resource|bool $result */
     $result = F_db_query(
         'SELECT g.group_name FROM ' . K_TABLE_GROUPS . ' g'
         . ' INNER JOIN ' . K_TABLE_USERGROUP . ' ug ON ug.usrgrp_group_id=g.group_id'
         . ' WHERE ug.usrgrp_user_id=' . $user_id . ' ORDER BY g.group_name',
         $db,
     );
-    while ($result && ($row = F_db_fetch_array($result))) {
+    while ($result && ($row = $normalize_row(F_db_fetch_array($result))) !== null) {
+        /** @var array{group_name: scalar|null} $row */
         $groups[] = (string) $row['group_name'];
     }
     return implode(', ', $groups);
@@ -55,12 +63,28 @@ if (isset($_GET['download']) && $_GET['download'] === 'export') {
         'registration_number', 'ssn', 'level', 'registration_date', 'groups',
     ]];
     $sql = 'SELECT * FROM ' . K_TABLE_USERS . ' WHERE user_id>1';
-    if ((int) $_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $sql .= ' AND user_level<' . (int) $_SESSION['session_user_level'];
+    /** @mago-expect analysis:possibly-undefined-string-array-index */
+    $session_user_level = (int) $_SESSION['session_user_level'];
+    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
+        $sql .= ' AND user_level<' . $session_user_level;
     }
     $sql .= ' ORDER BY user_lastname,user_firstname,user_name';
-    $result = F_db_query($sql, $db);
-    while ($result && ($user = F_db_fetch_array($result))) {
+    $result = f_tmf_users_xlsx_controller_query_result(F_db_query($sql, $db));
+    while ($result && ($user = f_tmf_users_xlsx_row(F_db_fetch_array($result))) !== null) {
+        /** @var array{
+         *     user_id: scalar|null,
+         *     user_name: scalar|null,
+         *     user_email: scalar|null,
+         *     user_firstname: scalar|null,
+         *     user_lastname: scalar|null,
+         *     user_birthdate?: scalar|null,
+         *     user_birthplace: scalar|null,
+         *     user_regnumber: scalar|null,
+         *     user_ssn: scalar|null,
+         *     user_level: scalar|null,
+         *     user_regdate: scalar|null
+         * } $user
+         */
         $rows[] = [
             ['value' => (int) $user['user_id'], 'type' => 'number'],
             $user['user_name'],
@@ -87,6 +111,18 @@ if (isset($_GET['download']) && $_GET['download'] === 'export') {
 }
 
 $message = '';
+/** @var array{
+ *     records: array<int, array{
+ *         login: string,
+ *         last_name: string,
+ *         first_name: string,
+ *         level: int,
+ *         group_names: list<string>
+ *     }>,
+ *     errors: array<int, list<string>>,
+ *     token?: string
+ * }|null $preview
+ */
 $preview = null;
 if (isset($_POST['xlsx_action'])) {
     if (
@@ -103,31 +139,35 @@ if (isset($_POST['xlsx_action'])) {
             if (
                 !is_array($xlsx_file)
                 || (int) ($xlsx_file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+                /** @mago-expect analysis:array-to-string-conversion */
                 || !is_uploaded_file((string) ($xlsx_file['tmp_name'] ?? ''))
             ) {
                 throw new RuntimeException('Выберите XLSX-файл без ошибок загрузки.');
             }
+            /** @var array{tmp_name: scalar|null} $xlsx_file */
             $temporary = (string) $xlsx_file['tmp_name'];
             $signature = file_get_contents($temporary, false, null, 0, 4);
             if ($signature !== "PK\x03\x04") {
                 throw new RuntimeException('Файл не является XLSX-архивом.');
             }
             $groups = [];
-            $group_result = F_db_query(
+            $group_result = f_tmf_users_xlsx_controller_query_result(F_db_query(
                 'SELECT group_id,group_name FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name',
                 $db,
-            );
-            while ($group_result && ($group = F_db_fetch_array($group_result))) {
+            ));
+            while ($group_result && ($group = f_tmf_users_xlsx_row(F_db_fetch_array($group_result))) !== null) {
+                /** @var array{group_id: scalar|null, group_name: scalar|null} $group */
                 $groups[mb_strtolower((string) $group['group_name'])] = (int) $group['group_id'];
             }
             $logins = [];
             $registration_numbers = [];
             $ssns = [];
-            $login_result = F_db_query(
+            $login_result = f_tmf_users_xlsx_controller_query_result(F_db_query(
                 'SELECT user_name,user_regnumber,user_ssn FROM ' . K_TABLE_USERS,
                 $db,
-            );
-            while ($login_result && ($user = F_db_fetch_array($login_result))) {
+            ));
+            while ($login_result && ($user = f_tmf_users_xlsx_row(F_db_fetch_array($login_result))) !== null) {
+                /** @var array{user_name: scalar|null, user_regnumber: scalar|null, user_ssn: scalar|null} $user */
                 $logins[mb_strtolower((string) $user['user_name'])] = true;
                 if (!empty($user['user_regnumber'])) {
                     $registration_numbers[mb_strtolower((string) $user['user_regnumber'])] = true;
@@ -136,13 +176,27 @@ if (isset($_POST['xlsx_action'])) {
                     $ssns[mb_strtolower((string) $user['user_ssn'])] = true;
                 }
             }
+            /** @var array{
+             *     records: array<int, array{
+             *         login: string,
+             *         last_name: string,
+             *         first_name: string,
+             *         level: int,
+             *         group_names: list<string>
+             *     }>,
+             *     errors: array<int, list<string>>,
+             *     token?: string
+             * } $preview
+             */
+            /** @mago-expect analysis:possibly-undefined-string-array-index */
+            $session_user_level = (int) $_SESSION['session_user_level'];
             $preview = F_tmf_users_xlsx_validate(
                 F_tmf_xlsx_read($temporary),
                 $logins,
                 $groups,
-                (int) $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR
+                $session_user_level >= K_AUTH_ADMINISTRATOR
                     ? K_AUTH_ADMINISTRATOR
-                    : max(1, (int) $_SESSION['session_user_level'] - 1),
+                    : max(1, $session_user_level - 1),
                 $registration_numbers,
                 $ssns,
             );
@@ -162,16 +216,20 @@ if (isset($_POST['xlsx_action'])) {
             unset($_SESSION['tmf_users_xlsx_preview']);
         }
     } elseif ($_POST['xlsx_action'] === 'import') {
+        /** @var mixed $pending */
         $pending = $_SESSION['tmf_users_xlsx_preview'] ?? null;
         unset($_SESSION['tmf_users_xlsx_preview']);
         if (
             !is_array($pending)
             || time() - (int) ($pending['created_at'] ?? 0) > 900
+            /** @mago-expect analysis:array-to-string-conversion */
             || !hash_equals((string) ($pending['token'] ?? ''), (string) ($_POST['preview_token'] ?? ''))
         ) {
             $message = 'Предпросмотр истёк. Загрузите файл повторно.';
         } else {
             try {
+                /** @var array{records: array<int, array<string, mixed>>} $pending */
+                /** @mago-expect analysis:redundant-cast */
                 $count = F_tmf_users_xlsx_import((array) $pending['records']);
                 $message = 'Импорт завершён. Создано пользователей: ' . $count . '.';
             } catch (Throwable $exception) {
@@ -187,6 +245,7 @@ require_once 'tce_page_header.php';
 function f_tmf_users_xlsx_html(mixed $value): string
 {
     global $l;
+    /** @var array{a_meta_charset: string} $l */
     return htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
 }
 
@@ -214,6 +273,18 @@ if (is_array($preview)) {
         }
         echo '</tbody></table>';
     } else {
+        /** @var array{
+         *     records: array<int, array{
+         *         login: string,
+         *         last_name: string,
+         *         first_name: string,
+         *         level: int,
+         *         group_names: list<string>
+         *     }>,
+         *     errors: array{},
+         *     token: string
+         * } $preview
+         */
         echo '<h2>Предпросмотр</h2><table><thead><tr><th>Строка</th><th>Логин</th>'
             . '<th>Имя</th><th>Уровень</th><th>Группы</th></tr></thead><tbody>';
         foreach ($preview['records'] as $row => $record) {
@@ -232,3 +303,23 @@ if (is_array($preview)) {
 echo '</div></div>';
 
 require_once 'tce_page_footer.php';
+
+/** @return array<array-key, mixed>|null */
+function f_tmf_users_xlsx_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_users_xlsx_controller_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
