@@ -101,6 +101,17 @@ final class GeneralFunctionsTest extends TestCase
         self::assertFalse(\f_legacy_equals([], '0'));
     }
 
+    public function testLegacyPositiveComparisonPreservesPhpOrdering(): void
+    {
+        foreach ([1, 0.5, '1', 'abc', true, [], ['value']] as $value) {
+            self::assertTrue(\f_legacy_is_positive($value));
+        }
+
+        foreach ([0, -1, 0.0, -0.5, '0', '-1', '', false, null] as $value) {
+            self::assertFalse(\f_legacy_is_positive($value));
+        }
+    }
+
     public function testUtf8NormalizerPreservesEveryMode(): void
     {
         [$status, $output] = \F_tcecode_run_process(
