@@ -22,8 +22,30 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_MODULES;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     t_modules_editor:string,m_authorization_denied:string,w_name:string,a_meta_charset:string,
+ *     m_disabled_vs_deleted:string,m_delete_confirm:string,w_delete:string,h_delete:string,
+ *     w_cancel:string,h_cancel:string,m_deleted:string,m_form_missing_fields:string,w_confirm:string,
+ *     w_update:string,m_update_restrict:string,w_record_status:string,w_enabled:string,w_disabled:string,
+ *     m_duplicate_name:string,m_updated:string,w_module:string,h_module_name:string,w_owner:string,
+ *     h_module_owner:string,w_select:string,w_groups:string,h_enabled:string,h_update:string,w_add:string,
+ *     h_add:string,w_clear:string,h_clear:string,t_subjects_editor:string,hp_edit_module:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var string $menu_mode */
+/** @var bool $formstatus */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+$session = $_SESSION;
+$session_user_id = (int) $session['session_user_id'];
+$session_user_level = (int) $session['session_user_level'];
 
 $thispage_title = $l['t_modules_editor'];
 require_once '../code/tce_page_header.php';
@@ -37,16 +59,17 @@ if (!isset($_REQUEST['module_enabled']) || empty($_REQUEST['module_enabled'])) {
     $module_enabled = f_get_boolean($_REQUEST['module_enabled']);
 }
 
-$module_name = isset($_REQUEST['module_name']) ? utrim($_REQUEST['module_name']) : '';
+$module_name = utrim(f_tce_edit_module_string($_REQUEST['module_name'] ?? ''));
 
 if (isset($_REQUEST['module_user_id'])) {
     $module_user_id = (int) $_REQUEST['module_user_id'];
 } else {
-    $module_user_id = (int) $_SESSION['session_user_id'];
+    $module_user_id = $session_user_id;
 }
 
-if (isset($_REQUEST['module_id']) && $_REQUEST['module_id'] > 0) {
-    $module_id = (int) $_REQUEST['module_id'];
+$requested_module_id = $_REQUEST['module_id'] ?? null;
+if ($requested_module_id !== null && f_tce_edit_module_is_positive($requested_module_id)) {
+    $module_id = (int) $requested_module_id;
     // check user's authorization for module
     if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -70,7 +93,8 @@ switch ($menu_mode) {
                 $sql = 'UPDATE ' . K_TABLE_MODULES . ' SET
 				module_enabled=\'0\'
 				WHERE module_id=' . $module_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error();
                 }
 
@@ -81,7 +105,7 @@ switch ($menu_mode) {
                 ?>
             <div class="confirmbox">
             <form action="<?php echo
-                htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
             ; ?>" method="post" enctype="multipart/form-data" id="form_delete">
             <div>
             <input type="hidden" name="module_id" id="module_id" value="<?php echo $module_id; ?>" />
@@ -105,7 +129,8 @@ switch ($menu_mode) {
     case 'forcedelete':
             if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_MODULES . ' WHERE module_id=' . $module_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     $module_id = false;
@@ -146,7 +171,8 @@ switch ($menu_mode) {
 					WHERE module_id='
                         . $module_id
                         . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+                    if (!$r) {
                         F_display_db_error(false);
                     } else {
                         $strmsg = $l['w_record_status'] . ': ';
@@ -167,7 +193,7 @@ switch ($menu_mode) {
                 // check if name is unique
                 if (!F_check_unique(
                     K_TABLE_MODULES,
-                    "module_name='" . F_escape_sql($db, $module_name) . "'",
+                    "module_name='" . f_tce_edit_module_string(F_escape_sql($db, $module_name)) . "'",
                     'module_id',
                     $module_id,
                 )) {
@@ -177,10 +203,10 @@ switch ($menu_mode) {
                     break;
                 }
 
-                if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+                if ($session_user_level >= f_tce_edit_module_int(K_AUTH_ADMINISTRATOR)) {
                     $module_user_id = (int) $module_user_id;
                 } else {
-                    $module_user_id = (int) $_SESSION['session_user_id'];
+                    $module_user_id = $session_user_id;
                 }
 
                 $sql =
@@ -188,7 +214,7 @@ switch ($menu_mode) {
                     . K_TABLE_MODULES
                     . ' SET
 				module_name=\''
-                    . F_escape_sql($db, $module_name)
+                    . f_tce_edit_module_string(F_escape_sql($db, $module_name))
                     . '\',
 				module_enabled=\''
                     . (int) $module_enabled
@@ -199,7 +225,8 @@ switch ($menu_mode) {
 				WHERE module_id='
                     . $module_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', $l['m_updated']);
@@ -212,17 +239,20 @@ switch ($menu_mode) {
         // Add
             if ($formstatus = F_check_form_fields()) {
                 // check if name is unique
-                if (!F_check_unique(K_TABLE_MODULES, "module_name='" . F_escape_sql($db, $module_name) . "'")) {
+                if (!F_check_unique(
+                    K_TABLE_MODULES,
+                    "module_name='" . f_tce_edit_module_string(F_escape_sql($db, $module_name)) . "'",
+                )) {
                     F_print_error('WARNING', $l['m_duplicate_name']);
                     $formstatus = false;
 
                     break;
                 }
 
-                if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+                if ($session_user_level >= f_tce_edit_module_int(K_AUTH_ADMINISTRATOR)) {
                     $module_user_id = (int) $module_user_id;
                 } else {
-                    $module_user_id = (int) $_SESSION['session_user_id'];
+                    $module_user_id = $session_user_id;
                 }
 
                 $sql =
@@ -234,7 +264,7 @@ switch ($menu_mode) {
 				module_user_id
 				) VALUES (
 				\''
-                    . F_escape_sql($db, $module_name)
+                    . f_tce_edit_module_string(F_escape_sql($db, $module_name))
                     . '\',
 				\''
                     . (int) $module_enabled
@@ -243,9 +273,11 @@ switch ($menu_mode) {
                     . $module_user_id
                     . '\'
 				)';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
+                    /** @var int|numeric-string $module_id */
                     $module_id = F_db_insert_id($db, K_TABLE_MODULES, 'module_id');
                 }
             }
@@ -256,7 +288,7 @@ switch ($menu_mode) {
         // Clear form fields
             $module_name = '';
             $module_enabled = true;
-            $module_user_id = (int) $_SESSION['session_user_id'];
+            $module_user_id = $session_user_id;
             break;
 
     default:
@@ -269,11 +301,16 @@ if ($formstatus && $menu_mode !== 'clear') {
         $module_id = 0;
         $module_name = '';
         $module_enabled = true;
-        $module_user_id = (int) $_SESSION['session_user_id'];
+        $module_user_id = $session_user_id;
     } else {
-        $sql = F_select_modules_sql('module_id=' . $module_id) . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $sql = f_tce_edit_module_string(
+            F_select_modules_sql('module_id=' . f_tce_edit_module_string($module_id)),
+        ) . ' LIMIT 1';
+        $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+        if ($r) {
+            $m = f_tce_edit_module_row(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{module_id:int|string,module_name:string,module_enabled:mixed,module_user_id:int|string} $m */
                 /** @var int|numeric-string $stored_module_id */
                 $stored_module_id = $m['module_id'];
                 $module_id = (int) $stored_module_id;
@@ -283,7 +320,7 @@ if ($formstatus && $menu_mode !== 'clear') {
             } else {
                 $module_name = '';
                 $module_enabled = true;
-                $module_user_id = (int) $_SESSION['session_user_id'];
+                $module_user_id = $session_user_id;
             }
         } else {
             F_display_db_error();
@@ -296,7 +333,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_moduleeditor">'
         . K_NEWLINE
 ;
@@ -318,10 +355,12 @@ if ($module_id === 0) {
 }
 
 echo '>+</option>' . K_NEWLINE;
-$sql = F_select_modules_sql();
-if ($r = F_db_query($sql, $db)) {
+$sql = f_tce_edit_module_string(F_select_modules_sql());
+$r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+if ($r) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while ($m = f_tce_edit_module_row(F_db_fetch_array($r))) {
+        /** @var array{module_id:int|string,module_name:string,module_enabled:mixed} $m */
         echo '<option value="' . $m['module_id'] . '"';
         /** @var int|numeric-string $listed_module_id */
         $listed_module_id = $m['module_id'];
@@ -383,7 +422,7 @@ echo '<label for="module_user_id">' . $l['w_owner'] . '</label>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 $userids = [];
-if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+if ($session_user_level >= f_tce_edit_module_int(K_AUTH_ADMINISTRATOR)) {
     echo
         '<select name="module_user_id" id="module_user_id" title="'
             . $l['h_module_owner']
@@ -394,8 +433,10 @@ if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
         'SELECT user_id, user_lastname, user_firstname, user_name FROM '
         . K_TABLE_USERS
         . ' WHERE (user_level>5) ORDER BY user_lastname, user_firstname, user_name';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while ($m = f_tce_edit_module_row(F_db_fetch_array($r))) {
+            /** @var array{user_id:int|string,user_name:string,user_lastname:string,user_firstname:string} $m */
             $userids[] = $m['user_id'];
             echo '<option value="' . $m['user_id'] . '"';
             /** @var int|numeric-string $listed_user_id */
@@ -430,8 +471,11 @@ if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
         . ' WHERE user_id='
         . $module_user_id
         . '';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = f_tce_edit_module_query_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = f_tce_edit_module_row(F_db_fetch_array($r));
+        if ($m) {
+            /** @var array{user_name:string,user_lastname:string,user_firstname:string} $m */
             echo
                 '<span style="font-style:italic;color:#333333;">('
                     . unhtmlentities(strip_tags(
@@ -483,9 +527,11 @@ $sqlg =
     . $module_user_id
     . '
 	ORDER BY group_name';
-if ($rg = F_db_query($sqlg, $db)) {
+$rg = f_tce_edit_module_query_result(F_db_query($sqlg, $db));
+if ($rg) {
     echo '<span style="font-style:italic;color#333333;font-size:small;">';
-    while ($mg = F_db_fetch_array($rg)) {
+    while ($mg = f_tce_edit_module_row(F_db_fetch_array($rg))) {
+        /** @var array{group_name:string} $mg */
         echo ' · ' . unhtmlentities(strip_tags($mg['group_name'])) . '';
     }
 
@@ -502,7 +548,7 @@ echo get_form_row_checkbox('module_enabled', $l['w_enabled'], $l['h_enabled'], '
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if ($module_id > 0) {
+if (f_tce_edit_module_is_positive($module_id)) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -530,10 +576,10 @@ echo '</div>' . K_NEWLINE;
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="right">' . K_NEWLINE;
 
-if ($module_id > 0) {
+if (f_tce_edit_module_is_positive($module_id)) {
     echo
         '<a href="tce_edit_subject.php?subject_module_id='
-            . $module_id
+            . f_tce_edit_module_string($module_id)
             . '" title="'
             . $l['t_subjects_editor']
             . '" class="xmlbutton">'
@@ -554,3 +600,50 @@ echo '<div class="pagehelp">' . $l['hp_edit_module'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_edit_module_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** Preserve legacy integer conversion without specializing configured constants. */
+function f_tce_edit_module_int(mixed $value): int
+{
+    return (int) $value;
+}
+
+/**
+ * Preserve legacy numeric comparison for request and stored identifiers.
+ *
+ * @param int|string|float|bool|array<array-key, mixed>|null $value
+ */
+function f_tce_edit_module_is_positive(int|string|float|bool|array|null $value): bool
+{
+    if (is_array($value)) {
+        return true;
+    }
+
+    if ($value === null) {
+        return false;
+    }
+
+    return $value > 0;
+}
+
+/**
+ * Preserve the active DAL result type across mutually exclusive database implementations.
+ *
+ * @return object|resource|bool
+ */
+function f_tce_edit_module_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tce_edit_module_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
