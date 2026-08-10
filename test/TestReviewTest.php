@@ -22,6 +22,41 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestInfoLinkPreservesPopupOptionsAndPlainCaption(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TEST_INFO_HEIGHT", 600); define("K_TEST_INFO_WIDTH", 800); '
+                    . '$GLOBALS["l"] = ["m_new_window_link" => "New window", "w_info" => "Info"]; '
+                    . 'require $argv[2]; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_testInfoLink|f_test_info_link)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo $qualified(7, "<b>A &amp; B</b>");',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+                dirname(__DIR__) . '/shared/code/tce_functions_general.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            '<a href="tce_popup_test_info.php?testid=7" '
+                . 'onclick="infoTestWindow=window.open(\'tce_popup_test_info.php?testid=7\''
+                . ',\'infoTestWindow\',\'dependent,height=600,width=800,menubar=no,resizable=yes,'
+                . 'scrollbars=yes,status=no,toolbar=no\');return false;" title="New window">A & B</a>',
+            $output,
+        );
+    }
+
+
     #[DataProvider('reviewValues')]
     public function testReviewValueNormalization(mixed $value, int $expected): void
     {
