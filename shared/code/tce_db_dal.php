@@ -23,7 +23,8 @@
  * @since 2003-10-12
  */
 
-match (K_DATABASE_TYPE) {
+$database_type = (string) constant('K_DATABASE_TYPE');
+match ($database_type) {
     'MYSQL' => require_once '../../shared/code/tce_db_dal_mysqli.php',
     'POSTGRESQL' => require_once '../../shared/code/tce_db_dal_postgresql.php',
     'ORACLE' => require_once '../../shared/code/tce_db_dal_oracle.php',
