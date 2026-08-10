@@ -56,6 +56,35 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestDurationConvertsConfiguredMinutesToSeconds(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["ids"] = []; '
+                    . 'function F_getTestData($id) { $GLOBALS["ids"][] = $id; '
+                    . 'return ["test_duration_time" => 5]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestDuration|f_get_test_duration)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("7"), $GLOBALS["ids"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame([300, [7]], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
+
 
     #[DataProvider('reviewValues')]
     public function testReviewValueNormalization(mixed $value, int $expected): void
