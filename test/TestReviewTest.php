@@ -63,8 +63,9 @@ final class TestReviewTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["ids"] = []; '
+                    . '$GLOBALS["durations"] = [5, "2.5", "invalid"]; '
                     . 'function f_get_test_data($id) { $GLOBALS["ids"][] = $id; '
-                    . 'return ["test_duration_time" => 5]; } '
+                    . 'return ["test_duration_time" => array_shift($GLOBALS["durations"])]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_duration)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
@@ -73,15 +74,21 @@ final class TestReviewTest extends TestCase
                     . '$function = substr($source, $start, $end - $start); '
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
-                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
-                    . 'echo json_encode([$qualified("7"), $GLOBALS["ids"]]);',
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $values = []; '
+                    . 'foreach (["7", "8", "9"] as $id) { try { $value = $qualified($id); '
+                    . '$values[] = [$value, get_debug_type($value)]; } catch (\\Throwable $error) { '
+                    . '$values[] = [get_class($error)]; } } '
+                    . 'echo json_encode([$values, $GLOBALS["ids"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        self::assertSame([300, [7]], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(
+            [[[300, 'int'], [150, 'float'], ['TypeError']], [7, 8, 9]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
     }
 
     public function testOmittedQuestionCountUsesActiveUserAndIncompleteLogs(): void

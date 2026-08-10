@@ -805,13 +805,14 @@ function f_get_test_name($test_id)
 /**
  * Returns the test duration time in seconds.
  * @param $test_id (int) test ID
- * @return int test duration time in seconds
+ * @return int|float Test duration time in seconds.
  */
-function f_get_test_duration(mixed $test_id): mixed
+function f_get_test_duration(mixed $test_id): int|float
 {
     require_once '../config/tce_config.php';
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
+    /** @var array{test_duration_time:int|float|numeric-string} $td */
     return $td['test_duration_time'] * K_SECONDS_IN_MINUTE;
 }
 
