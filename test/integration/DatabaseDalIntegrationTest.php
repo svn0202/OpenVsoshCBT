@@ -92,6 +92,14 @@ final class DatabaseDalIntegrationTest extends TestCase
         return reset($row);
     }
 
+    /**
+     * @return array<array-key,mixed>|null
+     */
+    private static function dalRow(mixed $value): ?array
+    {
+        return is_array($value) ? $value : null;
+    }
+
     private function dbScalar(string $sql): mixed
     {
         $result = \F_db_query($sql, $this->db);
@@ -185,13 +193,14 @@ final class DatabaseDalIntegrationTest extends TestCase
             $this->db
         );
         $this->assertNotFalse($res, 'querying the seeded schema/data should succeed');
+        /** @var \mysqli_result|\PgSql\Result $res */
 
         /** @var array<string,int> $levels */
         $levels = [];
-        $row = \F_db_fetch_assoc($res);
-        while (is_array($row)) {
-            $levels[$row['user_name']] = (int) $row['user_level'];
-            $row = \F_db_fetch_assoc($res);
+        $row = self::dalRow(\F_db_fetch_assoc($res));
+        while ($row !== null) {
+            $levels[(string) ($row['user_name'] ?? null)] = (int) ($row['user_level'] ?? null);
+            $row = self::dalRow(\F_db_fetch_assoc($res));
         }
 
         $this->assertGreaterThanOrEqual(2, \F_db_num_rows($res));
