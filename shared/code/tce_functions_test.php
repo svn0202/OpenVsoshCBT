@@ -1282,7 +1282,7 @@ function f_count_executed_tests($startdate, $enddate)
  * Track generated tests.
  * @param $date (string) date-time when the test was generated.
  */
-function F_updateTestuserStat($date)
+function f_update_testuser_stat($date): void
 {
     require_once '../config/tce_config.php';
     global $db;
@@ -1382,7 +1382,7 @@ function F_createTest($test_id, $user_id)
 
     // get inserted ID
     $testuser_id = F_db_insert_id($db, K_TABLE_TEST_USER, 'testuser_id');
-    F_updateTestuserStat($date);
+    f_update_testuser_stat($date);
 
     // get ID of first user's test (if exist)
     $firsttest = f_get_first_test_user($test_id);
