@@ -22,10 +22,70 @@
 
 require_once '../config/tce_config.php';
 
-if (isset($_POST['examtime'])) {
-    $examtime = $_POST['examtime'];
+/**
+ * @var array{
+ *     a_meta_charset:string,
+ *     a_meta_dir:string,
+ *     a_meta_language:string,
+ *     h_cancel:string,
+ *     h_questions_unanswered:string,
+ *     hp_test_execute:string,
+ *     m_confirm_test_termination:string,
+ *     m_exam_end_time:string,
+ *     ov_answer_not_saved:string,
+ *     ov_answer_save_conflict:string,
+ *     t_test_execute:string,
+ *     w_cancel:string,
+ *     w_index:string,
+ *     w_info:string,
+ *     w_terminate:string,
+ *     w_terminate_exam:string
+ * } $l
+ */
+/**
+ * @var array{
+ *     answer_version?:int|string,
+ *     answertext?:mixed,
+ *     answpos?:int|string|array<array-key,mixed>,
+ *     autonext?:string,
+ *     finish?:int|string,
+ *     forceterminate?:string,
+ *     nextquestion?:mixed,
+ *     nextquestionid?:int|string,
+ *     prevquestion?:mixed,
+ *     prevquestionid?:int|string,
+ *     reaction_time?:int|string,
+ *     repeat?:string,
+ *     terminationform?:mixed,
+ *     terminatetest?:mixed,
+ *     testcomment?:string,
+ *     testid?:int|string,
+ *     testlogid?:int|string,
+ *     timeout_logout?:bool|int|string
+ * } $request
+ */
+/** @var array<array-key,mixed> $post */
+/** @var array{answer_attachments?:array<array-key,mixed>} $files */
+/** @var array{REQUEST_METHOD:string, SCRIPT_NAME:string} $server */
+/**
+ * @var array{
+ *     session_test_completion_message?:string,
+ *     session_test_login?:string,
+ *     session_user_id:int,
+ *     session_user_ip:string
+ * } $session
+ */
+$request = &$_REQUEST;
+$post = &$_POST;
+$files = &$_FILES;
+$server = &$_SERVER;
+$session = &$_SESSION;
+
+if (isset($post['examtime'])) {
+    $examtime = $post['examtime'];
 }
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_PUBLIC_TEST_EXECUTE;
 $thispage_title = $l['t_test_execute'];
 $thispage_description = $l['hp_test_execute'];
@@ -33,6 +93,7 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_test.php';
 
+/** @var array{session_test_completion_message?:string, session_test_login?:string, session_user_id:int, session_user_ip:string} $session */
 $formname = 'testform';
 
 $test_id = 0;
@@ -43,26 +104,26 @@ $test_comment = '';
 $reaction_time = 0;
 $answer_save_error = '';
 
-if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
-    $test_id = (int) $_REQUEST['testid'];
+if (isset($request['testid']) && $request['testid'] > 0) {
+    $test_id = (int) $request['testid'];
     // check for test password
     $tph = f_get_test_password($test_id);
     if (
         !empty($tph)
         && !F_tmf_test_session_is_unlocked($test_id)
         && !check_password(
-            $tph . $test_id . $_SESSION['session_user_id'] . $_SESSION['session_user_ip'],
-            (string) ($_SESSION['session_test_login'] ?? ''),
+            $tph . $test_id . $session['session_user_id'] . $session['session_user_ip'],
+            $session['session_test_login'] ?? '',
         )
     ) {
         // display login page
         require_once '../code/tce_page_header.php';
-        echo f_test_login_form($_SERVER['SCRIPT_NAME'], 'form_test_login', 'post', 'multipart/form-data', $test_id);
+        echo (string) f_test_login_form($server['SCRIPT_NAME'], 'form_test_login', 'post', 'multipart/form-data', $test_id);
         require_once '../code/tce_page_footer.php';
         exit(); //break page here
     }
 
-    if (isset($_REQUEST['repeat']) && $_REQUEST['repeat'] === '1') {
+    if (isset($request['repeat']) && $request['repeat'] === '1') {
         // mark previous test attempts as repeated
         f_repeat_test($test_id);
     }
@@ -70,42 +131,42 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     if (f_execute_test($test_id)) {
         $execution_rules = f_get_test_data($test_id);
         if (f_get_boolean($execution_rules['test_disable_previous'] ?? false)) {
-            unset($_REQUEST['prevquestion'], $_POST['prevquestion']);
+            unset($request['prevquestion'], $post['prevquestion']);
         }
         if (f_get_boolean($execution_rules['test_disable_next'] ?? false)) {
-            unset($_REQUEST['nextquestion'], $_POST['nextquestion']);
+            unset($request['nextquestion'], $post['nextquestion']);
         }
-        if (!empty($_REQUEST['testlogid'])) {
-            $testlog_id = (int) $_REQUEST['testlogid'];
+        if (!empty($request['testlogid'])) {
+            $testlog_id = (int) $request['testlogid'];
         }
 
-        if (!empty($_REQUEST['answpos'])) {
-            $answpos = is_numeric($_REQUEST['answpos'])
+        if (!empty($request['answpos'])) {
+            $answpos = is_numeric($request['answpos'])
                 ? [
-                    $_REQUEST['answpos'] => 1,
-                ] : (array) $_REQUEST['answpos'];
+                    $request['answpos'] => 1,
+                ] : (array) $request['answpos'];
         }
 
         // `empty()` treats the valid short answer "0" as missing.
-        if (isset($_REQUEST['answertext']) && is_string($_REQUEST['answertext'])) {
-            $answer_text = $_REQUEST['answertext'];
+        if (isset($request['answertext']) && is_string($request['answertext'])) {
+            $answer_text = $request['answertext'];
         }
 
-        if (!empty($_REQUEST['reaction_time'])) {
-            $reaction_time = (int) $_REQUEST['reaction_time'];
+        if (!empty($request['reaction_time'])) {
+            $reaction_time = (int) $request['reaction_time'];
         }
 
-        if (!empty($_REQUEST['forceterminate']) && f_is_right_testlog_user($test_id, $testlog_id)) {
-            if ($_REQUEST['forceterminate'] === 'lasttimedquestion') {
+        if (!empty($request['forceterminate']) && f_is_right_testlog_user($test_id, $testlog_id)) {
+            if ($request['forceterminate'] === 'lasttimedquestion') {
                 // update last question
-                if (isset($_REQUEST['answer_version'])) {
+                if (isset($request['answer_version'])) {
                     F_tmf_save_question_answer(
                         $test_id,
                         $testlog_id,
                         $answpos,
                         $answer_text,
                         $reaction_time,
-                        (int) $_REQUEST['answer_version'],
+                        (int) $request['answer_version'],
                         bin2hex(random_bytes(16)),
                     );
                 } else {
@@ -113,9 +174,9 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 }
             }
 
-            $completion = $_REQUEST['forceterminate'] === 'lasttimedquestion'
+            $completion = $request['forceterminate'] === 'lasttimedquestion'
                 ? ['allowed' => true, 'reason' => 'timeout', 'details' => null]
-                : F_tmf_test_completion_status($test_id, (int) $_SESSION['session_user_id']);
+                : F_tmf_test_completion_status($test_id, (int) $session['session_user_id']);
             if (!$completion['allowed']) {
                 $labels = [
                     'minimum_duration' => 'Завершение пока недоступно. Осталось секунд: ',
@@ -124,12 +185,12 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 ];
                 $answer_save_error = ($labels[$completion['reason']] ?? 'Завершение пока недоступно.')
                     . ($completion['details'] ?? '');
-                $_REQUEST['forceterminate'] = '';
+                $request['forceterminate'] = '';
             } else {
                 // terminate the test (lock the test to status=4)
                 $completion_message = trim((string) ($execution_rules['test_completion_message'] ?? ''));
                 if ($completion_message !== '') {
-                    $_SESSION['session_test_completion_message'] = $completion_message;
+                    $session['session_test_completion_message'] = $completion_message;
                 }
                 f_terminate_user_test($test_id);
                 // redirect the user to the index page
@@ -161,20 +222,20 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         echo '<span class="infolink">' . f_test_info_link($test_id, $l['w_info']) . '<br /><br /></span>' . K_NEWLINE;
 
         if (
-            $_SERVER['REQUEST_METHOD'] === 'POST'
-            && !isset($_REQUEST['terminationform'])
+            $server['REQUEST_METHOD'] === 'POST'
+            && !isset($request['terminationform'])
             && f_is_right_testlog_user($test_id, $testlog_id)
         ) {
             // the form has been submitted, update testlogid data
             $answer_saved = true;
-            if (isset($_REQUEST['answer_version'])) {
+            if (isset($request['answer_version'])) {
                 $save_result = F_tmf_save_question_answer(
                     $test_id,
                     $testlog_id,
                     $answpos,
                     $answer_text,
                     $reaction_time,
-                    (int) $_REQUEST['answer_version'],
+                    (int) $request['answer_version'],
                     bin2hex(random_bytes(16)),
                 );
                 $answer_saved = $save_result['status'] === 'saved';
@@ -192,37 +253,43 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                     $reaction_time,
                 );
             }
-            if ($answer_saved && isset($_FILES['answer_attachments'])) {
+            if ($answer_saved && isset($files['answer_attachments'])) {
                 $attachment_result = F_tmf_attachment_store_uploads(
                     $test_id,
                     $testlog_id,
-                    (array) $_FILES['answer_attachments'],
+                    $files['answer_attachments'],
                 );
                 if (!in_array($attachment_result['status'], ['stored', 'empty'], true)) {
                     $answer_save_error = $attachment_result['message'];
                 }
             }
             // update user's test comment
-            if (isset($_REQUEST['testcomment']) && !empty($_REQUEST['testcomment'])) {
-                $test_comment = $_REQUEST['testcomment'];
+            if (isset($request['testcomment']) && !empty($request['testcomment'])) {
+                $test_comment = $request['testcomment'];
                 f_update_test_comment($test_id, $test_comment);
             }
 
             if (
                 $answer_saved
                 &&
-                (isset($_REQUEST['nextquestion']) || isset($_REQUEST['autonext']) && $_REQUEST['autonext'] === '1')
-                && $_REQUEST['nextquestionid'] > 0
+                (isset($request['nextquestion']) || isset($request['autonext']) && $request['autonext'] === '1')
+                && isset($request['nextquestionid'])
+                && $request['nextquestionid'] > 0
             ) {
                 // go to next question
-                $testlog_id = (int) $_REQUEST['nextquestionid'];
-            } elseif ($answer_saved && isset($_REQUEST['prevquestion']) && $_REQUEST['prevquestionid'] > 0) {
+                $testlog_id = (int) $request['nextquestionid'];
+            } elseif (
+                $answer_saved
+                && isset($request['prevquestion'], $request['prevquestionid'])
+                && $request['prevquestionid'] > 0
+            ) {
                 // go to previous question
-                $testlog_id = (int) $_REQUEST['prevquestionid'];
+                $testlog_id = (int) $request['prevquestionid'];
             } elseif ($answer_saved) {
                 // go to selected question
-                foreach (array_keys($_POST) as $key) {
-                    if (preg_match('/jumpquestion_(\d+)/', $key, $matches) > 0) {
+                foreach (array_keys($post) as $key) {
+                    $matches = [];
+                    if (preg_match('/jumpquestion_(\d+)/', (string) $key, $matches) === 1 && isset($matches[1])) {
                         $testlog_id = (int) $matches[1];
                         break;
                     }
@@ -237,7 +304,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         }
 
         // confirmation form to terminate the test
-        if (isset($_REQUEST['terminatetest']) && !empty($_REQUEST['terminatetest'])) {
+        if (isset($request['terminatetest']) && !empty($request['terminatetest'])) {
             // check if some questions were omitted (undisplayed or unanswered).
             $num_omitted_questions = f_get_num_omitted_questions($test_id);
             $omitted_msg = '';
@@ -254,7 +321,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             ?>
             <div class="confirmbox">
             <form action="<?php echo
-                htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
             ; ?>" method="post" enctype="multipart/form-data" id="form_test_terminate">
             <div>
             <input type="hidden" name="testid" id="testid" value="<?php echo $test_id; ?>" />
@@ -275,7 +342,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         } else {
             echo
                 '<form action="'
-                    . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                    . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
                     . '" method="post" enctype="multipart/form-data" id="'
                     . $formname
                     . '"'
@@ -290,7 +357,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             echo f_question_form($test_id, $testlog_id, $formname);
             // the $finish variable is used to check if the form has been automatically submitted
             // at the end of the time.
-            $finish = isset($_REQUEST['finish']) && $_REQUEST['finish'] > 0 ? 1 : 0;
+            $finish = isset($request['finish']) && $request['finish'] > 0 ? 1 : 0;
 
             echo '<input type="hidden" name="finish" id="finish" value="' . $finish . '" />' . K_NEWLINE;
             echo '<input type="hidden" name="display_time" id="display_time" value="" />' . K_NEWLINE;
@@ -301,11 +368,11 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
             // Hide termination while required answers are missing and identify the exact
             // question numbers, while keeping the server-side completion check authoritative.
-            $completion = F_tmf_test_completion_status($test_id, (int) $_SESSION['session_user_id']);
+            $completion = F_tmf_test_completion_status($test_id, (int) $session['session_user_id']);
             if (!$completion['allowed'] && $completion['reason'] === 'required_answers') {
                 $missing_questions = F_tmf_unanswered_question_numbers(
                     $test_id,
-                    (int) $_SESSION['session_user_id'],
+                    (int) $session['session_user_id'],
                 );
                 echo '<p class="warning" id="required-answers-notice" role="status">'
                     . 'Завершение появится после ответа на обязательные вопросы. Пропущены: '
@@ -323,7 +390,8 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 
         // start the countdown if disabled
         if (isset($examtime)) {
-            $timeout_logout = isset($_REQUEST['timeout_logout']) && $_REQUEST['timeout_logout'] ? 'true' : 'false';
+            /** @var int $examtime */
+            $timeout_logout = isset($request['timeout_logout']) && $request['timeout_logout'] ? 'true' : 'false';
 
             echo '<script type="text/javascript">' . K_NEWLINE;
             echo '//<![CDATA[' . K_NEWLINE;
