@@ -73,6 +73,101 @@ final class StatisticsTest extends TestCase
         self::assertSame([77], $attachments);
     }
 
+    public function testAllUsersStatisticsPreserveFiltersAndDisabledStatisticsShape(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS_LOGS", "test_logs"); '
+                    . 'define("K_TABLE_TEST_USER", "test_users"); define("K_TABLE_USERS", "users"); '
+                    . 'define("K_TABLE_USERGROUP", "user_groups"); define("K_TIMESTAMP_FORMAT", "format"); '
+                    . 'define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["db"] = "db"; '
+                    . '$row = ["testuser_id" => 99, "testuser_test_id" => 7, '
+                    . '"testuser_creation_time" => "creation", "testuser_status" => 4, "user_id" => 11, '
+                    . '"user_lastname" => "Last", "user_firstname" => "First", "user_name" => "login", '
+                    . '"user_email" => "mail@example.test", "total_score" => "6.50", '
+                    . '"testuser_end_time" => "end"]; $GLOBALS["rows"] = [$row, false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["statistics"] = []; '
+                    . 'function f_get_safe_users_test_stat_order_by($value) { return "user_name DESC"; } '
+                    . 'function strtotime($value) { return ["start-filter" => 10, "end-filter" => 20, '
+                    . '"creation" => 100, "end" => 200, "start" => 4000][$value]; } '
+                    . 'function date($format, $timestamp) { return "DATE:" . $timestamp; } '
+                    . 'function time() { return 10000; } function gmdate($format, $seconds) { return "TIME:" . $seconds; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function f_get_user_test_stat($testId, $userId, $testUserId) { return ['
+                    . '"test_max_score" => 10, "test_duration_time" => 30, "test_score_threshold" => 5, '
+                    . '"user_score" => 6, "user_test_start_time" => "start", "user_comment" => "comment"]; } '
+                    . 'function f_format_float($value) { return "FMT:" . $value; } '
+                    . 'function f_get_array_statistics($data) { $GLOBALS["statistics"] = $data; return ["done" => true]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getAllUsersTestStat)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$data = $qualified("07", "03", "011", "start-filter", "end-filter", '
+                    . '"unsafe", false, 0); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"], $GLOBALS["statistics"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /**
+         * @var array{
+         *   0: array{
+         *     svgpoints: string,
+         *     passed: int,
+         *     passed_perc: int,
+         *     num_records: int,
+         *     statistics: array{done: bool},
+         *     testuser: array{"'99'": array{
+         *       total_score: string,
+         *       total_score_perc: int,
+         *       time_diff: string,
+         *       remaining_time: int,
+         *       passmsg: bool,
+         *       locked: bool,
+         *       right: string
+         *     }}
+         *   },
+         *   1: array{0: string},
+         *   2: array{score: array{0: string}, score_perc: array{0: int}}
+         * } $decoded
+         */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$data, $queries, $statistics] = $decoded;
+        self::assertStringContainsString('testuser_test_id=7', $queries[0]);
+        self::assertStringContainsString('usrgrp_group_id=3', $queries[0]);
+        self::assertStringContainsString('user_id=11', $queries[0]);
+        self::assertStringContainsString("testuser_creation_time>='DATE:10'", $queries[0]);
+        self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
+        self::assertStringContainsString('ORDER BY user_name DESC', $queries[0]);
+        self::assertSame('x65v', $data['svgpoints']);
+        self::assertSame(1, $data['passed']);
+        self::assertSame(100, $data['passed_perc']);
+        self::assertSame(1, $data['num_records']);
+        self::assertSame(['done' => true], $data['statistics']);
+        $user = $data['testuser']["'99'"];
+        self::assertSame('FMT:6.50', $user['total_score']);
+        self::assertSame(65, $user['total_score_perc']);
+        self::assertSame('TIME:100', $user['time_diff']);
+        self::assertSame(70, $user['remaining_time']);
+        self::assertTrue($user['passmsg']);
+        self::assertTrue($user['locked']);
+        self::assertSame('', $user['right']);
+        self::assertSame(['6.50'], $statistics['score']);
+        self::assertSame([65], $statistics['score_perc']);
+    }
+
+
     public function testUserTestStatisticsOrderByFiltersAndFormatsInput(): void
     {
         [$status, $output] = \F_tcecode_run_process(
