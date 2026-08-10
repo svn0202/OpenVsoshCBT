@@ -2931,7 +2931,7 @@ count = 3
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_decodeOMRPage`: expected `array<array-key, mixed>`, but found `false`."
+message = "Invalid return type for function `f_decode_omr_page`: expected `array<array-key, mixed>`, but found `false`."
 count = 2
 
 [[issues]]
@@ -2973,7 +2973,7 @@ count = 1
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "missing-return-type"
-message = "Function `F_decodeOMRPage` is missing a return type hint."
+message = "Function `f_decode_omr_page` is missing a return type hint."
 count = 1
 
 [[issues]]

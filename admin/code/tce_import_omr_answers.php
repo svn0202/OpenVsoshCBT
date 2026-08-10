@@ -72,7 +72,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && $user_id > 0 && $_FILES !== 
         $omr_answers = [];
         for ($i = 1; $i <= $num_pages; ++$i) {
             if ((int) $_FILES['omrfile']['error'][$i] === UPLOAD_ERR_OK) {
-                $answers_page = F_decodeOMRPage($_FILES['omrfile']['tmp_name'][$i]);
+                $answers_page = f_decode_omr_page($_FILES['omrfile']['tmp_name'][$i]);
                 if ($answers_page !== false && !empty($answers_page)) {
                     $omr_answers += $answers_page;
                 } else {

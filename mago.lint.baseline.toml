@@ -3,12 +3,6 @@ variant = "loose"
 [[issues]]
 file = "admin/code/tce_functions_omr.php"
 code = "function-name"
-message = "Function name `F_decodeOMRPage` should be in snake case."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_omr.php"
-code = "function-name"
 message = "Function name `F_importOMRTestData` should be in snake case."
 count = 1
 

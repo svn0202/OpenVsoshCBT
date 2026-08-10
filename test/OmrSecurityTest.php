@@ -16,7 +16,7 @@ final class OmrSecurityTest extends TestCase
                     . '$GLOBALS["commands"] = []; '
                     . 'function exec($command) { $GLOBALS["commands"][] = $command; return "0"; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_decodeOMRPage|f_decode_omr_page)\\(/", '
+                    . 'preg_match("/function (f_decode_omr_page)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
