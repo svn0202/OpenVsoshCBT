@@ -24,4 +24,74 @@ final class TestAccessTest extends TestCase
         $_SESSION['session_user_id'] = 43;
         self::assertFalse(\F_tmf_test_session_is_unlocked(7));
     }
+
+    public function testExecuteTestPreservesAuthorizationCreationAndStatusDecisions(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "format"); $GLOBALS["db"] = "db"; '
+                    . '$_SESSION = ["session_user_id" => "11", "session_user_ip" => "127.0.0.1"]; '
+                    . '$row = ["test_id" => 22, "test_ip_range" => "127.0.0.1", '
+                    . '"test_duration_time" => 30, "test_repeatable" => 2]; '
+                    . '$nonrepeat = $row; $nonrepeat["test_repeatable"] = 0; '
+                    . '$GLOBALS["rows"] = [false, $row, $row, $row, $row, $row, $row, $row, $nonrepeat]; '
+                    . '$GLOBALS["ip"] = [false, true, true, true, true, true, true, true]; '
+                    . '$GLOBALS["access"] = [false, true, true, true, true, true, true]; '
+                    . '$GLOBALS["pregeneration"] = ["invalidated", null, null, null, null, null]; '
+                    . '$GLOBALS["statuses"] = [[0, 0], [1, 101], [4, 102], [5, 103], [5, 104]]; '
+                    . '$GLOBALS["counts"] = [1, 1]; $GLOBALS["queries"] = []; '
+                    . '$GLOBALS["create_calls"] = []; $GLOBALS["status_calls"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function date($format) { return "2026-08-10 12:00:00"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function f_is_valid_test_user(...$arguments) { return array_shift($GLOBALS["ip"]); } '
+                    . 'function F_tmf_test_access_status($testId, $userId) { '
+                    . 'return ["allowed" => array_shift($GLOBALS["access"])]; } '
+                    . 'function F_tmf_pregeneration_activate($testId, $userId) { '
+                    . 'return array_shift($GLOBALS["pregeneration"]); } '
+                    . 'function F_createTest(...$arguments) { $GLOBALS["create_calls"][] = $arguments; return true; } '
+                    . 'function f_check_test_status(...$arguments) { $GLOBALS["status_calls"][] = $arguments; '
+                    . 'return array_shift($GLOBALS["statuses"]); } '
+                    . 'function f_count_user_test($userId, $testId) { return array_shift($GLOBALS["counts"]); } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_executeTest)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
+                    . 'for ($i = 0; $i < 9; ++$i) { $results[] = $qualified("22"); } '
+                    . 'echo json_encode([$results, $GLOBALS["create_calls"], '
+                    . '$GLOBALS["status_calls"], count($GLOBALS["queries"]), $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [false, false, false, true, true, true, false, true, false],
+                [[22, 11], [22, '11'], [22, '11']],
+                [
+                    ['11', 22, 30],
+                    ['11', 22, 30],
+                    ['11', 22, 30],
+                    ['11', 22, 30],
+                    ['11', 22, 30],
+                ],
+                9,
+                0,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
 }
