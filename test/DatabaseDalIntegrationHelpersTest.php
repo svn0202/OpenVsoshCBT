@@ -11,6 +11,38 @@ require_once __DIR__ . '/integration/DatabaseDalIntegrationTest.php';
 
 final class DatabaseDalIntegrationHelpersTest extends TestCase
 {
+    public function testEscapedSqlRoundTripUsesEscapedValueAndOriginalResult(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'function F_escape_sql($db, $value, $strip) { '
+                    . '$GLOBALS["escape"] = [$db, $value, $strip]; return "escaped-value"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["query"] = [$sql, $db]; return "result"; } '
+                    . 'function F_db_fetch_assoc($result) { return ["v" => "O\'Brien \\"quote\\" \\\\ end"]; } '
+                    . 'require $argv[1]; require $argv[2]; '
+                    . '$test = new Test\\Integration\\DatabaseDalIntegrationTest('
+                    . '"testEscapeSqlRoundTripsThroughTheServer"); '
+                    . '$property = new ReflectionProperty($test, "db"); $property->setValue($test, "db-link"); '
+                    . '$test->testEscapeSqlRoundTripsThroughTheServer(); '
+                    . 'echo json_encode(["escape" => $GLOBALS["escape"], "query" => $GLOBALS["query"]]);',
+                dirname(__DIR__) . '/vendor/autoload.php',
+                __DIR__ . '/integration/DatabaseDalIntegrationTest.php',
+            ],
+            dirname(__DIR__),
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'escape' => ['db-link', "O'Brien \"quote\" \\ end", false],
+                'query' => ["SELECT 'escaped-value' AS v", 'db-link'],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testSeededUsersCheckBuildsNamedLevelMap(): void
     {
         [$status, $output] = \F_tcecode_run_process(
