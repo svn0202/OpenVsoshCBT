@@ -123,7 +123,7 @@ function f_decode_omr_test_data_qr_code(mixed $image): array|false
  * @param $image (string) image file to be decoded (scanned OMR page at 200 DPI with full color range).
  * @return array of answers data or false in case of error.
  */
-function F_decodeOMRPage($image)
+function f_decode_omr_page($image)
 {
     require_once '../config/tce_config.php';
     // decode barcode containing first question number

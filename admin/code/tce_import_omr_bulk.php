@@ -99,7 +99,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                         for ($i = 1; $i <= $num_pages; ++$i) {
                             $answerfile = 'OMR_' . $matches[1] . '_A' . $i . '.' . $matches[2];
                             if (F_file_exists($omrdir . $answerfile)) {
-                                $answers_page = F_decodeOMRPage($omrdir . $answerfile);
+                                $answers_page = f_decode_omr_page($omrdir . $answerfile);
                                 if ($answers_page !== false && !empty($answers_page)) {
                                     $omr_answers += $answers_page;
                                     file_put_contents(
