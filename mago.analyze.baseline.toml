@@ -3519,12 +3519,6 @@ count = 1
 [[issues]]
 file = "admin/code/tmf_word_import_lib.php"
 code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `TmfWordImportException` in `f_tmf_word_import_template`."
-count = 1
-
-[[issues]]
-file = "admin/code/tmf_word_import_lib.php"
-code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `TmfWordImportException` in `TmfWordImporter::imageHtml`."
 count = 1
 
@@ -3556,6 +3550,12 @@ count = 1
 file = "admin/code/tmf_word_import_lib.php"
 code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `TmfWordImportException` in `TmfWordImporter::readBodyBlocks`."
+count = 1
+
+[[issues]]
+file = "admin/code/tmf_word_import_lib.php"
+code = "unhandled-thrown-type"
+message = "Potentially unhandled exception `TmfWordImportException` in `f_tmf_word_import_template`."
 count = 1
 
 [[issues]]
@@ -4188,7 +4188,6 @@ code = "undefined-variable"
 message = "Undefined variable: `$l`."
 count = 45
 
-
 [[issues]]
 file = "public/code/tce_user_registration.php"
 code = "array-to-string-conversion"
@@ -4376,339 +4375,645 @@ message = "Unreachable else clause"
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "array-to-string-conversion"
-message = "Potential array in middle operand of string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "array-to-string-conversion"
-message = "Potentially casting `array` to `string`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "false-operand"
-message = "Left operand in `<=` comparison is `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 10
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `setcookie`: expected `string`, but found `int`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 13
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `session_decode`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtotime`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `date`: expected `int|null`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `setcookie`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 18
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
 count = 3
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Invalid left operand: type `mixed` cannot be reliably used in string concatenation."
+file = "shared/code/TcePdfReport.php"
+code = "imprecise-type"
+message = "Type `array` in parameter `$d` is imprecise, equivalent to `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
+file = "shared/code/TcePdfReport.php"
+code = "imprecise-type"
+message = "Type `array` in property `$contentFont` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "invalid-argument"
+message = "Invalid argument type for argument #2 of `TcePdfReport::answerMarker`: expected `array<array-key, mixed>`, but found `unknown-ref(Returns)`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "invalid-array-access"
+message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 9
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
+file = "shared/code/TcePdfReport.php"
+code = "invalid-array-element-key"
+message = "Invalid array key type."
+count = 6
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "invalid-iterator"
+message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
+count = 6
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "invalid-type-cast"
+message = "Casting `mixed` to `float`."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Left operand in `&&` operation has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Left operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Right operand in `<=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Right operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "mixed-operand"
-message = "Right operand in binary operation has type `mixed`."
+file = "shared/code/TcePdfReport.php"
+code = "invalid-type-cast"
+message = "Non numeric string of type `string` implicitly cast to `float`."
 count = 3
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$data` is missing a type hint."
+count = 3
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$display_mode` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$onlytext` is missing a type hint."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$pubmode` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$stats` is missing a type hint."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "missing-parameter-type"
+message = "Parameter `$svgdata` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `Com\Tecnick\Pdf\JavaScript::setBookmark`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `Com\Tecnick\Pdf\Page\Page::addContent`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `TcePdfReport::printQuestionStats`: expected `array<array-key, mixed>`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
+count = 8
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `nonnull`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `strtotime`: expected `string`, but found `mixed`."
+count = 4
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #2 of `TcePdfReport::statsRow`: expected `string`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #2 of `gmdate`: expected `int|null`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #3 of `TcePdfReport::statsRow`: expected `array<array-key, mixed>`, but found `mixed`."
+count = 4
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 77
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 16
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-assignment"
+message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid left operand: type `mixed` cannot be reliably used in string concatenation."
+count = 6
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid left operand: type `nonnull` cannot be reliably used in string concatenation."
+count = 10
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
 count = 5
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid middle operand: type `nonnull` cannot be reliably used in string concatenation."
+count = 5
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid middle operand: type `truthy-mixed` cannot be reliably used in string concatenation."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
+count = 8
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Invalid right operand: type `nonnull` cannot be reliably used in string concatenation."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Left operand in `<=` comparison has `mixed` type."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Left operand in `>=` comparison has `mixed` type."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Left operand in `>` comparison has `mixed` type."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Left operand in binary operation has type `mixed`."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Right operand in `>=` comparison has `mixed` type."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "mixed-operand"
+message = "Right operand in binary operation has type `mixed`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "no-value"
+message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "no-value"
+message = "Argument #1 passed to function `strlen` has type `never`, meaning it cannot produce a value."
+count = 3
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "no-value"
+message = "Argument #1 passed to function `strtotime` has type `never`, meaning it cannot produce a value."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "no-value"
+message = "Argument #1 passed to function `substr` has type `never`, meaning it cannot produce a value."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-false-operand"
+message = "Left operand in `<=` comparison might be `false` (type `false|int`)."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
 code = "possibly-false-operand"
 message = "Left operand in `<` comparison might be `false` (type `false|int`)."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
+code = "possibly-false-operand"
+message = "Left operand in arithmetic operation might be `false` (type `false|int`)."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-false-operand"
+message = "Right operand in `<` comparison might be `false` (type `false|int`)."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-false-operand"
+message = "Right operand in arithmetic operation might be `false` (type `false|int`)."
+count = 2
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-invalid-argument"
+message = '''Possible argument type mismatch for argument #1 of `Com\Tecnick\Pdf\Tcpdf::setSignature`: expected `array{'appearance': array{'ap'?: array<string, array<string, string>|string>|string, 'as'?: string, 'empty': array<int, array{'name': string, 'objid': int, 'page': int, 'rect': string}>, 'name': string, 'page': int, 'rect': string, 'xobj'?: string}, 'approval': string, 'cert_type': int, 'digest_algorithm'?: string, 'extracerts': null|string, 'info': array{'ContactInfo': string, 'Location': string, 'Name': string, 'Reason': string}, 'ltv'?: array{'embed_certs': bool, 'embed_crl': bool, 'embed_ocsp': bool, 'enabled': bool, 'include_dss': bool, 'include_vri': bool}, 'password': string, 'privkey': string, 'profile'?: string, 'signcert': string}`, but possibly received `array{'cert_type': int(1)|int(2), 'extracerts'?: string(''), 'info': array{'ContactInfo': string('')|string('you@example.com'), 'Location': string('')|string('Office'), 'Name': string('')|string('TCEXAM'), 'Reason': string('')|string('Certification')}, 'password': string('')|string('tcpdfdemo'), 'privkey': string('file://../../shared/config/tcpdf.crt'), 'signcert': string('file://../../shared/config/tcpdf.crt')}`.'''
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-invalid-argument"
+message = '''Possible argument type mismatch for argument #7 of `Com\Tecnick\Pdf\Tcpdf::__construct`: expected `array{'allowedHosts'?: array<array-key, string>, 'allowedPaths'?: array<array-key, string>, 'curlopts'?: array<int, bool|int|string>, 'defaultCurlOpts'?: array<int, bool|int|string>, 'fixedCurlOpts'?: array<int, bool|int|string>, 'markupAllowedPaths'?: array<array-key, string>, 'maxRemoteSize'?: int}|null`, but possibly received `array<string, mixed>|null`.'''
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
 code = "possibly-null-operand"
-message = "Possibly null middle operand used in string concatenation (type `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|null|string`)."
+message = "Possibly null right operand used in string concatenation (type `null|string('C')|string('M')|string('O')|string('S')|string('T')`)."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array index accessed on `list{string('S'), string('M'), string('T'), string('O'), string('C')}`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_ip')` accessed on `array<non-empty-string, mixed>`."
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(2)` accessed on `array<array-key, string>`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 3
+message = "Possibly undefined array key `string('answer_isright')` accessed on `array<array-key, mixed>`."
+count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('testid')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
+message = "Possibly undefined array key `string('answer_position')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('h')` accessed on `array<string, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('logansw_position')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('logansw_selected')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('module')` accessed on `non-empty-array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('out')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('passed')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('passed_perc')` accessed on `array<array-key, mixed>`."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_birthdate')` accessed on `array<array-key, mixed>`."
+message = "Possibly undefined array key `string('statistics')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_birthplace')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_email')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_firstname')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_lastname')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_level')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_regnumber')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('user_ssn')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('usrgrp_group_id')` accessed on `array<array-key, mixed>`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('xtest_password')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('xuser_name')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('xuser_otpcode')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
+message = "Possibly undefined array key `string('test')` accessed on `array<array-key, mixed>`."
 count = 4
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "possibly-undefined-variable"
-message = "Variable `$wait` might not have been defined on all execution paths leading to this point."
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('testuser')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('total_score')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('y')` accessed on `array<string, mixed>`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "redundant-cast"
+message = "Redundant cast to `(bool)`: the expression already has this type."
+count = 3
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "redundant-cast"
+message = "Redundant cast to `(float)`: the expression already has this type."
+count = 12
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
 code = "redundant-cast"
 message = "Redundant cast to `(string)`: the expression already has this type."
-count = 8
+count = 19
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "redundant-comparison"
-message = "Redundant `<=` comparison: left-hand side is always less than or equal to right-hand side."
+message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "redundant-comparison"
-message = "Redundant `>` comparison: left-hand side is always greater than right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "redundant-comparison"
-message = "Redundant `>` comparison: left-hand side is never greater than right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 8
+count = 2
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always falsy and right operand is not evaluated."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
-count = 1
+count = 2
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
 code = "redundant-logical-operation"
-message = "Redundant `||` operation: left operand is always true and right operand is not evaluated."
+message = "Redundant `&&` operation: left operand is evaluated and right operand is always falsy."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
+file = "shared/code/TcePdfReport.php"
+code = "redundant-logical-operation"
+message = "Redundant `||` operation: left operand is evaluated and right operand is always truthy."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
 code = "redundant-null-coalesce"
 message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
-count = 3
+count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "undefined-variable"
-message = "Undefined variable: `$PHPSESSID`."
-count = 3
+file = "shared/code/TcePdfReport.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$match`."
+count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "undefined-variable"
-message = "Undefined variable: `$db`."
-count = 23
+file = "shared/code/TcePdfReport.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$mm`."
+count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 18
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Barcode\Exception` in `TcePdfReport::defaultPageContent`.'
+count = 1
 
 [[issues]]
-file = "shared/code/tce_authorization.php"
-code = "unreachable-else-clause"
-message = "Unreachable else clause"
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Color\Exception` in `TcePdfReport::defaultPageContent`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Color\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\File\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\File\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Encrypt\Exception` in `TcePdfReport::__construct`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Encrypt\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::__construct`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::applyDigitalSignature`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::addReportPage`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::ensureContentFont`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::__construct`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::addReportPage`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::ensureContentFont`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::addReportPage`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::outputReport`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::writeReportHTML`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Random\RandomException` in `TcePdfReport::__construct`.'
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = "Potentially unhandled exception `Throwable` in `TcePdfReport::outputReport`."
+count = 1
+
+[[issues]]
+file = "shared/code/TcePdfReport.php"
+code = "unhandled-thrown-type"
+message = "Potentially unhandled exception `Throwable` in `TcePdfReport::writeReportHTML`."
 count = 1
 
 [[issues]]
@@ -5185,7 +5490,6 @@ code = "unused-parameter"
 message = "Parameter `$link_identifier` is never used."
 count = 3
 
-
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "array-to-string-conversion"
@@ -5585,13 +5889,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `f_count_user_test` is missing a return type hint."
+message = "Function `f_count_executed_tests` is missing a return type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `f_count_executed_tests` is missing a return type hint."
+message = "Function `f_count_user_test` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -5765,13 +6069,13 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `f_tmf_catalog_test_status`: expected `bool`, but found `mixed`."
+message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `truthy-mixed`."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `truthy-mixed`."
+message = "Invalid argument type for argument #2 of `f_tmf_catalog_test_status`: expected `bool`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -6690,647 +6994,4 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is evaluated and right operand is always falsy."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
-count = 3
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "imprecise-type"
-message = "Type `array` in parameter `$d` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "imprecise-type"
-message = "Type `array` in property `$contentFont` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #2 of `TcePdfReport::answerMarker`: expected `array<array-key, mixed>`, but found `unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 9
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-array-element-key"
-message = "Invalid array key type."
-count = 6
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 6
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-type-cast"
-message = "Casting `mixed` to `float`."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 3
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$data` is missing a type hint."
-count = 3
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$display_mode` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$onlytext` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$pubmode` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$stats` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "missing-parameter-type"
-message = "Parameter `$svgdata` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `Com\Tecnick\Pdf\JavaScript::setBookmark`: expected `string`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `Com\Tecnick\Pdf\Page\Page::addContent`: expected `string`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `TcePdfReport::printQuestionStats`: expected `array<array-key, mixed>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 8
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strlen`: expected `string`, but found `nonnull`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtotime`: expected `string`, but found `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `TcePdfReport::statsRow`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `gmdate`: expected `int|null`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `TcePdfReport::statsRow`: expected `array<array-key, mixed>`, but found `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 77
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 16
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-assignment"
-message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid left operand: type `mixed` cannot be reliably used in string concatenation."
-count = 6
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid left operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 10
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 5
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 5
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `truthy-mixed` cannot be reliably used in string concatenation."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 8
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Left operand in `<=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Left operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Left operand in `>` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Left operand in binary operation has type `mixed`."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Right operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "mixed-operand"
-message = "Right operand in binary operation has type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "no-value"
-message = "Argument #1 passed to function `strlen` has type `never`, meaning it cannot produce a value."
-count = 3
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "no-value"
-message = "Argument #1 passed to function `strtotime` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "no-value"
-message = "Argument #1 passed to function `substr` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-false-operand"
-message = "Left operand in `<=` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-false-operand"
-message = "Left operand in `<` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-false-operand"
-message = "Left operand in arithmetic operation might be `false` (type `false|int`)."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-false-operand"
-message = "Right operand in `<` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-false-operand"
-message = "Right operand in arithmetic operation might be `false` (type `false|int`)."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-invalid-argument"
-message = '''Possible argument type mismatch for argument #1 of `Com\Tecnick\Pdf\Tcpdf::setSignature`: expected `array{'appearance': array{'ap'?: array<string, array<string, string>|string>|string, 'as'?: string, 'empty': array<int, array{'name': string, 'objid': int, 'page': int, 'rect': string}>, 'name': string, 'page': int, 'rect': string, 'xobj'?: string}, 'approval': string, 'cert_type': int, 'digest_algorithm'?: string, 'extracerts': null|string, 'info': array{'ContactInfo': string, 'Location': string, 'Name': string, 'Reason': string}, 'ltv'?: array{'embed_certs': bool, 'embed_crl': bool, 'embed_ocsp': bool, 'enabled': bool, 'include_dss': bool, 'include_vri': bool}, 'password': string, 'privkey': string, 'profile'?: string, 'signcert': string}`, but possibly received `array{'cert_type': int(1)|int(2), 'extracerts'?: string(''), 'info': array{'ContactInfo': string('')|string('you@example.com'), 'Location': string('')|string('Office'), 'Name': string('')|string('TCEXAM'), 'Reason': string('')|string('Certification')}, 'password': string('')|string('tcpdfdemo'), 'privkey': string('file://../../shared/config/tcpdf.crt'), 'signcert': string('file://../../shared/config/tcpdf.crt')}`.'''
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-invalid-argument"
-message = '''Possible argument type mismatch for argument #7 of `Com\Tecnick\Pdf\Tcpdf::__construct`: expected `array{'allowedHosts'?: array<array-key, string>, 'allowedPaths'?: array<array-key, string>, 'curlopts'?: array<int, bool|int|string>, 'defaultCurlOpts'?: array<int, bool|int|string>, 'fixedCurlOpts'?: array<int, bool|int|string>, 'markupAllowedPaths'?: array<array-key, string>, 'maxRemoteSize'?: int}|null`, but possibly received `array<string, mixed>|null`.'''
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-null-operand"
-message = "Possibly null right operand used in string concatenation (type `null|string('C')|string('M')|string('O')|string('S')|string('T')`)."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `list{string('S'), string('M'), string('T'), string('O'), string('C')}`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(2)` accessed on `array<array-key, string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('answer_isright')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('answer_position')` accessed on `array<array-key, mixed>`."
-count = 1
-
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('h')` accessed on `array<string, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('logansw_position')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('logansw_selected')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('module')` accessed on `non-empty-array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('out')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('passed')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('passed_perc')` accessed on `array<array-key, mixed>`."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('statistics')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('test')` accessed on `array<array-key, mixed>`."
-count = 4
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('testuser')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('total_score')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('y')` accessed on `array<string, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-cast"
-message = "Redundant cast to `(bool)`: the expression already has this type."
-count = 3
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-cast"
-message = "Redundant cast to `(float)`: the expression already has this type."
-count = 12
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 19
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-comparison"
-message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
-count = 2
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is evaluated and right operand is always falsy."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-logical-operation"
-message = "Redundant `||` operation: left operand is evaluated and right operand is always truthy."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "redundant-null-coalesce"
-message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$match`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$mm`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Barcode\Exception` in `TcePdfReport::defaultPageContent`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Color\Exception` in `TcePdfReport::defaultPageContent`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Color\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\File\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\File\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Encrypt\Exception` in `TcePdfReport::__construct`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Encrypt\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::__construct`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::applyDigitalSignature`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::addReportPage`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::ensureContentFont`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Font\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::__construct`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::addReportPage`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::ensureContentFont`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Pdf\Page\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::addReportPage`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::outputReport`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Com\Tecnick\Unicode\Exception` in `TcePdfReport::writeReportHTML`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `TcePdfReport::__construct`.'
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `Throwable` in `TcePdfReport::outputReport`."
-count = 1
-
-[[issues]]
-file = "shared/code/TcePdfReport.php"
-code = "unhandled-thrown-type"
-message = "Potentially unhandled exception `Throwable` in `TcePdfReport::writeReportHTML`."
 count = 1
