@@ -25,7 +25,7 @@ final class WordImportTest extends TestCase
     protected function setUp(): void
     {
         $this->temporaryDirectory = sys_get_temp_dir() . '/openvsosh-word-' . bin2hex(random_bytes(6));
-        self::assertTrue(mkdir($this->temporaryDirectory, 0700, true));
+        self::assertTrue(mkdir($this->temporaryDirectory, 0o700, true));
     }
 
     protected function tearDown(): void

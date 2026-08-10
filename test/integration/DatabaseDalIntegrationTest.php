@@ -469,7 +469,7 @@ final class DatabaseDalIntegrationTest extends TestCase
             ? '"' . $databaseName . '"'
             : '`' . $databaseName . '`';
         $backupDirectory = sys_get_temp_dir() . '/openvsosh-backup-integration-' . bin2hex(random_bytes(6));
-        $this->assertTrue(mkdir($backupDirectory, 0700));
+        $this->assertTrue(mkdir($backupDirectory, 0o700));
         $archive = null;
         $targetDb = null;
         $controlDb = $this->db;

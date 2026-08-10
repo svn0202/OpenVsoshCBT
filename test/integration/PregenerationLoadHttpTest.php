@@ -369,7 +369,7 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
             ];
             $reportDirectory = __DIR__ . '/../../target/report';
             if (!is_dir($reportDirectory)) {
-                self::assertTrue(mkdir($reportDirectory, 0770, true));
+                self::assertTrue(mkdir($reportDirectory, 0o770, true));
             }
             self::assertNotFalse(file_put_contents(
                 $reportDirectory . '/pregeneration-load.json',

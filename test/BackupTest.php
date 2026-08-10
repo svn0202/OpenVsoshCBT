@@ -14,7 +14,7 @@ final class BackupTest extends TestCase
     protected function setUp(): void
     {
         $this->temporaryDirectory = sys_get_temp_dir() . '/openvsosh-backup-' . bin2hex(random_bytes(8));
-        self::assertTrue(mkdir($this->temporaryDirectory, 0700));
+        self::assertTrue(mkdir($this->temporaryDirectory, 0o700));
     }
 
     protected function tearDown(): void
