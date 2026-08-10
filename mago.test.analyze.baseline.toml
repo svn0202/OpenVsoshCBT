@@ -353,9 +353,3 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\DatabaseDalIntegrationTest::testDatabaseBackupCanActuallyRestoreDisposableDatabase`.'
 count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\DatabaseDalIntegrationTest::testWordImportCanCommitAndRollBackRealDatabaseWrites`.'
-count = 1
