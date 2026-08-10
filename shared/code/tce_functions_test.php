@@ -1088,7 +1088,7 @@ function F_selectAnswers(
  * @param $answers_ids (array) array of answer IDs to add
  * @return boolean true in case of success, false otherwise
  */
-function F_addLogAnswers($testlog_id, $answers_ids)
+function f_add_log_answers($testlog_id, $answers_ids): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -1764,7 +1764,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
         }
 
         // add answers
-        F_addLogAnswers($testlog_id, $answers_ids);
+        f_add_log_answers($testlog_id, $answers_ids);
     } else {
         // same answers for all test-takers
         // --------------------------------
@@ -1794,7 +1794,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
                 $answers_ids[] = $m['logansw_answer_id'];
             }
 
-            F_addLogAnswers($testlog_id, $answers_ids);
+            f_add_log_answers($testlog_id, $answers_ids);
         } else {
             F_display_db_error(false);
             return false;
