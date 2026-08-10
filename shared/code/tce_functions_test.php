@@ -3163,7 +3163,7 @@ function f_update_test_comment(mixed $test_id, mixed $testcomment): void
  * @param test_id int ID of the test
  * @return XHTML string for login form
  */
-function F_testLoginForm($faction, $fid, $fmethod, $fenctype, $test_id)
+function f_test_login_form($faction, $fid, $fmethod, $fenctype, $test_id)
 {
     global $l;
     require_once '../config/tce_config.php';
