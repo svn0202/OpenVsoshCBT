@@ -15,7 +15,7 @@ final class StatisticsTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getSafeUsersTestStatOrderBy|f_get_safe_users_test_stat_order_by)\\(/", '
+                    . 'preg_match("/function (f_get_safe_users_test_stat_order_by)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

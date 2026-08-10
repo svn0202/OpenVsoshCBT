@@ -1931,7 +1931,7 @@ function F_getAllUsersTestStat(
     $test_id = (int) $test_id;
     $group_id = (int) $group_id;
     $user_id = (int) $user_id;
-    $full_order_field = F_getSafeUsersTestStatOrderBy($full_order_field);
+    $full_order_field = f_get_safe_users_test_stat_order_by($full_order_field);
     $data = [];
     $data['svgpoints'] = '';
     $data['testuser'] = [];
@@ -2161,7 +2161,7 @@ function F_getAllUsersTestStat(
  * @param mixed $full_order_field Raw ORDER BY input.
  * @return string
  */
-function F_getSafeUsersTestStatOrderBy($full_order_field)
+function f_get_safe_users_test_stat_order_by($full_order_field): string
 {
     $allowed_fields = [
         'testuser_creation_time',
