@@ -1,19 +1,23 @@
 <?php
 
 require_once '../config/tce_config.php';
+/** @var mixed $db */
+/** @var array{m_authorization_denied: string, a_meta_charset: string} $l */
 
-$pagelevel = K_AUTH_ADMIN_TESTS;
+$pagelevel = (int) constant('K_AUTH_ADMIN_TESTS');
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once '../../shared/code/tce_functions_test.php';
 
 $thispage_title = 'Предварительная генерация вариантов';
-$test_id = isset($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
+$test_id = isset($_REQUEST['test_id']) && is_string($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
 $tests = [];
 $result = F_db_query(F_select_tests_sql(), $db);
-while ($result && ($test = F_db_fetch_array($result))) {
-    $tests[(int) $test['test_id']] = $test;
+/** @var \mysqli_result|\PgSql\Result|false $result */
+$normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+while ($result !== false && ($test = $normalize_row(F_db_fetch_array($result))) !== null) {
+    $tests[(int) ($test['test_id'] ?? 0)] = $test;
 }
 if ($test_id > 0 && !isset($tests[$test_id])) {
     F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -58,12 +62,16 @@ if ($test_id > 0) {
         WHERE testuser_test_id=' . $test_id . '
             AND testuser_status<5';
     $counts_result = F_db_query($counts_sql, $db);
+    /** @var \mysqli_result|\PgSql\Result|false $counts_result */
     $eligible_lookup = array_fill_keys($eligible_ids, true);
-    while ($counts_result && ($attempt = F_db_fetch_array($counts_result))) {
-        if (!isset($eligible_lookup[(int) $attempt['testuser_user_id']])) {
+    while (
+        $counts_result !== false
+        && ($attempt = $normalize_row(F_db_fetch_array($counts_result))) !== null
+    ) {
+        if (!isset($eligible_lookup[(int) ($attempt['testuser_user_id'] ?? 0)])) {
             continue;
         }
-        if (f_get_boolean($attempt['testuser_pregenerated'])) {
+        if (f_get_boolean($attempt['testuser_pregenerated'] ?? false)) {
             ++$prepared_count;
         } else {
             ++$started_count;
@@ -84,7 +92,7 @@ echo '<option value="">Выберите тест</option>';
 foreach ($tests as $available_test_id => $test) {
     $selected = $available_test_id === $test_id ? ' selected="selected"' : '';
     echo '<option value="' . $available_test_id . '"' . $selected . '>'
-        . htmlspecialchars((string) $test['test_name'], ENT_QUOTES, $l['a_meta_charset']) . '</option>';
+        . htmlspecialchars((string) ($test['test_name'] ?? ''), ENT_QUOTES, $l['a_meta_charset']) . '</option>';
 }
 echo '</select><button type="submit">Показать</button></form>';
 
