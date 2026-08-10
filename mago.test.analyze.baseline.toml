@@ -14,36 +14,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
-code = "imprecise-type"
-message = "Type `array` in property `$authCookies` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `loginCredentials` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "imprecise-type"
-message = "Type `array` in return type of `login` is imprecise, equivalent to `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "less-specific-argument"
-message = 'Argument type mismatch for argument #2 of `Test\Integration\AppHttpTestCase::httpUpload`: expected `array<string, string>`, but provided type `array<array-key, mixed>` is less specific.'
-count = 6
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "less-specific-argument"
-message = 'Argument type mismatch for argument #3 of `Test\Integration\AppHttpTestCase::http`: expected `array<string, string>`, but provided type `array<array-key, mixed>` is less specific.'
-count = 67
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 2
