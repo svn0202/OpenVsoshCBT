@@ -820,7 +820,7 @@ function f_get_test_duration($test_id)
  * @param $testuser_id (int) user's test ID
  * @return int start time in seconds
  */
-function f_get_test_start_time($testuser_id)
+function f_get_test_start_time(mixed $testuser_id): mixed
 {
     require_once '../config/tce_config.php';
     global $db, $l;
