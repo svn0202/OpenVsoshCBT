@@ -167,6 +167,81 @@ final class StatisticsTest extends TestCase
         self::assertSame([65], $statistics['score_perc']);
     }
 
+    public function testRawStatisticsPreserveEmptyShapeAndIndividualPublicFilters(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_users"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TABLE_ANSWERS", "answers"); '
+                    . 'define("K_TABLE_LOG_ANSWER", "log_answers"); define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_SUBJECTS", "subjects"); define("K_TABLE_MODULES", "modules"); '
+                    . 'define("K_TABLE_USERS", "users"); define("K_TABLE_USERGROUP", "user_groups"); '
+                    . 'define("K_TABLE_TESTS", "tests"); define("K_TIMESTAMP_FORMAT", "format"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
+                    . 'function f_get_test_id_results($testId, $userId) { return "7,8"; } '
+                    . 'function strtotime($value) { return $value === "start" ? 10 : 20; } '
+                    . 'function date($format, $timestamp) { return "DATE:" . $timestamp; } '
+                    . 'function f_get_test_data($testId) { return ["test_score_right" => 2]; } '
+                    . 'function F_db_datetime_diff_seconds($start, $end) { return "DIFF_SECONDS"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'function F_db_fetch_array($result) { return false; } '
+                    . 'function F_display_db_error() { throw new \\RuntimeException("unexpected error"); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getRawTestStat)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$data = $qualified("07", "03", "011", "start", "end", "099", '
+                    . '["seed" => "keep"], true); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: array{seed: string, qstats: array<string, mixed>}, 1: array{0: string}} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$data, $queries] = $decoded;
+        self::assertSame('keep', $data['seed']);
+        self::assertSame(
+            [
+                'recurrence' => 0,
+                'recurrence_perc' => 0,
+                'average_score' => 0,
+                'average_score_perc' => 0,
+                'average_time' => 0,
+                'right' => 0,
+                'right_perc' => 0,
+                'wrong' => 0,
+                'wrong_perc' => 0,
+                'unanswered' => 0,
+                'unanswered_perc' => 0,
+                'undisplayed' => 0,
+                'undisplayed_perc' => 0,
+                'unrated' => 0,
+                'unrated_perc' => 0,
+                'qnum' => 0,
+                'module' => [],
+            ],
+            $data['qstats'],
+        );
+        self::assertStringContainsString('testlog_score, testlog_user_ip, testlog_display_time', $queries[0]);
+        self::assertStringContainsString('testuser_test_id=7', $queries[0]);
+        self::assertStringContainsString('testuser_id=99', $queries[0]);
+        self::assertStringContainsString('testuser_user_id=user_id AND user_id=11', $queries[0]);
+        self::assertStringContainsString("testuser_creation_time>='DATE:10'", $queries[0]);
+        self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
+    }
+
+
 
     public function testUserTestStatisticsOrderByFiltersAndFormatsInput(): void
     {
