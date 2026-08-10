@@ -181,7 +181,7 @@ function F_getRawTestStat(
     $sqlw = 'WHERE testlog_testuser_id=testuser_id';
     $sqlansw = 'WHERE logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id';
     if ($pubmode) {
-        $test_ids_results = F_getTestIDResults($test_id, $user_id);
+        $test_ids_results = f_get_test_id_results($test_id, $user_id);
         $sqlw .= ' AND testuser_test_id IN (' . $test_ids_results . ') AND testuser_status>3';
         $sqlansw .= ' AND testuser_test_id IN (' . $test_ids_results . ') AND testuser_status>3';
     }
@@ -1956,7 +1956,7 @@ function F_getAllUsersTestStat(
     if ($pubmode) {
         $sqlr .=
             ' AND testuser_test_id IN ('
-            . F_getTestIDResults($test_id, $user_id)
+            . f_get_test_id_results($test_id, $user_id)
             . ') AND testuser_user_id='
             . $user_id
             . ' AND testuser_status>3';
@@ -2236,7 +2236,7 @@ function f_lock_user_test($test_id, $user_id): void
  * @param $test_id (int) Test ID.
  * @return string
  */
-function F_getTestIDResults($test_id, $user_id)
+function f_get_test_id_results($test_id, $user_id): string
 {
     return F_getTestIDs($test_id, $user_id, 'test_results_to_users');
 }
@@ -2246,7 +2246,7 @@ function F_getTestIDResults($test_id, $user_id)
  * @param $test_id (int) Test ID.
  * @return string
  */
-function F_getTestIDReports($test_id, $user_id)
+function f_get_test_id_reports($test_id, $user_id): string
 {
     return F_getTestIDs($test_id, $user_id, 'test_report_to_users');
 }

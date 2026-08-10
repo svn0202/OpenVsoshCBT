@@ -161,7 +161,7 @@ $sql =
     'SELECT * FROM '
     . K_TABLE_TESTS
     . ' WHERE test_id IN ('
-    . F_getTestIDResults($test_id, $user_id)
+    . f_get_test_id_results($test_id, $user_id)
     . ') ORDER BY test_begin_time DESC, test_name';
 if ($r = F_db_query($sql, $db)) {
     echo '<option value="0"';
