@@ -3295,54 +3295,6 @@ message = "Parameter `$parser` is never used."
 count = 3
 
 [[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 62
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-array-assignment"
-message = "Unsafe array assignment on type `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `<` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "mixed-operand"
-message = "Left operand in `>` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_page_menu.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 60
-
-[[issues]]
 file = "admin/code/tce_pdf_testgen.php"
 code = "impossible-condition"
 message = "Redundant ternary operator: condition is always falsy."

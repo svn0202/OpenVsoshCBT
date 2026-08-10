@@ -24,6 +24,10 @@ require_once '../config/tce_auth.php';
 require_once '../../shared/code/tce_functions_menu.php';
 require_once '../../shared/code/tce_functions_roles.php';
 
+/** @var array{h_index:string,h_info:string,h_login_button:string,h_logout_link:string,h_public_link:string,ov_instance_settings:string,t_answers_editor:string,t_backup_editor:string,t_filemanager:string,t_group_editor:string,t_modules_editor:string,t_omr_answers_importer:string,t_omr_bulk_importer:string,t_online_users:string,t_question_importer:string,t_questions_editor:string,t_questions_list:string,t_rating_editor:string,t_result_all_users:string,t_result_user:string,t_sslcerts:string,t_subjects_editor:string,t_test_select:string,t_tests_editor:string,t_user_editor:string,t_user_importer:string,t_user_select:string,w_answers:string,w_backup:string,w_file_manager:string,w_groups:string,w_guide:string,w_import:string,w_import_omr_answers:string,w_index:string,w_info:string,w_list:string,w_login:string,w_logout:string,w_modules:string,w_online:string,w_questions:string,w_rating:string,w_results:string,w_select:string,w_sslcerts:string,w_subjects:string,w_tests:string,w_users:string} $l */
+/** @var array{session_user_level:int|string} $session */
+$session = &$_SESSION;
+/** @var array<string,array<string,mixed>> $menu */
 $menu = [
     'index.php' => [
         'link' => 'index.php',
@@ -94,7 +98,7 @@ $menu = [
         'name' => 'Мой профиль',
         'level' => K_AUTH_OPERATOR,
         'key' => '',
-        'enabled' => $_SESSION['session_user_level'] >= K_AUTH_OPERATOR,
+        'enabled' => $session['session_user_level'] >= K_AUTH_OPERATOR,
         'icon' => 'profile',
     ],
     'tce_page_help.php' => [
@@ -121,7 +125,7 @@ $menu = [
         'name' => $l['w_logout'],
         'level' => 1,
         'key' => '',
-        'enabled' => $_SESSION['session_user_level'] > 0,
+        'enabled' => $session['session_user_level'] > 0,
         'icon' => 'logout',
     ],
     'tce_login.php' => [
@@ -130,7 +134,7 @@ $menu = [
         'name' => $l['w_login'],
         'level' => 0,
         'key' => '',
-        'enabled' => $_SESSION['session_user_level'] < 1,
+        'enabled' => $session['session_user_level'] < 1,
         'icon' => 'login',
     ],
 ];
@@ -376,24 +380,32 @@ $menu['tce_menu_tests.php']['sub'] = [
     ],
 ];
 
+/** @param array<string,array{link:string,level:int,sub?:array<string,array<string,mixed>>}> $items */
 $apply_role_levels = static function (array &$items) use (&$apply_role_levels): void {
-    foreach ($items as &$item) {
+    foreach (array_keys($items) as $item_key) {
+        if (!isset($items[$item_key]) || !is_array($items[$item_key])) {
+            continue;
+        }
+        $item = $items[$item_key];
+        /** @var array{link:string,level:int,sub?:array<string,array<string,mixed>>} $item */
         $item['level'] = openvsosh_admin_required_level(
-            basename((string) $item['link']),
+            basename($item['link']),
             (int) $item['level'],
         );
-        if (isset($item['sub']) && is_array($item['sub'])) {
+        if (isset($item['sub'])) {
             $apply_role_levels($item['sub']);
         }
+        $items[$item_key] = $item;
     }
-    unset($item);
 };
+/** @var array<string,array{link:string,level:int,sub?:array<string,array<string,mixed>>}> $menu */
 $apply_role_levels($menu);
 unset($apply_role_levels);
 
 echo '<span id="menusection"></span>' . K_NEWLINE;
 
 echo '<ul class="menu">' . K_NEWLINE;
+/** @var array<string,array<string,mixed>> $menu */
 foreach ($menu as $link => $data) {
     echo F_menu_link($link, $data, 0);
 }
