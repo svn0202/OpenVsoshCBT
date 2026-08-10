@@ -180,7 +180,10 @@ switch ($menu_mode) {
             . K_TABLE_TEST_USER
             . '
 			SET testuser_creation_time=\''
-            . date(K_TIMESTAMP_FORMAT, f_get_test_start_time($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE))
+            . date(
+                K_TIMESTAMP_FORMAT,
+                (int) f_get_test_start_time($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE),
+            )
             . '\'
 			WHERE testuser_id='
             . f_tce_admin_result_user_string($testuser_id)

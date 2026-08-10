@@ -261,12 +261,12 @@ PHP;
                     . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_NEWLINE", "\\n"); '
                     . '$GLOBALS["db"] = "db"; $_SESSION["session_user_id"] = "11"; '
                     . '$GLOBALS["examtime"] = 0; $GLOBALS["timeout_logout"] = false; '
-                    . '$GLOBALS["results"] = ["first-empty", false, "question", true]; '
+                    . '$GLOBALS["results"] = ["first-empty", false, "question", true, "question-2", true]; '
                     . '$row = ["question_fullscreen" => false, "testlog_answer_version" => 4, '
                     . '"testlog_testuser_id" => 55, "question_description" => "Question", '
                     . '"question_type" => 3, "testlog_answer_text" => "Saved answer", '
                     . '"question_timer" => 0, "testlog_display_time" => "2026-08-10 12:00:00"]; '
-                    . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row]]; '
+                    . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row], "question-2" => [$row]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function f_get_test_data($testId) { return ["test_noanswer_enabled" => false, '
                     . '"test_duration_time" => 30, "test_logout_on_timeout" => true]; } '
@@ -275,7 +275,8 @@ PHP;
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
-                    . 'function f_get_test_start_time($testUserId) { return 1000; } '
+                    . '$GLOBALS["start_times"] = [1000, false]; '
+                    . 'function f_get_test_start_time($testUserId) { return array_shift($GLOBALS["start_times"]); } '
                     . 'function F_tmf_question_options($description) { return []; } '
                     . 'function F_tmf_question_editor_description($description) { return "EDITED:" . $description; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
@@ -295,7 +296,7 @@ PHP;
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$outputs = [$qualified(0, 0, "form"), $qualified(7, 0, "form"), '
-                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form")]; '
+                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(7, 8, "form")]; '
                     . 'echo json_encode([$outputs, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["examtime"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -304,7 +305,7 @@ PHP;
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: array{0: null, 1: null, 2: string, 3: string}, 1: array{0: string, 1: string, 2: string, 3: string}, 2: int, 3: int} $decoded */
+        /** @var array{0: array{0: null, 1: null, 2: string, 3: string, 4: string}, 1: array{string,string,string,string,string,string}, 2: int, 3: int} $decoded */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$outputs, $queries, $errors, $examtime] = $decoded;
         self::assertSame([null, null, ''], array_slice($outputs, 0, 3));
@@ -312,16 +313,18 @@ PHP;
         self::assertStringContainsString('name="testlogid" id="testlogid" value="8"', $outputs[3]);
         self::assertStringContainsString('name="answer_version" id="answer_version" value="4"', $outputs[3]);
         self::assertStringContainsString('name="examtime" id="examtime" value="2800"', $outputs[3]);
+        self::assertStringContainsString('name="examtime" id="examtime" value="1800"', $outputs[4]);
         self::assertStringContainsString('name="timeout_logout" id="timeout_logout" value="1"', $outputs[3]);
         self::assertStringContainsString("<label for=\"answertext\">[EDITED:Question]\n</label>", $outputs[3]);
         self::assertStringContainsString('>Saved answer</textarea>', $outputs[3]);
         self::assertStringContainsString('уже сохранено: 1.', $outputs[3]);
         self::assertStringContainsString('<ATTACHMENTS:8>', $outputs[3]);
         self::assertStringContainsString('<MENU:55,8,0>', $outputs[3]);
-        self::assertCount(4, $queries);
+        self::assertCount(6, $queries);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[3]);
+        self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[5]);
         self::assertSame(1, $errors);
-        self::assertSame(2800, $examtime);
+        self::assertSame(1800, $examtime);
     }
 
     public function testQuestionsMenuPreservesSelectedReviewNavigationAndToolbarMarkup(): void

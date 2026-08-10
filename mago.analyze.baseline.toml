@@ -32,12 +32,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "falsable-return-statement"
-message = "Function `f_get_test_start_time` is declared to return `int` but possibly returns 'false' (inferred as `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "false-operand"
 message = "Left operand in `<=` comparison is `false`."
 count = 1
@@ -118,12 +112,6 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
 message = "Invalid return type for function `f_get_test_data`: expected `array<array-key, mixed>`, but found `array{}|unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `f_get_test_start_time`: expected `int`, but found `false|int`."
 count = 1
 
 [[issues]]

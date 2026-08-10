@@ -6,6 +6,58 @@ use PHPUnit\Framework\TestCase;
 
 final class AdminResultUserControllerTest extends TestCase
 {
+    public function testExtendTimePreservesInvalidStartTimeCoercion(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_EXTEND_TIME_MINUTES', 5);
+define('K_SECONDS_IN_MINUTE', 60);
+define('K_TABLE_TEST_USER', 'test_users');
+define('K_TIMESTAMP_FORMAT', 'Y-m-d H:i:s');
+$l = ['m_updated' => 'updated'];
+$db = 'db';
+$menu_mode = '';
+$testuser_id = 21;
+$_POST = ['extendtime' => '1'];
+$GLOBALS['queries'] = [];
+$GLOBALS['messages'] = [];
+$GLOBALS['date_arguments'] = [];
+function f_get_test_start_time($id) { return false; }
+function date($format, $timestamp) {
+    $GLOBALS['date_arguments'] = [$format, $timestamp];
+    return '1970-01-01 00:05:00';
+}
+function F_db_query($sql, $db) { $GLOBALS['queries'][] = $sql; return true; }
+function f_tce_admin_result_user_query_result($result) { return $result; }
+function f_tce_admin_result_user_string($value) { return (string) $value; }
+function F_display_db_error() { throw new \RuntimeException('unexpected database error'); }
+function F_print_error($type, $message) { $GLOBALS['messages'][] = [$type, $message]; }
+$source = file_get_contents($argv[1]);
+$start = strpos($source, "if (isset(\$_POST['lock']))");
+$end = strpos($source, '// --- Initialize variables', $start);
+eval('namespace Harness; ' . substr($source, $start, $end - $start));
+echo json_encode([
+    'date_arguments' => $GLOBALS['date_arguments'],
+    'queries' => $GLOBALS['queries'],
+    'messages' => $GLOBALS['messages'],
+], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_show_result_user.php'],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{date_arguments:array{string,int},queries:array{string},messages:list<array{string,string}>} $result */
+        $result = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(['Y-m-d H:i:s', 300], $result['date_arguments']);
+        self::assertCount(1, $result['queries']);
+        self::assertStringContainsString("SET testuser_creation_time='1970-01-01 00:05:00'", $result['queries'][0]);
+        self::assertStringContainsString('WHERE testuser_id=21', $result['queries'][0]);
+        self::assertSame([['MESSAGE', 'updated']], $result['messages']);
+    }
+
     public function testCompletedAttemptRendersSelectionsStatisticsAndActions(): void
     {
         $script = <<<'PHP'
