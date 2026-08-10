@@ -258,7 +258,7 @@ if ($formstatus) {
             $user_id = $m['testuser_user_id'];
             $test_start_time = $m['testuser_creation_time'];
             $testuser_status = $m['testuser_status'];
-            $teststat = F_getTestStat($test_id, 0, $user_id, 0, 0, $testuser_id);
+            $teststat = f_get_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id);
             $test_end_time = $m['test_end_time'];
         } else {
             $testuser_id = '';
