@@ -28,7 +28,7 @@ final class TestCommentFunctionsTest extends TestCase
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_testComment|f_test_comment)\\(/", '
+                    . 'preg_match("/function (f_test_comment)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

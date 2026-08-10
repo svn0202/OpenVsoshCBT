@@ -3066,7 +3066,7 @@ function f_get_num_omitted_questions($test_id)
  * @return string XHTML code
  * @since 4.0.000 (2006-10-01)
  */
-function F_testComment($test_id)
+function f_test_comment($test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
