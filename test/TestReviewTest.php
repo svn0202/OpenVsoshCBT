@@ -252,7 +252,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
                     . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getTestSSLCerts|f_get_test_ssl_certs)\\(/", '
+                    . 'preg_match("/function (f_get_test_ssl_certs)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

@@ -15537,12 +15537,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_getTestSSLCerts` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
 message = "Function `F_getTestStartTime` is missing a return type hint."
 count = 1
 
