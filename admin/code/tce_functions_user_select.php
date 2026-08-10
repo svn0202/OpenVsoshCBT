@@ -34,14 +34,14 @@
  * @return true
  */
 function f_select_user(
-    $order_field,
-    $orderdir,
-    $firstrow,
-    $rowsperpage,
-    $group_id = 0,
-    $andwhere = '',
-    $searchterms = '',
-) {
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $group_id = 0,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+): bool {
     global $l;
     require_once '../config/tce_config.php';
     F_show_select_user($order_field, $orderdir, $firstrow, $rowsperpage, $group_id, $andwhere, $searchterms);
@@ -59,18 +59,21 @@ function f_select_user(
  * @param $group_id (int) ID of the group (default = 0 = no specific group selected).
  * @param $andwhere (string) Additional SQL WHERE query conditions.
  * @param $searchterms (string) Search terms.
- * @return false in case of empty database, true otherwise
+ * @return bool False in case of an empty database, true otherwise.
  */
 function f_show_select_user(
-    $order_field,
-    $orderdir,
-    $firstrow,
-    $rowsperpage,
-    $group_id = 0,
-    $andwhere = '',
-    $searchterms = '',
-) {
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $group_id = 0,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+): bool {
     global $l, $db;
+    $stringify = static fn(mixed $value): string => is_array($value) ? 'Array' : (string) $value;
+    /** @return array<array-key,mixed>|null */
+    $row_result = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     /**
      * @var array{
      *     a_meta_charset: string,
@@ -119,11 +122,13 @@ function f_show_select_user(
         $numalign = 'right';
     }
 
-    $order_field = F_escape_sql($db, $order_field);
+    $order_field = $stringify(F_escape_sql($db, $order_field));
     $orderdir = (int) $orderdir;
     $firstrow = (int) $firstrow;
     $rowsperpage = (int) $rowsperpage;
     $group_id = (int) $group_id;
+    $andwhere = $stringify($andwhere);
+    $searchterms = $stringify($searchterms);
     if (
         empty($order_field)
         || !in_array($order_field, [
@@ -159,6 +164,8 @@ function f_show_select_user(
         return false;
     }
 
+    /** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+    $session = $_SESSION;
     $wherequery = '';
     if ($group_id > 0) {
         $wherequery = ', ' . K_TABLE_USERGROUP . ' WHERE user_id=usrgrp_user_id	AND usrgrp_group_id=' . $group_id . '';
@@ -172,13 +179,13 @@ function f_show_select_user(
     }
 
     $wherequery .= ' (user_id>1)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    if ((int) $session['session_user_level'] < (int) K_AUTH_ADMINISTRATOR) {
         // filter for level
         $wherequery .=
             ' AND ((user_level<'
-            . $_SESSION['session_user_level']
+            . $session['session_user_level']
             . ') OR (user_id='
-            . $_SESSION['session_user_id']
+            . $session['session_user_id']
             . '))';
         // filter for groups
         $wherequery .=
@@ -190,7 +197,7 @@ function f_show_select_user(
             . ' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
 				AND ta.usrgrp_user_id='
-            . (int) $_SESSION['session_user_id']
+            . (int) $session['session_user_id']
             . '
 				AND tb.usrgrp_user_id=user_id)';
     }
@@ -213,8 +220,12 @@ function f_show_select_user(
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        $m = $row_result(F_db_fetch_array($r));
+        if ($m) {
+            /** @var array{user_id?:int|string,user_name?:mixed,user_lastname?:mixed,user_firstname?:mixed,user_regnumber?:mixed,user_level?:mixed,user_regdate?:mixed} $m */
             // -- Table structure with links:
             echo '<div class="container">';
             echo '<table class="userselect record-table">' . K_NEWLINE;
@@ -295,7 +306,8 @@ function f_show_select_user(
             $itemcount = $firstrow;
             do {
                 ++$itemcount;
-                $edit_url = 'tce_edit_user.php?user_id=' . (int) $m['user_id'];
+                $user_id = $stringify($m['user_id'] ?? '');
+                $edit_url = 'tce_edit_user.php?user_id=' . (int) $user_id;
                 echo '<tr class="record-row" data-record-href="'
                     . htmlspecialchars($edit_url, ENT_QUOTES, $l['a_meta_charset']) . '">' . K_NEWLINE;
                 echo '<td>';
@@ -305,7 +317,7 @@ function f_show_select_user(
                         . '" id="userid'
                         . $itemcount
                         . '" value="'
-                        . $m['user_id']
+                        . $user_id
                         . '" title="'
                         . $l['w_select']
                         . '"'
@@ -324,7 +336,7 @@ function f_show_select_user(
                         . '" title="'
                         . $l['w_edit']
                         . '">'
-                        . htmlspecialchars($m['user_name'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_name'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</a></td>'
                         . K_NEWLINE
                 ;
@@ -332,7 +344,7 @@ function f_show_select_user(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_lastname'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_lastname'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -340,7 +352,7 @@ function f_show_select_user(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_firstname'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_firstname'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -348,14 +360,14 @@ function f_show_select_user(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_regnumber'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_regnumber'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
-                echo '<td>&nbsp;' . $m['user_level'] . '</td>' . K_NEWLINE;
+                echo '<td>&nbsp;' . $stringify($m['user_level'] ?? '') . '</td>' . K_NEWLINE;
                 echo
                     '<td>&nbsp;'
-                        . htmlspecialchars($m['user_regdate'], ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_regdate'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -370,11 +382,14 @@ function f_show_select_user(
                     . '
 					WHERE usrgrp_group_id=group_id
 						AND usrgrp_user_id='
-                    . $m['user_id']
+                    . $user_id
                     . '
 					ORDER BY group_name';
-                if ($rg = F_db_query($sqlg, $db)) {
-                    while ($mg = F_db_fetch_array($rg)) {
+                /** @var object|resource|bool $rg */
+                $rg = F_db_query($sqlg, $db);
+                if ($rg) {
+                    while ($mg = $row_result(F_db_fetch_array($rg))) {
+                        /** @var array{group_name:string} $mg */
                         $grp .= $mg['group_name'] . ', ';
                     }
                 } else {
@@ -392,7 +407,7 @@ function f_show_select_user(
 
                 echo
                     '<td><a href="tce_show_result_allusers.php?user_id='
-                        . $m['user_id']
+                        . $user_id
                         . '" class="xmlbutton" title="'
                         . $l['t_all_results_user']
                         . '">Результаты</a></td>'
@@ -400,7 +415,11 @@ function f_show_select_user(
                 ;
 
                 echo '</tr>' . K_NEWLINE;
-            } while ($m = F_db_fetch_array($r));
+                $m = $row_result(F_db_fetch_array($r));
+                if ($m) {
+                    /** @var array{user_id?:int|string,user_name?:mixed,user_lastname?:mixed,user_firstname?:mixed,user_regnumber?:mixed,user_level?:mixed,user_regdate?:mixed} $m */
+                }
+            } while ($m);
 
             echo '</table>' . K_NEWLINE;
 
@@ -414,7 +433,7 @@ function f_show_select_user(
             echo '<div class="record-bulk-toolbar" data-bulk-toolbar>' . K_NEWLINE;
             echo '<strong><span data-selected-count>0</span> выбрано</strong>' . K_NEWLINE;
             echo '<ul class="record-bulk-actions">';
-            if ($_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS) {
+            if ((int) $session['session_user_level'] >= (int) K_AUTH_DELETE_USERS) {
                 // delete user
                 echo '<li>';
                 F_submit_button(
@@ -426,12 +445,12 @@ function f_show_select_user(
                 echo '</li>' . K_NEWLINE;
             }
 
-            if ($_SESSION['session_user_level'] >= K_AUTH_ADMIN_GROUPS) {
+            if ((int) $session['session_user_level'] >= (int) K_AUTH_ADMIN_GROUPS) {
                 echo '<li>';
                 // add/delete group
                 echo F_user_group_select('new_group_id');
                 F_submit_button('addgroup', $l['w_add'], $l['w_add']);
-                if ($_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS) {
+                if ((int) $session['session_user_level'] >= (int) K_AUTH_DELETE_GROUPS) {
                     F_submit_button(
                         'delgroup',
                         $l['w_delete'],
@@ -441,7 +460,7 @@ function f_show_select_user(
                 }
 
                 echo '</li>' . K_NEWLINE;
-                if ($_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS) {
+                if ((int) $session['session_user_level'] >= (int) K_AUTH_MOVE_GROUPS) {
                     // move group
                     echo '<li>';
                     $arr = (($l['a_meta_dir'] <=> 'rtl') === 0) ? '&larr;' : '&rarr;';
@@ -461,9 +480,7 @@ function f_show_select_user(
             // -- page jumper (menu for successive pages)
             if ($rowsperpage > 0) {
                 $sql = 'SELECT count(*) AS total FROM ' . K_TABLE_USERS . '' . $wherequery . '';
-                if (!empty($order_field)) {
-                    $param_array = '&amp;order_field=' . urlencode($order_field) . '';
-                }
+                $param_array = '&amp;order_field=' . urlencode($order_field) . '';
 
                 if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir=' . $orderdir . '';
@@ -511,20 +528,23 @@ function f_show_select_user(
  * @param $group_id (int) ID of the group (default = 0 = no specific group selected).
  * @param $andwhere (string) Additional SQL WHERE query conditions.
  * @param $searchterms (string) Search terms.
- * @param string $cid ID of the calling form field.
- * @return false in case of empty database, true otherwise
+ * @param mixed $cid ID of the calling form field.
+ * @return bool False in case of an empty database, true otherwise.
  */
 function f_show_select_user_popup(
-    $order_field,
-    $orderdir,
-    $firstrow,
-    $rowsperpage,
-    $group_id = 0,
-    $andwhere = '',
-    $searchterms = '',
-    $cid = 0,
-) {
+    mixed $order_field,
+    mixed $orderdir,
+    mixed $firstrow,
+    mixed $rowsperpage,
+    mixed $group_id = 0,
+    mixed $andwhere = '',
+    mixed $searchterms = '',
+    mixed $cid = 0,
+): bool {
     global $l, $db;
+    $stringify = static fn(mixed $value): string => is_array($value) ? 'Array' : (string) $value;
+    /** @return array<array-key,mixed>|null */
+    $row_result = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     /**
      * @var array{
      *     a_meta_charset: string,
@@ -554,6 +574,7 @@ function f_show_select_user_popup(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once '../../shared/code/tce_functions_form.php';
+    $cid = $stringify($cid);
     $filter = 'cid=' . $cid;
     if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $txtalign = 'right';
@@ -563,11 +584,13 @@ function f_show_select_user_popup(
         $numalign = 'right';
     }
 
-    $order_field = F_escape_sql($db, $order_field);
+    $order_field = $stringify(F_escape_sql($db, $order_field));
     $orderdir = (int) $orderdir;
     $firstrow = (int) $firstrow;
     $rowsperpage = (int) $rowsperpage;
     $group_id = (int) $group_id;
+    $andwhere = $stringify($andwhere);
+    $searchterms = $stringify($searchterms);
     if (
         empty($order_field)
         || !in_array($order_field, [
@@ -603,6 +626,8 @@ function f_show_select_user_popup(
         return false;
     }
 
+    /** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+    $session = $_SESSION;
     $wherequery = '';
     if ($group_id > 0) {
         $wherequery = ', ' . K_TABLE_USERGROUP . ' WHERE user_id=usrgrp_user_id	AND usrgrp_group_id=' . $group_id . '';
@@ -616,13 +641,13 @@ function f_show_select_user_popup(
     }
 
     $wherequery .= ' (user_id>1)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    if ((int) $session['session_user_level'] < (int) K_AUTH_ADMINISTRATOR) {
         // filter for level
         $wherequery .=
             ' AND ((user_level<'
-            . $_SESSION['session_user_level']
+            . $session['session_user_level']
             . ') OR (user_id='
-            . $_SESSION['session_user_id']
+            . $session['session_user_id']
             . '))';
         // filter for groups
         $wherequery .=
@@ -634,7 +659,7 @@ function f_show_select_user_popup(
             . ' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
 				AND ta.usrgrp_user_id='
-            . (int) $_SESSION['session_user_id']
+            . (int) $session['session_user_id']
             . '
 				AND tb.usrgrp_user_id=user_id)';
     }
@@ -657,8 +682,12 @@ function f_show_select_user_popup(
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        $m = $row_result(F_db_fetch_array($r));
+        if ($m) {
+            /** @var array{user_id?:int|string,user_name?:string,user_lastname?:mixed,user_firstname?:mixed,user_email?:mixed,user_regnumber?:mixed,user_level?:mixed,user_regdate?:mixed} $m */
             // -- Table structure with links:
             echo '<div class="container">';
             echo '<table class="userselect" style="font-size:80%;">' . K_NEWLINE;
@@ -746,18 +775,19 @@ function f_show_select_user_popup(
             $itemcount = 0;
             do {
                 ++$itemcount;
+                $user_id = $stringify($m['user_id'] ?? '');
                 // on click the user ID will be returned on the calling form field
                 $jsaction = "javascript:var target=window.opener.document.getElementById('" . $cid . "');";
-                $jsaction .= 'target.value=' . $m['user_id'] . ';';
+                $jsaction .= 'target.value=' . $user_id . ';';
                 // A paginated caller may not have an option for this user loaded yet.
                 // Add a temporary one so assigning the value works before onchange submits the form.
                 $jsaction .=
                     "if(target.tagName==='SELECT'&&target.value!='"
-                    . $m['user_id']
+                    . $user_id
                     . "'){target.add(new Option('', '"
-                    . $m['user_id']
+                    . $user_id
                     . "'));target.value='"
-                    . $m['user_id']
+                    . $user_id
                     . "';}"
                 ;
                 $jsaction .= 'target.onchange();';
@@ -771,7 +801,7 @@ function f_show_select_user_popup(
                         . '" title="['
                         . $l['w_select']
                         . ']">'
-                        . htmlspecialchars($m['user_name'], ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_name'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</button></td>'
                         . K_NEWLINE
                 ;
@@ -779,7 +809,7 @@ function f_show_select_user_popup(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_lastname'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_lastname'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -787,7 +817,7 @@ function f_show_select_user_popup(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_firstname'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_firstname'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -795,7 +825,7 @@ function f_show_select_user_popup(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_email'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_email'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -803,14 +833,14 @@ function f_show_select_user_popup(
                     '<td style="text-align:'
                         . $txtalign
                         . ';">&nbsp;'
-                        . htmlspecialchars($m['user_regnumber'] ?? '', ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_regnumber'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
-                echo '<td>&nbsp;' . $m['user_level'] . '</td>' . K_NEWLINE;
+                echo '<td>&nbsp;' . $stringify($m['user_level'] ?? '') . '</td>' . K_NEWLINE;
                 echo
                     '<td>&nbsp;'
-                        . htmlspecialchars($m['user_regdate'], ENT_NOQUOTES, $l['a_meta_charset'])
+                        . htmlspecialchars($stringify($m['user_regdate'] ?? ''), ENT_NOQUOTES, $l['a_meta_charset'])
                         . '</td>'
                         . K_NEWLINE
                 ;
@@ -833,7 +863,11 @@ function f_show_select_user_popup(
                  */
 
                 echo '</tr>' . K_NEWLINE;
-            } while ($m = F_db_fetch_array($r));
+                $m = $row_result(F_db_fetch_array($r));
+                if ($m) {
+                    /** @var array{user_id?:int|string,user_name?:string,user_lastname?:mixed,user_firstname?:mixed,user_email?:mixed,user_regnumber?:mixed,user_level?:mixed,user_regdate?:mixed} $m */
+                }
+            } while ($m);
 
             echo '</table>' . K_NEWLINE;
             echo '<input type="hidden" name="order_field" id="order_field" value="' . $order_field . '" />' . K_NEWLINE;
@@ -847,9 +881,7 @@ function f_show_select_user_popup(
             // -- page jumper (menu for successive pages)
             if ($rowsperpage > 0) {
                 $sql = 'SELECT count(*) AS total FROM ' . K_TABLE_USERS . '' . $wherequery . '';
-                if (!empty($order_field)) {
-                    $param_array = '&amp;order_field=' . urlencode($order_field) . '';
-                }
+                $param_array = '&amp;order_field=' . urlencode($order_field) . '';
 
                 if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir=' . $orderdir . '';
@@ -886,7 +918,7 @@ function f_show_select_user_popup(
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function f_is_test_on_group($test_id, $group_id)
+function f_is_test_on_group(mixed $test_id, mixed $group_id): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -898,7 +930,9 @@ function f_is_test_on_group($test_id, $group_id)
         . ' AND tstgrp_group_id='
         . (int) $group_id
         . ' LIMIT 1';
-    return ($r = F_db_query($sql, $db)) && ($m = F_db_fetch_array($r));
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    return $r && (bool) F_db_fetch_array($r);
 }
 
 /**
@@ -908,7 +942,7 @@ function f_is_test_on_group($test_id, $group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function f_is_user_on_group($user_id, $group_id)
+function f_is_user_on_group(mixed $user_id, mixed $group_id): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -920,7 +954,9 @@ function f_is_user_on_group($user_id, $group_id)
         . ' AND usrgrp_group_id='
         . (int) $group_id
         . ' LIMIT 1';
-    return ($r = F_db_query($sql, $db)) && ($m = F_db_fetch_array($r));
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    return $r && (bool) F_db_fetch_array($r);
 }
 
 /**
@@ -929,16 +965,18 @@ function f_is_user_on_group($user_id, $group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function f_is_authorized_editor_for_group($group_id)
+function f_is_authorized_editor_for_group(mixed $group_id): mixed
 {
     global $l, $db;
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR || empty($group_id)) {
+    /** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+    $session = $_SESSION;
+    if ((int) $session['session_user_level'] >= (int) K_AUTH_ADMINISTRATOR || empty($group_id)) {
         // user is an administrator (belongs to all groups) or empty group
         return true;
     }
 
-    return f_is_user_on_group($_SESSION['session_user_id'], $group_id);
+    return f_is_user_on_group($session['session_user_id'], $group_id);
 }
 
 /**
@@ -947,12 +985,14 @@ function f_is_authorized_editor_for_group($group_id)
  * @return boolean true/false
  * @since 11.1.003 (2010-10-05)
  */
-function f_is_authorized_editor_for_user($user_id)
+function f_is_authorized_editor_for_user(mixed $user_id): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
     // administrators can edit any user; an empty user ID means a new (not yet persisted) record
-    if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR || empty($user_id)) {
+    /** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+    $session = $_SESSION;
+    if ((int) $session['session_user_level'] >= (int) K_AUTH_ADMINISTRATOR || empty($user_id)) {
         return true;
     }
 
@@ -960,7 +1000,7 @@ function f_is_authorized_editor_for_user($user_id)
     // with them (mirrors the authorship/group check in f_is_authorized_user); this prevents
     // horizontal-privilege / multi-tenant IDOR on user edit and result import/export.
     $user_id = (int) $user_id;
-    $editor_id = (int) $_SESSION['session_user_id'];
+    $editor_id = (int) $session['session_user_id'];
     return (
         F_count_rows(
             K_TABLE_USERGROUP
@@ -982,14 +1022,17 @@ function f_is_authorized_editor_for_user($user_id)
 /**
  * Return the SQL selection query for user groups
  * @param $where (string) filters to add on WHERE clause
- * @return sql selection string
+ * @return string SQL selection query.
  * @since 11.1.003 (2010-10-05)
  */
-function f_user_group_select_sql($where = '')
+function f_user_group_select_sql(mixed $where = ''): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
-    if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
+    $where = is_array($where) ? 'Array' : (string) $where;
+    /** @var array{session_user_id:int|string,session_user_level:int|string} $session */
+    $session = $_SESSION;
+    if ((int) $session['session_user_level'] >= (int) K_AUTH_ADMINISTRATOR) {
         // administrator access to all groups
         $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . '';
         if ($where !== '') {
@@ -998,7 +1041,7 @@ function f_user_group_select_sql($where = '')
     } else {
         // non-administrator can access only to his/her groups
         $sql = 'SELECT group_id,group_name FROM ' . K_TABLE_GROUPS . ', ' . K_TABLE_USERGROUP . '';
-        $sql .= ' WHERE group_id=usrgrp_group_id AND usrgrp_user_id=' . $_SESSION['session_user_id'] . '';
+        $sql .= ' WHERE group_id=usrgrp_group_id AND usrgrp_user_id=' . $session['session_user_id'] . '';
         if ($where !== '') {
             $sql .= ' AND ' . $where;
         }
@@ -1010,13 +1053,17 @@ function f_user_group_select_sql($where = '')
 /**
  * Display select box for user groups
  * @param $name (string) name of the select field
- * @return table header element string
+ * @return string Select element markup.
  */
-function f_user_group_select($name = 'group_id')
+function f_user_group_select(mixed $name = 'group_id'): string
 {
     global $l, $db;
+    /** @return array<array-key,mixed>|null */
+    $row_result = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     require_once '../config/tce_config.php';
-    $charset = (string) $l['a_meta_charset'];
+    /** @var array{a_meta_charset:string,w_group:string} $l */
+    $name = is_array($name) ? 'Array' : (string) $name;
+    $charset = $l['a_meta_charset'];
     $str = '';
     $str .=
         '<select name="'
@@ -1030,9 +1077,12 @@ function f_user_group_select($name = 'group_id')
         . '">'
         . K_NEWLINE;
     $sql = F_user_group_select_sql();
-    if ($r = F_db_query($sql, $db)) {
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
         $str .= '<option value="0" style="color:gray" selected="selected">' . $l['w_group'] . '</option>' . K_NEWLINE;
-        while ($m = F_db_fetch_array($r)) {
+        while ($m = $row_result(F_db_fetch_array($r))) {
+            /** @var array{group_id:int|string,group_name:string} $m */
             $str .= '<option value="' . $m['group_id'] . '">';
             $str .=
                 ' '
@@ -1053,17 +1103,22 @@ function f_user_group_select($name = 'group_id')
  * @param $user_id (int) user ID
  * @return array containing user's groups IDs
  */
-function f_get_user_groups($user_id)
+function f_get_user_groups(mixed $user_id): array
 {
     global $l, $db;
+    /** @return array<array-key,mixed>|null */
+    $row_result = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     require_once '../config/tce_config.php';
     $user_id = (int) $user_id;
     $groups = [];
     $sql = 'SELECT usrgrp_group_id
 		FROM ' . K_TABLE_USERGROUP . '
 		WHERE usrgrp_user_id=' . $user_id . '';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    if ($r) {
+        while ($m = $row_result(F_db_fetch_array($r))) {
+            /** @var array{usrgrp_group_id:mixed} $m */
             $groups[] = $m['usrgrp_group_id'];
         }
     } else {
@@ -1075,20 +1130,34 @@ function f_get_user_groups($user_id)
 
 /**
  * Return the user ID from registration number.
- * @return (int) User ID or 0 in case of error.
+ * @return int|string User ID or 0 in case of error.
  * @since 11.3.005 (2012-07-31)
  */
-function f_get_uid_from_regnum($regnum)
+function f_get_uid_from_regnum(mixed $regnum): int|string
 {
     global $l, $db;
+    /** @return array{user_id:int|string}|null */
+    $row_result = static function (mixed $row): ?array {
+        if (
+            !is_array($row)
+            || (!is_int($row['user_id'] ?? null) && !is_string($row['user_id'] ?? null))
+        ) {
+            return null;
+        }
+
+        /** @var array{user_id:int|string} $row */
+        return $row;
+    };
     require_once '../config/tce_config.php';
-    $sql =
-        'SELECT user_id FROM ' . K_TABLE_USERS . " WHERE user_regnumber='" . F_escape_sql($db, $regnum) . "' LIMIT 1";
-    if (!($r = F_db_query($sql, $db))) {
+    $sql = 'SELECT user_id FROM ' . K_TABLE_USERS . " WHERE user_regnumber='" . F_escape_sql($db, $regnum) . "' LIMIT 1";
+    /** @var object|resource|bool $r */
+    $r = F_db_query($sql, $db);
+    if (!$r) {
         return 0;
     }
 
-    if (!($m = F_db_fetch_array($r))) {
+    $m = $row_result(F_db_fetch_array($r));
+    if (!$m) {
         return 0;
     }
 
