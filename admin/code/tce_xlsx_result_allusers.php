@@ -1,7 +1,7 @@
 <?php
 
 require_once '../config/tce_config.php';
-$pagelevel = K_AUTH_ADMIN_RESULTS;
+$pagelevel = (int) constant('K_AUTH_ADMIN_RESULTS');
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
 require_once '../../shared/code/tce_functions_xlsx.php';
@@ -13,11 +13,32 @@ if ($test_id <= 0 || !f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, '
 }
 $group_id = isset($_REQUEST['group_id']) ? max(0, (int) $_REQUEST['group_id']) : 0;
 $user_id = isset($_REQUEST['user_id']) ? max(0, (int) $_REQUEST['user_id']) : 0;
-$startdate = isset($_REQUEST['startdate']) && is_string($_REQUEST['startdate'])
-    ? date(K_TIMESTAMP_FORMAT, strtotime($_REQUEST['startdate'])) : 0;
-$enddate = isset($_REQUEST['enddate']) && is_string($_REQUEST['enddate'])
-    ? date(K_TIMESTAMP_FORMAT, strtotime($_REQUEST['enddate'])) : 0;
+$startdate_time = isset($_REQUEST['startdate']) && is_string($_REQUEST['startdate'])
+    ? strtotime($_REQUEST['startdate']) : null;
+$startdate = $startdate_time === null ? 0 : date(K_TIMESTAMP_FORMAT, $startdate_time === false ? 0 : $startdate_time);
+$enddate_time = isset($_REQUEST['enddate']) && is_string($_REQUEST['enddate'])
+    ? strtotime($_REQUEST['enddate']) : null;
+$enddate = $enddate_time === null ? 0 : date(K_TIMESTAMP_FORMAT, $enddate_time === false ? 0 : $enddate_time);
 
+/**
+ * @var array{testuser: list<array{
+ *     id: mixed,
+ *     user_id: mixed,
+ *     user_name: mixed,
+ *     user_lastname: mixed,
+ *     user_firstname: mixed,
+ *     testuser_creation_time: mixed,
+ *     testuser_end_time: mixed,
+ *     time_diff: mixed,
+ *     total_score: mixed,
+ *     total_score_perc: mixed,
+ *     passmsg: mixed,
+ *     right: mixed,
+ *     wrong: mixed,
+ *     unanswered: mixed,
+ *     unrated: mixed
+ * }>} $data
+ */
 $data = f_get_all_users_test_stat(
     $test_id,
     $group_id,
