@@ -334,6 +334,44 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestStartTimePreservesEpochAndInvalidDateResults(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["rows"] = [['
+                    . '"testuser_creation_time" => "1970-01-01 00:00:01 UTC"], '
+                    . '["testuser_creation_time" => "invalid"]]; $GLOBALS["queries"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestStartTime|f_get_test_start_time)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("7"), $qualified("8"), $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [1, false, [
+                "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=7",
+                "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=8",
+            ]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+
 
 
 
