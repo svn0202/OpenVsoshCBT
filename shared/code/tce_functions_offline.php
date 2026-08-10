@@ -350,7 +350,7 @@ function f_tmf_offline_import(string $result_json): array
                 }
                 $clean_positions[(int) $position] = (int) $value;
             }
-            if (!F_updateQuestionLog($test_id, $testlog_id, $clean_positions, $text, $reaction_time)) {
+            if (!f_update_question_log($test_id, $testlog_id, $clean_positions, $text, $reaction_time)) {
                 F_db_query('ROLLBACK', $db);
                 return ['status' => 'error'];
             }

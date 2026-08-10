@@ -109,7 +109,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                         bin2hex(random_bytes(16)),
                     );
                 } else {
-                    F_updateQuestionLog($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
+                    f_update_question_log($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
                 }
             }
 
@@ -184,7 +184,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                         : $l['ov_answer_not_saved'];
                 }
             } else {
-                $answer_saved = F_updateQuestionLog(
+                $answer_saved = f_update_question_log(
                     $test_id,
                     $testlog_id,
                     $answpos,
