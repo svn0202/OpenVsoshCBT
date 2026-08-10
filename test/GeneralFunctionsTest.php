@@ -112,6 +112,23 @@ final class GeneralFunctionsTest extends TestCase
         }
     }
 
+    public function testLegacyDatabaseResultBoundaryPreservesValues(): void
+    {
+        self::assertFalse(\f_legacy_db_query_result(false));
+        self::assertTrue(\f_legacy_db_query_result(true));
+
+        $object = new \stdClass();
+        self::assertSame($object, \f_legacy_db_query_result($object));
+
+        $resource = fopen('php://memory', 'rb');
+        self::assertIsResource($resource);
+        try {
+            self::assertSame($resource, \f_legacy_db_query_result($resource));
+        } finally {
+            fclose($resource);
+        }
+    }
+
     public function testUtf8NormalizerPreservesEveryMode(): void
     {
         [$status, $output] = \F_tcecode_run_process(
