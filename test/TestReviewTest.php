@@ -371,6 +371,63 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestLogOwnershipPreservesAllDecisionBranches(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); $_SESSION["session_user_id"] = "11"; '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["query_results"] = [true, true, true, true, false]; '
+                    . '$GLOBALS["rows"] = [["testuser_user_id" => "11", "testuser_test_id" => "7"], '
+                    . '["testuser_user_id" => "12", "testuser_test_id" => "7"], '
+                    . '["testuser_user_id" => "11", "testuser_test_id" => "8"], false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . 'function f_legacy_int_equals($left, $right) { return (int) $left === (int) $right; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isRightTestlogUser|f_is_right_testlog_user)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
+                    . 'foreach ([21, 22, 23, 24, 25] as $testlog_id) { '
+                    . '$results[] = $qualified("7", (string) $testlog_id); } '
+                    . 'echo json_encode([$results, $GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [true, false, false, false, true],
+                1,
+                [
+                    "SELECT testuser_user_id, testuser_test_id\n\t\tFROM test_user, test_logs\n"
+                        . "\t\tWHERE testuser_id=testlog_testuser_id\n\t\t\tAND testlog_id=21",
+                    "SELECT testuser_user_id, testuser_test_id\n\t\tFROM test_user, test_logs\n"
+                        . "\t\tWHERE testuser_id=testlog_testuser_id\n\t\t\tAND testlog_id=22",
+                    "SELECT testuser_user_id, testuser_test_id\n\t\tFROM test_user, test_logs\n"
+                        . "\t\tWHERE testuser_id=testlog_testuser_id\n\t\t\tAND testlog_id=23",
+                    "SELECT testuser_user_id, testuser_test_id\n\t\tFROM test_user, test_logs\n"
+                        . "\t\tWHERE testuser_id=testlog_testuser_id\n\t\t\tAND testlog_id=24",
+                    "SELECT testuser_user_id, testuser_test_id\n\t\tFROM test_user, test_logs\n"
+                        . "\t\tWHERE testuser_id=testlog_testuser_id\n\t\t\tAND testlog_id=25",
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
 
 
 
