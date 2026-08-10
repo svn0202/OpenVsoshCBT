@@ -15141,12 +15141,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getAnswerIdFromPosition`: expected `int`, but found `array<int, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `f_get_num_omitted_questions`: expected `int`, but found `unknown-ref(number)`."
 count = 1
 
@@ -15502,12 +15496,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `F_executeTest` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `F_getAnswerIdFromPosition` is missing a return type hint."
 count = 1
 
 [[issues]]
@@ -15968,12 +15956,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "possibly-invalid-array-access"
-message = "Cannot perform array access on value of type `int`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "possibly-null-operand"
 message = "Possibly null left operand used in string concatenation (type `non-empty-string|null`)."
 count = 2
@@ -16198,7 +16180,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 21
+count = 20
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
