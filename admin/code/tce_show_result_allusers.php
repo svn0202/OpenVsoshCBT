@@ -496,7 +496,7 @@ if (isset($_REQUEST['sel'])) {
 
     echo '<div class="rowl">' . K_NEWLINE;
 
-    echo F_printTestResultStat($data, $nextorderdir, $order_field, $filter, false, $display_mode);
+    echo f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, false, $display_mode);
 
     if (!empty($data['testuser'])) {
         // check/uncheck all options

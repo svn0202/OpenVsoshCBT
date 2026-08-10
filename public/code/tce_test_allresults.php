@@ -323,7 +323,7 @@ if (isset($data['num_records'])) {
 }
 
 echo '<div class="rowl">' . K_NEWLINE;
-echo F_printTestResultStat($data, $nextorderdir, $order_field, $filter, true, $display_mode);
+echo f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, true, $display_mode);
 echo '<br />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 

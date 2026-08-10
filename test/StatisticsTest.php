@@ -254,7 +254,7 @@ final class StatisticsTest extends TestCase
                     . '$statFunction = substr($source, $statStart, $statEnd - $statStart); '
                     . '$statFunction = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $statFunction); '
                     . 'eval("namespace Harness; " . $statFunction); '
-                    . 'preg_match("/function (F_printTestResultStat)\\(/", '
+                    . 'preg_match("/function (f_print_test_result_stat)\\(/", '
                     . '$source, $resultMatch, PREG_OFFSET_CAPTURE); '
                     . '$resultStart = $resultMatch[0][1]; $resultEnd = strpos($source, "\\n/**", $resultStart); '
                     . '$resultFunction = substr($source, $resultStart, $resultEnd - $resultStart); '
