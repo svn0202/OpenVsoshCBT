@@ -109,4 +109,11 @@ final class OmrSecurityTest extends TestCase
         $this->assertFalse(\f_decode_omr_test_data($invalid));
         $this->assertFalse(\f_decode_omr_test_data(str_repeat('A', 1_048_577)));
     }
+
+    public function testOmrPayloadRejectsNonPositiveQuestionAndAnswerIdentifiers(): void
+    {
+        self::assertFalse(\f_decode_omr_test_data(\f_encode_omr_test_data([42, [0, [1 => 501]]])));
+        self::assertFalse(\f_decode_omr_test_data(\f_encode_omr_test_data([42, [100, [0 => 501]]])));
+        self::assertFalse(\f_decode_omr_test_data(\f_encode_omr_test_data([42, [100, [1 => -1]]])));
+    }
 }
