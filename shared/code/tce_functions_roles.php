@@ -62,8 +62,10 @@ function openvsosh_is_default_group(int $group_id): bool
         'SELECT group_name FROM ' . K_TABLE_GROUPS . ' WHERE group_id=' . $group_id . ' LIMIT 1',
         $db,
     );
-    $row = $result ? F_db_fetch_array($result) : false;
-    return is_array($row) && (string) $row['group_name'] === 'default';
+    /** @var \mysqli_result|\PgSql\Result|false $result */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+    $row = $result === false ? null : $normalize_row(F_db_fetch_array($result));
+    return (string) ($row['group_name'] ?? '') === 'default';
 }
 
 /**
@@ -89,5 +91,7 @@ function openvsosh_ensure_admin_default_group(int $user_id): bool
                 WHERE ug.usrgrp_user_id=u.user_id
                     AND ug.usrgrp_group_id=g.group_id
             )';
-    return F_db_query($sql, $db) !== false;
+    /** @var true|\mysqli_result|\PgSql\Result|false $result */
+    $result = F_db_query($sql, $db);
+    return $result !== false;
 }

@@ -14503,42 +14503,6 @@ message = "Potentially unhandled exception `Throwable` in `f_tmf_regrade_test`."
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "impossible-condition"
-message = "Redundant ternary operator: condition is always falsy."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "impossible-type-comparison"
-message = "Impossible type assertion: `$row` of type `false` can never be `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "redundant-comparison"
-message = "Avoid direct comparison with boolean literals."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "redundant-comparison"
-message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_roles.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always falsy and right operand is not evaluated."
-count = 1
-
-[[issues]]
 file = "shared/code/TCExamSessionHandler.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
