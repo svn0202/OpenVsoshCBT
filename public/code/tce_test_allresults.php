@@ -22,6 +22,7 @@
 
 require_once '../config/tce_config.php';
 
+/** @var array{a_meta_charset:string,h_pdf:string,h_pdf_all:string,h_test:string,hp_allresults_user:string,m_authorization_denied:string,t_all_results_user:string,w_answer:string,w_answers_right:string,w_datetime_format:string,w_disabled:string,w_graph:string,w_group:string,w_minimum:string,w_mode:string,w_module:string,w_pdf:string,w_pdf_all:string,w_question:string,w_result_graph:string,w_score:string,w_select:string,w_stats:string,w_subject:string,w_test:string,w_tests:string,w_time_begin:string,w_time_end:string} $l */
 $pagelevel = K_AUTH_PUBLIC_TEST_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
 
@@ -34,14 +35,40 @@ require_once '../../shared/code/tce_functions_test_stats.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once '../../shared/code/tce_functions_statistics.php';
 
-// comma separated list of required fields
-$_REQUEST['ff_required'] = '';
-$_REQUEST['ff_required_labels'] = '';
+/** @var array{display_mode?:string, enddate?:string, ff_required?:string, ff_required_labels?:string, group_id?:string, order_field?:string, orderdir?:string, selectcategory?:string, show_graph?:string, startdate?:string, test_id?:string} $request */
+$request = &$_REQUEST;
+/** @var array{session_user_id:int|string} $session */
+$session = &$_SESSION;
+/** @var mixed $db */
+$normalize_query_result = static function (mixed $result): mixed {
+    if (is_bool($result) || is_resource($result) || $result instanceof \mysqli_result || $result instanceof \PgSql\Result) {
+        return $result;
+    }
+    return false;
+};
+/** @return array<array-key,mixed>|null */
+$normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+/** @return array<array-key,mixed> */
+$normalize_stats = static fn (mixed $stats): array => is_array($stats) ? $stats : [];
+$normalize_output = static function (mixed $output): string {
+    if (is_string($output)) {
+        return $output;
+    }
+    if (is_int($output) || is_float($output) || is_bool($output) || $output instanceof \Stringable) {
+        return (string) $output;
+    }
+    return '';
+};
 
-$user_id = (int) $_SESSION['session_user_id'];
+// comma separated list of required fields
+$request['ff_required'] = '';
+$request['ff_required_labels'] = '';
+
+$user_id = (int) $session['session_user_id'];
 $filter = 'user_id=' . $user_id;
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$test_group_ids = '';
+if (isset($request['test_id']) && $request['test_id'] > 0) {
+    $test_id = (int) $request['test_id'];
     // check user's authorization
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -53,30 +80,30 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
     $test_id = 0;
 }
 
-if (isset($_REQUEST['selectcategory'])) {
+if (isset($request['selectcategory'])) {
     $changecategory = 1;
 }
 
-if (isset($_REQUEST['group_id']) && !empty($_REQUEST['group_id'])) {
-    $group_id = (int) $_REQUEST['group_id'];
+if (isset($request['group_id']) && !empty($request['group_id'])) {
+    $group_id = (int) $request['group_id'];
     $filter .= '&amp;group_id=' . $group_id . '';
 } else {
     $group_id = 0;
 }
 
 // filtering options
-if (isset($_REQUEST['startdate'])) {
-    $startdate = $_REQUEST['startdate'];
-    $startdate_time = strtotime($startdate);
+if (isset($request['startdate'])) {
+    $startdate = $request['startdate'];
+    $startdate_time = (int) strtotime($startdate);
     $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
 } else {
     $startdate = date('Y') . '-01-01 00:00:00';
 }
 
 $filter .= '&amp;startdate=' . urlencode($startdate);
-if (isset($_REQUEST['enddate'])) {
-    $enddate = $_REQUEST['enddate'];
-    $enddate_time = strtotime($enddate);
+if (isset($request['enddate'])) {
+    $enddate = $request['enddate'];
+    $enddate_time = (int) strtotime($enddate);
     $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
 } else {
     $enddate = date('Y') . '-12-31 23:59:59';
@@ -85,8 +112,8 @@ if (isset($_REQUEST['enddate'])) {
 $filter .= '&amp;enddate=' . urlencode($enddate) . '';
 
 $detail_modes = [$l['w_disabled'], $l['w_minimum'], $l['w_module'], $l['w_subject'], $l['w_question'], $l['w_answer']];
-if (isset($_REQUEST['display_mode'])) {
-    $display_mode = max(0, min(5, (int) $_REQUEST['display_mode']));
+if (isset($request['display_mode'])) {
+    $display_mode = max(0, min(5, (int) $request['display_mode']));
     $filter .= '&amp;display_mode=' . $display_mode;
 } else {
     $display_mode = 0;
@@ -94,8 +121,8 @@ if (isset($_REQUEST['display_mode'])) {
 
 $filter .= '&amp;display_mode=' . $display_mode;
 
-if (isset($_REQUEST['show_graph'])) {
-    $show_graph = (int) $_REQUEST['show_graph'];
+if (isset($request['show_graph'])) {
+    $show_graph = (int) $request['show_graph'];
     $filter .= '&amp;show_graph=' . $show_graph;
     if ($show_graph && $display_mode === 0) {
         $display_mode = 1;
@@ -105,9 +132,9 @@ if (isset($_REQUEST['show_graph'])) {
 }
 
 if (
-    isset($_REQUEST['order_field'])
-    && !empty($_REQUEST['order_field'])
-    && in_array($_REQUEST['order_field'], [
+    isset($request['order_field'])
+    && !empty($request['order_field'])
+    && in_array($request['order_field'], [
         'testuser_creation_time',
         'testuser_end_time',
         'user_name',
@@ -117,13 +144,13 @@ if (
         'testuser_test_id',
     ])
 ) {
-    $order_field = $_REQUEST['order_field'];
+    $order_field = $request['order_field'];
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
 }
 
 $filter .= '&amp;order_field=' . urlencode($order_field) . '';
-if (!isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
+if (!isset($request['orderdir']) || empty($request['orderdir'])) {
     $orderdir = 0;
     $nextorderdir = 1;
     $full_order_field = $order_field;
@@ -163,14 +190,15 @@ $sql =
     . ' WHERE test_id IN ('
     . f_get_test_id_results($test_id, $user_id)
     . ') ORDER BY test_begin_time DESC, test_name';
-if ($r = F_db_query($sql, $db)) {
+if ($r = $normalize_query_result(F_db_query($sql, $db))) {
     echo '<option value="0"';
     if ($test_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
-    while ($m = F_db_fetch_array($r)) {
+    while ($m = $normalize_row(F_db_fetch_array($r))) {
+        /** @var array{test_begin_time:string,test_id:int|string,test_name:string} $m */
         echo '<option value="' . $m['test_id'] . '"';
         if (f_form_option_is_selected($test_id, $m['test_id'])) {
             echo ' selected="selected"';
@@ -247,14 +275,15 @@ if ($test_id > 0) {
 }
 
 $sql .= ' ORDER BY group_name';
-if ($r = F_db_query($sql, $db)) {
+if ($r = $normalize_query_result(F_db_query($sql, $db))) {
     echo '<option value="0"';
     if ($group_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
-    while ($m = F_db_fetch_array($r)) {
+    while ($m = $normalize_row(F_db_fetch_array($r))) {
+        /** @var array{group_id:int|string,group_name:string} $m */
         echo '<option value="' . $m['group_id'] . '"';
         if (f_form_option_is_selected($group_id, $m['group_id'])) {
             echo ' selected="selected"';
@@ -308,7 +337,7 @@ echo '<div class="row"><hr /></div>' . K_NEWLINE;
 // ---------------------------------------------------------------------
 $itemcount = 0;
 
-$data = f_get_all_users_test_stat(
+$data = $normalize_stats(f_get_all_users_test_stat(
     $test_id,
     $group_id,
     $user_id,
@@ -317,18 +346,20 @@ $data = f_get_all_users_test_stat(
     $full_order_field,
     true,
     $display_mode,
-);
+));
+/** @var array{num_records?:int,svgpoints?:string} $data */
 if (isset($data['num_records'])) {
     $itemcount = $data['num_records'];
 }
 
 echo '<div class="rowl">' . K_NEWLINE;
-echo f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, true, $display_mode);
+echo $normalize_output(f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, true, $display_mode));
 echo '<br />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 // display svg graph
-if ($show_graph && isset($data['svgpoints']) && preg_match_all('/[x]/', $data['svgpoints'], $match) > 1) {
+$match = [];
+if ($show_graph && isset($data['svgpoints']) && (int) preg_match_all('/[x]/', $data['svgpoints'], $match) > 1) {
     $w = 800;
     $h = 300;
     echo '<div class="row">' . K_NEWLINE;
@@ -365,7 +396,17 @@ if ($show_graph && isset($data['svgpoints']) && preg_match_all('/[x]/', $data['s
 if ($display_mode > 1) {
     // display statistics for modules and subjects
     echo '<div class="rowl">' . K_NEWLINE;
-    echo f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode, true);
+    echo $normalize_output(f_print_test_stat(
+        $test_id,
+        $group_id,
+        $user_id,
+        $startdate,
+        $enddate,
+        0,
+        $data,
+        $display_mode,
+        true,
+    ));
     echo '<br />' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 }
