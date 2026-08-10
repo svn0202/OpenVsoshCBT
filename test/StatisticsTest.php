@@ -43,6 +43,57 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testLockUserTestPreservesUpdateAndErrorHandling(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "\\\\F\\\\I\\\\X\\\\E\\\\D"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["results"] = [true, false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_lockUserTest|f_lock_user_test)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("007", "11"), $qualified("8", "12")], '
+                    . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [null, null],
+                1,
+                [
+                    "UPDATE test_user\n\t\t\tSET testuser_status=4,\n"
+                        . "\t\t\t\ttestuser_close_reason='completed',\n"
+                        . "\t\t\t\ttestuser_last_activity='FIXED'\n"
+                        . "\t\t\tWHERE testuser_test_id=7\n"
+                        . "\t\t\t\tAND testuser_user_id=11\n\t\t\t\tAND testuser_status<4",
+                    "UPDATE test_user\n\t\t\tSET testuser_status=4,\n"
+                        . "\t\t\t\ttestuser_close_reason='completed',\n"
+                        . "\t\t\t\ttestuser_last_activity='FIXED'\n"
+                        . "\t\t\tWHERE testuser_test_id=8\n"
+                        . "\t\t\t\tAND testuser_user_id=12\n\t\t\t\tAND testuser_status<4",
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
