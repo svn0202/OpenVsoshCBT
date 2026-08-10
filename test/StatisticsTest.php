@@ -263,6 +263,68 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testUserTestTotalsPreserveFiltersRowsAndErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["query_results"] = [true, true, false]; '
+                    . '$GLOBALS["rows"] = [["testuser_id" => 9, "total_score" => "17.5", '
+                    . '"testuser_creation_time" => "start", "test_end_time" => "end", '
+                    . '"testuser_status" => 4, "testuser_comment" => "note"], false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getUserTestTotals|f_get_user_test_totals)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([['
+                    . '$qualified("7", "0", "9"), $qualified("7", "8", "9"), '
+                    . '$qualified("10", "11", "12", true), $qualified("13", "14", "15", true)], '
+                    . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [
+                    [],
+                    [
+                        'testuser_id' => 9,
+                        'user_score' => '17.5',
+                        'user_test_start_time' => 'start',
+                        'user_test_end_time' => 'end',
+                        'testuser_status' => 4,
+                        'user_comment' => 'note',
+                    ],
+                    [],
+                    [],
+                ],
+                1,
+                [
+                    $this->userTestTotalsQuery(7, 8, 9, 0),
+                    $this->userTestTotalsQuery(10, 11, 12, 3),
+                    $this->userTestTotalsQuery(13, 14, 15, 3),
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
@@ -283,5 +345,17 @@ final class StatisticsTest extends TestCase
         self::assertSame(0.0, $statistics['standard_deviation']['constant']);
         self::assertSame(0, $statistics['skewness']['constant']);
         self::assertSame(0, $statistics['kurtosi']['constant']);
+    }
+
+    private function userTestTotalsQuery(int $testId, int $userId, int $testuserId, int $status): string
+    {
+        return "SELECT SUM(testlog_score) AS total_score, MAX(testlog_change_time) AS test_end_time, "
+            . "testuser_id, testuser_creation_time, testuser_status, testuser_comment\n"
+            . "\t\tFROM test_user, test_logs\n\t\tWHERE testlog_testuser_id=testuser_id\n"
+            . "\t\t\tAND testuser_id=" . $testuserId . "\n"
+            . "\t\t\tAND testuser_test_id=" . $testId . "\n"
+            . "\t\t\tAND testuser_user_id=" . $userId . "\n"
+            . "\t\t\tAND testuser_status>" . $status . "\n"
+            . "\t\tGROUP BY testuser_id, testuser_creation_time, testuser_status, testuser_comment";
     }
 }
