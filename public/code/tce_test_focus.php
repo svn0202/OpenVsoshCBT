@@ -50,59 +50,58 @@ if (
     F_tmf_focus_json(403, ['status' => 'forbidden']);
 }
 
+$normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
 $log_result = F_db_query(
     'SELECT testlog_testuser_id
     FROM ' . K_TABLE_TESTS_LOGS . '
     WHERE testlog_id=' . $testlog_id,
     $db,
 );
-// @mago-expect analysis:no-value -- the active DAL returns a database result object or false
-$log = $log_result ? F_db_fetch_array($log_result) : false;
-// @mago-expect analysis:impossible-type-comparison -- DB fetch returns an array at runtime
-$testuser_id = is_array($log) ? (int) $log['testlog_testuser_id'] : 0;
+/** @var \mysqli_result|\PgSql\Result|false $log_result */
+$log = $log_result === false ? null : $normalize_row(F_db_fetch_array($log_result));
+$testuser_id = (int) ($log['testlog_testuser_id'] ?? 0);
 if ($testuser_id <= 0) {
     F_tmf_focus_json(403, ['status' => 'forbidden']);
 }
 
+$session_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
 $escaped_event_id = F_escape_sql($db, $event_id);
-// @mago-expect analysis:invalid-operand -- validated positive integer derived from the fetched DB row
 $sql = 'UPDATE ' . K_TABLE_TEST_USER . '
     SET testuser_focus_loss_count=testuser_focus_loss_count+1,
         testuser_last_focus_event=\'' . $escaped_event_id . '\'
     WHERE testuser_id=' . $testuser_id . '
         AND testuser_test_id=' . $test_id . '
-        AND testuser_user_id=' . (int) $_SESSION['session_user_id'] . '
+        AND testuser_user_id=' . $session_user_id . '
         AND testuser_status>0
         AND testuser_status<4
         AND (testuser_last_focus_event IS NULL
             OR testuser_last_focus_event<>\'' . $escaped_event_id . '\')';
+/** @var true|\mysqli_result|\PgSql\Result|false $result */
 $result = F_db_query($sql, $db);
 if (!$result) {
     F_tmf_focus_json(500, ['status' => 'error']);
 }
 
-// @mago-expect analysis:invalid-operand -- validated positive integer derived from the fetched DB row
 $count_result = F_db_query(
     'SELECT testuser_focus_loss_count, testuser_last_focus_event
     FROM ' . K_TABLE_TEST_USER . '
     WHERE testuser_id=' . $testuser_id . '
         AND testuser_test_id=' . $test_id . '
-        AND testuser_user_id=' . (int) $_SESSION['session_user_id'] . '
+        AND testuser_user_id=' . $session_user_id . '
         AND testuser_status>0
         AND testuser_status<4',
     $db,
 );
-// @mago-expect analysis:no-value -- the active DAL returns a database result object or false
-$attempt = $count_result ? F_db_fetch_array($count_result) : false;
-// @mago-expect analysis:impossible-type-comparison -- DB fetch returns an array at runtime
-if (!is_array($attempt)) {
+/** @var \mysqli_result|\PgSql\Result|false $count_result */
+$attempt = $count_result === false ? null : $normalize_row(F_db_fetch_array($count_result));
+if ($attempt === null) {
     F_tmf_focus_json(409, ['status' => 'closed']);
 }
-if ((string) $attempt['testuser_last_focus_event'] !== $event_id) {
+if ((string) ($attempt['testuser_last_focus_event'] ?? '') !== $event_id) {
     F_tmf_focus_json(409, ['status' => 'conflict']);
 }
 
 F_tmf_focus_json(200, [
     'status' => 'recorded',
-    'count' => (int) $attempt['testuser_focus_loss_count'],
+    'count' => (int) ($attempt['testuser_focus_loss_count'] ?? 0),
 ]);
