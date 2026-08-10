@@ -641,9 +641,10 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     unlink($xlsxFile);
                 }
             }
-            $this->assertSame((string) $attemptId, $xlsxRows[1][0]);
-            $this->assertSame($startedAt, $xlsxRows[1][5]);
-            $this->assertSame('14.500', $xlsxRows[1][8]);
+            $xlsxDataRow = $xlsxRows[1] ?? [];
+            $this->assertSame((string) $attemptId, $xlsxDataRow[0] ?? null);
+            $this->assertSame($startedAt, $xlsxDataRow[5] ?? null);
+            $this->assertSame('14.500', $xlsxDataRow[8] ?? null);
 
             [$pdfStatus, $pdfBody] = $this->http(
                 'GET',
