@@ -44,12 +44,21 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         self::assertNotFalse(\F_db_query($sql, $this->db), $sql);
     }
 
+    private static function scalarFromRow(mixed $row): ?string
+    {
+        if (!is_array($row)) {
+            return null;
+        }
+        assert(array_key_exists(0, $row), 'A fetched database row must contain its first column.');
+        return (string) $row[0];
+    }
+
     private function dbScalar(string $sql): ?string
     {
         $result = \F_db_query($sql, $this->db);
         self::assertNotFalse($result, $sql);
-        $row = \F_db_fetch_array($result);
-        return is_array($row) ? (string) $row[0] : null;
+        /** @var \mysqli_result|\PgSql\Result $result */
+        return self::scalarFromRow(\F_db_fetch_array($result));
     }
 
     /**

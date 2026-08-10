@@ -359,21 +359,3 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\DatabaseDalIntegrationTest::testWordImportCanCommitAndRollBackRealDatabaseWrites`.'
 count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "impossible-condition"
-message = "Redundant ternary operator: condition is always falsy."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "impossible-type-comparison"
-message = "Impossible type assertion: `$row` of type `unknown-ref(Returns)` can never be `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
