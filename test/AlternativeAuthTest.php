@@ -6,6 +6,56 @@ use PHPUnit\Framework\TestCase;
 
 final class AlternativeAuthTest extends TestCase
 {
+    public function testHttpBasicLoginPopulatesCredentialsAndProfile(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_SSL_ENABLED", false); '
+                    . 'define("K_HTTPBASIC_ENABLED", true); define("K_HTTPBASIC_USER_LEVEL", 4); '
+                    . 'define("K_HTTPBASIC_USER_GROUP_ID", 9); define("K_CAS_ENABLED", false); '
+                    . 'define("K_SHIBBOLETH_ENABLED", false); define("K_RADIUS_ENABLED", false); '
+                    . 'define("K_LDAP_ENABLED", false); define("K_CUSTOM_AUTH_METHODS", false); '
+                    . '$_SESSION = ["session_user_name" => "old-user"]; '
+                    . '$_SERVER = ["AUTH_TYPE" => "Basic", "PHP_AUTH_USER" => "alice", '
+                    . '"PHP_AUTH_PW" => "secret"]; $_POST = []; '
+                    . 'function f_legacy_literal_equals($left, $right) { return $left === $right; } '
+                    . 'function f_legacy_equals($left, $right) { return $left == $right; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (f_alt_login)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$function = substr($source, $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$result = $qualified(); echo json_encode([$result, $_POST]);',
+                dirname(__DIR__) . '/shared/code/tce_altauth.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [
+                    'user_email' => '',
+                    'user_firstname' => '',
+                    'user_lastname' => '',
+                    'user_birthdate' => '',
+                    'user_birthplace' => '',
+                    'user_regnumber' => '',
+                    'user_ssn' => '',
+                    'user_level' => 4,
+                    'usrgrp_group_id' => 9,
+                ],
+                ['xuser_name' => 'alice', 'xuser_password' => 'secret', 'logaction' => 'login'],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testAlternativeLoginReturnsFalseWhenAllProvidersAreDisabled(): void
     {
         [$status, $output] = \F_tcecode_run_process(
