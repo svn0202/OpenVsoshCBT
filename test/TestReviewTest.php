@@ -191,7 +191,7 @@ final class TestReviewTest extends TestCase
                 'namespace Harness; $GLOBALS["ids"] = []; function F_getTestData($id) { '
                     . '$GLOBALS["ids"][] = $id; return ["test_name" => "Final exam"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getTestName|f_get_test_name)\\(/", '
+                    . 'preg_match("/function (f_get_test_name)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
