@@ -172,7 +172,7 @@ unset($openvsosh_runtime, $request_uri);
 // try other login systems
 // (HTTP-BASIC, CAS, SHIBBOLETH, RADIUS, LDAP)
 require_once '../../shared/code/tce_altauth.php';
-$altusr = F_altLogin();
+$altusr = f_alt_login();
 
 // --- check if login information has been submitted
 if (

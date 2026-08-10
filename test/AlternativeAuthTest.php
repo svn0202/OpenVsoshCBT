@@ -18,7 +18,7 @@ final class AlternativeAuthTest extends TestCase
                     . 'define("K_LDAP_ENABLED", false); define("K_CUSTOM_AUTH_METHODS", false); '
                     . '$_SESSION = []; $_SERVER = []; $_POST = []; '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_altLogin|f_alt_login)\\(/", '
+                    . 'preg_match("/function (f_alt_login)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$function = substr($source, $start); '

@@ -1,12 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "shared/code/tce_altauth.php"
-code = "function-name"
-message = "Function name `F_altLogin` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "function-name"
 message = "Function name `F_getAuthorizedUsers` should be in snake case."
