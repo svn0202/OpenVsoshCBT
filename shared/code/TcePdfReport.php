@@ -1028,7 +1028,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             F_display_db_error();
         }
 
-        $stats = F_getTestStat($data['test']['test_id'] ?? 0, 0, $data['user_id'] ?? 0, 0, 0, $data['id'] ?? 0);
+        $stats = f_get_test_stat($data['test']['test_id'] ?? 0, 0, $data['user_id'] ?? 0, 0, 0, $data['id'] ?? 0);
         $this->printQuestionStats($stats['qstats'], 1);
     }
 

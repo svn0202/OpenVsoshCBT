@@ -116,7 +116,7 @@ function F_getUserTestTotals($test_id, $user_id = 0, $testuser_id = 0, $pubmode 
  * @param $pubmode (boolean) If true filter the results for the public interface.
  * return $data array containing test statistics.
  */
-function F_getTestStat(
+function f_get_test_stat(
     $test_id,
     $group_id = 0,
     $user_id = 0,
@@ -855,7 +855,7 @@ function F_printTestStat(
     $testuser_id = (int) $testuser_id;
     if (empty($ts)) {
         // get statistics array
-        $ts = F_getTestStat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, $pubmode);
+        $ts = f_get_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, $pubmode);
     }
 
     $txtdir = (($l['a_meta_dir'] <=> 'rtl') === 0) ? 'right' : 'left';
@@ -1987,7 +1987,7 @@ function F_getAllUsersTestStat(
     }
 
     if ($stats > 1) {
-        $data += F_getTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $pubmode);
+        $data += f_get_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $pubmode);
     }
 
     $sqlr .= ' GROUP BY testuser_id, testuser_test_id, testuser_creation_time, user_id, user_lastname, user_firstname, user_name, user_email, testuser_status
@@ -2007,7 +2007,7 @@ function F_getAllUsersTestStat(
             ++$itemcount;
             $usrtestdata = F_getUserTestStat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
             if ($stats > 0) {
-                $teststat = F_getTestStat(
+                $teststat = f_get_test_stat(
                     $mr['testuser_test_id'],
                     $group_id,
                     $mr['user_id'],
