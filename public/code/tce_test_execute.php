@@ -239,7 +239,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         // confirmation form to terminate the test
         if (isset($_REQUEST['terminatetest']) && !empty($_REQUEST['terminatetest'])) {
             // check if some questions were omitted (undisplayed or unanswered).
-            $num_omitted_questions = F_getNumOmittedQuestions($test_id);
+            $num_omitted_questions = f_get_num_omitted_questions($test_id);
             $omitted_msg = '';
             if ($num_omitted_questions > 0) {
                 $omitted_msg =
