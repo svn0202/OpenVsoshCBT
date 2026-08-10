@@ -57,9 +57,11 @@ $sql = 'UPDATE ' . K_TABLE_TEST_USER . "
         AND testuser_status>0
         AND testuser_status<4';
 $result = F_db_query($sql, $db);
+// @mago-expect analysis:redundant-condition -- the active DAL returns false when the UPDATE fails
 if (!$result) {
     F_tmf_heartbeat_json(500, ['status' => 'error']);
 }
+/** @var true|\mysqli_result|\PgSql\Result $result */
 if (F_db_affected_rows($db, $result) < 1) {
     F_tmf_heartbeat_json(409, ['status' => 'closed']);
 }
