@@ -249,7 +249,7 @@ final class TestAccessTest extends TestCase
                     . 'function f_two_col_row(...$arguments) { $GLOBALS["two_col"][] = $arguments; '
                     . 'return "<ROW:" . $arguments[0] . ":" . $arguments[2] . ">"; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_printTestInfo)\\(/", '
+                    . 'preg_match("/function (f_print_test_info)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

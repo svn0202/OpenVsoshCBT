@@ -41,7 +41,7 @@ if ($test_id > 0) {
     }
 
     require_once '../../shared/code/tce_functions_test.php';
-    echo F_printTestInfo($test_id, true);
+    echo f_print_test_info($test_id, true);
 }
 
 echo '<div class="row">' . K_NEWLINE;
