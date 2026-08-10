@@ -33,6 +33,7 @@ function f_tmf_xlsx_safe_sheet_name(string $name, int $fallback): string
 
 /**
  * @param array<int,array{name?:string,rows:array,widths?:array<int,float>}> $sheets
+ * @throws RuntimeException
  */
 function f_tmf_xlsx_build(array $sheets): string
 {
@@ -140,10 +141,18 @@ function f_tmf_xlsx_styles_xml(): string
         . '</cellStyles></styleSheet>';
 }
 
+/**
+ * @param array<array-key,mixed> $rows
+ * @param array<array-key,mixed> $widths
+ */
 function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
 {
+    /** @var array<int,array<int,string|int|float|bool|null|array{value?:mixed,type?:mixed}>> $rows */
+    /** @var array<int,int|float|string> $widths */
     $max_columns = 1;
     foreach ($rows as $row) {
+        /** @mago-expect analysis:redundant-type-comparison */
+        /** @mago-expect analysis:redundant-condition */
         $max_columns = max($max_columns, is_array($row) ? count($row) : 0);
     }
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -160,14 +169,20 @@ function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
     foreach (array_values($rows) as $row_index => $row) {
         $row_number = $row_index + 1;
         $xml .= '<row r="' . $row_number . '"' . ($row_number === 1 ? ' ht="24" customHeight="1"' : '') . '>';
-        foreach (array_values((array) $row) as $column_index => $cell) {
+        foreach (array_values($row) as $column_index => $cell) {
+            /** @var string|int|float|bool|null|array{value?:mixed,type?:mixed} $cell */
             $reference = F_tmf_xlsx_column_name($column_index) . $row_number;
             $type = null;
             $value = $cell;
             if (is_array($cell) && array_key_exists('value', $cell)) {
-                $value = $cell['value'];
-                $type = $cell['type'] ?? null;
+                /** @var string|int|float|bool|null $cell_value */
+                $cell_value = $cell['value'];
+                $value = $cell_value;
+                /** @var string|null $cell_type */
+                $cell_type = $cell['type'] ?? null;
+                $type = $cell_type;
             }
+            /** @var string|int|float|bool|null $value */
             $style = $row_number === 1 ? 1 : 0;
             if ($type === 'date') {
                 $timestamp = is_int($value) ? $value : strtotime((string) $value);
@@ -196,13 +211,14 @@ function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
  * Read the first worksheet as rows and reject formulas or oversized archives.
  *
  * @return array<int,array<int,string>>
+ * @throws RuntimeException
  */
 function f_tmf_xlsx_read(string $filename): array
 {
     if (
         !is_file($filename)
         || filesize($filename) === false
-        || filesize($filename) > TMF_XLSX_MAX_BYTES
+        || (int) filesize($filename) > TMF_XLSX_MAX_BYTES
         || !class_exists(ZipArchive::class)
     ) {
         throw new RuntimeException('Invalid or oversized XLSX file.');
@@ -228,14 +244,21 @@ function f_tmf_xlsx_read(string $filename): array
         if ($uncompressed > TMF_XLSX_MAX_UNCOMPRESSED_BYTES) {
             throw new RuntimeException('Oversized XLSX archive contents.');
         }
+        /** @var list<string> $shared */
         $shared = [];
         $shared_xml = $zip->getFromName('xl/sharedStrings.xml');
         if (is_string($shared_xml)) {
             $document = F_tmf_xlsx_dom($shared_xml);
             $xpath = new DOMXPath($document);
-            foreach ($xpath->query('//*[local-name()="si"]') as $item) {
+            /** @var DOMNodeList $shared_items */
+            $shared_items = $xpath->query('//*[local-name()="si"]');
+            foreach ($shared_items as $item) {
+                /** @var DOMNode $item */
                 $text = '';
-                foreach ($xpath->query('.//*[local-name()="t"]', $item) as $text_node) {
+                /** @var DOMNodeList $text_nodes */
+                $text_nodes = $xpath->query('.//*[local-name()="t"]', $item);
+                foreach ($text_nodes as $text_node) {
+                    /** @var DOMNode $text_node */
                     $text .= $text_node->textContent;
                 }
                 $shared[] = $text;
@@ -247,20 +270,32 @@ function f_tmf_xlsx_read(string $filename): array
         }
         $document = F_tmf_xlsx_dom($sheet_xml);
         $xpath = new DOMXPath($document);
+        /** @var array<int,array<int,string>> $rows */
         $rows = [];
-        foreach ($xpath->query('//*[local-name()="sheetData"]/*[local-name()="row"]') as $row_node) {
+        /** @var DOMNodeList $row_nodes */
+        $row_nodes = $xpath->query('//*[local-name()="sheetData"]/*[local-name()="row"]');
+        foreach ($row_nodes as $row_node) {
+            /** @var DOMElement $row_node */
             if (count($rows) >= TMF_XLSX_MAX_ROWS) {
                 throw new RuntimeException('The XLSX row limit was exceeded.');
             }
+            /** @var array<int,string> $row */
             $row = [];
-            foreach ($xpath->query('./*[local-name()="c"]', $row_node) as $cell) {
-                if ($xpath->query('./*[local-name()="f"]', $cell)->length > 0) {
+            /** @var DOMNodeList $cells */
+            $cells = $xpath->query('./*[local-name()="c"]', $row_node);
+            foreach ($cells as $cell) {
+                /** @var DOMElement $cell */
+                /** @var DOMNodeList $formula_nodes */
+                $formula_nodes = $xpath->query('./*[local-name()="f"]', $cell);
+                if ($formula_nodes->length > 0) {
                     throw new RuntimeException('Formulas are not accepted in user imports.');
                 }
-                $reference = (string) $cell->getAttribute('r');
+                $reference = $cell->getAttribute('r');
+                $match = [];
                 if (preg_match('/^([A-Z]+)[0-9]+$/', $reference, $match) !== 1) {
                     continue;
                 }
+                /** @var array{0:string,1:string} $match */
                 $column = 0;
                 foreach (str_split($match[1]) as $letter) {
                     $column = ($column * 26) + (ord($letter) - 64);
@@ -269,15 +304,20 @@ function f_tmf_xlsx_read(string $filename): array
                 if ($column >= TMF_XLSX_MAX_COLUMNS) {
                     throw new RuntimeException('The XLSX column limit was exceeded.');
                 }
-                $type = (string) $cell->getAttribute('t');
+                $type = $cell->getAttribute('t');
                 if ($type === 'inlineStr') {
+                    /** @var DOMNodeList $nodes */
                     $nodes = $xpath->query('.//*[local-name()="t"]', $cell);
                     $value = '';
                     foreach ($nodes as $node) {
+                        /** @var DOMNode $node */
                         $value .= $node->textContent;
                     }
                 } else {
-                    $value_node = $xpath->query('./*[local-name()="v"]', $cell)->item(0);
+                    /** @var DOMNodeList $value_nodes */
+                    $value_nodes = $xpath->query('./*[local-name()="v"]', $cell);
+                    /** @var DOMNode|null $value_node */
+                    $value_node = $value_nodes->item(0);
                     $value = $value_node ? $value_node->textContent : '';
                     if ($type === 's') {
                         $value = $shared[(int) $value] ?? '';
@@ -287,6 +327,7 @@ function f_tmf_xlsx_read(string $filename): array
             }
             if ($row !== []) {
                 ksort($row);
+                /** @var non-negative-int $max */
                 $max = max(array_keys($row));
                 $rows[] = array_replace(array_fill(0, $max + 1, ''), $row);
             }
@@ -297,6 +338,7 @@ function f_tmf_xlsx_read(string $filename): array
     }
 }
 
+/** @throws RuntimeException */
 function f_tmf_xlsx_dom(string $xml): DOMDocument
 {
     $document = new DOMDocument();
