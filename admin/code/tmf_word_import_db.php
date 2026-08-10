@@ -5,6 +5,8 @@
  *
  * Set $commit to false in integration tests to exercise the real SQL while
  * guaranteeing that the transaction is rolled back.
+ *
+ * @return array{module_name:string,subject_name:string,questions:int,answers:int,committed:bool}
  */
 function F_tmf_import_word_questions(array $data, $commit = true)
 {
