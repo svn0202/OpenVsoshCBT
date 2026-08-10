@@ -8,6 +8,71 @@ require_once __DIR__ . '/../shared/code/tce_functions_statistics.php';
 
 final class StatisticsTest extends TestCase
 {
+    public function testUserTestStatisticsPreserveTextQuestionMarkupAndQueryFailure(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TABLE_SUBJECTS", "subjects"); '
+                    . 'define("K_TABLE_MODULES", "modules"); define("K_NEWLINE", "\\n"); '
+                    . 'define("K_ENABLE_QUESTION_EXPLANATION", false); '
+                    . 'define("K_ENABLE_ANSWER_EXPLANATION", false); $GLOBALS["db"] = "db"; '
+                    . '$row = ["testlog_score" => "2.5", "testlog_user_ip" => "packed", '
+                    . '"testlog_reaction_time" => 0, "question_description" => "Question", '
+                    . '"question_explanation" => "", "question_type" => 3, '
+                    . '"testlog_answer_text" => "Answer", "testlog_id" => 77, '
+                    . '"testlog_comment" => "Teacher note"]; '
+                    . '$GLOBALS["results"] = [false, "questions"]; '
+                    . '$GLOBALS["rows"] = ["questions" => [$row, false]]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["attachments"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . 'function get_ip_as_string($value) { return "IPVALUE"; } '
+                    . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function F_tmf_attachment_html($testlogId) { '
+                    . '$GLOBALS["attachments"][] = $testlogId; return "<ATTACHMENT>"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_printUserTestStat)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$failed = $qualified("007"); $markup = $qualified("007"); '
+                    . 'echo json_encode([$failed, $markup, $GLOBALS["queries"], '
+                    . '$GLOBALS["errors"], $GLOBALS["attachments"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: string, 1: string, 2: array{0: string, 1: string}, 3: int, 4: array{0: int}} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$failed, $markup, $queries, $errors, $attachments] = $decoded;
+        self::assertSame('', $failed);
+        self::assertStringContainsString('<ol class="question">', $markup);
+        self::assertStringContainsString('<strong>[2.5]', $markup);
+        self::assertStringContainsString('(IP:IPVALUE', $markup);
+        self::assertStringContainsString('| --:--:--', $markup);
+        self::assertStringContainsString('| ------', $markup);
+        self::assertStringContainsString('[Question]', $markup);
+        self::assertStringContainsString('[Answer]<ATTACHMENT>&nbsp;', $markup);
+        self::assertStringContainsString('[Teacher note]&nbsp;', $markup);
+        self::assertCount(2, $queries);
+        self::assertStringContainsString('testlog_testuser_id=7', $queries[0]);
+        self::assertStringContainsString('testlog_testuser_id=7', $queries[1]);
+        self::assertSame(1, $errors);
+        self::assertSame([77], $attachments);
+    }
+
     public function testUserTestStatisticsOrderByFiltersAndFormatsInput(): void
     {
         [$status, $output] = \F_tcecode_run_process(
