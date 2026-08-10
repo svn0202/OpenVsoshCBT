@@ -22,12 +22,23 @@
 
 require_once '../config/tce_config.php';
 
-$from_group_id = $_POST['from_group_id'] ?? '';
-$to_group_id = $_POST['to_group_id'] ?? '';
+$from_group_id = isset($_POST['from_group_id']) ? (int) $_POST['from_group_id'] : 0;
+$to_group_id = isset($_POST['to_group_id']) ? (int) $_POST['to_group_id'] : 0;
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *     t_user_select:string,
+ *     m_authorization_denied:string,
+ *     w_group:string,
+ *     a_meta_charset:string,
+ *     w_search:string,
+ *     m_updated:string
+ * } $l
+ */
+/** @var mixed $db */
 $thispage_title = $l['t_user_select'];
 
 require_once '../code/tce_page_header.php';
@@ -40,7 +51,9 @@ $group_id = isset($_REQUEST['group_id']) ? (int) $_REQUEST['group_id'] : 0;
 $orderdir = isset($_REQUEST['orderdir']) ? (int) $_REQUEST['orderdir'] : 0;
 $firstrow = isset($_REQUEST['firstrow']) ? (int) $_REQUEST['firstrow'] : 0;
 $rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] : K_MAX_ROWS_PER_PAGE;
+/** @var string $order_field */
 $order_field = $_REQUEST['order_field'] ?? 'user_lastname,user_firstname';
+/** @var string $searchterms */
 $searchterms = $_REQUEST['searchterms'] ?? '';
 
 if (!f_is_authorized_editor_for_group($group_id)) {
@@ -71,8 +84,10 @@ if ($group_id === 0) {
 
 echo '>&nbsp;</option>' . K_NEWLINE;
 $sql = F_user_group_select_sql();
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
+$r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+if ($r) {
+    while ($m = f_tmf_select_users_row(F_db_fetch_array($r))) {
+        /** @var array{group_id:int|string,group_name:string} $m */
         echo '<option value="' . $m['group_id'] . '"';
         if (f_form_option_is_selected($group_id, $m['group_id'])) {
             echo ' selected="selected"';
@@ -103,6 +118,9 @@ $wherequery = '';
 if (strlen($searchterms) > 0) {
     $wherequery = '';
     $terms = preg_split("/[\s]+/i", $searchterms); // Get all the words into an array
+    if ($terms === false) {
+        $terms = [];
+    }
     foreach ($terms as $word) {
         $word = F_escape_sql($db, $word);
         $wherequery .= " AND ((user_name LIKE '%" . $word . "%')";
@@ -129,6 +147,18 @@ if (isset($_POST['addgroup'])) {
 }
 
 if (isset($menu_mode) && !empty($menu_mode)) {
+    /** @var array{session_user_level:int,session_user_id:int} $session */
+    $session = $_SESSION;
+    $session_user_level = $session['session_user_level'];
+    $session_user_id = $session['session_user_id'];
+    /** @var int $auth_delete_users */
+    $auth_delete_users = K_AUTH_DELETE_USERS;
+    /** @var int $auth_admin_groups */
+    $auth_admin_groups = K_AUTH_ADMIN_GROUPS;
+    /** @var int $auth_delete_groups */
+    $auth_delete_groups = K_AUTH_DELETE_GROUPS;
+    /** @var int $auth_move_groups */
+    $auth_move_groups = K_AUTH_MOVE_GROUPS;
     $istart = 1 + $firstrow;
     $iend = $rowsperpage + $firstrow;
     for ($i = $istart; $i <= $iend; ++$i) {
@@ -139,14 +169,15 @@ if (isset($menu_mode) && !empty($menu_mode)) {
             switch ($menu_mode) {
                 case 'delete':
                     if (
-                        $_SESSION['session_user_level'] >= K_AUTH_DELETE_USERS
+                        $session_user_level >= $auth_delete_users
                         && $user_id > 1
-                        && !f_form_option_is_selected($user_id, $_SESSION['session_user_id'])
+                        && !f_form_option_is_selected($user_id, $session_user_id)
                         && f_is_authorized_editor_for_user($user_id)
                     ) {
                         $sql = 'DELETE FROM ' . K_TABLE_USERS . '
 							WHERE user_id=' . $user_id . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error();
                         }
                     }
@@ -154,7 +185,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     break;
                 case 'addgroup':
                     if (
-                        $_SESSION['session_user_level'] >= K_AUTH_ADMIN_GROUPS
+                        $session_user_level >= $auth_admin_groups
                         && $new_group_id > 0
                         && f_is_authorized_editor_for_group($new_group_id)
                     ) {
@@ -174,7 +205,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                                 . $new_group_id
                                 . '\'
 								)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            $r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+                            if (!$r) {
                                 F_display_db_error();
                             }
                         }
@@ -183,7 +215,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     break;
                 case 'delgroup':
                     if (
-                        $_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS
+                        $session_user_level >= $auth_delete_groups
                         && $new_group_id > 0
                         && f_is_authorized_editor_for_group($new_group_id)
                     ) {
@@ -197,7 +229,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 								AND usrgrp_group_id='
                             . $new_group_id
                             . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error();
                         }
                     }
@@ -205,11 +238,9 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     break;
                 case 'move':
                     if (
-                        $_SESSION['session_user_level'] >= K_AUTH_MOVE_GROUPS
-                        && isset($from_group_id)
+                        $session_user_level >= $auth_move_groups
                         && $from_group_id > 0
                         && f_is_authorized_editor_for_group($from_group_id)
-                        && isset($to_group_id)
                         && $to_group_id > 0
                         && f_is_authorized_editor_for_group($to_group_id)
                     ) {
@@ -229,7 +260,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                                 . $from_group_id
                                 . '
 								LIMIT 1';
-                            if (!($r = F_db_query($sql, $db))) {
+                            $r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+                            if (!$r) {
                                 F_display_db_error();
                             }
                         } else {
@@ -243,7 +275,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 								AND usrgrp_group_id='
                                 . $from_group_id
                                 . '';
-                            if (!($r = F_db_query($sql, $db))) {
+                            $r = f_tmf_select_users_query_result(F_db_query($sql, $db));
+                            if (!$r) {
                                 F_display_db_error();
                             }
                         }
@@ -262,3 +295,23 @@ echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_select_users_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_select_users_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
