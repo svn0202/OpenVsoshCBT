@@ -287,7 +287,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             echo '<div>' . K_NEWLINE;
 
             // display questions + navigation menu
-            echo F_questionForm($test_id, $testlog_id, $formname);
+            echo f_question_form($test_id, $testlog_id, $formname);
             // the $finish variable is used to check if the form has been automatically submitted
             // at the end of the time.
             $finish = isset($_REQUEST['finish']) && $_REQUEST['finish'] > 0 ? 1 : 0;
