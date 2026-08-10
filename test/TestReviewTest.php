@@ -726,7 +726,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_db_insert_id(...$arguments) { $GLOBALS["insert_calls"][] = $arguments; return 55; } '
                     . 'function F_display_db_error(...$arguments) { $GLOBALS["errors"][] = $arguments; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_newTestLog)\\(/", '
+                    . 'preg_match("/function (f_new_test_log)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

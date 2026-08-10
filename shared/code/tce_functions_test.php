@@ -1152,7 +1152,7 @@ function f_get_first_test_user($test_id)
  * @param $num_answers (int) number of alternative answers
  * @return int testlog ID
  */
-function F_newTestLog($testuser_id, $question_id, $score, $order, $num_answers = 0)
+function f_new_test_log($testuser_id, $question_id, $score, $order, $num_answers = 0)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -1604,7 +1604,7 @@ function F_createTest($test_id, $user_id)
             $question_order = 0;
             foreach ($questions_data as $key => $q) {
                 ++$question_order;
-                $testlog_id = F_newTestLog($testuser_id, $q['id'], $q['score'], $question_order, $q['answers']);
+                $testlog_id = f_new_test_log($testuser_id, $q['id'], $q['score'], $question_order, $q['answers']);
                 // Add answers
                 if (!f_add_question_answers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
                     return false;
@@ -1634,7 +1634,7 @@ function F_createTest($test_id, $user_id)
                 ++$question_order;
                 // copy values to new user test
                 $question_unanswered_score = $testdata['test_score_unanswered'] * $m['question_difficulty'];
-                $testlog_id = F_newTestLog(
+                $testlog_id = f_new_test_log(
                     $testuser_id,
                     $m['testlog_question_id'],
                     $question_unanswered_score,
