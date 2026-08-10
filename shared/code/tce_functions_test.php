@@ -56,7 +56,7 @@ function F_getUserTests()
             $expired = false;
             $upcoming = strtotime($current_time) < strtotime($m['test_begin_time']);
             // check user's authorization
-            if (F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+            if (f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id, $test_pregenerated] = F_checkTestStatus(
@@ -417,9 +417,9 @@ function f_is_valid_ssl_cert($test_id): bool
  * @param $test_id (int) ID of the selected test
  * @param $user_ip (int) user's IP address.
  * @param $test_ip (int) test IP valid addresses. Various IP addresses may be separated using comma character. The asterisk character may be used to indicate "any number".
- * @return true if is user is authorized, false otherwise
+ * @return bool true if the user is authorized, false otherwise
  */
-function F_isValidTestUser($test_id, $user_ip, $test_ip)
+function f_is_valid_test_user($test_id, $user_ip, $test_ip): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -667,7 +667,7 @@ function F_printTestInfo($test_id, $showip = false)
     $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            if (!F_isValidTestUser($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+            if (!f_is_valid_test_user($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 return '';
             }
 
@@ -907,7 +907,7 @@ function F_executeTest($test_id)
         // check user's authorization
         if (
             ($m = F_db_fetch_array($r))
-            && F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
+            && f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
             && F_tmf_test_access_status($test_id, (int) $_SESSION['session_user_id'])['allowed']
         ) {
             $pregeneration = F_tmf_pregeneration_activate(
