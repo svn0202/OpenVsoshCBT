@@ -28,38 +28,71 @@
  * string $thispage_style page CSS file name, default K_SITE_STYLE
  */
 
+/** @var array{
+ *     a_meta_dir:string,
+ *     a_meta_language:string,
+ *     a_meta_charset:string,
+ *     t_login_form?:string,
+ *     ov_open_menu:string,
+ *     ov_close_menu:string,
+ *     ov_show_password:string,
+ *     ov_hide_password:string,
+ *     ov_theme_dark:string,
+ *     ov_theme_light:string,
+ *     ov_enable_dark_theme:string,
+ *     ov_enable_light_theme:string,
+ *     w_skip_navigation:string,
+ *     m_login_wrong:string
+ * } $l
+ */
 // if necessary load default values
+/** @var mixed $pagelevel */
 if (!isset($pagelevel) || empty($pagelevel)) {
     $pagelevel = 0;
 }
+/** @var int|string $pagelevel */
 
+/** @var mixed $thispage_title */
 if (!isset($thispage_title) || empty($thispage_title)) {
     $thispage_title = K_SITE_TITLE;
 }
+/** @var string $thispage_title */
 
+/** @var mixed $thispage_description */
 if (!isset($thispage_description) || empty($thispage_description)) {
     $thispage_description = K_SITE_DESCRIPTION;
 }
+/** @var string $thispage_description */
 
+/** @var mixed $thispage_author */
 if (!isset($thispage_author) || empty($thispage_author)) {
     $thispage_author = K_SITE_AUTHOR;
 }
+/** @var string $thispage_author */
 
+/** @var mixed $thispage_reply */
 if (!isset($thispage_reply) || empty($thispage_reply)) {
     $thispage_reply = K_SITE_REPLY;
 }
+/** @var string $thispage_reply */
 
+/** @var mixed $thispage_keywords */
 if (!isset($thispage_keywords) || empty($thispage_keywords)) {
     $thispage_keywords = K_SITE_KEYWORDS;
 }
+/** @var string $thispage_keywords */
 
+/** @var mixed $thispage_icon */
 if (!isset($thispage_icon) || empty($thispage_icon)) {
     $thispage_icon = K_SITE_ICON;
 }
+/** @var string $thispage_icon */
 
+/** @var mixed $thispage_style */
 if (!isset($thispage_style) || empty($thispage_style)) {
     $thispage_style = strcasecmp($l['a_meta_dir'], 'rtl') === 0 ? K_SITE_STYLE_RTL : K_SITE_STYLE;
 }
+/** @var string $thispage_style */
 
 echo '<!DOCTYPE html>' . K_NEWLINE;
 echo '<html lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
@@ -74,7 +107,7 @@ echo
     '<meta name="description" content="'
         . htmlspecialchars($thispage_description, ENT_COMPAT, $l['a_meta_charset'])
         . ' ['
-        . base64_decode(K_KEY_SECURITY)
+        . (string) base64_decode(K_KEY_SECURITY)
         . ']" />'
         . K_NEWLINE
 ;
@@ -109,15 +142,25 @@ echo '<script type="text/javascript">'
 echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
-$is_login_page = (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_login.php'
+$script_name = f_tmf_public_header_script_name($_SERVER);
+$is_login_page = (basename($script_name) === 'tce_login.php'
     || $thispage_title === ($l['t_login_form'] ?? null));
-$body_classes = ($_SESSION['session_user_level'] < 1 || $is_login_page)
+/** @var array{session_user_level:int} $session */
+$session = $_SESSION;
+$body_classes = ($session['session_user_level'] < 1 || $is_login_page)
     ? ['login-page']
     : ['app-page', 'theme-light'];
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+/** @var array{
+ *     ui_font:string,
+ *     login_background_overlay:int|numeric-string,
+ *     login_background_position:string,
+ *     login_background_size:string
+ * } $appearance
+ */
 $appearance = openvsosh_get_appearance_settings();
 $body_classes[] = 'ui-font-' . $appearance['ui_font'];
-if (basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php') {
+if (basename($script_name) === 'tce_test_execute.php') {
     $body_classes[] = 'exam-page';
 }
 
@@ -142,7 +185,7 @@ $shell_translations = [
 ];
 foreach ($shell_translations as $name => $translation) {
     $body_attributes .= ' data-' . $name . '="'
-        . htmlspecialchars((string) $translation, ENT_QUOTES, $l['a_meta_charset']) . '"';
+        . htmlspecialchars($translation, ENT_QUOTES, $l['a_meta_charset']) . '"';
 }
 echo '<body' . $body_attributes . '>' . K_NEWLINE;
 // accessibility: skip link to the main content (must be the first focusable element)
@@ -157,4 +200,13 @@ echo
 
 if (!empty($GLOBALS['login_error'])) {
     F_print_error('WARNING', $l['m_login_wrong']);
+}
+
+/** @param array<array-key,mixed> $server */
+function f_tmf_public_header_script_name(array $server): string
+{
+    if (!isset($server['SCRIPT_NAME']) || !is_string($server['SCRIPT_NAME'])) {
+        return '';
+    }
+    return $server['SCRIPT_NAME'];
 }
