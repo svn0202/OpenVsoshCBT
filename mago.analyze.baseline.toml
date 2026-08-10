@@ -15165,7 +15165,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_testLoginForm`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
+message = "Invalid return type for function `f_test_login_form`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
 count = 1
 
 [[issues]]
@@ -15555,7 +15555,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_testLoginForm` is missing a return type hint."
+message = "Function `f_test_login_form` is missing a return type hint."
 count = 1
 
 [[issues]]
