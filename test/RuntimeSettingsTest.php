@@ -12,6 +12,66 @@ require_once __DIR__ . '/../shared/code/tce_functions_openvsosh_settings.php';
 
 final class RuntimeSettingsTest extends TestCase
 {
+    public function testDatabaseBackedSettingsReadAndUpdateContractsRemainUnchanged(): void
+    {
+        $script = <<<'PHP'
+define('K_TABLE_PREFIX', 'tce_');
+define('K_DATABASE_TYPE', 'MYSQLI');
+$GLOBALS['queries'] = [];
+$GLOBALS['rows'] = [
+    'access' => [
+        ['setting_key' => 'registration_enabled', 'setting_value' => '1'],
+        ['setting_key' => 'access_help', 'setting_value' => 'Read this first'],
+    ],
+    'single' => [['setting_value' => 'stored-value']],
+    'exists' => [['setting_key' => 'site_name']],
+];
+function F_db_query($sql, $db) {
+    $GLOBALS['queries'][] = $sql;
+    if (str_contains($sql, 'setting_key, setting_value')) {
+        return 'access';
+    }
+    if (str_contains($sql, 'SELECT setting_value')) {
+        return 'single';
+    }
+    if (str_contains($sql, "WHERE setting_key='site_name'")) {
+        return 'exists';
+    }
+    return true;
+}
+function F_db_fetch_array($result) {
+    return is_string($result) ? array_shift($GLOBALS['rows'][$result]) : false;
+}
+function F_escape_sql($db, $value) { return str_replace("'", "''", $value); }
+$db = new stdClass();
+require 'tce_functions_openvsosh_settings.php';
+$access = openvsosh_get_access_settings();
+$single = openvsosh_get_setting('custom');
+$saved = openvsosh_save_setting('site_name', "Teacher's site");
+echo json_encode([$access, $single, $saved, end($GLOBALS['queries'])], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [
+                    'registration_enabled' => true,
+                    'password_reset_enabled' => false,
+                    'access_help' => 'Read this first',
+                ],
+                'stored-value',
+                true,
+                "UPDATE tce_openvsosh_settings SET setting_value='Teacher''s site' WHERE setting_key='site_name'",
+            ],
+            json_decode($output, true, flags: JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testAccessSettingDefaultsReflectFileConfiguration(): void
     {
         self::assertSame(
