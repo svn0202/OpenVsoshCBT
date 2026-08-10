@@ -1714,6 +1714,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     public function testEveryQuestionTypePersistsThroughAnswerSaveAndReload(): void
     {
         $cookies = $this->login();
