@@ -422,6 +422,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringContainsString('data-fraction="1/4"', $body);
     }
 
+    /** @throws \RuntimeException */
     public function testRegradeUpdatesObjectiveScoreAndPreservesEssayScore(): void
     {
         $cookies = $this->login();

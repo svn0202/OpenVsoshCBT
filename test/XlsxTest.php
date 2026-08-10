@@ -76,6 +76,7 @@ final class XlsxTest extends TestCase
         self::assertSame('&lt;a href=&quot;x&quot;&gt;&#039;value&#039; &amp; text&lt;/a&gt;', $output);
     }
 
+    /** @throws \RuntimeException */
     public function testNativeWorkbookRoundTripsTypesAndTreatsFormulaTextAsText(): void
     {
         if (!class_exists(ZipArchive::class)) {
@@ -105,6 +106,7 @@ final class XlsxTest extends TestCase
         self::assertSame('  пробелы  ', $rows[2][0] ?? null);
     }
 
+    /** @throws \RuntimeException */
     public function testReaderRejectsWorkbookFormulaCells(): void
     {
         if (!class_exists(ZipArchive::class)) {
