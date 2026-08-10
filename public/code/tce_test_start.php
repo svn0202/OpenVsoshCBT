@@ -22,6 +22,16 @@
  */
 
 require_once '../config/tce_config.php';
+/**
+ * @var array{
+ *     t_test_info: string,
+ *     hp_test_info: string,
+ *     h_execute: string,
+ *     w_execute: string,
+ *     h_cancel: string,
+ *     w_cancel: string
+ * } $l
+ */
 
 $test_id = 0;
 $pagelevel = K_AUTH_PUBLIC_TEST_EXECUTE;
@@ -31,7 +41,11 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../code/tce_page_header.php';
 
 echo '<div class="popupcontainer">' . K_NEWLINE;
-if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
+if (
+    isset($_REQUEST['testid'])
+    && is_string($_REQUEST['testid'])
+    && (int) $_REQUEST['testid'] > 0
+) {
     require_once '../../shared/code/tce_functions_test.php';
     $test_id = (int) $_REQUEST['testid'];
     echo f_print_test_info($test_id, false);
