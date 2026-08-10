@@ -362,7 +362,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             foreach (['owner', 'colleague'] as $name) {
                 $this->dbExec(
                     'INSERT INTO tce_usrgroups (usrgrp_user_id,usrgrp_group_id) VALUES ('
-                    . $userIds[$name] . ',' . $sharedGroup . ')'
+                    . (int) ($userIds[$name] ?? 0) . ',' . $sharedGroup . ')'
                 );
             }
             $this->dbExec(

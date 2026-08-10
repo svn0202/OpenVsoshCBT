@@ -16,7 +16,7 @@ count = 2
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-null-operand"
 message = "Possibly null middle operand used in string concatenation (type `int|null`)."
-count = 4
+count = 3
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
