@@ -1003,7 +1003,7 @@ function f_is_right_testlog_user($test_id, $testlog_id): bool
  * @param $ordmode (int) Ordering mode: 0=position; 1=alphabetical; 2=ID.
  * @return array id of selected answers
  */
-function F_selectAnswers(
+function f_select_answers(
     $question_id,
     $isright = '',
     $ordering = false,
@@ -1719,9 +1719,9 @@ function f_add_question_answers($testlog_id, $question_id, $question_type, $num_
             case 1:
                 // MCSA
                     // select first right answer
-                    $answers_ids += F_selectAnswers($question_id, 1, false, 1, 0, $randorder, $ordmode);
+                    $answers_ids += f_select_answers($question_id, 1, false, 1, 0, $randorder, $ordmode);
                     // select remaining answers
-                    $answers_ids += F_selectAnswers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
+                    $answers_ids += f_select_answers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
                     if (f_legacy_int_equals($ordmode, 1)) {
                         // reorder answers alphabetically
                         $sql =
@@ -1745,14 +1745,14 @@ function f_add_question_answers($testlog_id, $question_id, $question_type, $num_
             case 2:
                 // MCMA
                     // select answers
-                    $answers_ids += F_selectAnswers($question_id, '', false, $num_answers, 0, $randorder, $ordmode);
+                    $answers_ids += f_select_answers($question_id, '', false, $num_answers, 0, $randorder, $ordmode);
                     break;
             case 4:
             case 5:
                 // ORDERING
                     // select answers
                     $randorder = true;
-                    $answers_ids += F_selectAnswers($question_id, '', true, 0, 0, $randorder, $ordmode);
+                    $answers_ids += f_select_answers($question_id, '', true, 0, 0, $randorder, $ordmode);
                     break;
         }
 

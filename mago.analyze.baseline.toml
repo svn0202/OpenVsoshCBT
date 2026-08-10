@@ -15159,7 +15159,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_selectAnswers`: expected `array<array-key, mixed>`, but found `false`."
+message = "Invalid return type for function `f_select_answers`: expected `array<array-key, mixed>`, but found `false`."
 count = 1
 
 [[issues]]
@@ -15549,7 +15549,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_selectAnswers` is missing a return type hint."
+message = "Function `f_select_answers` is missing a return type hint."
 count = 1
 
 [[issues]]

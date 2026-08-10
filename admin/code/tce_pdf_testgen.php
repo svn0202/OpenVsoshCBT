@@ -535,8 +535,8 @@ for ($item = 1; $item <= $test_num; ++$item) {
                 $answers_ids = [];
                 switch ($q['type']) {
                     case 1: // MCSA
-                        $answers_ids += F_selectAnswers($q['id'], 1, false, 1, 0, $randorder, $test_answers_order_mode);
-                        $answers_ids += F_selectAnswers(
+                        $answers_ids += f_select_answers($q['id'], 1, false, 1, 0, $randorder, $test_answers_order_mode);
+                        $answers_ids += f_select_answers(
                             $q['id'],
                             0,
                             false,
@@ -547,7 +547,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                         );
                         break;
                     case 2: // MCMA
-                        $answers_ids += F_selectAnswers(
+                        $answers_ids += f_select_answers(
                             $q['id'],
                             '',
                             false,
@@ -560,7 +560,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     case 4: // ORDERING
                     case 5: // MATCHING
                         $randorder = true;
-                        $answers_ids += F_selectAnswers($q['id'], '', true, 0, 0, $randorder, $test_answers_order_mode);
+                        $answers_ids += f_select_answers($q['id'], '', true, 0, 0, $randorder, $test_answers_order_mode);
                         break;
                 }
 
