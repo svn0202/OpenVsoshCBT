@@ -19,10 +19,13 @@ final class BackupTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (glob($this->temporaryDirectory . '/*') ?: [] as $path) {
-            if (is_file($path)) {
-                unlink($path);
+        $paths = glob($this->temporaryDirectory . '/*');
+        foreach ($paths === false ? [] : $paths as $path) {
+            if (!is_file($path)) {
+                continue;
             }
+
+            unlink($path);
         }
         if (is_dir($this->temporaryDirectory)) {
             rmdir($this->temporaryDirectory);
@@ -153,7 +156,8 @@ final class BackupTest extends TestCase
             self::fail('A backup must not overwrite an archive from the same second.');
         } catch (\TmfBackupException) {
             self::assertSame($original, file_get_contents($path));
-            self::assertCount(1, glob($this->temporaryDirectory . '/*') ?: []);
+            $backupFiles = glob($this->temporaryDirectory . '/*');
+            self::assertCount(1, $backupFiles === false ? [] : $backupFiles);
         }
     }
 }
