@@ -52,7 +52,7 @@ if (!F_tmf_results_are_published($testdata)) {
 
 $test_basic_score = $testdata['test_score_right'];
 //lock user's test
-F_lockUserTest($test_id, $_SESSION['session_user_id']);
+f_lock_user_test($test_id, $_SESSION['session_user_id']);
 // get user's test stats
 $usrtestdata = F_getUserTestStat($test_id, $user_id, 0, true);
 $userdata = f_get_user_data($user_id);
