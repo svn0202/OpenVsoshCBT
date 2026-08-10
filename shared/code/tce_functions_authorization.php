@@ -322,7 +322,7 @@ function f_logout_page()
  * @param $field_user_id (string) name of the foreign key to to user_id
  * @return boolean true if the user is authorized, false otherwise
  */
-function F_isAuthorizedUser($table, $field_id_name, $value_id, $field_user_id)
+function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';

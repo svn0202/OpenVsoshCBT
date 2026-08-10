@@ -52,7 +52,7 @@ $sqlordermode = $_REQUEST['sqlordermode'] ?? '';
 if (!empty($_REQUEST['test_id']) > 0) {
     $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
-    if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+    if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 } else {

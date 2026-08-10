@@ -38,7 +38,7 @@ function F_tmf_import_word_questions(array $data, $commit = true)
         $result = F_db_query($sql, $db);
         if (
             $result && ($row = F_db_fetch_array($result))
-            && F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $row['module_id'], 'module_user_id')
+            && f_is_authorized_user(K_TABLE_MODULES, 'module_id', $row['module_id'], 'module_user_id')
         ) {
             $module_id = intval($row['module_id']);
         }

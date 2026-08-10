@@ -235,7 +235,7 @@ function F_getRawTestStat(
         if ($rt = F_db_query($sqlt, $db)) {
             while ($mt = F_db_fetch_assoc($rt)) {
                 // check user's authorization
-                if (F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $mt['testuser_test_id'], 'test_user_id')) {
+                if (f_is_authorized_user(K_TABLE_TESTS, 'test_id', $mt['testuser_test_id'], 'test_user_id')) {
                     $test_ids[] = $mt['testuser_test_id'];
                 }
             }

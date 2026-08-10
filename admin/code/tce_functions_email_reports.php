@@ -56,7 +56,7 @@ function f_send_report_emails(
     $mode = (int) $mode;
     if ($test_id > 0) {
         $test_id = (int) $test_id;
-        if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+        if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
             return;
         }
     } else {

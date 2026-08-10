@@ -41,7 +41,7 @@ $ssl_user_id = isset($_REQUEST['ssl_user_id']) ? (int) $_REQUEST['ssl_user_id'] 
 if (isset($_REQUEST['ssl_id']) && $_REQUEST['ssl_id'] > 0) {
     $ssl_id = (int) $_REQUEST['ssl_id'];
     // check user's authorization for this certificate
-    if (!F_isAuthorizedUser(K_TABLE_SSLCERTS, 'ssl_id', $ssl_id, 'ssl_user_id')) {
+    if (!f_is_authorized_user(K_TABLE_SSLCERTS, 'ssl_id', $ssl_id, 'ssl_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 } else {

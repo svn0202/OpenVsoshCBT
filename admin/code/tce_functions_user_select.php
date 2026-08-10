@@ -957,7 +957,7 @@ function f_is_authorized_editor_for_user($user_id)
     }
 
     // a non-administrator editor can only act on a user that shares at least one group
-    // with them (mirrors the authorship/group check in F_isAuthorizedUser); this prevents
+    // with them (mirrors the authorship/group check in f_is_authorized_user); this prevents
     // horizontal-privilege / multi-tenant IDOR on user edit and result import/export.
     $user_id = (int) $user_id;
     $editor_id = (int) $_SESSION['session_user_id'];

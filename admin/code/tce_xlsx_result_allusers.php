@@ -7,7 +7,7 @@ require_once '../../shared/code/tce_functions_test_stats.php';
 require_once '../../shared/code/tce_functions_xlsx.php';
 
 $test_id = isset($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
-if ($test_id <= 0 || !F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+if ($test_id <= 0 || !f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
     http_response_code(403);
     exit();
 }

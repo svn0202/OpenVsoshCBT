@@ -166,8 +166,8 @@ if ($answer_id > 0) {
         if (
             ($m = F_db_fetch_array($r))
             && (
-                !F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $m['subject_module_id'], 'module_user_id')
-                && !F_isAuthorizedUser(K_TABLE_SUBJECTS, 'subject_id', $m['question_subject_id'], 'subject_user_id')
+                !f_is_authorized_user(K_TABLE_MODULES, 'module_id', $m['subject_module_id'], 'module_user_id')
+                && !f_is_authorized_user(K_TABLE_SUBJECTS, 'subject_id', $m['question_subject_id'], 'subject_user_id')
             )
         ) {
             F_print_error('ERROR', $l['m_authorization_denied'], true);
