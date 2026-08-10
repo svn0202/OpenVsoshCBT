@@ -651,24 +651,26 @@ final class StatisticsTest extends TestCase
 
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
-        /**
-         * @var array{
-         *     median: array{spread: float, constant: float},
-         *     standard_deviation: array{spread: float, constant: float},
-         *     skewness: array{spread: float, constant: int},
-         *     kurtosi: array{spread: float, constant: int}
-         * } $statistics
-         */
+        /** @var array<string, array<string, int|float>> $statistics */
         $statistics = \f_get_array_statistics([
             'spread' => [1, 3],
             'constant' => [2, 2],
         ]);
 
-        self::assertSame(2.0, $statistics['median']['spread']);
-        self::assertSame(1.0, $statistics['standard_deviation']['spread']);
-        self::assertSame(0.0, $statistics['standard_deviation']['constant']);
-        self::assertSame(0, $statistics['skewness']['constant']);
-        self::assertSame(0, $statistics['kurtosi']['constant']);
+        self::assertSame([
+            'number' => ['spread' => 2, 'constant' => 2],
+            'sum' => ['spread' => 4.0, 'constant' => 4.0],
+            'mean' => ['spread' => 2.0, 'constant' => 2.0],
+            'median' => ['spread' => 2.0, 'constant' => 2.0],
+            'mode' => ['spread' => 1.0, 'constant' => 2.0],
+            'minimum' => ['spread' => 1, 'constant' => 2],
+            'maximum' => ['spread' => 3, 'constant' => 2],
+            'range' => ['spread' => 2.0, 'constant' => 0.0],
+            'variance' => ['spread' => 1.0, 'constant' => 0.0],
+            'standard_deviation' => ['spread' => 1.0, 'constant' => 0.0],
+            'skewness' => ['spread' => 0.0, 'constant' => 0],
+            'kurtosi' => ['spread' => 1.0, 'constant' => 0],
+        ], $statistics);
     }
 
     private function userTestTotalsQuery(int $testId, int $userId, int $testuserId, int $status): string
