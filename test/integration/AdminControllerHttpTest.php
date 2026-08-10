@@ -397,6 +397,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
     {
         [$manifestStatus, $manifest] = $this->http('GET', '/public/manifest.webmanifest');
         $this->assertSame(200, $manifestStatus);
+        /** @var array{display:string,start_url:string} $decoded */
         $decoded = json_decode($manifest, true, 512, JSON_THROW_ON_ERROR);
         $this->assertSame('standalone', $decoded['display']);
         $this->assertSame('./code/', $decoded['start_url']);
