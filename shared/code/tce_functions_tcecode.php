@@ -46,6 +46,7 @@ function f_decode_tcecode(mixed $text_to_decode): string
 {
     require_once '../config/tce_config.php';
     global $l, $db;
+    /** @var array{a_meta_charset:string} $l */
 
     $text_to_decode = (string) $text_to_decode;
 
@@ -66,7 +67,7 @@ function f_decode_tcecode(mixed $text_to_decode): string
     }
 
     // escape some special HTML characters
-    $newtext = htmlspecialchars($text_to_decode ?? '', ENT_QUOTES, $l['a_meta_charset']);
+    $newtext = htmlspecialchars($text_to_decode, ENT_QUOTES, $l['a_meta_charset']);
 
     $newtext = F_bbcode_to_tcecode($newtext);
 
@@ -104,6 +105,7 @@ function f_decode_tcecode(mixed $text_to_decode): string
     }
 
     // Convert multiple spaces to &nbsp; to support indentation.
+    $matches = [];
     preg_match_all('#[ ]{2,}#', $newtext, $matches);
     if (isset($matches[0])) {
         foreach ($matches[0] as $match) {
@@ -168,7 +170,12 @@ function f_sanitize_html_content(string $html): string
     F_sanitize_html_node($container);
     $result = '';
     foreach ($container->childNodes as $child) {
-        $result .= $document->saveHTML($child);
+        if ($child instanceof DOMNode) {
+            $serialized = $document->saveHTML($child);
+            if ($serialized !== false) {
+                $result .= $serialized;
+            }
+        }
     }
 
     return $result;
@@ -232,7 +239,7 @@ function f_sanitize_html_attributes(DOMElement $element, string $tag): void
         $allowed[] = 'start';
     }
 
-    foreach (iterator_to_array($element->attributes) as $attribute) {
+    foreach (iterator_to_array($element->attributes ?? []) as $attribute) {
         $name = strtolower($attribute->name);
         if (!in_array($name, $allowed, true)) {
             $element->removeAttributeNode($attribute);
@@ -309,7 +316,7 @@ function f_sanitize_html_style(string $style): string
         }
 
         $property = strtolower(trim($parts[0]));
-        $value = strtolower(trim($parts[1]));
+        $value = strtolower(trim($parts[1] ?? ''));
         if (isset($allowed[$property]) && in_array($value, $allowed[$property], true)) {
             $safe[] = $property . ': ' . $value;
         }
@@ -528,19 +535,23 @@ function f_tcecode_run_process(array $command, string $working_directory): array
 function f_latex_callback(mixed $matches): mixed
 {
     require_once '../../shared/config/tce_latex.php';
-    $picture_path = (string) K_LATEX_PATH_PICTURE;
+    /** @var array{1:string} $matches */
+    $picture_path = strval(K_LATEX_PATH_PICTURE);
+    $image_prefix = K_LATEX_IMG_PREFIX;
+    $image_format = K_LATEX_IMG_FORMAT;
+    $image_http_path = (string) K_LATEX_PATH_PICTURE_HTTPD;
     // extract latex code and convert some entities
     $latex = unhtmlentities($matches[1], true);
 
     $dr = 3; // density ratio
     // generate file name
-    $filename = K_LATEX_IMG_PREFIX . md5($latex);
-    $imgpath = K_LATEX_PATH_PICTURE . $filename;
+    $filename = $image_prefix . md5($latex);
+    $imgpath = $picture_path . $filename;
     $imgurl = false;
     $error = '';
     // check if file is already cached
-    if (is_file($imgpath . '.' . K_LATEX_IMG_FORMAT)) {
-        $imgurl = K_LATEX_PATH_PICTURE_HTTPD . $filename . '.' . K_LATEX_IMG_FORMAT;
+    if (is_file($imgpath . '.' . $image_format)) {
+        $imgurl = $image_http_path . $filename . '.' . $image_format;
     } elseif (strlen($latex) > K_LATEX_MAX_LENGHT) {
         // check if the formula
         $error = 'the formula is too long';
@@ -548,7 +559,7 @@ function f_latex_callback(mixed $matches): mixed
         preg_match(
             '/(include|def|command|loop|repeat|open|toks|output|input|catcode|name|[\^]{2}|\\\\every|\\\\errhelp|\\\\errorstopmode|\\\\scrollmode|\\\\nonstopmode|\\\\batchmode|\\\\read|\\\\write|csname|\\\\newhelp|\\\\uppercase|\\\\lowercase|\\\\relax|\\\\aftergroup|\\\\afterassignment|\\\\expandafter|\\\\noexpand|\\\\special)/i',
             $latex,
-        ) > 0
+        ) === 1
     ) {
         $error = 'invalid command';
     } else {
@@ -591,18 +602,19 @@ function f_latex_callback(mixed $matches): mixed
                     '8',
                     '-quality',
                     '100',
-                    basename($imgpath . '.' . K_LATEX_IMG_FORMAT),
+                    basename($imgpath . '.' . $image_format),
                 ], $picture_path);
                 if ($ret !== 0) {
                     $error = $output;
                 } else {
                     // @mago-expect lint:no-error-control-operator -- renderer output validation handles an unreadable image as a failed render
-                    $imsize = @getimagesize($imgpath . '.' . K_LATEX_IMG_FORMAT);
-                    [$w, $h] = $imsize;
+                    $imsize = @getimagesize($imgpath . '.' . $image_format);
+                    $w = $imsize[0] ?? 0;
+                    $h = $imsize[1] ?? 0;
                     if (($w / $dr) > K_LATEX_MAX_WIDTH || ($h / $dr) > K_LATEX_MAX_HEIGHT) {
                         $error = 'image size exceed limits';
                     } else {
-                        $imgurl = K_LATEX_PATH_PICTURE_HTTPD . $filename . '.' . K_LATEX_IMG_FORMAT;
+                        $imgurl = $image_http_path . $filename . '.' . $image_format;
                     }
                 }
             }
@@ -622,7 +634,8 @@ function f_latex_callback(mixed $matches): mixed
         // Keep the placeholder concise. Surface the TeX "! ..." error line when available, but
         // never echo the full pdflatex log into the rendered output (it leaks server paths).
         $msg = '';
-        if ($error !== '' && preg_match('/^!\s*(.+)$/m', $error, $em)) {
+        $em = [];
+        if ($error !== '' && preg_match('/^!\s*(.+)$/m', $error, $em) === 1 && isset($em[1])) {
             $msg = ': ' . trim($em[1]);
         }
         return '[LaTeX error' . htmlspecialchars($msg, ENT_QUOTES) . ']';
@@ -637,8 +650,9 @@ function f_latex_callback(mixed $matches): mixed
     $alt_latex = strtr($alt_latex, $replaceTable);
     // XHTML code for image
     // @mago-expect lint:no-error-control-operator -- the generated image may disappear between rendering and response assembly
-    $imsize = @getimagesize($imgpath . '.' . K_LATEX_IMG_FORMAT);
-    [$w, $h] = $imsize;
+    $imsize = @getimagesize($imgpath . '.' . $image_format);
+    $w = $imsize[0] ?? 0;
+    $h = $imsize[1] ?? 0;
 
     return (
         '<img src="'
@@ -661,6 +675,7 @@ function f_latex_callback(mixed $matches): mixed
  */
 function f_mathml_callback(mixed $matches): mixed
 {
+    /** @var array{1:string} $matches */
     $mathml_tags = '<abs><and><annotation><annotation-xml><apply><approx><arccos><arccosh><arccot><arccoth><arccsc><arccsch><arcsec><arcsech><arcsin><arcsinh><arctan><arctanh><arg><bind><bvar><card><cartesianproduct><cbytes><ceiling><cerror><ci><cn><codomain><complexes><compose><condition><conjugate><cos><cosh><cot><coth><cs><csc><csch><csymbol><curl><declare><degree><determinant><diff><divergence><divide><domain><domainofapplication><el><emptyset><eq><equivalent><eulergamma><exists><exp><exponentiale><factorial><factorof><false><floor><fn><forall><gcd><geq><grad><gt><ident><image><imaginary><imaginaryi><implies><in><infinity><int><integers><intersect><interval><inverse><lambda><laplacian><lcm><leq><limit><list><ln><log><logbase><lowlimit><lt><maction><malign><maligngroup><malignmark><malignscope><math><matrix><matrixrow><max><mean><median><menclose><merror><mfenced><mfrac><mfraction><mglyph><mi><min><minus><mlabeledtr><mlongdiv><mmultiscripts><mn><mo><mode><moment><momentabout><mover><mpadded><mphantom><mprescripts><mroot><mrow><ms><mscarries><mscarry><msgroup><msline><mspace><msqrt><msrow><mstack><mstyle><msub><msubsup><msup><mtable><mtd><mtext><mtr><munder><munderover><naturalnumbers><neq><none><not><notanumber><note><notin><notprsubset><notsubset><or><otherwise><outerproduct><partialdiff><pi><piece><piecewise><plus><power><primes><product><prsubset><quotient><rationals><real><reals><reln><rem><root><scalarproduct><sdev><sec><sech><selector><semantics><sep><set><setdiff><share><sin><sinh><subset><sum><tan><tanh><tendsto><times><transpose><true><union><uplimit><variance><vector><vectorproduct><xor>';
     // extract latex code and convert some entities
     $mathml = unhtmlentities($matches[1], true);
@@ -681,8 +696,9 @@ function f_sanitize_mathml_content(string $mathml, string $allowed_tag_string): 
     if ($mathml === '' || !class_exists('DOMDocument')) {
         return htmlspecialchars($mathml, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
+    $tag_matches = [];
     preg_match_all('/<([a-z0-9-]+)>/i', $allowed_tag_string, $tag_matches);
-    $allowed_tags = array_map('strtolower', $tag_matches[1] ?? []);
+    $allowed_tags = array_values(array_map('strtolower', $tag_matches[1] ?? []));
 
     $document = new DOMDocument('1.0', 'UTF-8');
     $previous_errors = libxml_use_internal_errors(true);
@@ -699,7 +715,12 @@ function f_sanitize_mathml_content(string $mathml, string $allowed_tag_string): 
     F_sanitize_mathml_node($container, $allowed_tags);
     $result = '';
     foreach ($container->childNodes as $child) {
-        $result .= $document->saveHTML($child);
+        if ($child instanceof DOMNode) {
+            $serialized = $document->saveHTML($child);
+            if ($serialized !== false) {
+                $result .= $serialized;
+            }
+        }
     }
     return trim((string) preg_replace('/[\n\r\s]+/', ' ', $result));
 }
@@ -762,6 +783,7 @@ function f_sanitize_mathml_node(DOMNode $parent, array $allowed_tags): void
  */
 function f_objects_callback(mixed $matches): string
 {
+    /** @var array{1:string, 2:string, 3?:int|string, 4?:int|string, 5?:string} $matches */
     $width = 0;
     $height = 0;
     $alt = '';
@@ -795,6 +817,13 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
 {
     require_once '../config/tce_config.php';
     global $l, $db;
+    /** @var string $name */
+    /** @var string $extension */
+    /** @var int|float $width */
+    /** @var int|float $height */
+    /** @var string $alt */
+    /** @var int|float $maxwidth */
+    /** @var int|float $maxheight */
     $filename = $name . '.' . $extension;
     $extension = strtolower($extension);
     $htmlcode = '';
@@ -814,6 +843,8 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
 
                 // @mago-expect lint:no-error-control-operator -- missing or invalid cached media falls back to caller-provided dimensions
                 $imsize = @getimagesize(K_PATH_CACHE . $filename);
+                $pixw = 0;
+                $pixh = 0;
                 if ($imsize !== false) {
                     [$pixw, $pixh] = $imsize;
                     if ($width <= 0 && $height <= 0) {
@@ -862,8 +893,10 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                 break;
         default:
                 include '../../shared/config/tce_mime.php';
-                if (isset($mime[$extension])) {
-                    $htmlcode = '<object type="' . $mime[$extension] . '" data="' . K_PATH_URL_CACHE . $filename . '"';
+                /** @var array<string,string> $mime */
+                $mime_type = $mime[$extension] ?? null;
+                if ($mime_type !== null) {
+                    $htmlcode = '<object type="' . $mime_type . '" data="' . K_PATH_URL_CACHE . $filename . '"';
                     if ($width > 0) {
                         $htmlcode .= ' width="' . $width . '"';
                     } elseif ($maxwidth > 0) {
@@ -877,7 +910,7 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                     }
 
                     $htmlcode .= '>';
-                    $htmlcode .= '<param name="type" value="' . $mime[$extension] . '" />';
+                    $htmlcode .= '<param name="type" value="' . $mime_type . '" />';
                     $htmlcode .= '<param name="src" value="' . K_PATH_URL_CACHE . $filename . '" />';
                     $htmlcode .= '<param name="filename" value="' . K_PATH_URL_CACHE . $filename . '" />';
                     if ($width > 0) {
@@ -895,7 +928,7 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                     if (!empty($alt)) {
                         $htmlcode .= '' . $alt . '';
                     } else {
-                        $htmlcode .= '[' . $mime[$extension] . ']:' . $filename . '';
+                        $htmlcode .= '[' . $mime_type . ']:' . $filename . '';
                     }
 
                     $htmlcode .= '</object>';
@@ -912,11 +945,11 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
 /**
  * Returns specified string without tcecode mark-up tags
  * @param $str (string) text to process
- * @return string without tcecode markup tags
+ * @return string text without tcecode markup tags
  */
-function f_remove_tcecode(mixed $str): mixed
+function f_remove_tcecode(mixed $str): string
 {
-    /** @var string $str */
+    $str = (string) $str;
     $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str) ?? $str;
     $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str) ?? $str;
     $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str) ?? $str;
@@ -959,15 +992,15 @@ function f_tcecode_to_line(mixed $str): mixed
         return $str;
     }
 
-    $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str);
-    $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str);
-    $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str);
-    $str = preg_replace("'\[li\](.*?)\[/li\]'si", ' * \1', $str);
-    $str = preg_replace("'\[\*\](.*?)\n'i", ' * \1', $str);
-    $str = preg_replace("'\[ulist\](.*?)\[/ulist\]'si", '\1', $str);
-    $str = preg_replace("'\[olist([^\]]*?)\](.*?)\[/olist\]'si", '\2', $str);
-    $str = preg_replace("'\[url([^\]]*?)\](.*?)\[/url\]'si", '\2', $str);
-    $str = preg_replace("'\[tex\](.*?)\[/tex\]'si", '[TEX]', $str);
+    $str = preg_replace("'\[object\](.*?)\[/object([^\]]*?)\]'si", '[OBJ]', $str) ?? $str;
+    $str = preg_replace("'\[img([^\]]*?)\](.*?)\[/img\]'si", '[IMG]', $str) ?? $str;
+    $str = preg_replace("'\[code\](.*?)\[/code\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[li\](.*?)\[/li\]'si", ' * \1', $str) ?? $str;
+    $str = preg_replace("'\[\*\](.*?)\n'i", ' * \1', $str) ?? $str;
+    $str = preg_replace("'\[ulist\](.*?)\[/ulist\]'si", '\1', $str) ?? $str;
+    $str = preg_replace("'\[olist([^\]]*?)\](.*?)\[/olist\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[url([^\]]*?)\](.*?)\[/url\]'si", '\2', $str) ?? $str;
+    $str = preg_replace("'\[tex\](.*?)\[/tex\]'si", '[TEX]', $str) ?? $str;
     $str = f_compact_string($str);
     $str = F_decode_tcecode($str);
     $str = f_compact_string($str);
@@ -987,6 +1020,7 @@ function f_tcecode_to_title(mixed $str): string
 {
     require_once '../config/tce_config.php';
     global $l;
+    /** @var array{a_meta_charset:string} $l */
     $str = (string) $str;
     if (F_has_html_markup($str)) {
         $str = html_entity_decode(strip_tags(F_sanitize_html_content($str)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
