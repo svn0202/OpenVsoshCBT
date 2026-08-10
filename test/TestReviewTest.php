@@ -428,6 +428,59 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestSslCertificateValidationPreservesAllBranches(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_SSLCERTS", "test_ssl"); '
+                    . 'define("K_TABLE_SSLCERTS", "ssl_certs"); '
+                    . '$GLOBALS["counts"] = [0, 1, 1, 1, 0]; $GLOBALS["calls"] = []; $GLOBALS["hash_calls"] = 0; '
+                    . 'function F_count_rows($tables, $where) { $GLOBALS["calls"][] = [$tables, $where]; '
+                    . 'return array_shift($GLOBALS["counts"]); } '
+                    . 'function f_get_ssl_client_hash() { ++$GLOBALS["hash_calls"]; return "client-hash"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isValidSSLCert|f_is_valid_ssl_cert)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9")], '
+                    . '$GLOBALS["hash_calls"], $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [true, true, false],
+                2,
+                [
+                    ['test_ssl', 'WHERE tstssl_test_id=7'],
+                    ['test_ssl', 'WHERE tstssl_test_id=8'],
+                    [
+                        'test_ssl, ssl_certs',
+                        "WHERE tstssl_ssl_id=ssl_id\n\t\t\tAND tstssl_test_id=8\n"
+                            . "\t\t\tAND ssl_hash='client-hash'\n\t\t\tLIMIT 1",
+                    ],
+                    ['test_ssl', 'WHERE tstssl_test_id=9'],
+                    [
+                        'test_ssl, ssl_certs',
+                        "WHERE tstssl_ssl_id=ssl_id\n\t\t\tAND tstssl_test_id=9\n"
+                            . "\t\t\tAND ssl_hash='client-hash'\n\t\t\tLIMIT 1",
+                    ],
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
 
 
 
