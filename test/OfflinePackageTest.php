@@ -8,6 +8,26 @@ require_once __DIR__ . '/../shared/code/tce_functions_offline.php';
 
 final class OfflinePackageTest extends TestCase
 {
+    public function testDatabaseValuesAreConvertedWithoutChangingTheirContents(): void
+    {
+        $stream = fopen('php://memory', 'r+');
+        self::assertIsResource($stream);
+        fwrite($stream, "stream\nvalue");
+        rewind($stream);
+
+        $lob = new class {
+            public function load(): string
+            {
+                return 'object value';
+            }
+        };
+
+        self::assertSame('', \F_tmf_offline_scalar(null));
+        self::assertSame("stream\nvalue", \F_tmf_offline_scalar($stream));
+        self::assertSame('object value', \F_tmf_offline_scalar($lob));
+        self::assertSame('0', \F_tmf_offline_scalar(0));
+    }
+
     public function testPayloadSignatureDetectsTampering(): void
     {
         $payload = \F_tmf_offline_payload_encode(['package_id' => 'abc', 'questions' => []]);
