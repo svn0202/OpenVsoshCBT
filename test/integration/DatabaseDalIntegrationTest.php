@@ -272,11 +272,12 @@ final class DatabaseDalIntegrationTest extends TestCase
             $expr = \F_db_datetime_diff_seconds("'2024-01-01 00:00:00'", "'2024-01-01 00:01:00'");
         }
 
-        $res = \F_db_query('SELECT ' . $expr . ' AS d', $this->db);
+        $res = \F_db_query('SELECT ' . strval($expr) . ' AS d', $this->db);
         $this->assertNotFalse($res);
+        /** @var \mysqli_result|\PgSql\Result $res */
 
-        $row = \F_db_fetch_assoc($res);
-        $this->assertSame(60, (int) $row['d']);
+        $row = self::dalRow(\F_db_fetch_assoc($res));
+        $this->assertSame(60, (int) ($row['d'] ?? null));
     }
 
     public function testAnswerVersionColumnsAreAvailable(): void
