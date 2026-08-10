@@ -87,7 +87,7 @@ function f_tmf_save_question_answer(
             return ['status' => $decision, 'version' => $current_version];
         }
 
-        if (!F_updateQuestionLog($test_id, $testlog_id, $answer_positions, $answer_text, $reaction_time)) {
+        if (!f_update_question_log($test_id, $testlog_id, $answer_positions, $answer_text, $reaction_time)) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'version' => $current_version];
         }

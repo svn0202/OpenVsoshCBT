@@ -1813,7 +1813,7 @@ function f_add_question_answers($testlog_id, $question_id, $question_type, $num_
  * @param $reaction_time (int) reaction time in milliseconds
  * @return boolean TRUE in case of success, FALSE otherwise
  */
-function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text = '', $reaction_time = 0)
+function f_update_question_log($test_id, $testlog_id, $answpos = [], $answer_text = '', $reaction_time = 0)
 {
     require_once '../config/tce_config.php';
     global $db, $l;

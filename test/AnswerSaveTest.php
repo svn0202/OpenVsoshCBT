@@ -73,7 +73,7 @@ final class AnswerSaveTest extends TestCase
                     . 'function date($format) { return "2026-08-10 12:34:56"; } '
                     . 'function get_normalized_ip($ip) { return "IP"; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_updateQuestionLog)\\(/", '
+                    . 'preg_match("/function (f_update_question_log)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
