@@ -514,7 +514,7 @@ function get_normalized_ip(mixed $ip): string|false
 /**
  * Converts an IP address into its packed 16-byte binary representation (network byte order).
  * This preserves full 128-bit precision and is case-insensitive, so the returned fixed-width
- * byte strings can be ordered and range-compared losslessly with strcmp() (see F_isValidIP).
+ * byte strings can be ordered and range-compared losslessly with strcmp() (see f_is_valid_ip).
  * Input may use any notation accepted by get_normalized_ip() (IPv4, IPv6, or the expanded form
  * already stored in the database).
  * @param $ip (string) IP address to convert.
