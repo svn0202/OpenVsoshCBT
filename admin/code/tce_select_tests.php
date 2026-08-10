@@ -22,9 +22,12 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_TESTS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{t_test_select:string,a_meta_charset:string,w_search:string,m_updated:string} $l */
+/** @var mixed $db */
 $thispage_title = $l['t_test_select'];
 
 require_once '../code/tce_page_header.php';
@@ -35,6 +38,7 @@ $order_field = $_REQUEST['order_field'] ?? 'user_lastname,user_firstname';
 $orderdir = isset($_REQUEST['orderdir']) ? (int) $_REQUEST['orderdir'] : 0;
 $firstrow = isset($_REQUEST['firstrow']) ? (int) $_REQUEST['firstrow'] : 0;
 $rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] : K_MAX_ROWS_PER_PAGE;
+/** @var string $searchterms */
 $searchterms = $_REQUEST['searchterms'] ?? '';
 
 if (isset($_POST['lock'])) {
@@ -68,14 +72,21 @@ $wherequery = '';
 if (strlen($searchterms) > 0) {
     $wherequery = '';
     $terms = preg_split("/[\s]+/i", $searchterms); // Get all the words into an array
+    if ($terms === false) {
+        $terms = [];
+    }
     foreach ($terms as $word) {
         $word = F_escape_sql($db, $word);
         $wherequery .= ' AND (';
         $wherequery .= " (test_name LIKE '%" . $word . "%')";
         $wherequery .= " OR (test_description LIKE '%" . $word . "%')";
-        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) === 1 && checkdate($wd[2], $wd[3], $wd[1])) {
-            $wherequery .= " OR ((test_begin_time <= '" . $word . "')";
-            $wherequery .= " AND (test_end_time >= '" . $word . "'))";
+        $wd = [];
+        if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) === 1) {
+            /** @var array{0:string,1:numeric-string,2:numeric-string,3:numeric-string} $wd */
+            if (checkdate((int) $wd[2], (int) $wd[3], (int) $wd[1])) {
+                $wherequery .= " OR ((test_begin_time <= '" . $word . "')";
+                $wherequery .= " AND (test_end_time >= '" . $word . "'))";
+            }
         }
 
         $wherequery .= ')';
@@ -102,7 +113,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
 							test_end_time=test_end_time-10000000000000
 							WHERE test_id=' . $test_id . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tmf_select_tests_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error(false);
                         }
 
@@ -112,7 +124,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET
 							test_end_time=test_end_time+10000000000000
 							WHERE test_id=' . $test_id . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tmf_select_tests_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error(false);
                         }
 
@@ -121,7 +134,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                     case 'delete':
                         $sql = 'DELETE FROM ' . K_TABLE_TESTS . '
 							WHERE test_id=' . $test_id . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        $r = f_tmf_select_tests_query_result(F_db_query($sql, $db));
+                        if (!$r) {
                             F_display_db_error();
                         }
 
@@ -139,3 +153,17 @@ echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_select_tests_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
