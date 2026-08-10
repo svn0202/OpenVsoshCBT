@@ -11791,18 +11791,6 @@ message = "Unreachable else clause"
 count = 3
 
 [[issues]]
-file = "shared/code/tce_db_dal.php"
-code = "match-default-arm-always-executed"
-message = "This default arm is always executed because no other arms can match."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_db_dal.php"
-code = "unreachable-match-arm"
-message = "This match arm is unreachable."
-count = 4
-
-[[issues]]
 file = "shared/code/tce_db_dal_mysql.php"
 code = "duplicate-definition"
 message = "Function `f_db_affected_rows` is already defined elsewhere."
