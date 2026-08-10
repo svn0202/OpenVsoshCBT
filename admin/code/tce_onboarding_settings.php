@@ -2,6 +2,7 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMINISTRATOR;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -10,8 +11,58 @@ require_once '../../shared/config/tce_user_registration.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 require_once '../../shared/code/tce_functions_site_assets.php';
 
-$settings_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
-$thispage_title = (string) ($l['ov_instance_settings'] ?? 'Настройки площадки');
+/**
+ * @var array{
+ *     a_meta_charset:string,
+ *     ov_instance_settings?:string,
+ *     ov_access_settings_saved:string,
+ *     ov_settings_save_failed:string,
+ *     ov_access_control:string,
+ *     ov_disable_registration:string,
+ *     ov_disable_registration_hint:string,
+ *     ov_disable_password_reset:string,
+ *     ov_disable_password_reset_hint:string,
+ *     ov_access_help:string,
+ *     ov_access_help_hint:string,
+ *     ov_save?:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var array{REQUEST_METHOD:string,SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/**
+ * @var array{
+ *     save_onboarding?:mixed,
+ *     save_site?:mixed,
+ *     save_access?:mixed,
+ *     csrf_token?:mixed,
+ *     instruction_test_id?:mixed,
+ *     demo_test_id?:mixed,
+ *     disable_registration?:mixed,
+ *     disable_password_reset?:mixed,
+ *     access_help?:string,
+ *     ...<string,mixed>
+ * } $post
+ */
+$post = $_POST;
+/** @var array<string,array<string,mixed>> $files */
+$files = $_FILES;
+/** @return array<array-key,mixed>|null */
+$normalize_array = static fn (mixed $value): ?array => is_array($value) ? $value : null;
+$normalize_query_result = static function (mixed $result): mixed {
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+};
+
+$settings_charset = $l['a_meta_charset'];
+$thispage_title = $l['ov_instance_settings'] ?? 'Настройки площадки';
 require_once 'tce_page_header.php';
 
 $config = f_get_onboarding_config();
@@ -19,12 +70,12 @@ $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
 $appearance_config = openvsosh_get_appearance_settings();
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
-    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_onboarding'])) {
+    if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
         exit();
     }
-    $instruction_id = max(0, (int) ($_POST['instruction_test_id'] ?? 0));
-    $demo_id = max(0, (int) ($_POST['demo_test_id'] ?? 0));
+    $instruction_id = max(0, (int) ($post['instruction_test_id'] ?? 0));
+    $demo_id = max(0, (int) ($post['demo_test_id'] ?? 0));
     if ($instruction_id > 0 && $instruction_id === $demo_id) {
         F_print_error('WARNING', 'Для инструкции и демо-теста выберите разные тесты.');
     } elseif (f_save_onboarding_config($instruction_id, $demo_id)) {
@@ -35,20 +86,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_onboarding'])) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
-    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_site'])) {
+    if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
         exit();
     }
-    $site_result = openvsosh_save_site_settings($_POST);
-    $runtime_result = openvsosh_save_runtime_settings($_POST);
-    $appearance_result = openvsosh_save_appearance_settings($_POST);
+    $site_result = openvsosh_save_site_settings($post);
+    $runtime_result = openvsosh_save_runtime_settings($post);
+    $appearance_result = openvsosh_save_appearance_settings($post);
     if ($site_result['saved'] && $runtime_result['saved'] && $appearance_result['saved']) {
         $asset_errors = [];
         foreach (['logo', 'background'] as $asset_type) {
-            if (isset($_FILES['site_' . $asset_type])) {
+            $uploaded_file = $files['site_' . $asset_type] ?? null;
+            if (is_array($uploaded_file)) {
                 $asset_result = openvsosh_store_site_asset(
                     $asset_type,
-                    (array) $_FILES['site_' . $asset_type],
+                    $uploaded_file,
                 );
                 if (!$asset_result['stored']) {
                     $asset_errors[] = $asset_result['message'];
@@ -82,14 +134,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_site'])) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_access'])) {
-    if (empty($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_access'])) {
+    if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
         exit();
     }
 
-    $registration_enabled = !isset($_POST['disable_registration']);
-    $password_reset_enabled = !isset($_POST['disable_password_reset']);
-    $access_help = trim((string) ($_POST['access_help'] ?? ''));
+    $registration_enabled = !isset($post['disable_registration']);
+    $password_reset_enabled = !isset($post['disable_password_reset']);
+    $access_help = trim($post['access_help'] ?? '');
     if (mb_strlen($access_help) > 5000) {
         $access_help = mb_substr($access_help, 0, 5000);
     }
@@ -104,8 +156,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_access'])) {
 
 $tests = [];
 $sql = 'SELECT test_id, test_name, test_begin_time, test_end_time FROM ' . K_TABLE_TESTS . ' ORDER BY test_name';
-if ($r = F_db_query($sql, $db)) {
-    while ($test = F_db_fetch_array($r)) {
+if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+    while ($test = $normalize_array(F_db_fetch_array($r))) {
         $tests[] = $test;
     }
 }
@@ -115,10 +167,8 @@ function f_onboarding_test_select(string $name, int $selected, array $tests, str
 {
     echo '<select name="' . $name . '" id="' . $name . '">' . K_NEWLINE;
     echo '<option value="0">— не назначен —</option>' . K_NEWLINE;
-    foreach ($tests as $test) {
-        if (!is_array($test)) {
-            continue;
-        }
+    $valid_tests = array_filter($tests, 'is_array');
+    foreach ($valid_tests as $test) {
         $id = (int) ($test['test_id'] ?? 0);
         echo '<option value="' . $id . '"' . ($id === (int) $selected ? ' selected="selected"' : '') . '>';
         echo htmlspecialchars((string) ($test['test_name'] ?? ''), ENT_QUOTES, $charset);
@@ -132,7 +182,7 @@ echo '<section class="settings-intro"><div><span>Центр управления
     . '<h2>Внешний вид и поведение площадки</h2>'
     . '<p>Настройте узнаваемое оформление, экран входа и основные параметры без правки файлов.</p></div>'
     . '<a href="../../public/code/index.php">Открыть площадку <span aria-hidden="true">↗</span></a></section>' . K_NEWLINE;
-echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
     . '" method="post" enctype="multipart/form-data">' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">01</span> Фирменное оформление</legend>' . K_NEWLINE;
 $site_fields = [
@@ -146,10 +196,10 @@ foreach ($site_fields as $key => [$label, $limit]) {
     echo '<div class="row"><label for="' . $key . '">' . $label . '</label>';
     if ($limit > 250) {
         echo '<textarea name="' . $key . '" id="' . $key . '" maxlength="' . $limit . '">'
-            . htmlspecialchars($site_config[$key], ENT_QUOTES, $l['a_meta_charset']) . '</textarea>';
+            . htmlspecialchars($site_config[$key] ?? '', ENT_QUOTES, $l['a_meta_charset']) . '</textarea>';
     } else {
         echo '<input type="text" name="' . $key . '" id="' . $key . '" maxlength="' . $limit
-            . '" value="' . htmlspecialchars($site_config[$key], ENT_QUOTES, $l['a_meta_charset']) . '" />';
+            . '" value="' . htmlspecialchars($site_config[$key] ?? '', ENT_QUOTES, $l['a_meta_charset']) . '" />';
     }
     echo '</div>' . K_NEWLINE;
 }
@@ -216,15 +266,23 @@ echo '</div></fieldset>' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">02</span> Язык, время и предупреждения</legend>' . K_NEWLINE;
 echo '<div class="row"><label for="default_language">Язык по умолчанию</label>'
     . '<select name="default_language" id="default_language">';
-foreach ((array) unserialize(K_AVAILABLE_LANGUAGES, ['allowed_classes' => false]) as $code => $name) {
-    echo '<option value="' . htmlspecialchars((string) $code, ENT_QUOTES) . '"'
-        . ((string) $runtime_config['default_language'] === (string) $code ? ' selected="selected"' : '')
-        . '>' . htmlspecialchars((string) $name, ENT_QUOTES, $l['a_meta_charset']) . '</option>';
+$raw_languages = $normalize_array(unserialize((string) K_AVAILABLE_LANGUAGES, ['allowed_classes' => false])) ?? [];
+$available_languages = [];
+foreach (array_keys($raw_languages) as $code) {
+    if (!is_string($code) || !is_string($raw_languages[$code] ?? null)) {
+        continue;
+    }
+    $available_languages[$code] = $raw_languages[$code];
+}
+foreach ($available_languages as $code => $name) {
+    echo '<option value="' . htmlspecialchars($code, ENT_QUOTES) . '"'
+        . ($runtime_config['default_language'] === $code ? ' selected="selected"' : '')
+        . '>' . htmlspecialchars($name, ENT_QUOTES, $l['a_meta_charset']) . '</option>';
 }
 echo '</select></div>' . K_NEWLINE;
 echo '<div class="row"><label for="default_timezone">Часовой пояс</label>'
     . '<input type="text" name="default_timezone" id="default_timezone" list="timezone-list" maxlength="64" value="'
-    . htmlspecialchars((string) $runtime_config['default_timezone'], ENT_QUOTES, $l['a_meta_charset']) . '" />'
+    . htmlspecialchars($runtime_config['default_timezone'], ENT_QUOTES, $l['a_meta_charset']) . '" />'
     . '<datalist id="timezone-list">';
 foreach (timezone_identifiers_list() as $timezone) {
     echo '<option value="' . htmlspecialchars($timezone, ENT_QUOTES) . '"></option>';
@@ -238,14 +296,14 @@ echo '<div class="row"><label for="timer_critical_seconds">Критически�
     . (int) $runtime_config['timer_critical_seconds'] . '" /></div>' . K_NEWLINE;
 echo '<div class="row"><label for="timer_warning_color">Цвет предупреждения</label>'
     . '<input type="color" name="timer_warning_color" id="timer_warning_color" value="'
-    . htmlspecialchars((string) $runtime_config['timer_warning_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
+    . htmlspecialchars($runtime_config['timer_warning_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
 echo '<div class="row"><label for="timer_critical_color">Критический цвет</label>'
     . '<input type="color" name="timer_critical_color" id="timer_critical_color" value="'
-    . htmlspecialchars((string) $runtime_config['timer_critical_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
+    . htmlspecialchars($runtime_config['timer_critical_color'], ENT_QUOTES) . '" /></div>' . K_NEWLINE;
 echo '</fieldset><div class="onboarding-admin-actions">'
     . '<button type="submit" name="save_site" value="1" class="button">Сохранить оформление</button></div>'
     . f_get_csrf_token_field() . K_NEWLINE . '</form>' . K_NEWLINE;
-echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">03</span> '
     . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])
     . '</legend>' . K_NEWLINE;
@@ -272,12 +330,12 @@ echo '<div class="row"><label for="access_help">'
     . '</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_access" value="1" class="button">'
-    . htmlspecialchars((string) ($l['ov_save'] ?? 'Сохранить'), ENT_QUOTES, $settings_charset)
+    . htmlspecialchars($l['ov_save'] ?? 'Сохранить', ENT_QUOTES, $settings_charset)
     . '</button></div>' . K_NEWLINE;
 echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '<p>Укажите, какие тесты считать инструкцией и демо. Они будут показаны участнику над основным каталогом, пока он их не завершит.</p>' . K_NEWLINE;
-echo '<form class="settings-form" action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">04</span> Последовательность знакомства</legend>' . K_NEWLINE;
 echo '<div class="row"><label for="instruction_test_id">1. Тест-инструкция</label>' . K_NEWLINE;
 f_onboarding_test_select(
