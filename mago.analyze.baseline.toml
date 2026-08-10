@@ -3961,42 +3961,6 @@ message = "Redundant `&&` operation: left operand is always falsy and right oper
 count = 2
 
 [[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `urldecode`: expected `string`, but found `truthy-mixed`."
-count = 2
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 6
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 6
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_functions_users_online.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 1
-
-[[issues]]
 file = "admin/code/tce_import_omr_answers.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
