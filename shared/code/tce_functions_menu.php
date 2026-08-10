@@ -31,19 +31,30 @@ function f_menu_link(mixed $link, mixed $data, mixed $level = 0): ?string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    if (!is_array($data)) {
+        return null;
+    }
     $level = (int) $level;
-    if (!$data['enabled'] || $_SESSION['session_user_level'] < $data['level']) {
+    $item_level = (int) ($data['level'] ?? 0);
+    if (empty($data['enabled']) || (int) ($_SESSION['session_user_level'] ?? 0) < $item_level) {
         // this item is disabled
         return null;
     }
 
+    $item_link = (string) ($data['link'] ?? '');
+    $item_title = (string) ($data['title'] ?? '');
+    $item_name = (string) ($data['name'] ?? '');
+    $charset = 'UTF-8';
+    if (is_array($l) && isset($l['a_meta_charset']) && is_string($l['a_meta_charset'])) {
+        $charset = $l['a_meta_charset'];
+    }
     $description = '';
-    if ($level > 0 && !empty($data['title']) && trim((string) $data['title']) !== trim((string) $data['name'])) {
-        $description = '<small class="menu-description">' . $data['title'] . '</small>';
+    if ($level > 0 && $item_title !== '' && trim($item_title) !== trim($item_name)) {
+        $description = '<small class="menu-description">' . $item_title . '</small>';
     }
     $str = '<li>';
     if ((string) $link !== basename($_SERVER['SCRIPT_NAME'])) {
-        $str .= '<a href="' . $data['link'] . '" title="' . $data['title'] . '"';
+        $str .= '<a href="' . $item_link . '" title="' . $item_title . '"';
         if (!empty($data['key'])) {
             $str .= ' accesskey="' . (string) $data['key'] . '"';
         }
@@ -53,21 +64,23 @@ function f_menu_link(mixed $link, mixed $data, mixed $level = 0): ?string
         }
 
         $str .= '>' . f_menu_icon_svg((string) ($data['icon'] ?? ''))
-            . '<span class="menu-label">' . $data['name'] . $description . '</span></a>';
+            . '<span class="menu-label">' . $item_name . $description . '</span></a>';
     } else {
         // current page (active link): mark it for assistive technologies
         $str .= '<span class="active" data-menu-link="'
-            . htmlspecialchars($data['link'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($item_link, ENT_QUOTES, $charset)
             . '" aria-current="page">' . f_menu_icon_svg((string) ($data['icon'] ?? ''))
-            . '<span class="menu-label">' . $data['name'] . $description . '</span></span>';
+            . '<span class="menu-label">' . $item_name . $description . '</span></span>';
     }
 
-    if (isset($data['sub']) && !empty($data['sub'])) {
+    if (isset($data['sub']) && is_array($data['sub']) && $data['sub'] !== []) {
         // print sub-items
         $sublevel = $level + 1;
         $str .= K_NEWLINE;
         $str .= '<ul>' . K_NEWLINE;
-        foreach ($data['sub'] as $sublink => $subdata) {
+        /** @var array<array-key, array<array-key, mixed>> $subitems */
+        $subitems = array_filter($data['sub'], static fn(mixed $item): bool => is_array($item));
+        foreach ($subitems as $sublink => $subdata) {
             $str .= F_menu_link($sublink, $subdata, $sublevel) ?? '';
         }
 
@@ -110,14 +123,19 @@ function f_menu_icon_svg(string $icon): string
  */
 function f_menu_is_child_active(mixed $data): bool
 {
-    if (isset($data['sub']) && !empty($data['sub'])) {
-        if (array_key_exists(basename($_SERVER['SCRIPT_NAME']), $data['sub'])) {
+    if (!is_array($data)) {
+        return false;
+    }
+    if (isset($data['sub']) && is_array($data['sub']) && $data['sub'] !== []) {
+        /** @var array<array-key, array<array-key, mixed>> $subitems */
+        $subitems = array_filter($data['sub'], static fn(mixed $item): bool => is_array($item));
+        if (array_key_exists(basename($_SERVER['SCRIPT_NAME']), $subitems)) {
             // key found
             return true;
         }
 
         // try sub-trees
-        foreach ($data['sub'] as $submenu) {
+        foreach ($subitems as $submenu) {
             if (f_menu_is_child_active($submenu)) {
                 return true;
             }
