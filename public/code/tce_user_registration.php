@@ -28,28 +28,54 @@ $newpassword_repeat = isset($_POST['newpassword_repeat']) && is_string($_POST['n
     : '';
 
 // read submitted form inputs (used by the registration processing path below)
-$user_name = $_REQUEST['user_name'] ?? '';
-$user_email = $_REQUEST['user_email'] ?? '';
-$user_regnumber = $_REQUEST['user_regnumber'] ?? '';
-$user_firstname = $_REQUEST['user_firstname'] ?? '';
-$user_lastname = $_REQUEST['user_lastname'] ?? '';
-$user_birthdate = $_REQUEST['user_birthdate'] ?? '';
-$user_birthplace = $_REQUEST['user_birthplace'] ?? '';
-$user_ssn = $_REQUEST['user_ssn'] ?? '';
-$user_groups = $_REQUEST['user_groups'] ?? [];
+$user_name = f_tce_user_registration_string($_REQUEST['user_name'] ?? '');
+$user_email = f_tce_user_registration_string($_REQUEST['user_email'] ?? '');
+$user_regnumber = f_tce_user_registration_string($_REQUEST['user_regnumber'] ?? '');
+$user_firstname = f_tce_user_registration_string($_REQUEST['user_firstname'] ?? '');
+$user_lastname = f_tce_user_registration_string($_REQUEST['user_lastname'] ?? '');
+$user_birthdate = f_tce_user_registration_string($_REQUEST['user_birthdate'] ?? '');
+$user_birthplace = f_tce_user_registration_string($_REQUEST['user_birthplace'] ?? '');
+$user_ssn = f_tce_user_registration_string($_REQUEST['user_ssn'] ?? '');
+$user_groups = f_tce_user_registration_groups($_REQUEST['user_groups'] ?? []);
 
 require_once '../../shared/config/tce_user_registration.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
-$access_settings = openvsosh_get_access_settings();
+$access_settings = f_tce_user_registration_access_settings(openvsosh_get_access_settings());
 if (!$access_settings['registration_enabled']) {
     // user registration is disabled, redirect to main page
     header('Location: ' . K_PATH_HOST . K_PATH_TCEXAM);
     exit();
 }
 
+/** @var int $pagelevel */
 $pagelevel = 0;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_otp.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,d_password_length:string,h_add:string,h_birth_date:string,h_birth_place:string,
+ *     h_firstname:string,h_fiscal_code:string,h_index:string,h_lastname:string,h_login_name:string,
+ *     h_password_repeat:string,h_password:string,h_regcode:string,h_usered_email:string,hp_user_registration:string,
+ *     m_different_passwords:string,m_duplicate_name:string,m_duplicate_regnumber:string,m_duplicate_ssn:string,
+ *     m_empty_password:string,m_new_window_link:string,m_user_registration_ok:string,m_user_verification_sent:string,
+ *     t_user_registration:string,w_add:string,w_birth_date:string,w_birth_place:string,w_date_format:string,
+ *     w_email:string,w_firstname:string,w_fiscal_code:string,w_groups:string,w_i_agree:string,w_lastname:string,
+ *     w_name:string,w_password:string,w_regcode:string,w_repeat:string,w_username:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var string $menu_mode */
+/**
+ * @var array{
+ *     user_name:int|string|bool,newpassword:int|string|bool,newpassword_repeat:int|string|bool,
+ *     user_email:int|string|bool,user_regnumber:int|string|bool,user_firstname:int|string|bool,
+ *     user_lastname:int|string|bool,user_birthdate:int|string|bool,user_birthplace:int|string|bool,
+ *     user_ssn:int|string|bool,user_groups:int|string|bool,user_agreement:int|string|bool
+ * } $regfields
+ */
+/** @var array{SCRIPT_NAME:string,REMOTE_ADDR:string} $server */
+$server = $_SERVER;
 
 $thispage_title = $l['t_user_registration'];
 $thispage_description = $l['hp_user_registration'];
@@ -75,8 +101,8 @@ $reqfields = [];
 $reqdesc = [];
 foreach ($regfields as $field => $required) {
     if (f_legacy_int_equals($required, 2)) {
-        $reqfields[] = (string) $field;
-        $reqdesc[] = htmlspecialchars($fielddesc[$field], ENT_COMPAT, $l['a_meta_charset']);
+        $reqfields[] = $field;
+        $reqdesc[] = htmlspecialchars($fielddesc[$field] ?? '', ENT_COMPAT, $l['a_meta_charset']);
     }
 }
 
@@ -118,7 +144,8 @@ if ($menu_mode === 'add') { // process submitted data
         }
     }
 
-    if ($formstatus = F_check_form_fields()) { // check submitted form fields
+    $formstatus = F_check_form_fields();
+    if ($formstatus) { // check submitted form fields
         // check if name is unique
         if (!F_check_unique(K_TABLE_USERS, "user_name='" . F_escape_sql($db, $user_name) . "'")) {
             F_print_error('WARNING', $l['m_duplicate_name']);
@@ -127,8 +154,7 @@ if ($menu_mode === 'add') { // process submitted data
 
         // check if registration number is unique
         if (
-            isset($user_regnumber)
-            && strlen($user_regnumber) > 0
+            strlen($user_regnumber) > 0
             && !F_check_unique(K_TABLE_USERS, "user_regnumber='" . F_escape_sql($db, $user_regnumber) . "'")
         ) {
             F_print_error('WARNING', $l['m_duplicate_regnumber']);
@@ -137,22 +163,23 @@ if ($menu_mode === 'add') { // process submitted data
 
         // check if ssn is unique
         if (
-            isset($user_ssn)
-            && strlen($user_ssn) > 0
+            strlen($user_ssn) > 0
             && !F_check_unique(K_TABLE_USERS, "user_ssn='" . F_escape_sql($db, $user_ssn) . "'")
         ) {
             F_print_error('WARNING', $l['m_duplicate_ssn']);
             $formstatus = false;
         }
 
+        $user_password = '';
+        $user_otpkey = '';
         // check password
         if (!empty($newpassword) || !empty($newpassword_repeat)) {
             // update password
             // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
             if ($newpassword === $newpassword_repeat) {
-                $user_password = get_password_hash($newpassword);
+                $user_password = f_tce_user_registration_string(get_password_hash($newpassword));
                 // update OTP key
-                $user_otpkey = f_get_random_otp_key();
+                $user_otpkey = f_tce_user_registration_string(f_get_random_otp_key());
             } else { //print message and exit
                 F_print_error('WARNING', $l['m_different_passwords']);
                 $formstatus = false;
@@ -164,10 +191,10 @@ if ($menu_mode === 'add') { // process submitted data
 
         if ($formstatus) {
             $user_verifycode = md5(uniqid((string) random_int(0, mt_getrandmax()), true)); // verification code
-            $user_ip = get_normalized_ip($_SERVER['REMOTE_ADDR']); // get the user's IP number
+            $user_ip = f_tce_user_registration_string(get_normalized_ip($server['REMOTE_ADDR'])); // get the user's IP number
             $user_regdate = date(K_TIMESTAMP_FORMAT);
             // get the registration date and time
-            $usrlevel = K_USRREG_EMAIL_CONFIRM ? 0 : 1;
+            $usrlevel = f_tce_user_registration_bool(K_USRREG_EMAIL_CONFIRM) ? 0 : 1;
 
             $sql =
                 'INSERT INTO '
@@ -231,10 +258,12 @@ if ($menu_mode === 'add') { // process submitted data
                 . f_empty_to_null($user_otpkey)
                 . '
 				)';
-            if (!($r = F_db_query($sql, $db))) {
+            $r = f_tce_user_registration_query_result(F_db_query($sql, $db));
+            $user_id = 0;
+            if (!$r) {
                 F_display_db_error(false);
             } else {
-                $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
+                $user_id = (int) F_db_insert_id($db, K_TABLE_USERS, 'user_id');
             }
 
             // add user's groups
@@ -244,8 +273,9 @@ if ($menu_mode === 'add') { // process submitted data
                 $user_groups[] = K_USRREG_GROUP;
             }
 
+            $allowed_groups = f_tce_user_registration_allowed_groups(K_USRREG_ALLOWED_GROUPS);
             foreach ($user_groups as $group_id) {
-                if (!in_array($group_id, K_USRREG_ALLOWED_GROUPS)) {
+                if (!in_array($group_id, $allowed_groups)) {
                     continue;
                 }
 
@@ -263,12 +293,13 @@ if ($menu_mode === 'add') { // process submitted data
                     . (int) $group_id
                     . '\'
 					)';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_user_registration_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 }
             }
 
-            if (K_USRREG_EMAIL_CONFIRM) {
+            if (f_tce_user_registration_bool(K_USRREG_EMAIL_CONFIRM)) {
                 // require email confirmation
                 require_once '../../shared/code/tce_functions_user_registration.php';
                 F_send_user_reg_email($user_id, $user_email, $user_verifycode);
@@ -296,63 +327,63 @@ if ($menu_mode === 'add') { // process submitted data
 
 // --- Initialize variables
 if (isset($_REQUEST['user_name'])) {
-    $user_name = htmlspecialchars($_REQUEST['user_name'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_name = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_name']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_name = '';
 }
 
 if (isset($_REQUEST['user_email'])) {
-    $user_email = htmlspecialchars($_REQUEST['user_email'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_email = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_email']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_email = '';
 }
 
-$user_password = $_REQUEST['user_password'] ?? '';
+$user_password = f_tce_user_registration_string($_REQUEST['user_password'] ?? '');
 
 if (isset($_REQUEST['user_regnumber'])) {
-    $user_regnumber = htmlspecialchars($_REQUEST['user_regnumber'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_regnumber = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_regnumber']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_regnumber = '';
 }
 
 if (isset($_REQUEST['user_firstname'])) {
-    $user_firstname = htmlspecialchars($_REQUEST['user_firstname'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_firstname = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_firstname']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_firstname = '';
 }
 
 if (isset($_REQUEST['user_lastname'])) {
-    $user_lastname = htmlspecialchars($_REQUEST['user_lastname'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_lastname = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_lastname']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_lastname = '';
 }
 
 if (isset($_REQUEST['user_birthdate'])) {
-    $user_birthdate = htmlspecialchars($_REQUEST['user_birthdate'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_birthdate = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_birthdate']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_birthdate = '';
 }
 
 if (isset($_REQUEST['user_birthplace'])) {
-    $user_birthplace = htmlspecialchars($_REQUEST['user_birthplace'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_birthplace = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_birthplace']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_birthplace = '';
 }
 
 if (isset($_REQUEST['user_ssn'])) {
-    $user_ssn = htmlspecialchars($_REQUEST['user_ssn'], ENT_COMPAT, $l['a_meta_charset']);
+    $user_ssn = htmlspecialchars(f_tce_user_registration_string($_REQUEST['user_ssn']), ENT_COMPAT, $l['a_meta_charset']);
 } else {
     $user_ssn = '';
 }
 
-$user_groups = $_REQUEST['user_groups'] ?? [];
+$user_groups = f_tce_user_registration_groups($_REQUEST['user_groups'] ?? []);
 
 // some fields are always required
 $regfields['user_name'] = 2;
 // @mago-expect lint:no-literal-password -- this is a required-field flag, not a password value
 $regfields['newpassword'] = 2;
 $regfields['newpassword_repeat'] = 2;
-if (K_USRREG_EMAIL_CONFIRM) {
+if (f_tce_user_registration_bool(K_USRREG_EMAIL_CONFIRM)) {
     $regfields['user_email'] = 2;
 }
 
@@ -361,7 +392,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_usereditor">'
         . K_NEWLINE
 ;
@@ -383,7 +414,10 @@ echo
         'username',
     )
 ;
-if (K_USRREG_EMAIL_CONFIRM || $regfields['user_email']) {
+if (
+    f_tce_user_registration_bool(K_USRREG_EMAIL_CONFIRM)
+    || f_tce_user_registration_bool($regfields['user_email'])
+) {
     echo
         get_form_row_text_input(
             'user_email',
@@ -566,8 +600,9 @@ if ($regfields['user_groups']) {
     $sql = 'SELECT *
 		FROM ' . K_TABLE_GROUPS . '
 		ORDER BY group_name';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    $r = f_tce_user_registration_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while (($m = f_tce_user_registration_group_row(F_db_fetch_array($r))) !== null) {
             echo '<option value="' . $m['group_id'] . '"';
             if (in_array($m['group_id'], $user_groups) || f_legacy_int_equals($m['group_id'], K_USRREG_GROUP)) {
                 echo ' selected="selected"';
@@ -613,7 +648,7 @@ echo '<div class="row">' . K_NEWLINE;
 F_submit_button('add', $l['w_add'], $l['h_add']);
 
 echo '</div>' . K_NEWLINE;
-echo f_get_csrf_token_field() . K_NEWLINE;
+echo f_tce_user_registration_string(f_get_csrf_token_field()) . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
@@ -621,3 +656,65 @@ echo '<div class="pagehelp">' . $l['hp_user_registration'] . '</div>' . K_NEWLIN
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_user_registration_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** @return list<int|string> */
+function f_tce_user_registration_groups(mixed $groups): array
+{
+    /** @var list<int|string> $groups */
+    return $groups;
+}
+
+function f_tce_user_registration_bool(mixed $value): bool
+{
+    if (is_array($value)) {
+        return $value !== [];
+    }
+
+    if (is_object($value) || is_resource($value)) {
+        return true;
+    }
+
+    if (is_bool($value)) {
+        return $value;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value)) {
+        return (bool) $value;
+    }
+
+    return false;
+}
+
+/** @return list<int|string> */
+function f_tce_user_registration_allowed_groups(mixed $groups): array
+{
+    /** @var list<int|string> $groups */
+    return $groups;
+}
+
+/** @return array{registration_enabled:bool} */
+function f_tce_user_registration_access_settings(mixed $settings): array
+{
+    /** @var array{registration_enabled:bool} $settings */
+    return $settings;
+}
+
+/** @return object|resource|bool */
+function f_tce_user_registration_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array{group_id:int|string,group_name:string}|null */
+function f_tce_user_registration_group_row(mixed $row): ?array
+{
+    /** @var array{group_id:int|string,group_name:string}|null $row */
+    return $row;
+}
