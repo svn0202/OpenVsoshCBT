@@ -14,6 +14,7 @@ require_once __DIR__ . '/../shared/code/tce_functions_attachments.php';
 
 final class AttachmentsTest extends TestCase
 {
+    /** @throws \RuntimeException */
     public function testRealPngIsAcceptedFromItsContents(): void
     {
         $file = tempnam(sys_get_temp_dir(), 'openvsosh-attachment-');
@@ -35,6 +36,7 @@ final class AttachmentsTest extends TestCase
         self::assertSame(64, strlen($metadata['sha256']));
     }
 
+    /** @throws \RuntimeException */
     public function testExecutableContentIsRejectedEvenWithImageName(): void
     {
         $file = tempnam(sys_get_temp_dir(), 'openvsosh-attachment-');
