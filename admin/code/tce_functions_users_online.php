@@ -53,6 +53,16 @@ function f_show_online_users(string $wherequery, string $order_field, int $order
 function f_list_online_users(string $wherequery, string $order_field, int $orderdir, int $firstrow, int $rowsperpage): bool
 {
     global $l, $db;
+    /**
+     * @var array{
+     *     m_databasempty: string,
+     *     t_online_users: string,
+     *     w_user: string,
+     *     w_level: string,
+     *     w_ip: string,
+     *     hp_online_users: string
+     * } $l
+     */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_page.php';
     require_once 'tce_functions_user_select.php';
@@ -106,18 +116,21 @@ function f_list_online_users(string $wherequery, string $order_field, int $order
     echo '</tr>' . K_NEWLINE;
     echo '</thead>' . K_NEWLINE;
 
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    $result = F_db_query($sql, $db);
+    /** @var \mysqli_result|\PgSql\Result|false $result */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+    if ($result !== false) {
+        while (($m = $normalize_row(F_db_fetch_array($result))) !== null) {
             $this_session = F_session_string_to_array((string) ($m['cpsession_data'] ?? ''));
             echo '<tr>';
             echo '<td align="left">';
             $user_str = '';
             if (!empty($this_session['session_user_lastname'])) {
-                $user_str .= urldecode($this_session['session_user_lastname']) . ', ';
+                $user_str .= urldecode((string) $this_session['session_user_lastname']) . ', ';
             }
 
             if (!empty($this_session['session_user_firstname'])) {
-                $user_str .= urldecode($this_session['session_user_firstname']) . '';
+                $user_str .= urldecode((string) $this_session['session_user_firstname']) . '';
             }
 
             $user_str .= ' (' . urldecode((string) ($this_session['session_user_name'] ?? '')) . ')';
@@ -146,9 +159,7 @@ function f_list_online_users(string $wherequery, string $order_field, int $order
     // --- page jump
     if ($rowsperpage > 0) {
         $sql = 'SELECT count(*) AS total FROM ' . K_TABLE_SESSIONS . ' ' . $wherequery . '';
-        if (!empty($order_field)) {
-            $param_array = '&amp;order_field=' . urlencode($order_field) . '';
-        }
+        $param_array = '&amp;order_field=' . urlencode($order_field) . '';
 
         if ($orderdir !== 0) {
             $param_array .= '&amp;orderdir=' . $orderdir . '';
