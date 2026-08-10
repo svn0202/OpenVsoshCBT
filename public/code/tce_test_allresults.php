@@ -365,7 +365,7 @@ if ($show_graph && isset($data['svgpoints']) && preg_match_all('/[x]/', $data['s
 if ($display_mode > 1) {
     // display statistics for modules and subjects
     echo '<div class="rowl">' . K_NEWLINE;
-    echo F_printTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode, true);
+    echo f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode, true);
     echo '<br />' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 }

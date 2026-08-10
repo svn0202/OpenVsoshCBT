@@ -214,7 +214,7 @@ if (f_get_boolean($teststat['testinfo']['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
     echo '<hr />' . K_NEWLINE;
     echo '<h2>' . $l['w_stats'] . '</h2>';
-    echo F_printTestStat($test_id, 0, $user_id, 0, 0, $testuser_id, $teststat, 2, true);
+    echo f_print_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id, $teststat, 2, true);
     echo '<hr />' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 

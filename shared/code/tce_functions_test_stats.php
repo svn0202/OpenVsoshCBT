@@ -804,7 +804,7 @@ function f_normalize_test_stat_averages($data)
  * @param $pubmode (boolean) If true filter the results for the public interface.
  * return $data string containing HTML table.
  */
-function F_printTestStat(
+function f_print_test_stat(
     $test_id,
     $group_id = 0,
     $user_id = 0,
