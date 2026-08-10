@@ -661,7 +661,7 @@ function f_get_authorized_dirs(): string
         return '[^/]*';
     }
 
-    $reg = F_getAuthorizedUsers($_SESSION['session_user_id']);
+    $reg = f_get_authorized_users($_SESSION['session_user_id']);
     return str_replace(',', '|', $reg);
 }
 

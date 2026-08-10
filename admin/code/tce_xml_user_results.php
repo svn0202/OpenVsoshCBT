@@ -193,7 +193,7 @@ function f_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
 			AND testlog_testuser_id=testuser_id
 			AND testuser_test_id=test_id';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $sql .= ' AND test_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
+        $sql .= ' AND test_user_id IN (' . f_get_authorized_users($_SESSION['session_user_id']) . ')';
     }
 
     $sql .=

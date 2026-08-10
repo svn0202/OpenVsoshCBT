@@ -392,7 +392,7 @@ function f_is_authorized_user($table, $field_id_name, $value_id, $field_user_id)
  * @param $user_id (int) user ID
  * @return string
  */
-function F_getAuthorizedUsers($user_id)
+function f_get_authorized_users($user_id): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';

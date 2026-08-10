@@ -151,7 +151,7 @@ function f_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
 
     $wherequery .= ' (test_id>0)';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $wherequery .= ' AND test_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
+        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($_SESSION['session_user_id']) . ')';
     }
 
     if (!empty($andwhere)) {
@@ -483,7 +483,7 @@ function f_show_select_test_popup(
 
     $wherequery .= ' (test_id>0)';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $wherequery .= ' AND test_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
+        $wherequery .= ' AND test_user_id IN (' . f_get_authorized_users($_SESSION['session_user_id']) . ')';
     }
 
     if (!empty($andwhere)) {
