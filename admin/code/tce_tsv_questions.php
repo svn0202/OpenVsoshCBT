@@ -22,22 +22,27 @@
  */
 
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var int|string $expmode_request */
+$expmode_request = $_REQUEST['expmode'] ?? 0;
+/** @var int|string $module_id_request */
+$module_id_request = $_REQUEST['module_id'] ?? 0;
+/** @var int|string $subject_id_request */
+$subject_id_request = $_REQUEST['subject_id'] ?? 0;
 if (
-    !isset($_REQUEST['expmode'])
-    || $_REQUEST['expmode'] <= 0
-    || !isset($_REQUEST['module_id'])
-    || $_REQUEST['module_id'] <= 0
-    || (!isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
+    $expmode_request <= 0
+    || $module_id_request <= 0
+    || $subject_id_request <= 0
 ) {
     exit();
 }
 
-$expmode = (int) $_REQUEST['expmode'];
-$module_id = (int) $_REQUEST['module_id'];
-$subject_id = (int) $_REQUEST['subject_id'];
+$expmode = (int) $expmode_request;
+$module_id = (int) $module_id_request;
+$subject_id = (int) $subject_id_request;
 
 // check user's authorization for module
 if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
@@ -79,6 +84,7 @@ echo f_tsv_export_questions($module_id, $subject_id, $expmode);
 function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): string
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_authorization.php';
     require_once '../../shared/code/tce_functions_auth_sql.php';
@@ -134,8 +140,10 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
     }
 
     $sqlm = F_select_modules_sql($andmodwhere);
-    if ($rm = F_db_query($sqlm, $db)) {
-        while ($mm = F_db_fetch_array($rm)) {
+    $rm = f_tmf_tsv_questions_query_result(F_db_query($sqlm, $db));
+    if ($rm) {
+        while ($mm = f_tmf_tsv_questions_row(F_db_fetch_array($rm))) {
+            /** @var array{module_id:int|string,module_enabled:mixed,module_name:string} $mm */
             $tsv .= 'M'; // MODULE
             $tsv .= K_TAB . (int) f_get_boolean($mm['module_enabled']);
             $tsv .= K_TAB . f_text_to_tsv($mm['module_name']);
@@ -147,8 +155,16 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
             }
 
             $sqls = F_select_subjects_sql($where_sqls);
-            if ($rs = F_db_query($sqls, $db)) {
-                while ($ms = F_db_fetch_array($rs)) {
+            $rs = f_tmf_tsv_questions_query_result(F_db_query($sqls, $db));
+            if ($rs) {
+                while ($ms = f_tmf_tsv_questions_row(F_db_fetch_array($rs))) {
+                    /** @var array{
+                     *     subject_id:int|string,
+                     *     subject_enabled:mixed,
+                     *     subject_name:string,
+                     *     subject_description:string
+                     * } $ms
+                     */
                     $tsv .= 'S'; // SUBJECT
                     $tsv .= K_TAB . (int) f_get_boolean($ms['subject_enabled']);
                     $tsv .= K_TAB . f_text_to_tsv($ms['subject_name']);
@@ -164,13 +180,32 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
                         . $ms['subject_id']
                         . '
 						ORDER BY question_enabled DESC, question_position, question_description';
-                    if ($r = F_db_query($sql, $db)) {
-                        while ($m = F_db_fetch_array($r)) {
+                    $r = f_tmf_tsv_questions_query_result(F_db_query($sql, $db));
+                    if ($r) {
+                        while ($m = f_tmf_tsv_questions_row(F_db_fetch_array($r))) {
+                            /** @var array{
+                             *     question_id:int|string,
+                             *     question_enabled:mixed,
+                             *     question_description:string,
+                             *     question_explanation:string,
+                             *     question_type:int<1,5>,
+                             *     question_difficulty:int|string,
+                             *     question_position:int|string,
+                             *     question_timer:int|string,
+                             *     question_fullscreen:mixed,
+                             *     question_inline_answers:mixed,
+                             *     question_auto_next:mixed,
+                             *     question_shuffle_answers:mixed
+                             * } $m
+                             */
                             $tsv .= 'Q'; // QUESTION
                             $tsv .= K_TAB . (int) f_get_boolean($m['question_enabled']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_description']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_explanation']);
-                            $tsv .= K_TAB . $qtype[$m['question_type'] - 1];
+                            $qtype_index = $m['question_type'] - 1;
+                            /** @mago-expect analysis:possibly-undefined-int-array-index */
+                            /** @mago-expect analysis:possibly-null-operand */
+                            $tsv .= K_TAB . $qtype[$qtype_index];
                             $tsv .= K_TAB . $m['question_difficulty'];
                             $tsv .= K_TAB . $m['question_position'];
                             $tsv .= K_TAB . $m['question_timer'];
@@ -189,8 +224,19 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
                                 . $m['question_id']
                                 . '\'
 								ORDER BY answer_position,answer_isright DESC';
-                            if ($ra = F_db_query($sqla, $db)) {
-                                while ($ma = F_db_fetch_array($ra)) {
+                            $ra = f_tmf_tsv_questions_query_result(F_db_query($sqla, $db));
+                            if ($ra) {
+                                while ($ma = f_tmf_tsv_questions_row(F_db_fetch_array($ra))) {
+                                    /** @var array{
+                                     *     answer_enabled:mixed,
+                                     *     answer_description:string,
+                                     *     answer_explanation:string,
+                                     *     answer_isright:mixed,
+                                     *     answer_position:int|string,
+                                     *     answer_keyboard_key:int|string,
+                                     *     answer_weight:mixed
+                                     * } $ma
+                                     */
                                     $tsv .= 'A'; // ANSWER
                                     $tsv .= K_TAB . (int) f_get_boolean($ma['answer_enabled']);
                                     $tsv .= K_TAB . f_text_to_tsv($ma['answer_description']);
@@ -218,4 +264,24 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
     }
 
     return $tsv;
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_tsv_questions_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_tsv_questions_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
