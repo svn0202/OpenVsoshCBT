@@ -1429,7 +1429,7 @@ echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple"
 //$sql = F_user_group_select_sql();
 $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_test_group_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['group_id'] . '"';
         if (f_legacy_is_positive($test_id) && f_is_test_on_group($test_id, $m['group_id'])) {
             echo ' selected="selected"';
@@ -1454,7 +1454,7 @@ echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="sslcerts[]" id="sslcerts" size="5" multiple="multiple">' . K_NEWLINE;
 $sql = 'SELECT * FROM ' . K_TABLE_SSLCERTS . ' ORDER BY ssl_name';
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_test_ssl_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['ssl_id'] . '"';
         if (f_legacy_is_positive($test_id) && f_is_test_on_ssl_certs($test_id, $m['ssl_id'])) {
             echo ' selected="selected"';
@@ -2253,6 +2253,20 @@ function f_tce_edit_test_list_row(mixed $row): ?array
      *     test_id:int|numeric-string,test_begin_time:string,test_end_time:string,test_name:string
      * }|null $row
      */
+    return $row;
+}
+
+/** @return array{group_id:int|string,group_name:string}|null */
+function f_tce_edit_test_group_row(mixed $row): ?array
+{
+    /** @var array{group_id:int|string,group_name:string}|null $row */
+    return $row;
+}
+
+/** @return array{ssl_id:int|string,ssl_name:string,ssl_end_date:string}|null */
+function f_tce_edit_test_ssl_row(mixed $row): ?array
+{
+    /** @var array{ssl_id:int|string,ssl_name:string,ssl_end_date:string}|null $row */
     return $row;
 }
 
