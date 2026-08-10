@@ -207,6 +207,40 @@ final class TestReviewTest extends TestCase
         self::assertSame(['Final exam', [9]], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
+    public function testTestGroupsReturnOrderedCommaSeparatedIds(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_GROUPS", "test_groups"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["rows"] = [['
+                    . '"tstgrp_group_id" => 3], ["tstgrp_group_id" => 7]]; $GLOBALS["queries"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
+                    . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestGroups|f_get_test_groups)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("7"), $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['0,3,7', ['SELECT tstgrp_group_id FROM test_groups WHERE tstgrp_test_id=7 ORDER BY tstgrp_group_id']],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+
 
 
 
