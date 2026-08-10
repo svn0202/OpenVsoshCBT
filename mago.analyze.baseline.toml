@@ -105,12 +105,6 @@ count = 12
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
-message = "Left operand in `&&` operation has `mixed` type."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "mixed-operand"
 message = "Left operand in `<` comparison has `mixed` type."
 count = 2
 
@@ -213,12 +207,6 @@ count = 1
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "possibly-undefined-variable"
-message = "Variable `$menu_mode` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-undefined-variable"
 message = "Variable `$test_duration_time` might not have been defined on all execution paths leading to this point."
 count = 3
 
@@ -250,12 +238,6 @@ count = 1
 file = "admin/code/tce_edit_test.php"
 code = "redundant-logical-operation"
 message = "Redundant `||` operation: left operand is always false and right operand is evaluated."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "undefined-variable"
-message = "Undefined variable: `$formstatus`."
 count = 1
 
 [[issues]]
