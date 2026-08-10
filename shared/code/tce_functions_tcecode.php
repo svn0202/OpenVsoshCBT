@@ -809,8 +809,8 @@ function f_objects_callback(mixed $matches): string
  * @param $width (int) object width
  * @param $height (int) object height
  * @param $alt (string) alternative content
- * @param $maxwidth (int) object max or default width
- * @param $maxheight (int) object max or default height
+ * @param-out int|float $maxwidth Object max or default width.
+ * @param-out int|float $maxheight Object max or default height.
  * @return string replacement string
  */
 function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, mixed $height = 0, mixed $alt = '', mixed &$maxwidth = 0, mixed &$maxheight = 0): string
