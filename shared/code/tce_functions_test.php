@@ -679,20 +679,20 @@ function F_printTestInfo($test_id, $showip = false)
                 . '<br /><br /></div>'
                 . K_NEWLINE;
             $str .= '<div class="tceformbox">' . K_NEWLINE;
-            $str .= F_twoColRow($l['w_time_begin'], $l['h_time_begin'], $m['test_begin_time']);
-            $str .= F_twoColRow($l['w_time_end'], $l['h_time_end'], $m['test_end_time']);
-            $str .= F_twoColRow($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
-            $str .= F_twoColRow($l['w_score_right'], $l['h_score_right'], $m['test_score_right']);
-            $str .= F_twoColRow($l['w_score_wrong'], $l['h_score_wrong'], $m['test_score_wrong']);
-            $str .= F_twoColRow($l['w_score_unanswered'], $l['h_score_unanswered'], $m['test_score_unanswered']);
-            $str .= F_twoColRow($l['w_max_score'], $l['w_max_score'], $m['test_max_score']);
-            $str .= F_twoColRow($l['w_test_score_threshold'], $l['h_test_score_threshold'], $m['test_score_threshold']);
-            $str .= F_twoColRow(
+            $str .= f_two_col_row($l['w_time_begin'], $l['h_time_begin'], $m['test_begin_time']);
+            $str .= f_two_col_row($l['w_time_end'], $l['h_time_end'], $m['test_end_time']);
+            $str .= f_two_col_row($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
+            $str .= f_two_col_row($l['w_score_right'], $l['h_score_right'], $m['test_score_right']);
+            $str .= f_two_col_row($l['w_score_wrong'], $l['h_score_wrong'], $m['test_score_wrong']);
+            $str .= f_two_col_row($l['w_score_unanswered'], $l['h_score_unanswered'], $m['test_score_unanswered']);
+            $str .= f_two_col_row($l['w_max_score'], $l['w_max_score'], $m['test_max_score']);
+            $str .= f_two_col_row($l['w_test_score_threshold'], $l['h_test_score_threshold'], $m['test_score_threshold']);
+            $str .= f_two_col_row(
                 $l['w_results_to_users'],
                 $l['h_results_to_users'],
                 $boolval[(int) f_get_boolean($m['test_results_to_users'])],
             );
-            $str .= F_twoColRow(
+            $str .= f_two_col_row(
                 $l['w_report_to_users'],
                 $l['h_report_to_users'],
                 $boolval[(int) f_get_boolean($m['test_report_to_users'])],
@@ -705,20 +705,20 @@ function F_printTestInfo($test_id, $showip = false)
                 $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
             }
 
-            $str .= F_twoColRow($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
+            $str .= f_two_col_row($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
             // Additional information hidden by default
-            //$str .= F_twoColRow($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(f_get_boolean($m['test_random_questions_select']))]);
-            //$str .= F_twoColRow($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(f_get_boolean($m['test_random_questions_order']))]);
-            //$str .= F_twoColRow($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(f_get_boolean($m['test_questions_order_mode']))]);
-            //$str .= F_twoColRow($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(f_get_boolean($m['test_random_answers_select']))]);
-            //$str .= F_twoColRow($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(f_get_boolean($m['test_random_answers_order']))]);
-            //$str .= F_twoColRow($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(f_get_boolean($m['test_answers_order_mode']))]);
-            //$str .= F_twoColRow($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(f_get_boolean($m['test_comment_enabled']))]);
-            //$str .= F_twoColRow($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(f_get_boolean($m['test_menu_enabled']))]);
-            //$str .= F_twoColRow($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(f_get_boolean($m['test_noanswer_enabled']))]);
-            //$str .= F_twoColRow($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(f_get_boolean($m['test_mcma_radio']))]);
+            //$str .= f_two_col_row($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(f_get_boolean($m['test_random_questions_select']))]);
+            //$str .= f_two_col_row($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(f_get_boolean($m['test_random_questions_order']))]);
+            //$str .= f_two_col_row($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(f_get_boolean($m['test_questions_order_mode']))]);
+            //$str .= f_two_col_row($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(f_get_boolean($m['test_random_answers_select']))]);
+            //$str .= f_two_col_row($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(f_get_boolean($m['test_random_answers_order']))]);
+            //$str .= f_two_col_row($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(f_get_boolean($m['test_answers_order_mode']))]);
+            //$str .= f_two_col_row($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(f_get_boolean($m['test_comment_enabled']))]);
+            //$str .= f_two_col_row($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(f_get_boolean($m['test_menu_enabled']))]);
+            //$str .= f_two_col_row($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(f_get_boolean($m['test_noanswer_enabled']))]);
+            //$str .= f_two_col_row($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(f_get_boolean($m['test_mcma_radio']))]);
             if ($showip) {
-                $str .= F_twoColRow($l['w_ip_range'], $l['h_ip_range'], $m['test_ip_range']);
+                $str .= f_two_col_row($l['w_ip_range'], $l['h_ip_range'], $m['test_ip_range']);
             }
 
             $str .= '<br/>';
@@ -852,7 +852,7 @@ function F_getTestStartTime($testuser_id)
  * @param $value (string) string to display on the right column
  * @return string XHTML code
  */
-function F_twoColRow($label = '', $description = '', $value = '')
+function f_two_col_row($label = '', $description = '', $value = ''): string
 {
     $str = '';
     $str .= '<div class="row">';
