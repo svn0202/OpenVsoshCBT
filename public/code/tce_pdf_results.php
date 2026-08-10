@@ -159,7 +159,7 @@ $filter .= '&amp;orderdir=' . $orderdir . '';
 $pubmode = true;
 
 // get the data to print
-$ts = F_getAllUsersTestStat(
+$ts = f_get_all_users_test_stat(
     $test_id,
     $group_id,
     $user_id,

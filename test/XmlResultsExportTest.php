@@ -13,7 +13,7 @@ final class XmlResultsExportTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; $GLOBALS["arguments"] = []; '
-                    . 'function F_getAllUsersTestStat(...$arguments) { '
+                    . 'function f_get_all_users_test_stat(...$arguments) { '
                     . '$GLOBALS["arguments"] = $arguments; return ["data"]; } '
                     . 'function get_data_xml($data) { return "<data />\\n"; } '
                     . '$source = file_get_contents($argv[1]); '

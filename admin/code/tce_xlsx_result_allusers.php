@@ -18,7 +18,7 @@ $startdate = isset($_REQUEST['startdate']) && is_string($_REQUEST['startdate'])
 $enddate = isset($_REQUEST['enddate']) && is_string($_REQUEST['enddate'])
     ? date(K_TIMESTAMP_FORMAT, strtotime($_REQUEST['enddate'])) : 0;
 
-$data = F_getAllUsersTestStat(
+$data = f_get_all_users_test_stat(
     $test_id,
     $group_id,
     $user_id,
