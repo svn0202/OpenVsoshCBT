@@ -26,18 +26,6 @@ count = 74
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `truthy-string` implicitly cast to `float`."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
 count = 6
