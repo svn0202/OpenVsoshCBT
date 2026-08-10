@@ -294,6 +294,7 @@ if (isset($_POST['lock'])) {
     $menu_mode = 'unlock';
 }
 
+/** @var string $test_end_time */
 switch ($menu_mode) {
     case 'lock':
         // lock test by changing end date (subtract 1000 years)

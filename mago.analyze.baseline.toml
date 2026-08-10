@@ -123,12 +123,6 @@ count = 12
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `substr`: expected `string`, but possibly received `array<array-key, string>|string`."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #2 of `date`: expected `int|null`, but possibly received `float|int`."
 count = 3
 
