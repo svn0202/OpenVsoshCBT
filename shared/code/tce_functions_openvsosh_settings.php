@@ -21,8 +21,8 @@ if (!defined('K_TABLE_OPENVSOSH_SETTINGS')) {
 function openvsosh_access_setting_defaults(): array
 {
     return [
-        'registration_enabled' => defined('K_USRREG_ENABLED') && K_USRREG_ENABLED,
-        'password_reset_enabled' => defined('K_PASSWORD_RESET') && K_PASSWORD_RESET,
+        'registration_enabled' => defined('K_USRREG_ENABLED') && constant('K_USRREG_ENABLED') === true,
+        'password_reset_enabled' => defined('K_PASSWORD_RESET') && constant('K_PASSWORD_RESET') === true,
         'access_help' => '',
     ];
 }
@@ -33,7 +33,7 @@ function openvsosh_access_setting_defaults(): array
  * @param string $sql database statement
  * @return mixed database result or false
  */
-function openvsosh_silent_query($sql)
+function openvsosh_silent_query(string $sql): mixed
 {
     global $db;
 
@@ -45,6 +45,33 @@ function openvsosh_silent_query($sql)
     }
 }
 
+/** @return non-empty-array<array-key, mixed>|null */
+function openvsosh_settings_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function openvsosh_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
+
+/** @return array<array-key, mixed> */
+function openvsosh_settings_array(mixed $value): array
+{
+    return is_array($value) ? $value : [];
+}
+
 /**
  * Create the small settings table for existing installations.
  *
@@ -54,7 +81,7 @@ function openvsosh_silent_query($sql)
  *
  * @return bool true when the table is available
  */
-function openvsosh_ensure_settings_table()
+function openvsosh_ensure_settings_table(): bool
 {
     if (openvsosh_silent_query('SELECT setting_key FROM ' . K_TABLE_OPENVSOSH_SETTINGS . ' LIMIT 1')) {
         return true;
@@ -94,7 +121,7 @@ function openvsosh_ensure_settings_table()
  *
  * @return array{registration_enabled: bool, password_reset_enabled: bool, access_help: string}
  */
-function openvsosh_get_access_settings()
+function openvsosh_get_access_settings(): array
 {
     global $db;
     $settings = openvsosh_access_setting_defaults();
@@ -113,16 +140,17 @@ function openvsosh_get_access_settings()
         . ' WHERE setting_key IN ('
         . implode(',', $quoted_keys)
         . ')';
-    if (!($result = openvsosh_silent_query($sql))) {
+    $result = openvsosh_query_result(openvsosh_silent_query($sql));
+    if (!$result) {
         return $settings;
     }
 
-    while ($row = F_db_fetch_array($result)) {
-        $key = (string) $row['setting_key'];
+    while (($row = openvsosh_settings_row(F_db_fetch_array($result))) !== null) {
+        $key = (string) ($row['setting_key'] ?? '');
         if ($key === 'registration_enabled' || $key === 'password_reset_enabled') {
-            $settings[$key] = (string) $row['setting_value'] === '1';
+            $settings[$key] = (string) ($row['setting_value'] ?? '') === '1';
         } elseif ($key === 'access_help') {
-            $settings[$key] = (string) $row['setting_value'];
+            $settings[$key] = (string) ($row['setting_value'] ?? '');
         }
     }
 
@@ -137,7 +165,11 @@ function openvsosh_get_access_settings()
  * @param string $access_help plain-text access instructions shown on the login page
  * @return bool true when every value was stored
  */
-function openvsosh_save_access_settings($registration_enabled, $password_reset_enabled, $access_help)
+function openvsosh_save_access_settings(
+    bool $registration_enabled,
+    bool $password_reset_enabled,
+    string $access_help,
+): bool
 {
     global $db;
     if (!openvsosh_ensure_settings_table()) {
@@ -154,9 +186,9 @@ function openvsosh_save_access_settings($registration_enabled, $password_reset_e
         $escaped_key = F_escape_sql($db, $key);
         $escaped_value = F_escape_sql($db, $value);
         $exists = false;
-        $select = openvsosh_silent_query(
+        $select = openvsosh_query_result(openvsosh_silent_query(
             "SELECT setting_key FROM " . K_TABLE_OPENVSOSH_SETTINGS . " WHERE setting_key='" . $escaped_key . "'",
-        );
+        ));
         if ($select && F_db_fetch_array($select)) {
             $exists = true;
         }
@@ -184,12 +216,12 @@ function openvsosh_get_setting(string $key): ?string
         return null;
     }
     $escaped_key = F_escape_sql($db, $key);
-    $result = openvsosh_silent_query(
+    $result = openvsosh_query_result(openvsosh_silent_query(
         "SELECT setting_value FROM " . K_TABLE_OPENVSOSH_SETTINGS
         . " WHERE setting_key='" . $escaped_key . "'",
-    );
-    $row = $result ? F_db_fetch_array($result) : false;
-    return is_array($row) ? (string) $row['setting_value'] : null;
+    ));
+    $row = $result ? openvsosh_settings_row(F_db_fetch_array($result)) : null;
+    return $row !== null ? (string) ($row['setting_value'] ?? '') : null;
 }
 
 /**
@@ -203,10 +235,10 @@ function openvsosh_save_setting(string $key, string $value): bool
     }
     $escaped_key = F_escape_sql($db, $key);
     $escaped_value = F_escape_sql($db, $value);
-    $exists = openvsosh_silent_query(
+    $exists = openvsosh_query_result(openvsosh_silent_query(
         "SELECT setting_key FROM " . K_TABLE_OPENVSOSH_SETTINGS
         . " WHERE setting_key='" . $escaped_key . "'",
-    );
+    ));
     $sql = $exists && F_db_fetch_array($exists)
         ? "UPDATE " . K_TABLE_OPENVSOSH_SETTINGS . " SET setting_value='" . $escaped_value
             . "' WHERE setting_key='" . $escaped_key . "'"
@@ -239,6 +271,7 @@ function openvsosh_get_site_settings(): array
 /**
  * Validate and save plain-text instance branding.
  *
+ * @param array<array-key, mixed> $input
  * @return array{saved:bool,errors:array<int,string>}
  */
 function openvsosh_save_site_settings(array $input): array
@@ -295,6 +328,7 @@ function openvsosh_get_appearance_settings(): array
  * Validate and save visual preferences without accepting arbitrary CSS values.
  * Missing fields retain their current values for backwards-compatible posts.
  *
+ * @param array<array-key, mixed> $input
  * @return array{saved:bool,errors:array<int,string>}
  */
 function openvsosh_save_appearance_settings(array $input): array
@@ -348,20 +382,37 @@ function openvsosh_save_appearance_settings(array $input): array
  */
 function openvsosh_get_runtime_settings(): array
 {
+    /** @var string $default_language */
+    $default_language = defined('K_LANGUAGE') ? K_LANGUAGE : 'ru';
+    /** @var string $default_timezone */
+    $default_timezone = defined('K_TIMEZONE') ? K_TIMEZONE : 'UTC';
+    /** @var array{default_language:string,default_timezone:string,timer_warning_seconds:int,
+     *     timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string} $defaults
+     */
     $defaults = [
-        'default_language' => defined('K_LANGUAGE') ? K_LANGUAGE : 'ru',
-        'default_timezone' => defined('K_TIMEZONE') ? K_TIMEZONE : 'UTC',
+        'default_language' => $default_language,
+        'default_timezone' => $default_timezone,
         'timer_warning_seconds' => 600,
         'timer_critical_seconds' => 300,
         'timer_warning_color' => '#b45309',
         'timer_critical_color' => '#b91c1c',
     ];
-    foreach ($defaults as $key => $default) {
-        $value = openvsosh_get_setting($key);
-        if ($value !== null) {
-            $defaults[$key] = is_int($default) ? (int) $value : $value;
-        }
-    }
+    $language = openvsosh_get_setting('default_language');
+    $defaults['default_language'] = $language ?? $defaults['default_language'];
+    $timezone = openvsosh_get_setting('default_timezone');
+    $defaults['default_timezone'] = $timezone ?? $defaults['default_timezone'];
+    $warning_seconds = openvsosh_get_setting('timer_warning_seconds');
+    $defaults['timer_warning_seconds'] = $warning_seconds === null
+        ? $defaults['timer_warning_seconds']
+        : (int) $warning_seconds;
+    $critical_seconds = openvsosh_get_setting('timer_critical_seconds');
+    $defaults['timer_critical_seconds'] = $critical_seconds === null
+        ? $defaults['timer_critical_seconds']
+        : (int) $critical_seconds;
+    $warning_color = openvsosh_get_setting('timer_warning_color');
+    $defaults['timer_warning_color'] = $warning_color ?? $defaults['timer_warning_color'];
+    $critical_color = openvsosh_get_setting('timer_critical_color');
+    $defaults['timer_critical_color'] = $critical_color ?? $defaults['timer_critical_color'];
     return $defaults;
 }
 
@@ -376,7 +427,12 @@ function openvsosh_bootstrap_settings_path(): string
  */
 function openvsosh_save_runtime_settings(array $input): array
 {
-    $languages = array_keys((array) unserialize(K_AVAILABLE_LANGUAGES, ['allowed_classes' => false]));
+    /** @var string $available_languages */
+    $available_languages = K_AVAILABLE_LANGUAGES;
+    $decoded_languages = openvsosh_settings_array(
+        unserialize($available_languages, ['allowed_classes' => false]),
+    );
+    $languages = array_keys($decoded_languages);
     $language = (string) ($input['default_language'] ?? '');
     $timezone = (string) ($input['default_timezone'] ?? '');
     $warning = (int) ($input['timer_warning_seconds'] ?? -1);
@@ -416,6 +472,7 @@ function openvsosh_save_runtime_settings(array $input): array
         }
     }
     $path = openvsosh_bootstrap_settings_path();
+    // @mago-expect analysis:unhandled-thrown-type -- entropy failure retains the existing exception contract
     $temporary = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
     $json = json_encode(
         ['language' => $language, 'timezone' => $timezone],
@@ -447,6 +504,7 @@ function openvsosh_contrast_text(string $background): string
         $value = $channel / 255;
         return $value <= 0.040_45 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
     }, $rgb);
+    /** @var array{float, float, float} $channels */
     $luminance = (0.2126 * $channels[0]) + (0.7152 * $channels[1]) + (0.0722 * $channels[2]);
     $white_contrast = 1.05 / ($luminance + 0.05);
     return $white_contrast >= 4.5 ? '#ffffff' : '#000000';
@@ -461,8 +519,10 @@ function openvsosh_get_offline_package_secret(): string
     if (is_string($secret) && preg_match('/^[a-f0-9]{64}$/', $secret) === 1) {
         return $secret;
     }
+    // @mago-expect analysis:unhandled-thrown-type -- entropy failure retains the existing exception contract
     $secret = bin2hex(random_bytes(32));
     if (!openvsosh_save_setting('offline_package_secret', $secret)) {
+        // @mago-expect analysis:unhandled-thrown-type -- callers already receive persistence failures
         throw new RuntimeException('Unable to persist the offline package secret.');
     }
     $persisted = openvsosh_get_setting('offline_package_secret');
