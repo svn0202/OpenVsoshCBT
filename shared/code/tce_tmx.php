@@ -123,6 +123,8 @@ class TMXResourceBundle
             );
         if ($cache_is_fresh) {
             // read data from cache
+            /** @var array<array-key,mixed> $tmx */
+            $tmx = [];
             require_once $this->cachefile;
             $this->resource = $tmx;
         } else {
@@ -157,6 +159,7 @@ class TMXResourceBundle
             // sets the character data handler function for the XML parser
             xml_set_character_data_handler($this->parser, $this->segContentHandler(...));
             // start parsing an XML document
+            // @mago-expect analysis:possibly-false-argument -- a stale/missing source retains the historical xml_parse failure
             if (xml_parse($this->parser, file_get_contents($tmxfile)) === 0) {
                 die(sprintf(
                     'ERROR TMXResourceBundle :: XML error: %s at line %d',
