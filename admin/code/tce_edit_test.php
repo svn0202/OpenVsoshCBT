@@ -1140,7 +1140,7 @@ if (!isset($test_num) || !empty($test_num)) {
 }
 
 if ($formstatus && $menu_mode !== 'clear') {
-    if (!isset($test_id) || $test_id === 0) {
+    if ($test_id === 0) {
         $test_id = 0;
         $test_name = '';
         $test_description = '';
