@@ -43,16 +43,24 @@ function f_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '
     require_once __DIR__ . '/../config/tce_config.php';
     require_once __DIR__ . '/tce_functions_general.php';
     global $l;
-    $messagetype = strtolower($messagetype);
+    /** @var array{t_message: string, t_warning: string, t_error: string} $l */
+    $messagetype = strtolower(strval($messagetype));
     // Strip any markup here; the message is escaped per output context (HTML/JS) below.
     // NOTE: do not re-decode entities (unhtmlentities) — doing so reconstructs tags from
     // encoded input and reintroduces XSS via attribute-carrying allow-listed tags.
-    $messagetoprint = trim(strip_tags($messagetoprint));
+    $messagetoprint = trim(strip_tags(strval($messagetoprint)));
     //message is appended to the log file
-    if (K_USE_ERROR_LOG && !strcmp($messagetype, 'error')) {
+    /** @var mixed $configured_error_log */
+    $configured_error_log = constant('K_USE_ERROR_LOG');
+    $use_error_log = is_bool($configured_error_log) && $configured_error_log;
+    if ($use_error_log && !strcmp($messagetype, 'error')) {
+        /** @var mixed $session_user_id */
+        $session_user_id = $_SESSION['session_user_id'] ?? '';
+        /** @var mixed $session_user_ip */
+        $session_user_ip = $_SESSION['session_user_ip'] ?? '';
         $logsttring = date(K_TIMESTAMP_FORMAT) . K_TAB;
-        $logsttring .= $_SESSION['session_user_id'] . K_TAB;
-        $logsttring .= $_SESSION['session_user_ip'] . K_TAB;
+        $logsttring .= (is_int($session_user_id) || is_string($session_user_id) ? $session_user_id : '') . K_TAB;
+        $logsttring .= (is_int($session_user_ip) || is_string($session_user_ip) ? $session_user_ip : '') . K_TAB;
         $logsttring .= $messagetype . K_TAB;
         $logsttring .= $_SERVER['SCRIPT_NAME'] . K_TAB;
         $logsttring .= $messagetoprint . K_NEWLINE;
@@ -84,7 +92,10 @@ function f_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '
                 . '</div>'
                 . K_NEWLINE
         ;
-        if (K_ENABLE_JSERRORS) {
+        /** @var mixed $configured_js_errors */
+        $configured_js_errors = constant('K_ENABLE_JSERRORS');
+        $enable_js_errors = is_bool($configured_js_errors) && $configured_js_errors;
+        if ($enable_js_errors) {
             //display message on JavaScript Alert Window.
             echo '<script type="text/javascript">' . K_NEWLINE;
             echo '//<![CDATA[' . K_NEWLINE;
@@ -92,7 +103,12 @@ function f_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '
                 'alert('
                     . json_encode(
                         '[' . $msgtitle . ']: ' . $messagetoprint,
-                        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE,
+                        JSON_HEX_TAG
+                            | JSON_HEX_APOS
+                            | JSON_HEX_QUOT
+                            | JSON_HEX_AMP
+                            | JSON_UNESCAPED_UNICODE
+                            | JSON_THROW_ON_ERROR,
                     )
                     . ');'
                     . K_NEWLINE
@@ -168,9 +184,9 @@ function f_url_exists(string $url): bool
     curl_setopt($crs, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
     curl_exec($crs);
-    $code = curl_getinfo($crs, CURLINFO_HTTP_CODE);
+    $exists = curl_getinfo($crs, CURLINFO_HTTP_CODE) === 200;
     unset($crs);
-    return $code === 200;
+    return $exists;
 }
 
 /**
