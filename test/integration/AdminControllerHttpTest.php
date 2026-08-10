@@ -30,7 +30,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
     /** Known password seeded for the 'admin' user so the test can authenticate. */
     private const ADMIN_PW = 'itest-admin-pw-7Q2cl8k8ec';
 
-    /** Cached authenticated cookies (log in once for the whole class). */
+    /** @var array<string,string> Cached authenticated cookies (log in once for the whole class). */
     private static array $authCookies = [];
 
     /** Guard so the admin password is seeded only once. */
@@ -156,7 +156,11 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
     }
 
-    /** Log in as admin once and cache the authenticated session cookies. */
+    /**
+     * Log in as admin once and cache the authenticated session cookies.
+     *
+     * @return array<string,string>
+     */
     private function login(): array
     {
         if (self::$authCookies !== []) {
@@ -175,7 +179,11 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         return self::$authCookies;
     }
 
-    /** Start a fresh authenticated session for a specific integration-test account. */
+    /**
+     * Start a fresh authenticated session for a specific integration-test account.
+     *
+     * @return array<string,string>
+     */
     private function loginCredentials(string $username, #[\SensitiveParameter] string $password): array
     {
         [, , $cookies] = $this->http('GET', '/admin/code/index.php');
