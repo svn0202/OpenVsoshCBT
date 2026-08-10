@@ -131,15 +131,15 @@ class TCExamSessionHandler implements SessionHandlerInterface
             . date(K_TIMESTAMP_FORMAT)
             . '\'
 				LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
-                return $m['cpsession_data'];
-            }
-
+        $result = F_db_query($sql, $db);
+        /** @var \mysqli_result|\PgSql\Result|false $result */
+        if ($result === false) {
             return '';
         }
 
-        return '';
+        $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+        $row = $normalize_row(F_db_fetch_array($result));
+        return (string) ($row['cpsession_data'] ?? '');
     }
 
     /**
@@ -152,29 +152,35 @@ class TCExamSessionHandler implements SessionHandlerInterface
     {
         global $db;
         // workaround for PHP bug 41230
-        if (
-            (!isset($db) || !$db)
-            && !($db = F_db_connect(
+        if (!isset($db) || !$db) {
+            $connection = F_db_connect(
                 K_DATABASE_HOST,
                 K_DATABASE_PORT,
                 K_DATABASE_USER_NAME,
                 K_DATABASE_USER_PASSWORD,
                 K_DATABASE_NAME,
-            ))
-        ) {
-            return false;
+            );
+            /** @var \mysqli|\PgSql\Connection|false $connection */
+            if ($connection === false) {
+                return false;
+            }
+            $db = $connection;
         }
 
         $id = F_escape_sql($db, $id);
         $data = F_escape_sql($db, $data);
-        $expiry = date(K_TIMESTAMP_FORMAT, time() + K_SESSION_LIFE);
+        $session_life = (int) constant('K_SESSION_LIFE');
+        $expiry = date(K_TIMESTAMP_FORMAT, time() + $session_life);
         // check if this session already exist on database
         $sql = 'SELECT cpsession_id
 				FROM ' . K_TABLE_SESSIONS . '
 				WHERE cpsession_id=\'' . $id . '\'
 				LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $result = F_db_query($sql, $db);
+        /** @var \mysqli_result|\PgSql\Result|false $result */
+        if ($result !== false) {
+            $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+            if ($normalize_row(F_db_fetch_array($result)) !== null) {
                 // SQL to update existing session
                 $sqlup =
                     'UPDATE '
@@ -211,7 +217,9 @@ class TCExamSessionHandler implements SessionHandlerInterface
 					)';
             }
 
-            return F_db_query($sqlup, $db) !== false;
+            $write_result = F_db_query($sqlup, $db);
+            /** @var \mysqli_result|\PgSql\Result|true|false $write_result */
+            return $write_result !== false;
         }
 
         return false;
@@ -227,7 +235,9 @@ class TCExamSessionHandler implements SessionHandlerInterface
         global $db;
         $id = F_escape_sql($db, $id);
         $sql = 'DELETE FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $id . "'";
-        return F_db_query($sql, $db) !== false;
+        $result = F_db_query($sql, $db);
+        /** @var \mysqli_result|\PgSql\Result|true|false $result */
+        return $result !== false;
     }
 
     /**
@@ -242,11 +252,13 @@ class TCExamSessionHandler implements SessionHandlerInterface
         global $db;
         $expiry_time = date(K_TIMESTAMP_FORMAT);
         $sql = 'DELETE FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_expiry<='" . $expiry_time . "'";
-        if (!($r = F_db_query($sql, $db))) {
+        $result = F_db_query($sql, $db);
+        /** @var \mysqli_result|\PgSql\Result|true|false $result */
+        if ($result === false) {
             return false;
         }
 
-        return F_db_affected_rows($db, $r);
+        return (int) F_db_affected_rows($db, $result);
     }
 }
 
@@ -489,14 +501,14 @@ if (PHP_SAPI === 'cli') {
 session_set_save_handler(new TCExamSessionHandler(), true);
 
 // start user session
-if (isset($_COOKIE['PHPSESSID'])) {
+if (isset($_COOKIE['PHPSESSID']) && is_string($_COOKIE['PHPSESSID'])) {
     // cookie takes precedence
     $_REQUEST['PHPSESSID'] = $_COOKIE['PHPSESSID'];
 }
 
-if (isset($_REQUEST['PHPSESSID'])) {
+if (isset($_REQUEST['PHPSESSID']) && is_string($_REQUEST['PHPSESSID'])) {
     // sanitize $PHPSESSID from get/post/cookie
-    $PHPSESSID = preg_replace('/[^0-9a-f]*/', '', $_REQUEST['PHPSESSID']);
+    $PHPSESSID = preg_replace('/[^0-9a-f]*/', '', $_REQUEST['PHPSESSID']) ?? '';
     if (strlen($PHPSESSID) !== 32) {
         // generate new ID
         $PHPSESSID = get_new_session_id();
