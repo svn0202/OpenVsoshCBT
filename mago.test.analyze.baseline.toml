@@ -122,12 +122,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 13
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
 code = "reference-to-undefined-variable"
 message = "Reference created from a previously undefined variable `$m`."
 count = 1
