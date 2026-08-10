@@ -234,6 +234,7 @@ final class DatabaseDalIntegrationTest extends TestCase
             $this->db
         );
         $this->assertNotFalse($ins, 'INSERT should succeed');
+        /** @var true|\mysqli_result|\PgSql\Result $ins */
         $this->assertSame(1, \F_db_affected_rows($this->db, $ins));
 
         $id = (int) \F_db_insert_id($this->db, \K_TABLE_GROUPS, 'group_id');
@@ -245,15 +246,16 @@ final class DatabaseDalIntegrationTest extends TestCase
         );
         $this->assertSame(1, \F_db_num_rows($sel));
 
-        $found = \F_db_fetch_assoc($sel);
-        $this->assertSame($name, $found['group_name']);
-        $this->assertSame($id, (int) $found['group_id']);
+        $found = self::dalRow(\F_db_fetch_assoc($sel));
+        $this->assertSame($name, $found['group_name'] ?? null);
+        $this->assertSame($id, (int) ($found['group_id'] ?? null));
 
         $del = \F_db_query(
             'DELETE FROM ' . \K_TABLE_GROUPS . " WHERE group_name = '" . $name . "'",
             $this->db
         );
         $this->assertNotFalse($del);
+        /** @var true|\mysqli_result|\PgSql\Result $del */
         $this->assertSame(1, \F_db_affected_rows($this->db, $del));
     }
 
