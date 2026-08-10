@@ -584,7 +584,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 [
                     'test_id' => (string) $testId,
                     'regrade' => '1',
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ]
             );
             $this->assertSame(200, $status);
@@ -777,7 +777,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'timer_critical_seconds' => '180',
                     'timer_warning_color' => '#9a4f00',
                     'timer_critical_color' => '#a40000',
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
                 'site_logo',
                 'logo.png',
@@ -785,9 +785,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             );
             $this->assertSame(200, $status);
             $this->assertStringContainsString('Настройки площадки сохранены', $body);
-            $storedLogo = (string) ($this->dbScalar(
+            $storedLogo = $this->dbScalar(
                 "SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='site_logo_stored'"
-            ) ?? '');
+            ) ?? '';
             $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $storedLogo);
             [$directStatus] = $this->http('GET', '/cache/site-assets/' . $storedLogo);
             $this->assertContains($directStatus, [403, 404]);
@@ -815,7 +815,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'timer_critical_seconds' => '180',
                     'timer_warning_color' => '#9a4f00',
                     'timer_critical_color' => '#a40000',
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
                 'site_background',
                 'background.png',
@@ -1674,7 +1674,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             [$status, $body] = $this->httpUpload(
                 '/admin/code/tce_offline.php?test_id=' . $testId,
                 $cookies,
-                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                ['import_offline' => '1', 'csrf_token' => $token],
                 'result_file',
                 'tampered.json',
                 json_encode($tampered, JSON_THROW_ON_ERROR),
@@ -1685,7 +1685,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             [$status, $body] = $this->httpUpload(
                 '/admin/code/tce_offline.php?test_id=' . $testId,
                 $cookies,
-                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                ['import_offline' => '1', 'csrf_token' => $token],
                 'result_file',
                 'result.json',
                 $offlineResult,
@@ -1708,7 +1708,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             [, $body] = $this->httpUpload(
                 '/admin/code/tce_offline.php?test_id=' . $testId,
                 $cookies,
-                ['import_offline' => '1', 'csrf_token' => (string) $token],
+                ['import_offline' => '1', 'csrf_token' => $token],
                 'result_file',
                 'result.json',
                 $offlineResult,
@@ -1873,7 +1873,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                             'testlogid' => (string) $logIds[$type],
                             'answer_version' => '0',
                             'answer_operation' => bin2hex(random_bytes(16)),
-                            'csrf_token' => (string) $token,
+                            'csrf_token' => $token,
                         ],
                         $answerPayload,
                     ),
@@ -2082,7 +2082,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'answertext' => 'Confirmed before lost response',
                     'answer_version' => $versionMatch[1],
                     'answer_operation' => $operation,
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
             );
             $this->assertSame(200, $saveStatus);
@@ -2103,7 +2103,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'answertext' => 'Confirmed before lost response',
                     'answer_version' => $versionMatch[1],
                     'answer_operation' => $operation,
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
             );
             $this->assertSame(200, $duplicateStatus);
@@ -2122,7 +2122,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'answertext' => 'Must not overwrite',
                     'answer_version' => $versionMatch[1],
                     'answer_operation' => bin2hex(random_bytes(16)),
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
             );
             $this->assertSame(409, $staleStatus);
@@ -2159,7 +2159,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'answertext' => 'Evidence attached',
                     'answer_version' => '1',
                     'confirmanswer' => '1',
-                    'csrf_token' => (string) $token,
+                    'csrf_token' => $token,
                 ],
                 'answer_attachments[]',
                 'evidence.png',
@@ -2172,9 +2172,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'SELECT attachment_id FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId
             ) ?? '0');
             $this->assertGreaterThan(0, $attachmentId);
-            $storedName = (string) ($this->dbScalar(
+            $storedName = $this->dbScalar(
                 'SELECT attachment_stored_name FROM tce_testlog_attachments WHERE attachment_id=' . $attachmentId
-            ) ?? '');
+            ) ?? '';
             [$directStatus] = $this->http('GET', '/cache/attachments/' . $storedName, $cookies);
             $this->assertContains($directStatus, [403, 404]);
 
