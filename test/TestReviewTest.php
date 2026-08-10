@@ -273,6 +273,36 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testCompletedUserTestCountUsesRetryStatusBoundary(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
+                    . '$GLOBALS["calls"] = []; function F_count_rows($table, $where) { '
+                    . '$GLOBALS["calls"][] = [$table, $where]; return 4; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_countUserTest|f_count_user_test)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified(11, 7), $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [4, [['test_user', 'WHERE testuser_test_id=7 AND testuser_user_id=11 AND testuser_status >= 4']]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+
 
 
 
