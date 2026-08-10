@@ -21,8 +21,56 @@
  */
 
 require_once 'tce_xhtml_header.php';
-$is_app_page = ($_SESSION['session_user_level'] > 0 && empty($is_login_page));
-$esc = static fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
+/**
+ * @var array{
+ *     a_meta_charset:string,
+ *     ov_open_menu:string,
+ *     ov_vsosh_name?:string,
+ *     ov_vsosh_abbreviation_prefix?:string,
+ *     ov_vsosh_abbreviation_suffix?:string,
+ *     ov_vsosh_caption_line_1?:string,
+ *     ov_vsosh_caption_line_2?:string,
+ *     ov_vsosh_caption_line_3?:string,
+ *     ov_switch_theme:string,
+ *     ov_theme_dark:string,
+ *     w_user:string,
+ *     w_jump_menu:string,
+ *     ov_close_menu:string,
+ *     ov_rcoko_alt:string,
+ *     ov_testing_platform:string,
+ *     ov_organization_name:string,
+ *     ov_olympiad_results:string,
+ *     ov_about_platform:string,
+ *     ov_source_code:string,
+ *     w_license:string,
+ *     ov_user_information:string,
+ *     ov_close:string,
+ *     w_level:string,
+ *     w_username:string,
+ *     w_name:string,
+ *     w_logout:string,
+ *     ov_logout_question:string
+ * } $l
+ */
+/** @var array{session_user_level:int,session_user_id:int,session_user_name:string,session_user_firstname:string} $session */
+$session = $_SESSION;
+/** @var mixed $db */
+/** @var string $thispage_title */
+$is_app_page = ($session['session_user_level'] > 0 && empty($is_login_page));
+$esc = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
+$normalize_query_result = static function (mixed $result): mixed {
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+};
+/** @return array<array-key,mixed>|null */
+$normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
 $wordmark = [
     'name' => $l['ov_vsosh_name'] ?? 'ВСОШ — Всероссийская олимпиада школьников',
     'prefix' => $l['ov_vsosh_abbreviation_prefix'] ?? 'ВС',
@@ -72,7 +120,7 @@ if ($is_app_page) {
     echo '<button class="tmf-theme-toggle" type="button" aria-pressed="false" title="'
         . $esc($l['ov_switch_theme']) . '"><i aria-hidden="true">☾</i><span>'
         . $esc($l['ov_theme_dark']) . '</span></button>' . K_NEWLINE;
-    if ($_SESSION['session_user_level'] >= K_ADMIN_LINK) {
+    if ($session['session_user_level'] >= K_ADMIN_LINK) {
         echo '<a class="tmf-admin-shortcut" href="../../admin/code/index.php"><span aria-hidden="true">⚙</span> Admin</a>' . K_NEWLINE;
     }
     echo '<button class="tmf-user-toggle" type="button" aria-controls="tmf-user-panel" aria-expanded="false">'
@@ -110,7 +158,7 @@ if (!$is_app_page) {
 }
 echo '<div class="legal-menu-links">' . K_NEWLINE;
 echo '<strong>' . $esc($l['ov_about_platform']) . '</strong>' . K_NEWLINE;
-echo '<a href="' . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
+echo '<a href="' . htmlspecialchars((string) K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
     . '" rel="noopener">' . $esc($l['ov_source_code']) . ' OpenVsoshCBT</a>' . K_NEWLINE;
 echo '<a href="' . K_PATH_URL . 'LICENSE">' . $esc($l['w_license']) . ' AGPL-3.0-or-later</a>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
@@ -123,24 +171,25 @@ if ($is_app_page) {
     echo '<div class="tmf-user-panel-title"><strong>' . $esc($l['w_user']) . '</strong>'
         . '<button class="tmf-user-close" type="button" aria-label="' . $esc($l['ov_close'])
         . '">×</button></div>' . K_NEWLINE;
-    $profile_result = F_db_query(
+    $profile_result = $normalize_query_result(F_db_query(
         'SELECT user_schedule FROM ' . K_TABLE_USERS
-        . ' WHERE user_id=' . (int) $_SESSION['session_user_id'] . ' LIMIT 1',
+        . ' WHERE user_id=' . $session['session_user_id'] . ' LIMIT 1',
         $db,
-    );
-    $profile = $profile_result ? F_db_fetch_array($profile_result) : [];
+    ));
+    $profile = $profile_result ? $normalize_row(F_db_fetch_array($profile_result)) : null;
+    $schedule = is_array($profile) ? (string) ($profile['user_schedule'] ?? '') : '';
     require_once '../../shared/code/tce_functions_user_photo.php';
-    if (is_file(f_tmf_user_photo_path((int) $_SESSION['session_user_id']))) {
+    if (is_file(f_tmf_user_photo_path($session['session_user_id']))) {
         echo '<img class="participant-photo" src="tce_user_photo.php" alt="Фотография участника" />' . K_NEWLINE;
     }
     echo '<dl>' . K_NEWLINE;
-    echo '<dt>' . $esc($l['w_level']) . '</dt><dd>' . (int) $_SESSION['session_user_level'] . '</dd>' . K_NEWLINE;
-    echo '<dt>' . $esc($l['w_username']) . '</dt><dd>' . $esc($_SESSION['session_user_name']) . '</dd>' . K_NEWLINE;
-    echo '<dt>' . $esc($l['w_name']) . '</dt><dd>' . $esc(urldecode((string) $_SESSION['session_user_firstname'])) . '</dd>' . K_NEWLINE;
+    echo '<dt>' . $esc($l['w_level']) . '</dt><dd>' . $session['session_user_level'] . '</dd>' . K_NEWLINE;
+    echo '<dt>' . $esc($l['w_username']) . '</dt><dd>' . $esc($session['session_user_name']) . '</dd>' . K_NEWLINE;
+    echo '<dt>' . $esc($l['w_name']) . '</dt><dd>' . $esc(urldecode($session['session_user_firstname'])) . '</dd>' . K_NEWLINE;
     echo '</dl>' . K_NEWLINE;
-    if (trim((string) ($profile['user_schedule'] ?? '')) !== '') {
+    if (trim($schedule) !== '') {
         echo '<section class="participant-schedule"><strong>Расписание</strong><p>'
-            . nl2br($esc($profile['user_schedule']))
+            . nl2br($esc($schedule))
             . '</p></section>'
             . K_NEWLINE;
     }
