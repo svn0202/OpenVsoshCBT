@@ -702,7 +702,7 @@ final class TestReviewTest extends TestCase
                     . 'return array_shift($GLOBALS["results"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_terminateUserTest|f_terminate_user_test)\\(/", '
+                    . 'preg_match("/function (f_terminate_user_test)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

@@ -131,7 +131,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
                 if ($completion_message !== '') {
                     $_SESSION['session_test_completion_message'] = $completion_message;
                 }
-                F_terminateUserTest($test_id);
+                f_terminate_user_test($test_id);
                 // redirect the user to the index page
                 header('Location: index.php');
                 echo '<!DOCTYPE html>' . K_NEWLINE;
