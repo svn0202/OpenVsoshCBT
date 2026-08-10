@@ -353,7 +353,7 @@ final class AuthorizationFunctionsTest extends TestCase
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_syncUserGroups)\\(/", '
+                    . 'preg_match("/function (f_sync_user_groups)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

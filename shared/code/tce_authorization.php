@@ -324,7 +324,7 @@ if (
                     $logged = true;
                     if (K_USER_GROUP_RSYNC && $altusr !== false) {
                         // sync user groups
-                        F_syncUserGroups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
+                        f_sync_user_groups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
                     }
                 } elseif (!F_check_unique(
                     K_TABLE_USERS,
@@ -370,7 +370,7 @@ if (
                                 $logged = true;
                                 if (K_USER_GROUP_RSYNC) {
                                     // sync user groups
-                                    F_syncUserGroups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
+                                    f_sync_user_groups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
                                 }
                             }
                         } else {
@@ -452,7 +452,7 @@ if (
                         $_SESSION['session_test_login'] = '';
                         $logged = true;
                         // sync user groups
-                        F_syncUserGroups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
+                        f_sync_user_groups($_SESSION['session_user_id'], $altusr['usrgrp_group_id']);
                     }
                 } else {
                     $login_error = true;

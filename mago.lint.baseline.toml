@@ -1,12 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "function-name"
-message = "Function name `F_syncUserGroups` should be in snake case."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "function-name"
 message = "Function name `F_addQuestionAnswers` should be in snake case."
