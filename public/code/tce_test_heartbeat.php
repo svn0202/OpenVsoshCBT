@@ -44,7 +44,7 @@ if (
     $test_id <= 0
     || $testlog_id <= 0
     || !f_is_right_testlog_user($test_id, $testlog_id)
-    || !F_executeTest($test_id)
+    || !f_execute_test($test_id)
 ) {
     F_tmf_heartbeat_json(403, ['status' => 'forbidden']);
 }
