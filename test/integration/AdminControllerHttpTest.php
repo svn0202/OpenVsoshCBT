@@ -2073,8 +2073,10 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertStringNotContainsString('name="terminatetest"', $page);
             $token = self::extractCsrfToken($page);
             $this->assertNotNull($token);
+            $versionMatch = [];
             preg_match('/name="answer_version"[^>]*value="(\\d+)"/', $page, $versionMatch);
             $this->assertNotEmpty($versionMatch);
+            $answerVersion = $versionMatch[1] ?? '';
             $operation = bin2hex(random_bytes(16));
             [$saveStatus, $saveBody] = $this->http(
                 'POST',
@@ -2084,7 +2086,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'testid' => (string) $testId,
                     'testlogid' => (string) $testlogId,
                     'answertext' => 'Confirmed before lost response',
-                    'answer_version' => $versionMatch[1],
+                    'answer_version' => $answerVersion,
                     'answer_operation' => $operation,
                     'csrf_token' => $token,
                 ],
@@ -2105,7 +2107,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'testid' => (string) $testId,
                     'testlogid' => (string) $testlogId,
                     'answertext' => 'Confirmed before lost response',
-                    'answer_version' => $versionMatch[1],
+                    'answer_version' => $answerVersion,
                     'answer_operation' => $operation,
                     'csrf_token' => $token,
                 ],
@@ -2124,7 +2126,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'testid' => (string) $testId,
                     'testlogid' => (string) $testlogId,
                     'answertext' => 'Must not overwrite',
-                    'answer_version' => $versionMatch[1],
+                    'answer_version' => $answerVersion,
                     'answer_operation' => bin2hex(random_bytes(16)),
                     'csrf_token' => $token,
                 ],
