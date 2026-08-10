@@ -20,6 +20,7 @@ function f_tmf_attachment_directory(): string
 
 /**
  * @return array{original_name:string,mime:string,size:int,sha256:string}
+ * @throws RuntimeException
  */
 function f_tmf_attachment_inspect(string $path, string $original_name): array
 {
@@ -42,7 +43,7 @@ function f_tmf_attachment_inspect(string $path, string $original_name): array
         } finally {
             restore_error_handler();
         }
-        if (!is_array($image) || ($image['mime'] ?? '') !== $mime) {
+        if (!is_array($image) || $image['mime'] !== $mime) {
             throw new RuntimeException('Содержимое изображения повреждено или не соответствует типу.');
         }
     } elseif ($mime === 'application/pdf') {
@@ -51,21 +52,23 @@ function f_tmf_attachment_inspect(string $path, string $original_name): array
             throw new RuntimeException('Содержимое PDF повреждено.');
         }
     }
+    /** @var 'application/pdf'|'image/jpeg'|'image/png' $mime */
     $original_name = basename(str_replace("\0", '', trim($original_name)));
     $original_name = preg_replace('/[\x00-\x1F\x7F]+/u', '_', $original_name);
     $original_name = mb_substr((string) $original_name, 0, 255);
     if ($original_name === '') {
-        $original_name = 'attachment.' . strtolower(TMF_ATTACHMENT_ALLOWED_MIME[$mime]);
+        $original_name = 'attachment.' . strtolower(TMF_ATTACHMENT_ALLOWED_MIME[$mime] ?? '');
     }
     return [
         'original_name' => $original_name,
         'mime' => $mime,
         'size' => (int) $size,
-        'sha256' => hash_file('sha256', $path),
+        'sha256' => (string) hash_file('sha256', $path),
     ];
 }
 
 /**
+ * @param array<array-key, mixed> $files
  * @return array<int,array{name:string,tmp_name:string,error:int,size:int}>
  */
 function f_tmf_attachment_normalize_uploads(array $files): array
@@ -73,6 +76,7 @@ function f_tmf_attachment_normalize_uploads(array $files): array
     if (!isset($files['name'])) {
         return [];
     }
+    /** @var array<array-key, scalar|null> $names */
     $names = is_array($files['name']) ? $files['name'] : [$files['name']];
     $temporary = is_array($files['tmp_name'] ?? null) ? $files['tmp_name'] : [$files['tmp_name'] ?? ''];
     $errors = is_array($files['error'] ?? null) ? $files['error'] : [$files['error'] ?? UPLOAD_ERR_NO_FILE];
@@ -96,28 +100,31 @@ function f_tmf_attachment_normalize_uploads(array $files): array
 /**
  * Store all submitted files atomically at the metadata level.
  *
+ * @param array<array-key, mixed> $files
  * @return array{status:string,count:int,message:string}
  */
 function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $files): array
 {
     global $db;
+    /** @var mixed $db */
     $user_id = (int) ($_SESSION['session_user_id'] ?? 0);
-    $owner_result = F_db_query(
+    $owner_result = f_tmf_attachment_query_result(F_db_query(
         'SELECT q.question_type FROM ' . K_TABLE_TESTS_LOGS . ' tl'
         . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
         . ' INNER JOIN ' . K_TABLE_QUESTIONS . ' q ON q.question_id=tl.testlog_question_id'
         . ' WHERE tl.testlog_id=' . $testlog_id . ' AND tu.testuser_test_id=' . $test_id
         . ' AND tu.testuser_user_id=' . $user_id . ' AND tu.testuser_status<4 LIMIT 1',
         $db,
-    );
-    if (!$owner_result || !($owner = F_db_fetch_array($owner_result)) || (int) $owner['question_type'] !== 3) {
+    ));
+    $owner = $owner_result ? f_tmf_attachment_row(F_db_fetch_array($owner_result)) : null;
+    if ($owner === null || (int) ($owner['question_type'] ?? 0) !== 3) {
         return ['status' => 'forbidden', 'count' => 0, 'message' => 'Вложения разрешены только к своему эссе.'];
     }
     $uploads = F_tmf_attachment_normalize_uploads($files);
     if ($uploads === []) {
         return ['status' => 'empty', 'count' => 0, 'message' => ''];
     }
-    $existing = F_count_rows(
+    $existing = (int) F_count_rows(
         F_tmf_attachment_table(),
         'WHERE attachment_testlog_id=' . $testlog_id,
     );
@@ -128,6 +135,11 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
             'message' => 'К одному ответу можно приложить не более трёх файлов.',
         ];
     }
+    /** @var list<array{
+     *     upload: array{name:string,tmp_name:string,error:int,size:int},
+     *     metadata: array{original_name:string,mime:string,size:int,sha256:string}
+     * }> $candidates
+     */
     $candidates = [];
     try {
         foreach ($uploads as $upload) {
@@ -148,7 +160,7 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
         return ['status' => 'storage_error', 'count' => 0, 'message' => 'Хранилище вложений недоступно.'];
     }
     $stored_paths = [];
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!f_tmf_attachment_query_succeeded(F_db_query('START TRANSACTION', $db))) {
         return ['status' => 'database_error', 'count' => 0, 'message' => 'Не удалось начать сохранение вложений.'];
     }
     try {
@@ -169,11 +181,11 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
                 . F_escape_sql($db, $metadata['original_name']) . "','"
                 . F_escape_sql($db, $metadata['mime']) . "'," . $metadata['size'] . ",'"
                 . $metadata['sha256'] . "','" . date(K_TIMESTAMP_FORMAT) . "')";
-            if (!F_db_query($sql, $db)) {
+            if (!f_tmf_attachment_query_succeeded(F_db_query($sql, $db))) {
                 throw new RuntimeException('Не удалось записать сведения о вложении.');
             }
         }
-        if (!F_db_query('COMMIT', $db)) {
+        if (!f_tmf_attachment_query_succeeded(F_db_query('COMMIT', $db))) {
             throw new RuntimeException('Не удалось завершить сохранение вложений.');
         }
     } catch (Throwable $exception) {
@@ -189,18 +201,47 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
 }
 
 /**
- * @return array<int,array<string,mixed>>
+ * @return list<array{
+ *     attachment_id: scalar|null,
+ *     attachment_user_id: scalar|null,
+ *     attachment_stored_name: scalar|null,
+ *     attachment_original_name: scalar|null,
+ *     attachment_mime: scalar|null,
+ *     attachment_size: scalar|null,
+ *     attachment_sha256: scalar|null
+ * }>
  */
 function f_tmf_attachment_list(int $testlog_id): array
 {
     global $db;
+    /** @var mixed $db */
+    /** @var list<array{
+     *     attachment_id: scalar|null,
+     *     attachment_user_id: scalar|null,
+     *     attachment_stored_name: scalar|null,
+     *     attachment_original_name: scalar|null,
+     *     attachment_mime: scalar|null,
+     *     attachment_size: scalar|null,
+     *     attachment_sha256: scalar|null
+     * }> $attachments
+     */
     $attachments = [];
-    $result = F_db_query(
+    $result = f_tmf_attachment_query_result(F_db_query(
         'SELECT * FROM ' . F_tmf_attachment_table()
         . ' WHERE attachment_testlog_id=' . $testlog_id . ' ORDER BY attachment_id',
         $db,
-    );
-    while ($result && ($row = F_db_fetch_array($result))) {
+    ));
+    while ($result && ($row = f_tmf_attachment_row(F_db_fetch_array($result))) !== null) {
+        /** @var array{
+         *     attachment_id: scalar|null,
+         *     attachment_user_id: scalar|null,
+         *     attachment_stored_name: scalar|null,
+         *     attachment_original_name: scalar|null,
+         *     attachment_mime: scalar|null,
+         *     attachment_size: scalar|null,
+         *     attachment_sha256: scalar|null
+         * } $row
+         */
         $attachments[] = $row;
     }
     return $attachments;
@@ -208,32 +249,47 @@ function f_tmf_attachment_list(int $testlog_id): array
 
 /**
  * @return array{
- *     attachment_id: mixed,
- *     attachment_user_id: mixed,
- *     attachment_stored_name: mixed,
- *     attachment_original_name: mixed,
- *     attachment_mime: mixed,
- *     attachment_sha256: mixed,
- *     testuser_test_id: mixed
+ *     attachment_id: scalar|null,
+ *     attachment_user_id: scalar|null,
+ *     attachment_stored_name: scalar|null,
+ *     attachment_original_name: scalar|null,
+ *     attachment_mime: scalar|null,
+ *     attachment_sha256: scalar|null,
+ *     testuser_test_id: scalar|null
  * }|false
  */
 function f_tmf_attachment_find(int $attachment_id): array|false
 {
     global $db;
-    $result = F_db_query(
+    /** @var mixed $db */
+    $result = f_tmf_attachment_query_result(F_db_query(
         'SELECT a.*,tu.testuser_test_id FROM ' . F_tmf_attachment_table() . ' a'
         . ' INNER JOIN ' . K_TABLE_TESTS_LOGS . ' tl ON tl.testlog_id=a.attachment_testlog_id'
         . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
         . ' WHERE a.attachment_id=' . $attachment_id . ' LIMIT 1',
         $db,
-    );
+    ));
     if (!$result) {
         return false;
     }
-    $row = F_db_fetch_array($result);
-    return is_array($row) ? $row : false;
+    $row = f_tmf_attachment_row(F_db_fetch_array($result));
+    if ($row === null) {
+        return false;
+    }
+    /** @var array{
+     *     attachment_id: scalar|null,
+     *     attachment_user_id: scalar|null,
+     *     attachment_stored_name: scalar|null,
+     *     attachment_original_name: scalar|null,
+     *     attachment_mime: scalar|null,
+     *     attachment_sha256: scalar|null,
+     *     testuser_test_id: scalar|null
+     * } $row
+     */
+    return $row;
 }
 
+/** @param array<array-key, mixed> $attachment */
 function f_tmf_attachment_path(array $attachment): string
 {
     $stored_name = (string) ($attachment['attachment_stored_name'] ?? '');
@@ -246,6 +302,7 @@ function f_tmf_attachment_path(array $attachment): string
 function f_tmf_attachment_html(int $testlog_id): string
 {
     global $l;
+    /** @var array{a_meta_charset: string} $l */
     $attachments = F_tmf_attachment_list($testlog_id);
     if ($attachments === []) {
         return '';
@@ -271,13 +328,24 @@ function f_tmf_attachment_html(int $testlog_id): string
     return $html . '</ul></div>';
 }
 
+/**
+ * @param array{
+ *     attachment_id: scalar|null,
+ *     attachment_user_id: scalar|null,
+ *     attachment_stored_name: scalar|null,
+ *     attachment_original_name: scalar|null,
+ *     attachment_mime: scalar|null,
+ *     attachment_sha256: scalar|null,
+ *     testuser_test_id: scalar|null
+ * } $attachment
+ */
 function f_tmf_attachment_send(array $attachment, bool $inline): never
 {
     $path = F_tmf_attachment_path($attachment);
     if (
         $path === ''
         || !is_file($path)
-        || !hash_equals((string) $attachment['attachment_sha256'], hash_file('sha256', $path))
+        || !hash_equals((string) $attachment['attachment_sha256'], (string) hash_file('sha256', $path))
     ) {
         http_response_code(404);
         exit();
@@ -286,8 +354,8 @@ function f_tmf_attachment_send(array $attachment, bool $inline): never
         ? 'inline'
         : 'attachment';
     $fallback = 'attachment-' . (int) $attachment['attachment_id'];
-    header('Content-Type: ' . $attachment['attachment_mime']);
-    header('Content-Length: ' . filesize($path));
+    header('Content-Type: ' . (string) $attachment['attachment_mime']);
+    header('Content-Length: ' . (string) filesize($path));
     header(
         'Content-Disposition: ' . $disposition . '; filename="' . $fallback
         . '"; filename*=UTF-8\'\'' . rawurlencode((string) $attachment['attachment_original_name']),
@@ -298,25 +366,28 @@ function f_tmf_attachment_send(array $attachment, bool $inline): never
     exit();
 }
 
+/** @throws RuntimeException */
 function f_tmf_attachment_delete_attempt(int $testuser_id): void
 {
     global $db;
-    $result = F_db_query(
+    /** @var mixed $db */
+    $result = f_tmf_attachment_query_result(F_db_query(
         'SELECT a.* FROM ' . F_tmf_attachment_table() . ' a'
         . ' INNER JOIN ' . K_TABLE_TESTS_LOGS . ' tl ON tl.testlog_id=a.attachment_testlog_id'
         . ' WHERE tl.testlog_testuser_id=' . $testuser_id,
         $db,
-    );
+    ));
+    /** @var list<array<array-key, mixed>> $attachments */
     $attachments = [];
-    while ($result && ($attachment = F_db_fetch_array($result))) {
+    while ($result && ($attachment = f_tmf_attachment_row(F_db_fetch_array($result))) !== null) {
         $attachments[] = $attachment;
     }
-    if (!F_db_query(
+    if (!f_tmf_attachment_query_succeeded(F_db_query(
         'DELETE FROM ' . F_tmf_attachment_table()
         . ' WHERE attachment_testlog_id IN (SELECT testlog_id FROM ' . K_TABLE_TESTS_LOGS
         . ' WHERE testlog_testuser_id=' . $testuser_id . ')',
         $db,
-    )) {
+    ))) {
         throw new RuntimeException('Не удалось удалить сведения о вложениях.');
     }
     foreach ($attachments as $attachment) {
@@ -327,22 +398,33 @@ function f_tmf_attachment_delete_attempt(int $testuser_id): void
     }
 }
 
+/** @throws RuntimeException */
 function f_tmf_attempt_archive(int $testuser_id): string
 {
     global $db;
+    /** @var mixed $db */
     if (!class_exists(ZipArchive::class)) {
         throw new RuntimeException('ZipArchive недоступен.');
     }
-    $result = F_db_query(
+    $result = f_tmf_attachment_query_result(F_db_query(
         'SELECT tl.testlog_id,tl.testlog_question_id,tl.testlog_answer_text,'
         . 'tl.testlog_score,q.question_description FROM ' . K_TABLE_TESTS_LOGS . ' tl'
         . ' INNER JOIN ' . K_TABLE_QUESTIONS . ' q ON q.question_id=tl.testlog_question_id'
         . ' WHERE tl.testlog_testuser_id=' . $testuser_id . ' ORDER BY tl.testlog_id',
         $db,
-    );
+    ));
     $manifest = ['format' => 'openvsosh-attempt-archive-v1', 'testuser_id' => $testuser_id, 'answers' => []];
+    /** @var array<string, string> $files */
     $files = [];
-    while ($result && ($answer = F_db_fetch_array($result))) {
+    while ($result && ($answer = f_tmf_attachment_row(F_db_fetch_array($result))) !== null) {
+        /** @var array{
+         *     testlog_id: scalar|null,
+         *     testlog_question_id: scalar|null,
+         *     testlog_answer_text: scalar|null,
+         *     testlog_score: int|float|string|null,
+         *     question_description: scalar|null
+         * } $answer
+         */
         $entry = [
             'testlog_id' => (int) $answer['testlog_id'],
             'question_id' => (int) $answer['testlog_question_id'],
@@ -400,4 +482,29 @@ function f_tmf_attempt_archive(int $testuser_id): string
         throw new RuntimeException('Не удалось прочитать архив.');
     }
     return $bytes;
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tmf_attachment_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+function f_tmf_attachment_query_succeeded(mixed $result): bool
+{
+    return (bool) f_tmf_attachment_query_result($result);
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_attachment_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }
