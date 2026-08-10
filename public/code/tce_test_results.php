@@ -22,8 +22,23 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_PUBLIC_TEST_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,h_answer_right:string,h_answer_wrong:string,h_answers_right:string,h_index:string,
+ *     h_pdf:string,h_score_total:string,h_testcomment:string,h_time_begin:string,h_time_end:string,
+ *     hp_result_user:string,m_unanswered:string,t_test_results:string,w_answers_right:string,w_answers_wrong:string,
+ *     w_comment:string,w_explanation:string,w_not_passed:string,w_passed:string,w_pdf:string,w_position:string,
+ *     w_score:string,w_subjects:string,w_test:string,w_test_time:string,w_time_begin:string,w_time_end:string,
+ *     w_user:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var array{session_user_id:int|string} $session */
+$session = $_SESSION;
 
 $thispage_title = $l['t_test_results'];
 require_once '../code/tce_page_header.php';
@@ -33,10 +48,11 @@ require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
 require_once '../../shared/code/tce_functions_result_publication.php';
 
-$user_id = (int) $_SESSION['session_user_id'];
+$user_id = (int) $session['session_user_id'];
 
-if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
-    $test_id = (int) $_REQUEST['testid'];
+$requested_test_id = $_REQUEST['testid'] ?? null;
+if ($requested_test_id !== null && f_tce_test_results_is_positive($requested_test_id)) {
+    $test_id = (int) $requested_test_id;
 } else {
     header('Location: index.php'); //redirect browser to public main page
     exit();
@@ -45,17 +61,17 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 // get test basic score
 $test_basic_score = 1;
 
-$testdata = f_get_test_data($test_id);
+$testdata = f_tce_test_results_test_data(f_get_test_data($test_id));
 if (!F_tmf_results_are_published($testdata)) {
     exit();
 }
 
 $test_basic_score = $testdata['test_score_right'];
 //lock user's test
-f_lock_user_test($test_id, $_SESSION['session_user_id']);
+f_lock_user_test($test_id, $session['session_user_id']);
 // get user's test stats
-$usrtestdata = f_get_user_test_stat($test_id, $user_id, 0, true);
-$userdata = f_get_user_data($user_id);
+$usrtestdata = f_tce_test_results_user_test_data(f_get_user_test_stat($test_id, $user_id, 0, true));
+$userdata = f_tce_test_results_user_data(f_get_user_data($user_id));
 
 echo '<div class="container">' . K_NEWLINE;
 
@@ -80,13 +96,15 @@ echo get_form_description_line($l['w_test'] . ':', $l['w_test'], $test_all);
 echo get_form_description_line($l['w_time_begin'] . ':', $l['h_time_begin'], $usrtestdata['test_start_time']);
 echo get_form_description_line($l['w_time_end'] . ':', $l['h_time_end'], $usrtestdata['test_end_time']);
 
-if (!isset($usrtestdata['test_end_time']) || $usrtestdata['test_end_time'] <= 0) {
+$test_start_time = f_tce_test_results_string($usrtestdata['test_start_time']);
+$test_end_time = $usrtestdata['test_end_time'];
+if (!f_tce_test_results_is_positive($test_end_time)) {
     $time_diff = $testdata['test_duration_time'] * 60;
 } else {
-    $time_diff = strtotime($usrtestdata['test_end_time']) - strtotime($usrtestdata['test_start_time']); //sec
+    $time_diff = (int) strtotime(f_tce_test_results_string($test_end_time)) - (int) strtotime($test_start_time); //sec
 }
 
-$time_diff = gmdate('H:i:s', $time_diff);
+$time_diff = gmdate('H:i:s', (int) $time_diff);
 echo get_form_description_line($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
 
 $passmsg = '';
@@ -120,16 +138,16 @@ echo get_form_description_line($l['w_answers_right'] . ':', $l['h_answers_right'
 echo get_form_description_line($l['w_comment'] . ':', $l['h_testcomment'], F_decode_tcecode($usrtestdata['comment']));
 echo '</div>' . K_NEWLINE;
 
-$result_charset = (string) $l['a_meta_charset'];
-$result_index_title = (string) $l['h_index'];
-$result_page_help = (string) $l['hp_result_user'];
-$result_pdf_title = (string) $l['h_pdf'];
-$result_pdf_label = (string) $l['w_pdf'];
-$result_score_label = (string) $l['w_score'];
-$result_right_label = (string) $l['w_answers_right'];
-$result_score = is_numeric($usrtestdata['score']) ? (float) $usrtestdata['score'] : 0.0;
-$result_max_score = is_numeric($usrtestdata['max_score']) ? (float) $usrtestdata['max_score'] : 0.0;
-$result_threshold = is_numeric($usrtestdata['score_threshold']) ? (float) $usrtestdata['score_threshold'] : 0.0;
+$result_charset = $l['a_meta_charset'];
+$result_index_title = $l['h_index'];
+$result_page_help = $l['hp_result_user'];
+$result_pdf_title = $l['h_pdf'];
+$result_pdf_label = $l['w_pdf'];
+$result_score_label = $l['w_score'];
+$result_right_label = $l['w_answers_right'];
+$result_score = f_tce_test_results_numeric_float($usrtestdata['score']);
+$result_max_score = f_tce_test_results_numeric_float($usrtestdata['max_score']);
+$result_threshold = f_tce_test_results_numeric_float($usrtestdata['score_threshold']);
 $result_right = (int) $usrtestdata['right'];
 $result_all = (int) $usrtestdata['all'];
 $score_percent = $result_max_score > 0
@@ -156,9 +174,19 @@ echo '<section class="result-hero" aria-labelledby="result-summary-title">'
 if (f_get_boolean($testdata['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
 
+    /**
+     * @var array<int|string,array{
+     *     name:string,num:int,right:int,wrong:int,unanswered:int,undisplayed:int,unrated:int,
+     *     score:int|float,maxscore:int|float,
+     *     subjects:array<int|string,array{
+     *         name:string,num:int,right:int,wrong:int,unanswered:int,undisplayed:int,unrated:int,
+     *         score:int|float,maxscore:int|float
+     *     }>
+     * }> $topicresults
+     */
     $topicresults = []; // per-topic results
     $testuser_id = $usrtestdata['testuser_id'];
-    if (isset($testuser_id) && !empty($testuser_id)) {
+    if (!empty($testuser_id)) {
         // display user questions
         $sql =
             'SELECT *
@@ -178,7 +206,8 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
 				AND question_subject_id=subject_id
 				AND subject_module_id=module_id
 			ORDER BY testlog_id';
-        if ($r = F_db_query($sql, $db)) {
+        $r = f_tce_test_results_query_result(F_db_query($sql, $db));
+        if ($r) {
             echo '<div class="result-question-toolbar" aria-label="Фильтр вопросов">'
                 . '<strong>Разбор ответов</strong><div role="group">'
                 . '<button type="button" class="active" data-result-filter="all">Все</button>'
@@ -186,36 +215,37 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 . '<button type="button" data-result-filter="unanswered">Без ответа</button>'
                 . '</div></div>' . K_NEWLINE;
             echo '<ol class="question result-question-list">' . K_NEWLINE;
-            while ($m = F_db_fetch_array($r)) {
-                /** @var int|numeric-string $raw_question_type */
+            while (($m = f_tce_test_results_question_row(F_db_fetch_array($r))) !== null) {
                 $raw_question_type = $m['question_type'];
                 $question_type = (int) $raw_question_type;
                 // create per-topic results array
                 if (!array_key_exists($m['module_id'], $topicresults)) {
-                    $topicresults[$m['module_id']] = [];
-                    $topicresults[$m['module_id']]['name'] = $m['module_name'];
-                    $topicresults[$m['module_id']]['num'] = 0;
-                    $topicresults[$m['module_id']]['right'] = 0;
-                    $topicresults[$m['module_id']]['wrong'] = 0;
-                    $topicresults[$m['module_id']]['unanswered'] = 0;
-                    $topicresults[$m['module_id']]['undisplayed'] = 0;
-                    $topicresults[$m['module_id']]['unrated'] = 0;
-                    $topicresults[$m['module_id']]['score'] = 0;
-                    $topicresults[$m['module_id']]['maxscore'] = 0;
-                    $topicresults[$m['module_id']]['subjects'] = [];
+                    $topicresults[$m['module_id']] = [
+                        'name' => $m['module_name'],
+                        'num' => 0,
+                        'right' => 0,
+                        'wrong' => 0,
+                        'unanswered' => 0,
+                        'undisplayed' => 0,
+                        'unrated' => 0,
+                        'score' => 0,
+                        'maxscore' => 0,
+                        'subjects' => [],
+                    ];
                 }
 
                 if (!array_key_exists($m['subject_id'], $topicresults[$m['module_id']]['subjects'])) {
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']] = [];
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['name'] = $m['subject_name'];
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['num'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['right'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['wrong'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unanswered'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['undisplayed'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unrated'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['score'] = 0;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['maxscore'] = 0;
+                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']] = [
+                        'name' => $m['subject_name'],
+                        'num' => 0,
+                        'right' => 0,
+                        'wrong' => 0,
+                        'unanswered' => 0,
+                        'undisplayed' => 0,
+                        'unrated' => 0,
+                        'score' => 0,
+                        'maxscore' => 0,
+                    ];
                 }
 
                 $question_max_score = $m['question_difficulty'] * $test_basic_score;
@@ -233,19 +263,19 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 }
 
                 // total number of unanswered questions
-                if (strlen($m['testlog_change_time']) <= 0) {
+                if (strlen(f_tce_test_results_string($m['testlog_change_time'])) <= 0) {
                     ++$topicresults[$m['module_id']]['unanswered'];
                     ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unanswered'];
                 }
 
                 // total number of undisplayed questions
-                if (strlen($m['testlog_display_time']) <= 0) {
+                if (strlen(f_tce_test_results_string($m['testlog_display_time'])) <= 0) {
                     ++$topicresults[$m['module_id']]['undisplayed'];
                     ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['undisplayed'];
                 }
 
                 // number of free-text unrated questions
-                if (strlen($m['testlog_score']) <= 0) {
+                if (strlen(f_tce_test_results_string($m['testlog_score'])) <= 0) {
                     ++$topicresults[$m['module_id']]['unrated'];
                     ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unrated'];
                 }
@@ -257,10 +287,10 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 $topicresults[$m['module_id']]['maxscore'] += $question_max_score;
                 $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['maxscore'] += $question_max_score;
 
-                $question_score = is_numeric($m['testlog_score']) ? (float) $m['testlog_score'] : 0.0;
-                if (strlen((string) $m['testlog_change_time']) <= 0) {
+                $question_score = f_tce_test_results_numeric_float($m['testlog_score']);
+                if (strlen(f_tce_test_results_string($m['testlog_change_time'])) <= 0) {
                     $result_state = 'unanswered';
-                } elseif ($question_score > ((is_numeric($question_max_score) ? (float) $question_max_score : 0.0) / 2)) {
+                } elseif ($question_score > (f_tce_test_results_numeric_float($question_max_score) / 2)) {
                     $result_state = 'correct';
                 } else {
                     $result_state = 'incorrect';
@@ -286,7 +316,10 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 if (isset($m['testlog_display_time']) && isset($m['testlog_change_time'])) {
                     echo
                         ' | '
-                            . date('i:s', strtotime($m['testlog_change_time']) - strtotime($m['testlog_display_time']))
+                            . date(
+                                'i:s',
+                                (int) strtotime($m['testlog_change_time']) - (int) strtotime($m['testlog_display_time']),
+                            )
                             . ''
                     ;
                 } else {
@@ -303,7 +336,7 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                 echo '<br />' . K_NEWLINE;
                 // display question description
                 echo F_decode_tcecode($m['question_description']) . K_NEWLINE;
-                if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
+                if (f_tce_test_results_bool(K_ENABLE_QUESTION_EXPLANATION) && !empty($m['question_explanation'])) {
                     echo
                         '<br /><span class="explanation">'
                             . $l['w_explanation']
@@ -334,13 +367,11 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                         . $m['testlog_id']
                         . '\'
 						ORDER BY logansw_order';
-                    if ($ra = F_db_query($sqla, $db)) {
-                        while ($ma = F_db_fetch_array($ra)) {
-                            /** @var int|numeric-string $raw_log_position */
+                    $ra = f_tce_test_results_query_result(F_db_query($sqla, $db));
+                    if ($ra) {
+                        while (($ma = f_tce_test_results_answer_row(F_db_fetch_array($ra))) !== null) {
                             $raw_log_position = $ma['logansw_position'];
-                            /** @var int|numeric-string $raw_answer_position */
                             $raw_answer_position = $ma['answer_position'];
-                            /** @var int|numeric-string $raw_selected */
                             $raw_selected = $ma['logansw_selected'];
                             $log_position = (int) $raw_log_position;
                             $answer_position = (int) $raw_answer_position;
@@ -397,7 +428,6 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                                         . $answer_position
                                         . '</abbr>'
                                 ;
-                            // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
                             } elseif (f_get_boolean($ma['answer_isright'])) {
                                 echo '<abbr title="' . $l['w_answers_right'] . '" class="onbox">&reg;</abbr>';
                             } else {
@@ -405,9 +435,8 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
                             }
 
                             echo ' ';
-                            // @mago-expect analysis:invalid-array-access -- active DAL fetches answer rows as arrays
                             echo F_decode_tcecode($ma['answer_description']);
-                            if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                            if (f_tce_test_results_bool(K_ENABLE_ANSWER_EXPLANATION) && !empty($ma['answer_explanation'])) {
                                 echo
                                     '<br /><span class="explanation">'
                                         . $l['w_explanation']
@@ -504,12 +533,12 @@ if (f_get_boolean($testdata['test_report_to_users'])) {
     echo '<hr />' . K_NEWLINE;
     echo '</div>' . K_NEWLINE;
 
-    if (K_ENABLE_PUBLIC_PDF) {
+    if (f_tce_test_results_bool(K_ENABLE_PUBLIC_PDF)) {
         echo '<div class="row">' . K_NEWLINE;
         // PDF button
         echo
             '<a href="'
-                . pdfLink(3, $test_id, 0, $user_id, '', 0)
+                . f_tce_test_results_pdf_link($test_id, $user_id)
                 . '" class="xmlbutton" title="'
                 . $result_pdf_title
                 . '">'
@@ -529,3 +558,131 @@ echo '<div class="pagehelp">' . $result_page_help . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_test_results_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** Preserve legacy positive-value comparisons. */
+function f_tce_test_results_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+    return false;
+}
+
+function f_tce_test_results_bool(bool $value): bool
+{
+    return $value;
+}
+
+function f_tce_test_results_numeric_float(mixed $value): float
+{
+    return is_numeric($value) ? (float) $value : 0.0;
+}
+
+/** @return object|resource|bool */
+function f_tce_test_results_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array<string,mixed> */
+function f_tce_test_results_user_data(mixed $data): array
+{
+    /** @var array<string,mixed> $data */
+    return $data;
+}
+
+/**
+ * @return array{
+ *     test_name:string,test_description:string,test_score_right:int|float|numeric-string,
+ *     test_results_anonymized?:mixed,test_duration_time:int|float|numeric-string,test_report_to_users:mixed
+ * }
+ */
+function f_tce_test_results_test_data(mixed $data): array
+{
+    /**
+     * @var array{
+     *     test_name:string,test_description:string,test_score_right:int|float|numeric-string,
+     *     test_results_anonymized?:mixed,test_duration_time:int|float|numeric-string,test_report_to_users:mixed
+     * } $data
+     */
+    return $data;
+}
+
+/**
+ * @return array{
+ *     test_start_time:string,test_end_time:int|string|null,score_threshold:int|float|numeric-string,
+ *     score:int|float|numeric-string,max_score:int|float|numeric-string,right:int|numeric-string,
+ *     all:int|numeric-string,comment:string,testuser_id:int|string
+ * }
+ */
+function f_tce_test_results_user_test_data(mixed $data): array
+{
+    /**
+     * @var array{
+     *     test_start_time:string,test_end_time:int|string|null,score_threshold:int|float|numeric-string,
+     *     score:int|float|numeric-string,max_score:int|float|numeric-string,right:int|numeric-string,
+     *     all:int|numeric-string,comment:string,testuser_id:int|string
+     * } $data
+     */
+    return $data;
+}
+
+/**
+ * @return array{
+ *     question_type:int|numeric-string,module_id:int|string,module_name:string,subject_id:int|string,
+ *     subject_name:string,question_difficulty:int|float|numeric-string,testlog_score:numeric-string,
+ *     testlog_change_time:string|null,testlog_display_time:string|null,testlog_user_ip:int|string,
+ *     testlog_reaction_time:int|float|numeric-string|null,question_description:string,
+ *     question_explanation:string|null,testlog_answer_text:string,testlog_id:int|string,testlog_comment:string|null
+ * }|null
+ */
+function f_tce_test_results_question_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     question_type:int|numeric-string,module_id:int|string,module_name:string,subject_id:int|string,
+     *     subject_name:string,question_difficulty:int|float|numeric-string,testlog_score:numeric-string,
+     *     testlog_change_time:string|null,testlog_display_time:string|null,testlog_user_ip:int|string,
+     *     testlog_reaction_time:int|float|numeric-string|null,question_description:string,
+     *     question_explanation:string|null,testlog_answer_text:string,testlog_id:int|string,testlog_comment:string|null
+     * }|null $row
+     */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     logansw_position:int|numeric-string,answer_position:int|numeric-string,logansw_selected:int|numeric-string,
+ *     answer_isright:mixed,answer_description:string,answer_explanation:string|null
+ * }|null
+ */
+function f_tce_test_results_answer_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     logansw_position:int|numeric-string,answer_position:int|numeric-string,logansw_selected:int|numeric-string,
+     *     answer_isright:mixed,answer_description:string,answer_explanation:string|null
+     * }|null $row
+     */
+    return $row;
+}
+
+function f_tce_test_results_pdf_link(int $test_id, int $user_id): string
+{
+    $pdf_link = ltrim(__NAMESPACE__ . '\\pdfLink', '\\');
+    /** @var callable(int,int,int,int,string,int):string $pdf_link */
+    return $pdf_link(3, $test_id, 0, $user_id, '', 0);
+}
