@@ -80,7 +80,10 @@ final class WordImportTest extends TestCase
         ];
     }
 
-    /** @param array<int, int> $expectedTypes */
+    /**
+     * @param array<int, int> $expectedTypes
+     * @throws \TmfWordImportException
+     */
     #[DataProvider('fixtureProvider')]
     public function testRealWordExamples(
         string $filename,
@@ -135,6 +138,7 @@ final class WordImportTest extends TestCase
         self::assertSame($expectedTypes, $actualTypes);
     }
 
+    /** @throws \TmfWordImportException */
     public function testUnsafeArchivePathIsRejected(): void
     {
         $filename = $this->temporaryDirectory . '/unsafe.docx';
@@ -152,6 +156,7 @@ final class WordImportTest extends TestCase
         (new TmfWordImporter($filename))->parse();
     }
 
+    /** @throws \TmfWordImportException */
     public function testMatchingMarkerCreatesIndependentMatchingQuestion(): void
     {
         if (!class_exists(ZipArchive::class)) {
@@ -192,6 +197,7 @@ final class WordImportTest extends TestCase
         self::assertStringNotContainsString('[[MATCHING]]', $data['questions'][0]['description']);
     }
 
+    /** @throws \TmfWordImportException */
     public function testDownloadableTemplateRoundTripsEveryQuestionType(): void
     {
         if (!class_exists(ZipArchive::class)) {
@@ -212,6 +218,7 @@ final class WordImportTest extends TestCase
         );
     }
 
+    /** @throws \TmfWordImportException */
     public function testArabicTextRoundTripsWithoutNormalizationOrReordering(): void
     {
         if (!class_exists(ZipArchive::class)) {

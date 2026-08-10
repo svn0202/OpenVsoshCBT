@@ -400,6 +400,7 @@ final class DatabaseDalIntegrationTest extends TestCase
 
     /**
      * @throws \Random\RandomException
+     * @throws \TmfWordImportException
      */
     public function testWordImportCanCommitAndRollBackRealDatabaseWrites(): void
     {
