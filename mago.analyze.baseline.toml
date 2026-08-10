@@ -18623,21 +18623,3 @@ file = "shared/code/TcePdfReport.php"
 code = "unhandled-thrown-type"
 message = "Potentially unhandled exception `Throwable` in `TcePdfReport::writeReportHTML`."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "mixed-property-type-coercion"
-message = "A value with a less specific type `mixed` is being assigned to property `$$resource` (array<array-key, mixed>)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "possibly-false-argument"
-message = "Argument #2 of function `xml_parse` is possibly `false`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_tmx.php"
-code = "undefined-variable"
-message = "Undefined variable: `$tmx`."
-count = 1
