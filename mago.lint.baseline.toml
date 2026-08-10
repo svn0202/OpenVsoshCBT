@@ -53,9 +53,3 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "function-name"
 message = "Function name `F_printTestStat` should be in snake case."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "function-name"
-message = "Function name `F_printUserTestStat` should be in snake case."
-count = 1
