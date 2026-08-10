@@ -3121,7 +3121,7 @@ function F_testComment($test_id)
  * @param mixed $testcomment user comment.
  * @since 4.0.000 (2006-10-01)
  */
-function F_updateTestComment(mixed $test_id, mixed $testcomment): void
+function f_update_test_comment(mixed $test_id, mixed $testcomment): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
