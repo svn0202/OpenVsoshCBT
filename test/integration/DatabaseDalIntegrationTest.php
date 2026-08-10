@@ -219,9 +219,10 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $res = \F_db_query("SELECT '" . $escaped . "' AS v", $this->db);
         $this->assertNotFalse($res, 'a query embedding the escaped value should be valid SQL');
+        /** @var \mysqli_result|\PgSql\Result $res */
 
-        $row = \F_db_fetch_assoc($res);
-        $this->assertSame($raw, $row['v'], 'the escaped value must round-trip unchanged');
+        $row = self::dalRow(\F_db_fetch_assoc($res));
+        $this->assertSame($raw, $row['v'] ?? null, 'the escaped value must round-trip unchanged');
     }
 
     public function testInsertFetchAndDeleteRoundTrip(): void
