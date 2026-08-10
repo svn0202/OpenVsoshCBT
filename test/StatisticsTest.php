@@ -37,7 +37,7 @@ final class StatisticsTest extends TestCase
                     . 'function F_tmf_attachment_html($testlogId) { '
                     . '$GLOBALS["attachments"][] = $testlogId; return "<ATTACHMENT>"; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_printUserTestStat)\\(/", '
+                    . 'preg_match("/function (f_print_user_test_stat)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

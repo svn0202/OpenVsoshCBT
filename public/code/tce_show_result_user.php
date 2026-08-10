@@ -207,7 +207,7 @@ echo
 
 if (f_get_boolean($teststat['testinfo']['test_report_to_users'])) {
     echo '<div class="rowl">' . K_NEWLINE;
-    echo F_printUserTestStat($testuser_id);
+    echo f_print_user_test_stat($testuser_id);
     echo '</div>' . K_NEWLINE;
 
     // print statistics for modules and subjects

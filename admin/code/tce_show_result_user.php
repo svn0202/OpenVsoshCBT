@@ -518,7 +518,7 @@ if (isset($teststat) && !empty($teststat)) {
 
     if (isset($testuser_id) && $testuser_id !== 0 && !empty($teststat)) {
         echo '<div class="rowl">' . K_NEWLINE;
-        echo F_printUserTestStat($testuser_id);
+        echo f_print_user_test_stat($testuser_id);
         echo '</div>' . K_NEWLINE;
 
         // print statistics for modules and subjects
