@@ -16407,12 +16407,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "missing-return-type"
-message = "Function `F_getTestIDs` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-return-type"
 message = "Function `F_getTestStat` is missing a return type hint."
 count = 1
 
