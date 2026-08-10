@@ -586,6 +586,7 @@ if ($logged) { //if user is just logged in: reloads page
 }
 
 // check for test password
+/** @var array{m_wrong_test_password:string} $l */
 if (
     isset($_POST['testpswaction'])
     && f_legacy_literal_equals($_POST['testpswaction'], 'login')
