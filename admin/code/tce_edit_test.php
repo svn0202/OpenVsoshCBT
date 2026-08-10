@@ -1103,7 +1103,9 @@ switch ($menu_mode) {
             $test_name = '';
             $test_description = '';
             $test_begin_time = date(K_TIMESTAMP_FORMAT);
-            $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
+            $default_test_end_timestamp = time() + K_SECONDS_IN_DAY;
+            /** @var int $default_test_end_timestamp */
+            $test_end_time = date(K_TIMESTAMP_FORMAT, $default_test_end_timestamp);
             $test_duration_time = 60;
             $test_ip_range = '*';
             $test_results_to_users = false;
@@ -1145,7 +1147,9 @@ if ($formstatus && $menu_mode !== 'clear') {
         $test_name = '';
         $test_description = '';
         $test_begin_time = date(K_TIMESTAMP_FORMAT);
-        $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
+        $default_test_end_timestamp = time() + K_SECONDS_IN_DAY;
+        /** @var int $default_test_end_timestamp */
+        $test_end_time = date(K_TIMESTAMP_FORMAT, $default_test_end_timestamp);
         $test_duration_time = 60;
         $test_ip_range = '*';
         $test_results_to_users = false;
@@ -1205,7 +1209,9 @@ if ($formstatus && $menu_mode !== 'clear') {
                 $test_name = '';
                 $test_description = '';
                 $test_begin_time = date(K_TIMESTAMP_FORMAT);
-                $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
+                $default_test_end_timestamp = time() + K_SECONDS_IN_DAY;
+                /** @var int $default_test_end_timestamp */
+                $test_end_time = date(K_TIMESTAMP_FORMAT, $default_test_end_timestamp);
                 $test_duration_time = 60;
                 $test_ip_range = '*';
                 $test_results_to_users = false;
