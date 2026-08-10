@@ -2,6 +2,9 @@
 
 require_once '../config/tce_config.php';
 
+/** @var array{a_meta_charset:string, m_authorization_denied:string} $l */
+/** @var mixed $db */
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_OPERATOR;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -24,13 +27,34 @@ if (!in_array($status_filter, $allowed_statuses, true)) {
     $status_filter = '';
 }
 
+$normalize_query_result = static function (mixed $result): mixed {
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+};
+/** @return array<array-key,mixed>|null */
+$normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+
 $tests = [];
-$tests_result = F_db_query(F_select_tests_sql(), $db);
-while ($tests_result && ($test_row = F_db_fetch_array($tests_result))) {
+/** @var array<int,array{test_duration_time:int|string, test_id:int|string, test_name:mixed, test_password?:string, test_user_id:int|string}> $tests */
+$tests_result = $normalize_query_result(F_db_query(F_select_tests_sql(), $db));
+while ($tests_result && ($test_row = $normalize_row(F_db_fetch_array($tests_result)))) {
+    /** @var array{test_duration_time:int|string, test_id:int|string, test_name:mixed, test_password?:string, test_user_id:int|string} $test_row */
     $tests[(int) $test_row['test_id']] = $test_row;
 }
-if ($test_id > 0 && !isset($tests[$test_id])) {
-    F_print_error('ERROR', $l['m_authorization_denied'], true);
+$selected_test = null;
+if ($test_id > 0) {
+    $selected_test = $tests[$test_id] ?? null;
+    if ($selected_test === null) {
+        F_print_error('ERROR', $l['m_authorization_denied'], true);
+        exit();
+    }
 }
 
 $action_result = '';
@@ -64,17 +88,41 @@ if (isset($_GET['action_result']) && is_string($_GET['action_result'])) {
 }
 
 $participants = [];
+/**
+ * @var array<int,array{
+ *     answer_saved_at:mixed,
+ *     attempt:null|array{
+ *         testuser_close_reason:mixed,
+ *         testuser_creation_time:mixed,
+ *         testuser_focus_loss_count:mixed,
+ *         testuser_id:int|string,
+ *         testuser_last_activity:mixed,
+ *         testuser_pregenerated:mixed,
+ *         testuser_status:int|string,
+ *         testuser_user_id:int|string
+ *     },
+ *     focus_loss_count:int,
+ *     questions_answered:int,
+ *     questions_total:int,
+ *     remaining_seconds?:int|null,
+ *     status?:'blocked'|'completed'|'connection_lost'|'in_progress'|'not_started'|'timed_out',
+ *     user:array{user_firstname:mixed, user_id:int|string, user_lastname:mixed, user_name:mixed}
+ * }> $participants
+ */
 $status_counts = array_fill_keys($allowed_statuses, 0);
+/** @var array{blocked:int, completed:int, connection_lost:int, in_progress:int, not_started:int, timed_out:int} $status_counts */
+$author_name = '';
 if ($test_id > 0) {
-    $author_name = '';
-    $author_result = F_db_query(
+    /** @var array{test_duration_time:int|string, test_id:int|string, test_name:mixed, test_password?:string, test_user_id:int|string} $selected_test */
+    $author_result = $normalize_query_result(F_db_query(
         'SELECT user_name, user_firstname, user_lastname
         FROM ' . K_TABLE_USERS . '
-        WHERE user_id=' . (int) $tests[$test_id]['test_user_id'] . '
+        WHERE user_id=' . (int) $selected_test['test_user_id'] . '
         LIMIT 1',
         $db,
-    );
-    if ($author_result && ($author = F_db_fetch_array($author_result))) {
+    ));
+    if ($author_result && ($author = $normalize_row(F_db_fetch_array($author_result)))) {
+        /** @var array{user_firstname:mixed, user_lastname:mixed, user_name:mixed} $author */
         $author_name = trim((string) $author['user_lastname'] . ' ' . (string) $author['user_firstname']);
         if ($author_name === '') {
             $author_name = (string) $author['user_name'];
@@ -86,8 +134,9 @@ if ($test_id > 0) {
         INNER JOIN ' . K_TABLE_TEST_GROUPS . ' tg ON tg.tstgrp_group_id=ug.usrgrp_group_id
         WHERE tg.tstgrp_test_id=' . $test_id . '
         ORDER BY u.user_lastname, u.user_firstname, u.user_name';
-    $user_result = F_db_query($user_sql, $db);
-    while ($user_result && ($user = F_db_fetch_array($user_result))) {
+    $user_result = $normalize_query_result(F_db_query($user_sql, $db));
+    while ($user_result && ($user = $normalize_row(F_db_fetch_array($user_result)))) {
+        /** @var array{user_firstname:mixed, user_id:int|string, user_lastname:mixed, user_name:mixed} $user */
         $participants[(int) $user['user_id']] = [
             'user' => $user,
             'attempt' => null,
@@ -104,18 +153,22 @@ if ($test_id > 0) {
         FROM ' . K_TABLE_TEST_USER . '
         WHERE testuser_test_id=' . $test_id . '
         ORDER BY testuser_user_id, testuser_status, testuser_id DESC';
-    $attempt_result = F_db_query($attempt_sql, $db);
-    while ($attempt_result && ($attempt = F_db_fetch_array($attempt_result))) {
+    $attempt_result = $normalize_query_result(F_db_query($attempt_sql, $db));
+    while ($attempt_result && ($attempt = $normalize_row(F_db_fetch_array($attempt_result)))) {
+        /** @var array{testuser_close_reason:mixed, testuser_creation_time:mixed, testuser_focus_loss_count:mixed, testuser_id:int|string, testuser_last_activity:mixed, testuser_pregenerated:mixed, testuser_status:int|string, testuser_user_id:int|string} $attempt */
         $participant_id = (int) $attempt['testuser_user_id'];
-        if (!isset($participants[$participant_id])) {
+        $current_participant = $participants[$participant_id] ?? null;
+        if ($current_participant === null) {
             continue;
         }
-        $current = $participants[$participant_id]['attempt'];
+        /** @var array{answer_saved_at:mixed, attempt:null|array{testuser_close_reason:mixed, testuser_creation_time:mixed, testuser_focus_loss_count:mixed, testuser_id:int|string, testuser_last_activity:mixed, testuser_pregenerated:mixed, testuser_status:int|string, testuser_user_id:int|string}, focus_loss_count:int, questions_answered:int, questions_total:int, user:array{user_firstname:mixed, user_id:int|string, user_lastname:mixed, user_name:mixed}} $current_participant */
+        $current = $current_participant['attempt'];
         if (
             $current === null
             || ((int) $current['testuser_status'] >= 5 && (int) $attempt['testuser_status'] < 5)
         ) {
-            $participants[$participant_id]['attempt'] = $attempt;
+            $current_participant['attempt'] = $attempt;
+            $participants[$participant_id] = $current_participant;
         }
     }
 
@@ -128,16 +181,19 @@ if ($test_id > 0) {
         WHERE tu.testuser_test_id=' . $test_id . '
             AND tu.testuser_status<5
         GROUP BY tl.testlog_testuser_id';
-    $log_result = F_db_query($log_sql, $db);
+    $log_result = $normalize_query_result(F_db_query($log_sql, $db));
     $log_totals = [];
-    while ($log_result && ($log = F_db_fetch_array($log_result))) {
+    /** @var array<int,array{answer_saved_at:mixed, questions_answered:mixed, questions_total:mixed, testlog_testuser_id:int|string}> $log_totals */
+    while ($log_result && ($log = $normalize_row(F_db_fetch_array($log_result)))) {
+        /** @var array{answer_saved_at:mixed, questions_answered:mixed, questions_total:mixed, testlog_testuser_id:int|string} $log */
         $log_totals[(int) $log['testlog_testuser_id']] = $log;
     }
 
-    foreach ($participants as &$participant) {
+    foreach ($participants as $participant_id => $participant) {
         $attempt = $participant['attempt'];
-        if (is_array($attempt) && isset($log_totals[(int) $attempt['testuser_id']])) {
-            $log = $log_totals[(int) $attempt['testuser_id']];
+        $attempt_id = is_array($attempt) ? (int) $attempt['testuser_id'] : 0;
+        $log = $attempt_id > 0 ? ($log_totals[$attempt_id] ?? null) : null;
+        if (is_array($log)) {
             $participant['questions_total'] = (int) $log['questions_total'];
             $participant['questions_answered'] = (int) $log['questions_answered'];
             $participant['answer_saved_at'] = $log['answer_saved_at'];
@@ -162,18 +218,40 @@ if ($test_id > 0) {
             is_array($attempt)
             && in_array($participant['status'], ['in_progress', 'connection_lost', 'blocked'], true)
         ) {
-            // @mago-expect analysis:mixed-array-assignment -- participant rows are assembled above from DB data
             $participant['remaining_seconds'] = max(
                 0,
-                strtotime((string) $attempt['testuser_creation_time'])
-                    + ((int) $tests[$test_id]['test_duration_time'] * K_SECONDS_IN_MINUTE)
+                (int) strtotime((string) $attempt['testuser_creation_time'])
+                    + ((int) $selected_test['test_duration_time'] * K_SECONDS_IN_MINUTE)
                     - time(),
             );
         }
-        ++$status_counts[$participant['status']];
+        $participant_status = $participant['status'];
+        $status_counts[$participant_status] = ($status_counts[$participant_status] ?? 0) + 1;
+        $participants[$participant_id] = $participant;
     }
-    unset($participant);
 }
+
+/**
+ * @var array<int,array{
+ *     answer_saved_at:mixed,
+ *     attempt:null|array{
+ *         testuser_close_reason:mixed,
+ *         testuser_creation_time:mixed,
+ *         testuser_focus_loss_count:mixed,
+ *         testuser_id:int|string,
+ *         testuser_last_activity:mixed,
+ *         testuser_pregenerated:mixed,
+ *         testuser_status:int|string,
+ *         testuser_user_id:int|string
+ *     },
+ *     focus_loss_count:int,
+ *     questions_answered:int,
+ *     questions_total:int,
+ *     remaining_seconds:int|null,
+ *     status:'blocked'|'completed'|'connection_lost'|'in_progress'|'not_started'|'timed_out',
+ *     user:array{user_firstname:mixed, user_id:int|string, user_lastname:mixed, user_name:mixed}
+ * }> $participants
+ */
 
 $status_labels = [
     'not_started' => 'Не приступил',
@@ -202,6 +280,18 @@ $visible_participants = array_filter(
         return str_contains($haystack, strtolower($search));
     },
 );
+/**
+ * @var array<int,array{
+ *     answer_saved_at:mixed,
+ *     attempt:null|array{testuser_id:int|string, testuser_last_activity:mixed},
+ *     focus_loss_count:int,
+ *     questions_answered:int,
+ *     questions_total:int,
+ *     remaining_seconds:int|null,
+ *     status:'blocked'|'completed'|'connection_lost'|'in_progress'|'not_started'|'timed_out',
+ *     user:array{user_firstname:mixed, user_id:int|string, user_lastname:mixed, user_name:mixed}
+ * }> $visible_participants
+ */
 $status_priority = [
     'connection_lost' => 0,
     'blocked' => 1,
@@ -224,10 +314,10 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'xlsx') {
             $user['user_name'],
             $user['user_lastname'],
             $user['user_firstname'],
-            $status_labels[$participant['status']],
+            $status_labels[$participant['status']] ?? '',
             ['value' => $participant['questions_answered'], 'type' => 'number'],
             ['value' => $participant['questions_total'], 'type' => 'number'],
-            ['value' => (int) ($participant['focus_loss_count'] ?? 0), 'type' => 'number'],
+            ['value' => $participant['focus_loss_count'], 'type' => 'number'],
             $participant['remaining_seconds'] === null
                 ? ''
                 : ['value' => $participant['remaining_seconds'], 'type' => 'number'],
@@ -273,13 +363,13 @@ if ($test_id > 0 && isset($_GET['export']) && $_GET['export'] === 'csv') {
             $user['user_name'],
             $user['user_lastname'],
             $user['user_firstname'],
-            $status_labels[$participant['status']],
+            $status_labels[$participant['status']] ?? '',
             $participant['questions_answered'],
             $participant['questions_total'],
-            (int) ($participant['focus_loss_count'] ?? 0),
+            $participant['focus_loss_count'],
             $participant['remaining_seconds'] ?? '',
             $attempt['testuser_last_activity'] ?? '',
-            $participant['answer_saved_at'] ?? '',
+            $participant['answer_saved_at'],
         ]);
     }
     fclose($output);
@@ -291,6 +381,7 @@ require_once 'tce_page_header.php';
 function f_tmf_monitor_html(mixed $value): string
 {
     global $l;
+    /** @var array{a_meta_charset:string} $l */
     return htmlspecialchars((string) $value, ENT_QUOTES, $l['a_meta_charset']);
 }
 
@@ -335,10 +426,11 @@ if ($test_id > 0) {
     echo '<div class="monitor-summary" aria-label="Сводка">';
     foreach ($status_labels as $status => $label) {
         echo '<a href="?test_id=' . $test_id . '&amp;status=' . $status . '"><strong>'
-            . $status_counts[$status] . '</strong><span>' . $label . '</span></a>';
+            . ($status_counts[$status] ?? 0) . '</strong><span>' . $label . '</span></a>';
     }
     echo '</div>' . K_NEWLINE;
-    $test_token = (string) ($tests[$test_id]['test_password'] ?? '');
+    /** @var array{test_duration_time:int|string, test_id:int|string, test_name:mixed, test_password?:string, test_user_id:int|string} $selected_test */
+    $test_token = $selected_test['test_password'] ?? '';
     echo '<dl class="monitor-test-meta"><div><dt>Автор</dt><dd>'
         . F_tmf_monitor_html($author_name === '' ? '—' : $author_name)
         . '</dd></div><div><dt>Токен теста</dt><dd><code>'
@@ -363,9 +455,9 @@ if ($test_id > 0) {
             . F_tmf_monitor_html($full_name === '' ? $user['user_name'] : $full_name)
             . '</strong><small>' . F_tmf_monitor_html($user['user_name']) . '</small></td>';
         echo '<td><span class="monitor-status monitor-status-' . $participant['status'] . '">'
-            . $status_labels[$participant['status']] . '</span></td>';
-        $questions_total = (int) ($participant['questions_total'] ?? 0);
-        $questions_answered = (int) ($participant['questions_answered'] ?? 0);
+            . ($status_labels[$participant['status']] ?? '') . '</span></td>';
+        $questions_total = $participant['questions_total'];
+        $questions_answered = $participant['questions_answered'];
         $progress = $questions_total > 0
             ? min(100, (int) round(100 * $questions_answered / $questions_total))
             : 0;
@@ -377,7 +469,7 @@ if ($test_id > 0) {
             : (int) $participant['remaining_seconds'];
         echo '<td>' . ($remaining === null ? '—' : sprintf('%02d:%02d', intdiv($remaining, 60), $remaining % 60))
             . '</td>';
-        echo '<td><strong>' . (int) ($participant['focus_loss_count'] ?? 0) . '</strong></td>';
+        echo '<td><strong>' . $participant['focus_loss_count'] . '</strong></td>';
         $last_activity = isset($attempt['testuser_last_activity'])
             ? (string) $attempt['testuser_last_activity']
             : '';
@@ -426,11 +518,12 @@ if ($test_id > 0) {
         WHERE a.monitor_test_id=' . $test_id . '
         ORDER BY a.monitor_audit_id DESC
         LIMIT 50';
-    $audit_result = F_db_query($audit_sql, $db);
+    $audit_result = $normalize_query_result(F_db_query($audit_sql, $db));
     echo '<details class="monitor-audit"><summary>Журнал действий</summary><table>'
         . '<thead><tr><th>Время</th><th>Оператор</th><th>Участник</th><th>Действие</th>'
         . '<th>Детали</th></tr></thead><tbody>';
-    while ($audit_result && ($audit = F_db_fetch_array($audit_result))) {
+    while ($audit_result && ($audit = $normalize_row(F_db_fetch_array($audit_result)))) {
+        /** @var array{actor_name:mixed, monitor_action:mixed, monitor_audit_time:mixed, monitor_details?:mixed, target_name:mixed} $audit */
         echo '<tr><td>' . F_tmf_monitor_html($audit['monitor_audit_time']) . '</td><td>'
             . F_tmf_monitor_html($audit['actor_name']) . '</td><td>'
             . F_tmf_monitor_html($audit['target_name']) . '</td><td>'
