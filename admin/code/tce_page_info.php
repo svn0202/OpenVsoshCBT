@@ -21,6 +21,17 @@
  */
 
 require_once '../config/tce_config.php';
+/**
+ * @var array{
+ *     t_page_info: string,
+ *     d_tcexam_desc: string,
+ *     w_author: string,
+ *     m_new_window_link: string,
+ *     w_license: string,
+ *     t_third_parties: string,
+ *     t_translations: string
+ * } $l
+ */
 
 $pagelevel = K_AUTH_ADMIN_INFO;
 require_once '../../shared/code/tce_authorization.php';
