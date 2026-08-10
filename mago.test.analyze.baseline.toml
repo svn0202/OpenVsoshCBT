@@ -389,9 +389,3 @@ file = "test/integration/PregenerationLoadHttpTest.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `array_fill`: expected `non-negative-int`, but possibly received `negative-int|positive-int`."
-count = 2

@@ -154,6 +154,7 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         }
         self::assertGreaterThanOrEqual(2, $participantCount);
         self::assertLessThanOrEqual(500, $participantCount);
+        /** @var positive-int $participantCount */
         $maximumP95Setting = getenv('TMF_PREGEN_LOAD_MAX_P95_MS');
         if (!$maximumP95Setting) {
             $maximumP95Setting = 10_000;
