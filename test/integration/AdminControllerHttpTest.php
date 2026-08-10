@@ -1846,7 +1846,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 $this->dbExec(
                     'INSERT INTO tce_tests_logs_answers (logansw_testlog_id,logansw_answer_id,'
                     . 'logansw_selected,logansw_order,logansw_position) VALUES ('
-                    . $logId . ',' . $answerIds[$type][$order] . ',-1,' . $order . ',0)'
+                    . $logId . ',' . (int) ($answerIds[$type][$order] ?? 0) . ',-1,' . $order . ',0)'
                 );
             }
         }
@@ -1863,7 +1863,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 [$pageStatus, $page] = $this->http(
                     'GET',
                     '/public/code/tce_test_execute.php?testid=' . $testId
-                    . '&testlogid=' . $logIds[$type],
+                    . '&testlogid=' . (int) ($logIds[$type] ?? 0),
                     $cookies,
                 );
                 $this->assertSame(200, $pageStatus, 'initial page for type ' . $type);
@@ -1876,7 +1876,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     array_merge(
                         [
                             'testid' => (string) $testId,
-                            'testlogid' => (string) $logIds[$type],
+                            'testlogid' => (string) ($logIds[$type] ?? 0),
                             'answer_version' => '0',
                             'answer_operation' => bin2hex(random_bytes(16)),
                             'csrf_token' => $token,
@@ -1895,18 +1895,18 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 [$nextStatus] = $this->http(
                     'GET',
                     '/public/code/tce_test_execute.php?testid=' . $testId
-                    . '&testlogid=' . $logIds[$nextType],
+                    . '&testlogid=' . (int) ($logIds[$nextType] ?? 0),
                     $cookies,
                 );
                 $this->assertSame(200, $nextStatus);
                 [$reloadStatus, $reloadPage] = $this->http(
                     'GET',
                     '/public/code/tce_test_execute.php?testid=' . $testId
-                    . '&testlogid=' . $logIds[$type],
+                    . '&testlogid=' . (int) ($logIds[$type] ?? 0),
                     $cookies,
                 );
                 $this->assertSame(200, $reloadStatus, 'reload for type ' . $type);
-                $visibleDescription = explode('<!--', $questions[$type], 2)[0];
+                $visibleDescription = explode('<!--', $questions[$type] ?? '', 2)[0];
                 $this->assertStringContainsString($visibleDescription, $reloadPage);
                 $this->assertMatchesRegularExpression(
                     '/name="answer_version"[^>]*value="1"/',
@@ -1946,7 +1946,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertSame(
                 'Text survives navigation and reload',
                 $this->dbScalar(
-                    'SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $logIds[3]
+                    'SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . (int) ($logIds[3] ?? 0)
                 ),
             );
             foreach ([1 => [1, 0], 2 => [1, 1]] as $type => $selectedValues) {
@@ -1956,7 +1956,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                         (string) $selected,
                         $this->dbScalar(
                             'SELECT logansw_selected FROM tce_tests_logs_answers WHERE '
-                            . 'logansw_testlog_id=' . $logIds[$type] . ' AND logansw_order=' . $order
+                            . 'logansw_testlog_id=' . (int) ($logIds[$type] ?? 0) . ' AND logansw_order=' . $order
                         ),
                     );
                 }
@@ -1967,7 +1967,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                         (string) $position,
                         $this->dbScalar(
                             'SELECT logansw_position FROM tce_tests_logs_answers WHERE '
-                            . 'logansw_testlog_id=' . $logIds[$type] . ' AND logansw_order=' . $order
+                            . 'logansw_testlog_id=' . (int) ($logIds[$type] ?? 0) . ' AND logansw_order=' . $order
                         ),
                     );
                 }
