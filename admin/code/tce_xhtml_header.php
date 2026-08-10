@@ -28,38 +28,62 @@
  * string $thispage_style page CSS file name, default K_TCEXAM_STYLE
  */
 
+/** @var array{
+ *     a_meta_dir: string,
+ *     a_meta_language: string,
+ *     a_meta_charset: string,
+ *     w_skip_navigation?: mixed,
+ *     m_login_wrong?: mixed
+ * } $l
+ */
 //if necessary load default values
+/** @var mixed $pagelevel */
 if (!isset($pagelevel) || empty($pagelevel)) {
     $pagelevel = 0;
 }
+/** @var int|string $pagelevel */
 
+/** @var mixed $thispage_title */
 if (!isset($thispage_title) || empty($thispage_title)) {
     $thispage_title = K_TCEXAM_TITLE;
 }
+/** @var string $thispage_title */
 
+/** @var mixed $thispage_description */
 if (!isset($thispage_description) || empty($thispage_description)) {
     $thispage_description = K_TCEXAM_DESCRIPTION;
 }
+/** @var string $thispage_description */
 
+/** @var mixed $thispage_author */
 if (!isset($thispage_author) || empty($thispage_author)) {
     $thispage_author = K_TCEXAM_AUTHOR;
 }
+/** @var string $thispage_author */
 
+/** @var mixed $thispage_reply */
 if (!isset($thispage_reply) || empty($thispage_reply)) {
     $thispage_reply = K_TCEXAM_REPLY_TO;
 }
+/** @var string $thispage_reply */
 
+/** @var mixed $thispage_keywords */
 if (!isset($thispage_keywords) || empty($thispage_keywords)) {
     $thispage_keywords = K_TCEXAM_KEYWORDS;
 }
+/** @var string $thispage_keywords */
 
+/** @var mixed $thispage_icon */
 if (!isset($thispage_icon) || empty($thispage_icon)) {
     $thispage_icon = K_TCEXAM_ICON;
 }
+/** @var string $thispage_icon */
 
+/** @var mixed $thispage_style */
 if (!isset($thispage_style) || empty($thispage_style)) {
     $thispage_style = strcasecmp($l['a_meta_dir'], 'rtl') === 0 ? K_TCEXAM_STYLE_RTL : K_TCEXAM_STYLE;
 }
+/** @var string $thispage_style */
 
 echo '<!DOCTYPE html>' . K_NEWLINE;
 echo '<html lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
@@ -74,7 +98,7 @@ echo
     '<meta name="description" content="'
         . htmlspecialchars($thispage_description, ENT_COMPAT, $l['a_meta_charset'])
         . ' ['
-        . base64_decode(K_KEY_SECURITY)
+        . (string) base64_decode(K_KEY_SECURITY)
         . ']" />'
         . K_NEWLINE
 ;
@@ -131,8 +155,9 @@ echo '<!-- TCExam19730104 -->' . K_NEWLINE;
 echo '</head>' . K_NEWLINE;
 
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
+/** @var array{admin_palette: string, admin_density: string, ui_font: string} $appearance */
 $appearance = openvsosh_get_appearance_settings();
-$admin_body_charset = (string) ($l['a_meta_charset'] ?? 'UTF-8');
+$admin_body_charset = $l['a_meta_charset'];
 $admin_body_classes = [
     'admin-page',
     'admin-palette-' . $appearance['admin_palette'],
