@@ -35,7 +35,7 @@ echo '<div class="popupcontainer">' . K_NEWLINE;
 $test_id = f_positive_request_int($_REQUEST['testid'] ?? null);
 if ($test_id > 0) {
     require_once '../../shared/code/tce_functions_test.php';
-    echo F_printTestInfo($test_id, false);
+    echo f_print_test_info($test_id, false);
 }
 
 echo '<div class="row">' . K_NEWLINE;

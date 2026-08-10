@@ -656,7 +656,7 @@ function f_test_info_link($test_id, $link_name = ''): string
  * @param $showip (boolean) if true display enabled users' IP range
  * @return string containing an XHTML code
  */
-function F_printTestInfo($test_id, $showip = false)
+function f_print_test_info($test_id, $showip = false)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';

@@ -34,7 +34,7 @@ echo '<div class="popupcontainer">' . K_NEWLINE;
 if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     require_once '../../shared/code/tce_functions_test.php';
     $test_id = (int) $_REQUEST['testid'];
-    echo F_printTestInfo($test_id, false);
+    echo f_print_test_info($test_id, false);
     echo '<br />' . K_NEWLINE;
     echo '<div class="row">' . K_NEWLINE;
     // display execute button
