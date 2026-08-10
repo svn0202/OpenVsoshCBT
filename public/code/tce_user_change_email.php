@@ -25,15 +25,39 @@ require_once '../config/tce_config.php';
 $currentpassword = isset($_POST['currentpassword']) && is_string($_POST['currentpassword'])
     ? $_POST['currentpassword']
     : '';
+/** @var string $user_email */
 $user_email = $_POST['user_email'] ?? '';
+/** @var string $user_email_repeat */
 $user_email_repeat = $_POST['user_email_repeat'] ?? '';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_USER_CHANGE_EMAIL;
+/** @var array{
+ *     t_user_change_email:string,
+ *     w_email:string,
+ *     a_meta_charset:string,
+ *     m_different_emails:string,
+ *     m_login_wrong:string,
+ *     m_email_updated:string,
+ *     m_user_verification_sent:string,
+ *     h_index:string,
+ *     w_new_email:string,
+ *     h_email:string,
+ *     w_repeat:string,
+ *     w_password:string,
+ *     h_password:string,
+ *     w_update:string,
+ *     h_update:string,
+ *     hp_user_change_email:string
+ * } $l
+ */
+/** @var mixed $db */
 $thispage_title = $l['t_user_change_email'];
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../code/tce_page_header.php';
 
+/** @mago-expect analysis:possibly-undefined-string-array-index */
 $user_id = (int) $_SESSION['session_user_id'];
 
 // comma separated list of required fields
@@ -45,6 +69,7 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars(
 );
 
 // process submitted data
+/** @var string $menu_mode */
 switch ($menu_mode) {
     case 'update': // Update user
         if ($formstatus = F_check_form_fields()) {
@@ -58,9 +83,11 @@ switch ($menu_mode) {
             }
 
             $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
-            if ($r = F_db_query($sql, $db)) {
+            $r = f_tmf_change_email_query_result(F_db_query($sql, $db));
+            if ($r) {
+                $m = f_tmf_change_email_row(F_db_fetch_array($r));
                 if (
-                    !($m = F_db_fetch_array($r))
+                    $m === null
                     || !check_password($currentpassword, (string) ($m['user_password'] ?? ''))
                 ) {
                     F_print_error('WARNING', $l['m_login_wrong']);
@@ -73,6 +100,7 @@ switch ($menu_mode) {
                 break;
             }
 
+            /** @mago-expect analysis:possibly-undefined-string-array-index */
             $current_level = (int) $_SESSION['session_user_level'];
             $user_verifycode = get_new_session_id(); // verification code
             $requires_verification = $current_level < 5;
@@ -88,7 +116,8 @@ switch ($menu_mode) {
                 . '
 				WHERE user_id='
                 . $user_id;
-            if (!($r = F_db_query($sql, $db))) {
+            $r = f_tmf_change_email_query_result(F_db_query($sql, $db));
+            if (!$r) {
                 F_display_db_error(false);
             } else {
                 F_print_error('MESSAGE', $l['m_email_updated']);
@@ -196,3 +225,23 @@ echo '<div class="pagehelp">' . $l['hp_user_change_email'] . '</div>' . K_NEWLIN
 echo '</div>' . K_NEWLINE;
 
 require_once __DIR__ . '/tce_page_footer.php';
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_change_email_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_change_email_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
