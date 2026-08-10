@@ -11,6 +11,35 @@ require_once __DIR__ . '/integration/DatabaseDalIntegrationTest.php';
 
 final class DatabaseDalIntegrationHelpersTest extends TestCase
 {
+    public function testSeededUsersCheckBuildsNamedLevelMap(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$GLOBALS["rows"] = [['
+                    . '"user_name" => "anonymous", "user_level" => "0"], ['
+                    . '"user_name" => "admin", "user_level" => "10"]]; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["sql"] = $sql; return "result"; } '
+                    . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_db_num_rows($result) { return 2; } '
+                    . 'define("K_TABLE_USERS", "tce_users"); require $argv[1]; require $argv[2]; '
+                    . '$test = new Test\\Integration\\DatabaseDalIntegrationTest("testSeededUsersArePresent"); '
+                    . '$property = new ReflectionProperty($test, "db"); $property->setValue($test, "db-link"); '
+                    . '$test->testSeededUsersArePresent(); echo $GLOBALS["sql"];',
+                dirname(__DIR__) . '/vendor/autoload.php',
+                __DIR__ . '/integration/DatabaseDalIntegrationTest.php',
+            ],
+            dirname(__DIR__),
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            'SELECT user_name, user_level FROM tce_users ORDER BY user_level',
+            $output,
+        );
+    }
+
     public function testPipeReaderReturnsContentsAndClosesResource(): void
     {
         $pipe = fopen('php://temp', 'w+');
