@@ -3042,7 +3042,7 @@ function f_tmf_live_score(int $test_id, int $testuser_id): ?float
  * @param $test_id (int) test ID
  * @return integer number
  */
-function F_getNumOmittedQuestions($test_id)
+function f_get_num_omitted_questions($test_id)
 {
     require_once '../config/tce_config.php';
     global $db, $l;

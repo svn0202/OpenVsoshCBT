@@ -95,7 +95,7 @@ final class TestReviewTest extends TestCase
                     . '$GLOBALS["count_calls"] = []; function F_count_rows($tables, $where) { '
                     . '$GLOBALS["count_calls"][] = [$tables, $where]; return 3; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getNumOmittedQuestions|f_get_num_omitted_questions)\\(/", '
+                    . 'preg_match("/function (f_get_num_omitted_questions)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
