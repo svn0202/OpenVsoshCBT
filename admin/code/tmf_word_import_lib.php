@@ -13,6 +13,8 @@ const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
 
 /**
  * Build the canonical Word-import template offered by the admin interface.
+ *
+ * @throws TmfWordImportException
  */
 function f_tmf_word_import_template(): string
 {
@@ -244,6 +246,7 @@ class TmfWordImporter
      *     warnings: list<string>,
      *     statistics: array{blocks: int, questions: int, images: int}
      * }
+     * @throws TmfWordImportException
      */
     public function parse(): array
     {
@@ -266,6 +269,7 @@ class TmfWordImporter
         }
     }
 
+    /** @throws TmfWordImportException */
     private function openArchive(): void
     {
         if (!class_exists(ZipArchive::class) || !class_exists(DOMDocument::class)) {
@@ -274,11 +278,12 @@ class TmfWordImporter
         if (!is_file($this->filename) || !is_readable($this->filename)) {
             throw new TmfWordImportException('DOCX file is not readable.');
         }
-        if (filesize($this->filename) > self::MAX_DOCUMENT_BYTES) {
+        $file_size = filesize($this->filename);
+        if ($file_size !== false && $file_size > self::MAX_DOCUMENT_BYTES) {
             throw new TmfWordImportException('DOCX file is larger than 20 MB.');
         }
         $signature = file_get_contents($this->filename, false, null, 0, 4);
-        if (substr($signature, 0, 2) !== 'PK') {
+        if ($signature === false || substr($signature, 0, 2) !== 'PK') {
             throw new TmfWordImportException('The uploaded file is not a DOCX/ZIP archive.');
         }
 
@@ -296,6 +301,7 @@ class TmfWordImporter
             if ($stat === false) {
                 throw new TmfWordImportException('Unable to read a DOCX archive entry.');
             }
+            /** @var array{name:string,size:int} $stat */
             $name = str_replace('\\', '/', $stat['name']);
             if ($name === '' || $name[0] === '/' || preg_match('#(^|/)\.\.(/|$)#', $name)) {
                 throw new TmfWordImportException('DOCX contains an unsafe archive path.');
@@ -310,6 +316,7 @@ class TmfWordImporter
         }
     }
 
+    /** @throws TmfWordImportException */
     private function loadRelationships(): void
     {
         $xml = $this->zip->getFromName('word/_rels/document.xml.rels');
@@ -341,6 +348,7 @@ class TmfWordImporter
         }
     }
 
+    /** @throws TmfWordImportException */
     private function loadDocument(): void
     {
         $xml = $this->zip->getFromName('word/document.xml');
@@ -356,6 +364,7 @@ class TmfWordImporter
         $this->xpath->registerNamespace('v', 'urn:schemas-microsoft-com:vml');
     }
 
+    /** @throws TmfWordImportException */
     private function loadXml(string $xml, string $label): DOMDocument
     {
         $dom = new DOMDocument();
@@ -369,10 +378,14 @@ class TmfWordImporter
         return $dom;
     }
 
+    /**
+     * @return list<array{plain:string,html:string,kind:string}>
+     * @throws TmfWordImportException
+     */
     private function readBodyBlocks(): array
     {
-        $body = $this->xpath->query('/w:document/w:body')->item(0);
-        if (!$body) {
+        $body = $this->queryFirstElement('/w:document/w:body');
+        if (!$body instanceof DOMElement) {
             throw new TmfWordImportException('DOCX body is missing.');
         }
         $blocks = [];
@@ -399,10 +412,14 @@ class TmfWordImporter
         return (bool) preg_match('/(^|[\r\n])\s*(?:MODULE:=|TOPIC:=|Q:\s*\d+\)|[A-Z]\s*:\)|RIGHT:)/iu', $text);
     }
 
+    /**
+     * @param list<array{plain:string,html:string,kind:string}> $blocks
+     * @throws TmfWordImportException
+     */
     private function flattenMarkerTable(DOMElement $table, array &$blocks): void
     {
-        foreach ($this->xpath->query('./w:tr', $table) as $row) {
-            foreach ($this->xpath->query('./w:tc', $row) as $cell) {
+        foreach ($this->queryElements('./w:tr', $table) as $row) {
+            foreach ($this->queryElements('./w:tc', $row) as $cell) {
                 if ($this->isVerticalMergeContinuation($cell)) {
                     continue;
                 }
@@ -424,18 +441,22 @@ class TmfWordImporter
         }
     }
 
+    /**
+     * @return array{plain:string,html:string,kind:string}
+     * @throws TmfWordImportException
+     */
     private function paragraphBlock(DOMElement $paragraph): array
     {
         $plain = $this->plainText($paragraph);
         $style = [];
-        $alignment = $this->xpath->query('./w:pPr/w:jc', $paragraph)->item(0);
+        $alignment = $this->queryFirstElement('./w:pPr/w:jc', $paragraph);
         if ($alignment instanceof DOMElement) {
             $value = $this->wordAttribute($alignment, 'val');
             if (in_array($value, ['left', 'right', 'center', 'justify'], true)) {
                 $style[] = 'text-align:' . $value;
             }
         }
-        $direction = $this->xpath->query('./w:pPr/w:bidi', $paragraph)->item(0);
+        $direction = $this->queryFirstElement('./w:pPr/w:bidi', $paragraph);
         if ($direction) {
             $style[] = 'direction:rtl';
         }
@@ -466,17 +487,21 @@ class TmfWordImporter
         ];
     }
 
+    /** @throws TmfWordImportException */
     private function hyperlinkHtml(DOMElement $hyperlink): string
     {
         $inner = '';
-        foreach ($this->xpath->query('./w:r', $hyperlink) as $run) {
+        foreach ($this->queryElements('./w:r', $hyperlink) as $run) {
             $inner .= $this->runHtml($run);
         }
         $id = $this->relationshipId($hyperlink);
-        if (!$id || !isset($this->relationships[$id])) {
+        if (!$id) {
             return $inner;
         }
-        $rel = $this->relationships[$id];
+        $rel = $this->relationships[$id] ?? null;
+        if ($rel === null) {
+            return $inner;
+        }
         if (!$rel['external'] || !preg_match('#^https?://#i', $rel['target'])) {
             return $inner;
         }
@@ -489,6 +514,7 @@ class TmfWordImporter
         );
     }
 
+    /** @throws TmfWordImportException */
     private function runHtml(DOMElement $run): string
     {
         $content = '';
@@ -515,28 +541,28 @@ class TmfWordImporter
             return '';
         }
 
-        $properties = $this->xpath->query('./w:rPr', $run)->item(0);
+        $properties = $this->queryFirstElement('./w:rPr', $run);
         if (!$properties) {
             return $content;
         }
-        if ($this->xpath->query('./w:b[not(@w:val="0") and not(@w:val="false")]', $properties)->length) {
+        if ($this->queryElements('./w:b[not(@w:val="0") and not(@w:val="false")]', $properties) !== []) {
             $content = '<strong>' . $content . '</strong>';
         }
-        if ($this->xpath->query('./w:i[not(@w:val="0") and not(@w:val="false")]', $properties)->length) {
+        if ($this->queryElements('./w:i[not(@w:val="0") and not(@w:val="false")]', $properties) !== []) {
             $content = '<em>' . $content . '</em>';
         }
-        if ($this->xpath->query('./w:u[not(@w:val="none")]', $properties)->length) {
+        if ($this->queryElements('./w:u[not(@w:val="none")]', $properties) !== []) {
             $content = '<u>' . $content . '</u>';
         }
         $styles = [];
-        $color = $this->xpath->query('./w:color', $properties)->item(0);
+        $color = $this->queryFirstElement('./w:color', $properties);
         if ($color instanceof DOMElement) {
             $value = $this->wordAttribute($color, 'val');
             if (preg_match('/^[0-9A-F]{6}$/i', $value)) {
                 $styles[] = 'color:#' . $value;
             }
         }
-        $highlight = $this->xpath->query('./w:highlight', $properties)->item(0);
+        $highlight = $this->queryFirstElement('./w:highlight', $properties);
         if ($highlight instanceof DOMElement) {
             $value = $this->wordAttribute($highlight, 'val');
             $map = [
@@ -556,7 +582,7 @@ class TmfWordImporter
                 $styles[] = 'background-color:' . $map[$value];
             }
         }
-        $shade = $this->xpath->query('./w:shd', $properties)->item(0);
+        $shade = $this->queryFirstElement('./w:shd', $properties);
         if ($shade instanceof DOMElement) {
             $fill = $this->wordAttribute($shade, 'fill');
             if (preg_match('/^[0-9A-F]{6}$/i', $fill)) {
@@ -574,17 +600,21 @@ class TmfWordImporter
         return $content;
     }
 
+    /** @throws TmfWordImportException */
     private function imageHtml(DOMElement $container): string
     {
-        $blip = $this->xpath->query('.//a:blip', $container)->item(0);
+        $blip = $this->queryFirstElement('.//a:blip', $container);
         if (!$blip instanceof DOMElement) {
             return '';
         }
         $id = $this->relationshipId($blip);
-        if (!$id || !isset($this->relationships[$id])) {
+        if (!$id) {
             return '';
         }
-        $rel = $this->relationships[$id];
+        $rel = $this->relationships[$id] ?? null;
+        if ($rel === null) {
+            return '';
+        }
         if ($rel['external']) {
             $this->warnings[] = 'An externally linked image was ignored.';
             return '';
@@ -601,7 +631,7 @@ class TmfWordImporter
             return '';
         }
 
-        $target = ltrim(preg_replace('#^(\.\./)+#', '', $rel['target']), '/');
+        $target = ltrim(preg_replace('#^(\.\./)+#', '', $rel['target']) ?? $rel['target'], '/');
         $entry = str_starts_with($target, 'word/') ? $target : 'word/' . $target;
         if (!str_starts_with($entry, 'word/media/')) {
             $this->warnings[] = 'An image relationship outside word/media was ignored.';
@@ -619,7 +649,9 @@ class TmfWordImporter
             restore_error_handler();
         }
         $allowed = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif'];
-        if (!$image_info || !isset($allowed[$image_info[2]])) {
+        $image_type = $image_info === false ? 0 : (int) $image_info[2];
+        $extension = $allowed[$image_type] ?? null;
+        if ($extension === null) {
             $this->warnings[] = 'A non-JPEG/PNG/GIF image was ignored for safety.';
             return '';
         }
@@ -630,7 +662,7 @@ class TmfWordImporter
         ) {
             throw new TmfWordImportException('Unable to create the Word import media directory.');
         }
-        $basename = hash('sha256', $bytes) . '.' . $allowed[$image_info[2]];
+        $basename = hash('sha256', $bytes) . '.' . $extension;
         $destination = $this->media_directory . '/' . $basename;
         if (!is_file($destination) && file_put_contents($destination, $bytes, LOCK_EX) === false) {
             throw new TmfWordImportException('Unable to save an embedded image.');
@@ -644,13 +676,17 @@ class TmfWordImporter
         );
     }
 
+    /**
+     * @return array{plain:string,html:string,kind:string}
+     * @throws TmfWordImportException
+     */
     private function tableBlock(DOMElement $table): array
     {
         $rows = [];
-        foreach ($this->xpath->query('./w:tr', $table) as $row) {
+        foreach ($this->queryElements('./w:tr', $table) as $row) {
             $cells = [];
             $column = 0;
-            foreach ($this->xpath->query('./w:tc', $row) as $cell) {
+            foreach ($this->queryElements('./w:tc', $row) as $cell) {
                 $span = $this->cellGridSpan($cell);
                 $cells[] = [
                     'node' => $cell,
@@ -707,7 +743,7 @@ class TmfWordImporter
 
     private function cellGridSpan(DOMElement $cell): int
     {
-        $span = $this->xpath->query('./w:tcPr/w:gridSpan', $cell)->item(0);
+        $span = $this->queryFirstElement('./w:tcPr/w:gridSpan', $cell);
         if ($span instanceof DOMElement) {
             return max(1, (int) $this->wordAttribute($span, 'val'));
         }
@@ -716,7 +752,7 @@ class TmfWordImporter
 
     private function isVerticalMergeContinuation(DOMElement $cell): bool
     {
-        $merge = $this->xpath->query('./w:tcPr/w:vMerge', $cell)->item(0);
+        $merge = $this->queryFirstElement('./w:tcPr/w:vMerge', $cell);
         if (!$merge instanceof DOMElement) {
             return false;
         }
@@ -726,16 +762,23 @@ class TmfWordImporter
 
     private function isVerticalMergeRestart(DOMElement $cell): bool
     {
-        $merge = $this->xpath->query('./w:tcPr/w:vMerge', $cell)->item(0);
+        $merge = $this->queryFirstElement('./w:tcPr/w:vMerge', $cell);
         return $merge instanceof DOMElement && $this->wordAttribute($merge, 'val') === 'restart';
     }
 
+    /**
+     * @param list<list<array{node:DOMElement,column:int,span:int,continue:bool,restart:bool}>> $rows
+     */
     private function verticalRowspan(array $rows, int $start_row, int $column): int
     {
         $span = 1;
         for ($r = $start_row + 1; $r < count($rows); ++$r) {
             $found = false;
-            foreach ($rows[$r] as $cell) {
+            $row = $rows[$r] ?? null;
+            if ($row === null) {
+                break;
+            }
+            foreach ($row as $cell) {
                 if ($cell['column'] === $column && $cell['continue']) {
                     ++$span;
                     $found = true;
@@ -757,14 +800,16 @@ class TmfWordImporter
     private function mathNode(DOMNode $node): string
     {
         if ($node instanceof DOMText) {
-            return $this->escapeText($node->nodeValue);
+            return $this->escapeText($node->nodeValue ?? '');
         }
         if (!$node instanceof DOMElement) {
             return '';
         }
         $children = '';
         foreach ($node->childNodes as $child) {
-            $children .= $this->mathNode($child);
+            if ($child instanceof DOMNode) {
+                $children .= $this->mathNode($child);
+            }
         }
         switch ($node->localName) {
             case 't':
@@ -834,6 +879,105 @@ class TmfWordImporter
         return $node;
     }
 
+    /** @return list<DOMElement> */
+    private function queryElements(string $expression, ?DOMNode $context = null): array
+    {
+        /** @var DOMNodeList|false $nodes */
+        $nodes = $this->xpath->query($expression, $context);
+        if (!$nodes instanceof DOMNodeList) {
+            return [];
+        }
+
+        $elements = [];
+        for ($index = 0; $index < $nodes->length; ++$index) {
+            $node = $nodes->item($index);
+            if ($node instanceof DOMElement) {
+                $elements[] = $node;
+            }
+        }
+        return $elements;
+    }
+
+    private function queryFirstElement(string $expression, ?DOMNode $context = null): ?DOMElement
+    {
+        $elements = $this->queryElements($expression, $context);
+        return $elements[0] ?? null;
+    }
+
+    /** @return list<DOMText> */
+    private function queryTextNodes(DOMXPath $xpath, string $expression): array
+    {
+        /** @var DOMNodeList|false $nodes */
+        $nodes = $xpath->query($expression);
+        if (!$nodes instanceof DOMNodeList) {
+            return [];
+        }
+
+        $text_nodes = [];
+        for ($index = 0; $index < $nodes->length; ++$index) {
+            $node = $nodes->item($index);
+            if ($node instanceof DOMText) {
+                $text_nodes[] = $node;
+            }
+        }
+        return $text_nodes;
+    }
+
+    /**
+     * @return array{
+     *     source_number:int,description:string,
+     *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+     *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+     *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,audio_play_limit:int,
+     *     short_answer:bool,matching:bool,type:int
+     * }
+     */
+    private function newQuestion(int $source_number, string $description): array
+    {
+        return [
+            'source_number' => $source_number,
+            'description' => $description,
+            'answers' => [],
+            'right_keys' => [],
+            'difficulty' => 1,
+            'timer' => 0,
+            'auto_next' => 0,
+            'fullscreen' => 0,
+            'inline_answers' => 0,
+            'mcma_checkbox' => false,
+            'mcma_header' => [],
+            'max_sel' => 0,
+            'similarity_threshold' => 0,
+            'audio_play_limit' => 0,
+            'short_answer' => false,
+            'matching' => false,
+            'type' => 0,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     source_number:int,description:string,
+     *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+     *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+     *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,audio_play_limit:int,
+     *     short_answer:bool,matching:bool,type:int
+     * }
+     */
+    private function typedQuestion(mixed $question): array
+    {
+        /**
+         * @var array{
+         *     source_number:int,description:string,
+         *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+         *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+         *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,audio_play_limit:int,
+         *     short_answer:bool,matching:bool,type:int
+         * } $question
+         */
+        return $question;
+    }
+
     /**
      * @return array{
      *     module: string,
@@ -858,6 +1002,8 @@ class TmfWordImporter
      *         type: int
      *     }>
      * }
+     * @param list<array{plain:string,html:string,kind:string}> $blocks
+     * @throws TmfWordImportException
      */
     private function parseTemplateBlocks(array $blocks): array
     {
@@ -874,45 +1020,50 @@ class TmfWordImporter
             if ($plain === '') {
                 continue;
             }
-            if (preg_match('/^\s*MODULE:=\s*(.+)$/iu', $plain, $match)) {
+            $match = [];
+            if (preg_match('/^\s*MODULE:=\s*(.+)$/iu', $plain, $match) && isset($match[1])) {
                 $result['module'] = trim($match[1]);
                 continue;
             }
-            if (preg_match('/^\s*TOPIC:=\s*(.+)$/iu', $plain, $match)) {
+            if (preg_match('/^\s*TOPIC:=\s*(.+)$/iu', $plain, $match) && isset($match[1])) {
                 $result['topic'] = trim($match[1]);
                 continue;
             }
-            if (preg_match('/^\s*Q:\s*(\d+)\)\s*/iu', $plain, $match)) {
+            if (preg_match('/^\s*Q:\s*(\d+)\)\s*/iu', $plain, $match) && isset($match[0], $match[1])) {
                 if ($question !== null) {
-                    $this->finalizeQuestion($question);
+                    /**
+                     * @var array{
+                     *     source_number:int,description:string,
+                     *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+                     *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,
+                     *     inline_answers:int,mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,
+                     *     similarity_threshold:int,audio_play_limit:int,short_answer:bool,matching:bool,type:int
+                     * } $question
+                     */
+                    $question = $this->finalizeQuestion($this->typedQuestion($question));
                     $result['questions'][] = $question;
                 }
                 $prefix = $match[0];
-                $question = [
-                    'source_number' => (int) $match[1],
-                    'description' => $this->stripHtmlTextPrefix($block['html'], mb_strlen($prefix, 'UTF-8')),
-                    'answers' => [],
-                    'right_keys' => [],
-                    'difficulty' => 1,
-                    'timer' => 0,
-                    'auto_next' => 0,
-                    'fullscreen' => 0,
-                    'inline_answers' => 0,
-                    'mcma_checkbox' => false,
-                    'mcma_header' => [],
-                    'max_sel' => 0,
-                    'similarity_threshold' => 0,
-                    'audio_play_limit' => 0,
-                    'short_answer' => false,
-                    'matching' => false,
-                ];
+                $question = $this->newQuestion(
+                    (int) $match[1],
+                    $this->stripHtmlTextPrefix($block['html'], mb_strlen($prefix, 'UTF-8')),
+                );
                 $active_answer = null;
                 continue;
             }
             if ($question === null) {
                 continue;
             }
-            if (preg_match('/^\s*([A-Z])\s*:\)\s*/u', $plain, $match)) {
+            /**
+             * @var array{
+             *     source_number:int,description:string,
+             *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+             *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+             *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,
+             *     audio_play_limit:int,short_answer:bool,matching:bool,type:int
+             * } $question
+             */
+            if (preg_match('/^\s*([A-Z])\s*:\)\s*/u', $plain, $match) && isset($match[0], $match[1])) {
                 $key = strtoupper($match[1]);
                 $prefix = $match[0];
                 $answer = [
@@ -924,20 +1075,32 @@ class TmfWordImporter
                 $active_answer = $key;
                 continue;
             }
-            if (preg_match('/^\s*RIGHT:\s*(.*)$/iu', $plain, $match)) {
+            if (preg_match('/^\s*RIGHT:\s*(.*)$/iu', $plain, $match) && isset($match[1])) {
                 $keys = preg_split('/[\s,;]+/', strtoupper(trim($match[1])), -1, PREG_SPLIT_NO_EMPTY);
+                if ($keys === false) {
+                    $keys = [];
+                }
                 $question['right_keys'] = array_values(array_unique($keys));
                 $active_answer = null;
                 continue;
             }
-            if ($active_answer !== null) {
+            if ($active_answer !== null && isset($question['answers'][$active_answer])) {
                 $question['answers'][$active_answer]['description'] .= $block['html'];
             } else {
                 $question['description'] .= $block['html'];
             }
         }
         if ($question !== null) {
-            $this->finalizeQuestion($question);
+            /**
+             * @var array{
+             *     source_number:int,description:string,
+             *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+             *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+             *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,
+             *     audio_play_limit:int,short_answer:bool,matching:bool,type:int
+             * } $question
+             */
+            $question = $this->finalizeQuestion($this->typedQuestion($question));
             $result['questions'][] = $question;
         }
 
@@ -978,7 +1141,23 @@ class TmfWordImporter
         return $result;
     }
 
-    private function finalizeQuestion(array &$question): void
+    /**
+     * @param array{
+     *     source_number:int,description:string,
+     *     answers:array<array-key,array{key:string,description:string,weight:int|null}>,
+     *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+     *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,audio_play_limit:int,
+     *     short_answer:bool,matching:bool,type:int
+     * } $question
+     * @return array{
+     *     source_number:int,description:string,
+     *     answers:list<array{key:string,description:string,weight:int|null}>,
+     *     right_keys:list<string>,difficulty:int,timer:int,auto_next:int,fullscreen:int,inline_answers:int,
+     *     mcma_checkbox:bool,mcma_header:list<string>,max_sel:int,similarity_threshold:int,audio_play_limit:int,
+     *     short_answer:bool,matching:bool,type:int
+     * }
+     */
+    private function finalizeQuestion(array $question): array
     {
         $plain = $this->htmlPlainText($question['description']);
         if (preg_match('/\[\[TMF_CHECKBOX\]\]/iu', $plain)) {
@@ -993,41 +1172,42 @@ class TmfWordImporter
             $question['matching'] = true;
             $question['description'] = $this->removeHtmlMarker($question['description'], '[[MATCHING]]');
         }
-        if (preg_match('/\[\[MCMA_HEADER:=([^\]]+)\]\]/iu', $plain, $match)) {
+        $match = [];
+        if (preg_match('/\[\[MCMA_HEADER:=([^\]]+)\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['mcma_header'] = array_map('trim', explode(',', $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[MAX_SEL=(\d+)\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[MAX_SEL=(\d+)\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['max_sel'] = max(0, (int) $match[1]);
             if ($question['max_sel'] > 0) {
                 $question['mcma_checkbox'] = true;
             }
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[SIMILARITY=(\d{1,3})\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[SIMILARITY=(\d{1,3})\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['similarity_threshold'] = max(0, min(99, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[AUDIO_PLAYS=(\d{1,2})\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[AUDIO_PLAYS=(\d{1,2})\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['audio_play_limit'] = max(0, min(99, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[DIFFICULTY=(\d+)\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[DIFFICULTY=(\d+)\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['difficulty'] = max(1, min(5, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[TIMER=(\d+)\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[TIMER=(\d+)\]\]/iu', $plain, $match) && isset($match[0], $match[1])) {
             $question['timer'] = max(0, min(32_767, (int) $match[1]));
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
-        if (preg_match('/\[\[AUTO_NEXT(?:=1)?\]\]/iu', $plain, $match)) {
+        if (preg_match('/\[\[AUTO_NEXT(?:=1)?\]\]/iu', $plain, $match) && isset($match[0])) {
             $question['auto_next'] = 1;
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
 
         foreach ($question['answers'] as &$answer) {
             $answer_plain = $this->htmlPlainText($answer['description']);
-            if (preg_match('/\[\[WEIGHT=(-?\d+)\]\]/iu', $answer_plain, $match)) {
+            if (preg_match('/\[\[WEIGHT=(-?\d+)\]\]/iu', $answer_plain, $match) && isset($match[0], $match[1])) {
                 // Keep imported data portable across all supported databases.
                 $answer['weight'] = max(0, min(100, (int) $match[1]));
                 $answer['description'] = $this->removeHtmlMarker($answer['description'], $match[0]);
@@ -1065,9 +1245,10 @@ class TmfWordImporter
             $metadata .= '<!--TMF_CHECKBOX-->';
         }
         if (!empty($question['mcma_header'])) {
+            $encoded_header = json_encode($question['mcma_header']);
             $metadata .=
                 '<!--TMF_MCMA_HEADER:'
-                . htmlspecialchars(json_encode($question['mcma_header']), ENT_QUOTES, 'UTF-8')
+                . htmlspecialchars($encoded_header === false ? '' : $encoded_header, ENT_QUOTES, 'UTF-8')
                 . '-->';
         }
         if ($question['max_sel'] > 0) {
@@ -1084,6 +1265,7 @@ class TmfWordImporter
         }
         $question['description'] = $metadata . trim($question['description']);
         $question['answers'] = array_values($question['answers']);
+        return $question;
     }
 
     private function stripHtmlTextPrefix(string $html, int $characters): string
@@ -1094,16 +1276,17 @@ class TmfWordImporter
         $dom = $this->loadHtmlFragment($html);
         $xpath = new DOMXPath($dom);
         $remaining = $characters;
-        foreach ($xpath->query('//body/div//text()') as $text_node) {
+        foreach ($this->queryTextNodes($xpath, '//body/div//text()') as $text_node) {
             if ($remaining <= 0) {
                 break;
             }
-            $length = mb_strlen($text_node->nodeValue, 'UTF-8');
+            $node_value = $text_node->nodeValue ?? '';
+            $length = mb_strlen($node_value, 'UTF-8');
             if ($length <= $remaining) {
                 $remaining -= $length;
                 $text_node->nodeValue = '';
             } else {
-                $text_node->nodeValue = mb_substr($text_node->nodeValue, $remaining, null, 'UTF-8');
+                $text_node->nodeValue = mb_substr($node_value, $remaining, null, 'UTF-8');
                 $remaining = 0;
             }
         }
@@ -1114,10 +1297,10 @@ class TmfWordImporter
     {
         $dom = $this->loadHtmlFragment($html);
         $xpath = new DOMXPath($dom);
-        $text_nodes = $xpath->query('//body//text()');
-        foreach ($text_nodes as $node) {
-            if (stripos($node->nodeValue, $marker) !== false) {
-                $node->nodeValue = str_ireplace($marker, '', $node->nodeValue);
+        foreach ($this->queryTextNodes($xpath, '//body//text()') as $node) {
+            $node_value = $node->nodeValue ?? '';
+            if (stripos($node_value, $marker) !== false) {
+                $node->nodeValue = str_ireplace($marker, '', $node_value);
                 return $this->bodyInnerHtml($dom);
             }
         }
@@ -1145,7 +1328,10 @@ class TmfWordImporter
         $html = '';
         if ($body) {
             foreach ($body->childNodes as $child) {
-                $html .= $dom->saveHTML($child);
+                if ($child instanceof DOMNode) {
+                    $fragment = $dom->saveHTML($child);
+                    $html .= $fragment === false ? '' : $fragment;
+                }
             }
         }
         return $html;
@@ -1161,7 +1347,7 @@ class TmfWordImporter
         $text = '';
         foreach ($node->childNodes as $child) {
             if ($child instanceof DOMText) {
-                $text .= $child->nodeValue;
+                $text .= $child->nodeValue ?? '';
             } elseif ($child instanceof DOMElement) {
                 if ($child->namespaceURI === 'http://schemas.openxmlformats.org/wordprocessingml/2006/main') {
                     if (in_array($child->localName, ['t', 'instrText'], true)) {
@@ -1191,9 +1377,15 @@ class TmfWordImporter
         $escaped = htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         return preg_replace_callback(
             '/ {2,}/',
-            static fn($match): string => str_repeat('&nbsp;', strlen($match[0]) - 1) . ' ',
+            self::preserveSpaces(...),
             $escaped,
         ) ?? $escaped;
+    }
+
+    /** @param array<array-key,string> $match */
+    private static function preserveSpaces(array $match): string
+    {
+        return str_repeat('&nbsp;', max(0, strlen($match[0] ?? '') - 1)) . ' ';
     }
 
     private function wordAttribute(DOMElement $element, string $name): string
