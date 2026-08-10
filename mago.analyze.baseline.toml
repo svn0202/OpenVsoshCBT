@@ -109,36 +109,6 @@ message = "Undefined variable: `$l`."
 count = 26
 
 [[issues]]
-file = "admin/code/tce_attempt_archive.php"
-code = "false-array-access"
-message = "Cannot perform array access on `false`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_attempt_archive.php"
-code = "impossible-condition"
-message = "Redundant ternary operator: condition is always falsy."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_attempt_archive.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_attempt_archive.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_attempt_archive.php"
-code = "redundant-logical-operation"
-message = "Redundant `||` operation: left operand is always true and right operand is not evaluated."
-count = 1
-
-[[issues]]
 file = "admin/code/XMLQuestionImporter.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."

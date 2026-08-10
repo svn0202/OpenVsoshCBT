@@ -12,13 +12,15 @@ $result = F_db_query(
     . ' WHERE testuser_id=' . $testuser_id . ' LIMIT 1',
     $db,
 );
-$attempt = $result ? F_db_fetch_array($result) : false;
+/** @var \mysqli_result|\PgSql\Result|false $result */
+$normalize_attempt = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+$attempt = $result === false ? null : $normalize_attempt(F_db_fetch_array($result));
 if (
-    !$attempt
+    $attempt === null
     || !f_is_authorized_user(
         K_TABLE_TESTS,
         'test_id',
-        (int) $attempt['testuser_test_id'],
+        (int) ($attempt['testuser_test_id'] ?? 0),
         'test_user_id',
     )
 ) {
