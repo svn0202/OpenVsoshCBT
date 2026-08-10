@@ -4,7 +4,7 @@ variant = "loose"
 file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 31
+count = 30
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -16,19 +16,13 @@ count = 3
 file = "admin/code/tce_edit_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `substr`: expected `string`, but found `mixed`."
-count = 5
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 1
+count = 4
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 6
+count = 3
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -46,7 +40,7 @@ count = 2
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 14
+count = 13
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -86,18 +80,6 @@ count = 2
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `in_array`: expected `array<array-key, array<int|non-empty-string, mixed>|string>`, but possibly received `array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|non-empty-list<string>|truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-invalid-iterator"
-message = "The expression provided to `foreach` (type `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|truthy-string`) might not be iterable at runtime."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
 code = "possibly-null-operand"
 message = "Possibly null middle operand used in string concatenation (type `null|string('C')|string('M')|string('O')|string('S')|string('T')`)."
 count = 1
@@ -113,24 +95,6 @@ file = "admin/code/tce_edit_test.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array index accessed on `list{string('S'), string('M'), string('T'), string('O'), string('C')}`."
 count = 2
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `truthy-lowercase-string` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is evaluated and right operand is always truthy."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_db_dal_oracle.php"
