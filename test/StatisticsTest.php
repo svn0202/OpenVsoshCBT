@@ -241,6 +241,41 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
     }
 
+    public function testStatisticsPrintersPreserveDisabledAndEmptyResults(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_printTestStat)\\(/", '
+                    . '$source, $statMatch, PREG_OFFSET_CAPTURE); '
+                    . '$statStart = $statMatch[0][1]; $statEnd = strpos($source, "\\n/**", $statStart); '
+                    . '$statFunction = substr($source, $statStart, $statEnd - $statStart); '
+                    . '$statFunction = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $statFunction); '
+                    . 'eval("namespace Harness; " . $statFunction); '
+                    . 'preg_match("/function (F_printTestResultStat)\\(/", '
+                    . '$source, $resultMatch, PREG_OFFSET_CAPTURE); '
+                    . '$resultStart = $resultMatch[0][1]; $resultEnd = strpos($source, "\\n/**", $resultStart); '
+                    . '$resultFunction = substr($source, $resultStart, $resultEnd - $resultStart); '
+                    . '$resultFunction = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $resultFunction); '
+                    . 'eval("namespace Harness; " . $resultFunction); '
+                    . '$statName = __NAMESPACE__ . "\\\\" . $statMatch[1][0]; '
+                    . '$resultName = __NAMESPACE__ . "\\\\" . $resultMatch[1][0]; '
+                    . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
+                    . '$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 0]], 2), '
+                    . '$resultName(["num_records" => 0], 1, "score", "")]; '
+                    . 'echo json_encode($returns);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame([null, null, null], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
+
 
 
     public function testUserTestStatisticsOrderByFiltersAndFormatsInput(): void
