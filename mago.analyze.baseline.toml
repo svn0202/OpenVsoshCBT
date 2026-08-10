@@ -15070,7 +15070,7 @@ count = 5
 file = "shared/code/tce_functions_test.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 40
+count = 39
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -15202,12 +15202,6 @@ count = 5
 file = "shared/code/tce_functions_test.php"
 code = "less-specific-nested-argument-type"
 message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `array<array-key, mixed>` is less specific."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "less-specific-return-statement"
-message = "Returned type `bool` is less specific than the declared return type `true` for function `F_isValidSSLCert`."
 count = 1
 
 [[issues]]
@@ -15556,12 +15550,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `F_isTestOverLimits` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `F_isValidSSLCert` is missing a return type hint."
 count = 1
 
 [[issues]]
