@@ -10243,18 +10243,6 @@ message = "This condition (type `true`) will always evaluate to true."
 count = 3
 
 [[issues]]
-file = "public/code/tce_test_heartbeat.php"
-code = "no-value"
-message = "Argument #2 passed to function `f_db_affected_rows` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_heartbeat.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 1
-
-[[issues]]
 file = "public/code/tce_test_results.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
