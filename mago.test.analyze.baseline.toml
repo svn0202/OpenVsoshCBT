@@ -260,12 +260,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `proc_open`: expected `array<array-key, mixed>|null`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 2
@@ -340,10 +334,4 @@ count = 4
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "redundant-comparison"
 message = "Redundant `===` comparison: left-hand side is never identical to right-hand side."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$verifyPipes`."
 count = 1

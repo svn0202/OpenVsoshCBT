@@ -311,6 +311,7 @@ final class DatabaseDalIntegrationTest extends TestCase
         $row = \F_db_fetch_assoc($result);
         $this->assertSame(15, (int) $row['n']);
 
+        $verifyPipes = [];
         $verify = proc_open(
             [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
             [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
