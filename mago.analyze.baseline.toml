@@ -12739,36 +12739,6 @@ message = "Potentially unhandled exception `RuntimeException` in `f_tmf_attempt_
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "mixed-operand"
-message = "Invalid right operand: type `truthy-mixed` cannot be reliably used in string concatenation."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "mixed-operand"
-message = "Left operand in `<` comparison has `mixed` type."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "mixed-operand"
-message = "Left operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_auth_sql.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 4
-
-[[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
