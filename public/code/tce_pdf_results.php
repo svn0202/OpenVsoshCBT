@@ -41,10 +41,28 @@ require_once '../../shared/config/tce_pdf.php';
 require_once '../../shared/code/tce_pdf_report.php';
 require_once '../../shared/code/tce_functions_statistics.php';
 
+/** @var array{
+ *     m_authorization_denied: string,
+ *     t_result_all_users: string,
+ *     hp_result_alluser: string,
+ *     t_result_user: string,
+ *     hp_result_user: string,
+ *     w_statistics: string
+ * } $l
+ */
+/** @mago-expect analysis:possibly-undefined-string-array-index */
 $user_id = (int) $_SESSION['session_user_id'];
-$mode = isset($_REQUEST['mode']) && $_REQUEST['mode'] > 0 ? (int) $_REQUEST['mode'] : 0;
-$test_id = isset($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
-$testuser_id = isset($_REQUEST['testuser_id']) ? (int) $_REQUEST['testuser_id'] : 0;
+/** @var int|string $mode_request */
+$mode_request = $_REQUEST['mode'] ?? 0;
+$mode = $mode_request > 0 ? (int) $mode_request : 0;
+/** @var int|string $test_id_request */
+$test_id_request = $_REQUEST['test_id'] ?? 0;
+$test_id = (int) $test_id_request;
+/** @var int|string $group_id_request */
+$group_id_request = $_REQUEST['group_id'] ?? 0;
+/** @var int|string $testuser_id_request */
+$testuser_id_request = $_REQUEST['testuser_id'] ?? 0;
+$testuser_id = (int) $testuser_id_request;
 
 $onlytext = $mode === 5;
 // The ?email= token bypasses the normal authorization check, so it must fail closed when
@@ -65,8 +83,7 @@ if (
 }
 
 $filter = 'sel=1';
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+if ($test_id > 0) {
     if (!isset($_REQUEST['email']) && !f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit();
     }
@@ -76,32 +93,37 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
     $test_id = 0;
 }
 
-if (isset($_REQUEST['group_id']) && $_REQUEST['group_id'] > 0) {
-    $group_id = (int) $_REQUEST['group_id'];
+if ((int) $group_id_request > 0) {
+    $group_id = (int) $group_id_request;
     $filter .= '&amp;group_id=' . $group_id . '';
 } else {
     $group_id = 0;
 }
 
-if (isset($_REQUEST['testuser_id']) && $_REQUEST['testuser_id'] > 1) {
-    $testuser_id = (int) $_REQUEST['testuser_id'];
+if ($testuser_id > 1) {
     $filter .= '&amp;testuser_id=' . $testuser_id . '';
 } else {
     $testuser_id = 0;
 }
 
+/** @var int $startdate_time */
+$startdate_time = 0;
 if (isset($_REQUEST['startdate'])) {
+    /** @var string $startdate */
     $startdate = $_REQUEST['startdate'];
-    $startdate_time = strtotime($startdate);
+    $startdate_time = (int) strtotime($startdate);
     $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
     $filter .= '&amp;startdate=' . urlencode($startdate);
 } else {
     $startdate = '';
 }
 
+/** @var int $enddate_time */
+$enddate_time = 0;
 if (isset($_REQUEST['enddate'])) {
+    /** @var string $enddate */
     $enddate = $_REQUEST['enddate'];
-    $enddate_time = strtotime($enddate);
+    $enddate_time = (int) strtotime($enddate);
     $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
     $filter .= '&amp;enddate=' . urlencode($enddate) . '';
 } else {
@@ -138,6 +160,7 @@ if (
         'testuser_test_id',
     ])
 ) {
+    /** @var string $order_field */
     $order_field = $_REQUEST['order_field'];
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
@@ -159,6 +182,15 @@ $filter .= '&amp;orderdir=' . $orderdir . '';
 $pubmode = true;
 
 // get the data to print
+/** @var array{
+ *     num_records: mixed,
+ *     svgpoints: string,
+ *     qstats: array<array-key, mixed>,
+ *     testuser: array<string, array{
+ *         test: array{test_report_to_users: mixed}
+ *     }>
+ * } $ts
+ */
 $ts = f_get_all_users_test_stat(
     $test_id,
     $group_id,
@@ -196,14 +228,10 @@ switch ($mode) {
 $pdf = new TcePdfReport();
 
 // header back-link QR-Code
-if ($pubmode) {
-    $pdf->setTCExamBackLink(K_PATH_URL . 'public/code/tce_test_allresults.php?' . $filter);
-} else {
-    $pdf->setTCExamBackLink(K_PATH_URL . 'admin/code/tce_show_result_allusers.php?' . $filter);
-}
+$pdf->setTCExamBackLink(K_PATH_URL . 'public/code/tce_test_allresults.php?' . $filter);
 
 // document metadata
-$pdf->setCreator('TCExam ver.' . K_TCEXAM_VERSION);
+$pdf->setCreator('TCExam ver.' . (string) K_TCEXAM_VERSION);
 $pdf->setAuthor(PDF_AUTHOR);
 $pdf->setTitle($doc_title);
 $pdf->setSubject($doc_description);
@@ -232,14 +260,20 @@ if ($mode > 2) {
     // detailed report per test user (respecting the per-test "report to users" flag in public mode)
     if ($testuser_id === 0) {
         foreach ($ts['testuser'] as $tstusr) {
-            if (!$pubmode || f_get_boolean($tstusr['test']['test_report_to_users'])) {
+            if (f_get_boolean($tstusr['test']['test_report_to_users'])) {
                 $pdf->addReportPage();
                 $pdf->printTestUserInfo($tstusr, $onlytext);
             }
         }
-    } elseif (!$pubmode || f_get_boolean($ts['testuser']["'" . $testuser_id . "'"]['test']['test_report_to_users'])) {
-        $pdf->addReportPage();
-        $pdf->printTestUserInfo($ts['testuser']["'" . $testuser_id . "'"], $onlytext);
+    } else {
+        $testuser_key = "'" . $testuser_id . "'";
+        /** @mago-expect analysis:possibly-undefined-string-array-index */
+        /** @var array{test: array{test_report_to_users: mixed}} $testuser */
+        $testuser = $ts['testuser'][$testuser_key];
+        if (f_get_boolean($testuser['test']['test_report_to_users'])) {
+            $pdf->addReportPage();
+            $pdf->printTestUserInfo($testuser, $onlytext);
+        }
     }
 }
 
