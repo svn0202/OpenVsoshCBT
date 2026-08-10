@@ -206,12 +206,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 2
