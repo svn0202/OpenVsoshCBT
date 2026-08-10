@@ -365,6 +365,9 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->assertNotFalse($result);
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     public function testWordImportCanCommitAndRollBackRealDatabaseWrites(): void
     {
         require_once __DIR__ . '/../../admin/code/tmf_word_import_lib.php';
