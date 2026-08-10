@@ -51,6 +51,31 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/config/tce_user_registration.php';
 
 /** @var mixed $db */
+/**
+ * @var array{
+ *     a_meta_charset:string,d_password_length:string,h_add:string,h_add_questions:string,h_answers_order_mode:string,
+ *     h_cancel:string,h_clear:string,h_delete:string,h_ip_range:string,h_num_answers:string,h_num_questions:string,
+ *     h_pdf_offline_test:string,h_question_difficulty:string,h_question_type:string,h_questions_order_mode:string,
+ *     h_random_answers:string,h_random_questions:string,h_score_right:string,h_score_unanswered:string,
+ *     h_score_wrong:string,h_subjects:string,h_test:string,h_test_description:string,h_test_name:string,
+ *     h_test_password:string,h_test_score_threshold:string,h_test_time:string,h_update:string,hp_edit_test:string,
+ *     m_authorization_denied:string,m_delete_confirm_test:string,m_deleted:string,m_duplicate_name:string,
+ *     m_form_missing_fields:string,m_unavailable_questions:string,m_update_restrict:string,m_updated:string,
+ *     t_subjects_editor:string,t_tests_editor:string,w_add:string,w_add_questions:string,w_all:string,
+ *     w_alphabetic:string,w_cancel:string,w_clear:string,w_confirm:string,w_datetime_format:string,w_delete:string,
+ *     w_description:string,w_enable_comment:string,w_enable_menu:string,w_enable_noanswer:string,w_free_answer:string,
+ *     w_generate:string,w_groups:string,w_id:string,w_ip_range:string,w_lock:string,w_logout_on_timeout:string,
+ *     w_matching_answer:string,w_max_score:string,w_mcma_partial_score:string,w_mcma_radio:string,w_minutes:string,
+ *     w_multiple_answers:string,w_name:string,w_no:string,w_num_answers:string,w_num_questions:string,
+ *     w_order:string,w_order_by:string,w_ordering_answer:string,w_password:string,w_pdf_offline_test:string,
+ *     w_position:string,w_question_difficulty:string,w_questions:string,w_random_answers:string,
+ *     w_random_questions:string,w_repeatable:string,w_report_to_users:string,w_results_to_users:string,
+ *     w_score_right:string,w_score_unanswered:string,w_score_wrong:string,w_search:string,w_select:string,
+ *     w_single_answer:string,w_sslcerts:string,w_subject:string,w_subjects:string,w_test:string,
+ *     w_test_score_threshold:string,w_test_time:string,w_time_begin:string,w_time_end:string,w_type:string,
+ *     w_unlock:string,w_update:string
+ * } $l
+ */
 $thispage_title = $l['t_tests_editor'];
 require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -1290,8 +1315,8 @@ echo get_form_row_text_input('test_name', $l['w_name'], $l['h_test_name'], '', $
 echo
     get_form_row_text_box(
         'test_description',
-        (string) $l['w_description'],
-        (string) $l['h_test_description'],
+        $l['w_description'],
+        $l['h_test_description'],
         $test_description,
         false,
         '',
@@ -1601,7 +1626,7 @@ for ($i = 2; $i <= 127; ++$i) {
     $repeat_options[$i] = $i;
 }
 
-echo get_form_row_select_box('test_repeatable', (string) $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
+echo get_form_row_select_box('test_repeatable', $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
 
 echo get_form_row_checkbox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
 
