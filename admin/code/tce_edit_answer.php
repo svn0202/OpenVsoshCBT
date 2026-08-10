@@ -22,8 +22,27 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_ANSWERS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,h_add:string,h_answer:string,h_answer_isright:string,h_answer_keyboard_key:string,
+ *     h_cancel:string,h_clear:string,h_delete:string,h_enabled:string,h_explanation:string,h_position:string,
+ *     h_preview:string,h_question:string,h_subject:string,h_update:string,hp_edit_answer:string,
+ *     m_authorization_denied:string,m_delete_confirm:string,m_deleted:string,m_disabled_vs_deleted:string,
+ *     m_duplicate_answer:string,m_form_missing_fields:string,m_update_restrict:string,m_updated:string,
+ *     t_answers_editor:string,t_questions_editor:string,t_questions_list:string,w_add:string,w_answer:string,
+ *     w_cancel:string,w_clear:string,w_confirm:string,w_delete:string,w_description:string,w_disabled:string,
+ *     w_enabled:string,w_explanation:string,w_hide:string,w_keyboard_key:string,w_list:string,w_module:string,
+ *     w_position:string,w_preview:string,w_question:string,w_record_status:string,w_right:string,w_show:string,
+ *     w_subject:string,w_update:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
 
 $thispage_title = $l['t_answers_editor'];
 require_once '../code/tce_page_header.php';
@@ -33,10 +52,14 @@ require_once '../../shared/code/tce_functions_tmf_question.php';
 require_once '../code/tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 
+$formstatus = f_tce_edit_answer_bool($formstatus ?? false);
+$menu_mode = f_tce_edit_answer_string($menu_mode ?? '');
+
 // upload multimedia files
 $uploadedfile = [];
 for ($id = 0; $id < 2; ++$id) {
-    if (isset($_POST['sendfile' . $id]) && $_FILES['userfile' . $id]['name']) {
+    $userfile = $_FILES['userfile' . $id] ?? null;
+    if (isset($_POST['sendfile' . $id]) && is_array($userfile) && !empty($userfile['name'])) {
         require_once '../code/tce_functions_upload.php';
         $uploadedfile["'" . $id . "'"] = f_upload_file('userfile' . $id, K_PATH_CACHE);
     }
@@ -66,7 +89,7 @@ if (!isset($_REQUEST['answer_enabled']) || empty($_REQUEST['answer_enabled'])) {
     $answer_enabled = f_get_boolean($_REQUEST['answer_enabled']);
 }
 
-if (isset($_REQUEST['changemodule']) && $_REQUEST['changemodule'] > 0) {
+if (isset($_REQUEST['changemodule']) && f_tce_edit_answer_is_positive($_REQUEST['changemodule'])) {
     $changemodule = 1;
 } elseif (isset($_REQUEST['selectmodule'])) {
     $changemodule = 1;
@@ -74,7 +97,7 @@ if (isset($_REQUEST['changemodule']) && $_REQUEST['changemodule'] > 0) {
     $changemodule = 0;
 }
 
-if (isset($_REQUEST['changesubject']) && $_REQUEST['changesubject'] > 0) {
+if (isset($_REQUEST['changesubject']) && f_tce_edit_answer_is_positive($_REQUEST['changesubject'])) {
     $changesubject = 1;
 } elseif (isset($_REQUEST['selectsubject'])) {
     $changesubject = 1;
@@ -82,7 +105,7 @@ if (isset($_REQUEST['changesubject']) && $_REQUEST['changesubject'] > 0) {
     $changesubject = 0;
 }
 
-if (isset($_REQUEST['changecategory']) && $_REQUEST['changecategory'] > 0) {
+if (isset($_REQUEST['changecategory']) && f_tce_edit_answer_is_positive($_REQUEST['changecategory'])) {
     $changecategory = 1;
 } elseif (isset($_REQUEST['selectcategory'])) {
     $changecategory = 1;
@@ -107,16 +130,17 @@ $prev_answer_position = isset($_REQUEST['prev_answer_position']) ? (int) $_REQUE
 $subject_id = isset($_REQUEST['subject_id']) ? (int) $_REQUEST['subject_id'] : 0;
 
 $answer_question_id = isset($_REQUEST['answer_question_id']) ? (int) $_REQUEST['answer_question_id'] : 0;
+$answer_description = '';
 
 $matching_reuse_positions = false;
 if ($answer_question_id > 0) {
     $question_options_sql = 'SELECT question_type,question_description FROM ' . K_TABLE_QUESTIONS
         . ' WHERE question_id=' . $answer_question_id . ' LIMIT 1';
-    if ($question_options_result = F_db_query($question_options_sql, $db)) {
-        if ($question_options_row = F_db_fetch_array($question_options_result)) {
+    if ($question_options_result = f_tce_edit_answer_query($question_options_sql, $db)) {
+        if (($question_options_row = f_tce_edit_answer_question_options_row(F_db_fetch_array($question_options_result))) !== null) {
             $matching_reuse_positions = (int) $question_options_row['question_type'] === 5
                 && F_tmf_question_options(
-                    (string) $question_options_row['question_description'],
+                    $question_options_row['question_description'],
                 )['matching_reuse_positions'];
         }
     } else {
@@ -133,14 +157,16 @@ $answer_weight = isset($_REQUEST['answer_weight']) && $_REQUEST['answer_weight']
     : null;
 
 if (isset($_REQUEST['answer_description'])) {
-    $answer_description = utrim($_REQUEST['answer_description']);
+    $answer_description = f_tce_edit_answer_string(utrim(f_tce_edit_answer_string($_REQUEST['answer_description'])));
     if (function_exists('normalizer_normalize')) {
         // normalize UTF-8 string based on settings
-        $answer_description = f_utf8_normalizer($answer_description, K_UTF8_NORMALIZATION_MODE);
+        $answer_description = f_tce_edit_answer_string(f_utf8_normalizer($answer_description, K_UTF8_NORMALIZATION_MODE));
     }
 }
 
-$answer_explanation = isset($_REQUEST['answer_explanation']) ? utrim($_REQUEST['answer_explanation']) : '';
+$answer_explanation = isset($_REQUEST['answer_explanation'])
+    ? f_tce_edit_answer_string(utrim(f_tce_edit_answer_string($_REQUEST['answer_explanation'])))
+    : '';
 
 $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
@@ -161,10 +187,10 @@ if ($answer_id > 0) {
         . $answer_id
         . '
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_tce_edit_answer_query($sql, $db)) {
         // check user's authorization for parent module
         if (
-            ($m = F_db_fetch_array($r))
+            ($m = f_tce_edit_answer_authorization_row(F_db_fetch_array($r)))
             && (
                 !f_is_authorized_user(K_TABLE_MODULES, 'module_id', $m['subject_module_id'], 'module_user_id')
                 && !f_is_authorized_user(K_TABLE_SUBJECTS, 'subject_id', $m['question_subject_id'], 'subject_user_id')
@@ -185,7 +211,7 @@ switch ($menu_mode) {
                 $sql = 'UPDATE ' . K_TABLE_ANSWERS . ' SET
 				answer_enabled=\'0\'
 				WHERE answer_id=' . $answer_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error();
                 }
 
@@ -196,7 +222,7 @@ switch ($menu_mode) {
                 ?>
             <div class="confirmbox">
             <form action="<?php echo
-                htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
             ; ?>" method="post" enctype="multipart/form-data" id="form_delete">
             <div>
             <input type="hidden" name="answer_id" id="answer_id" value="<?php echo $answer_id; ?>" />
@@ -210,10 +236,10 @@ switch ($menu_mode) {
                 $answer_question_id
             ; ?>" />
             <input type="hidden" name="answer_description" id="answer_description" value="<?php echo
-                htmlspecialchars((string) $answer_description, ENT_QUOTES, $l['a_meta_charset'])
+                htmlspecialchars($answer_description, ENT_QUOTES, $l['a_meta_charset'])
             ; ?>" />
             <input type="hidden" name="answer_explanation" id="answer_explanation" value="<?php echo
-                htmlspecialchars((string) $answer_explanation, ENT_QUOTES, $l['a_meta_charset'])
+                htmlspecialchars($answer_explanation, ENT_QUOTES, $l['a_meta_charset'])
             ; ?>" />
             <?php
 
@@ -233,7 +259,7 @@ switch ($menu_mode) {
             // Delete
             if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'START TRANSACTION';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
                     break;
                 }
@@ -241,11 +267,11 @@ switch ($menu_mode) {
                 // get answer position (if defined)
                 $sql = 'SELECT answer_position
 				FROM ' . K_TABLE_ANSWERS . '
-				WHERE answer_id=' . $answer_id . '
+					WHERE answer_id=' . f_tce_edit_answer_string($answer_id) . '
 				LIMIT 1';
-                if ($r = F_db_query($sql, $db)) {
-                    if ($m = F_db_fetch_array($r)) {
-                        $answer_position = $m['answer_position'];
+                if ($r = f_tce_edit_answer_query($sql, $db)) {
+                    if (($m = f_tce_edit_answer_position_row(F_db_fetch_array($r))) !== null) {
+                        $answer_position = (int) $m['answer_position'];
                     }
                 } else {
                     F_display_db_error();
@@ -253,9 +279,9 @@ switch ($menu_mode) {
 
                 // delete answer
                 $sql = 'DELETE FROM ' . K_TABLE_ANSWERS . ' WHERE answer_id=' . $answer_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
-                    F_db_query('ROLLBACK', $db); // rollback transaction
+                    f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                 } else {
                     $answer_id = false;
                     // adjust questions ordering
@@ -271,14 +297,14 @@ switch ($menu_mode) {
 							AND answer_position>'
                             . $answer_position
                             . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_tce_edit_answer_query($sql, $db))) {
                             F_display_db_error(false);
-                            F_db_query('ROLLBACK', $db); // rollback transaction
+                            f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                         }
                     }
 
                     $sql = 'COMMIT';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = f_tce_edit_answer_query($sql, $db))) {
                         F_display_db_error(false);
                         break;
                     }
@@ -308,8 +334,8 @@ switch ($menu_mode) {
 				FROM ' . K_TABLE_ANSWERS . '
 				WHERE answer_id=' . $answer_id . '
 				LIMIT 1';
-                if ($r = F_db_query($sql, $db)) {
-                    if ($m = F_db_fetch_array($r)) {
+                if ($r = f_tce_edit_answer_query($sql, $db)) {
+                    if (($m = f_tce_edit_answer_position_row(F_db_fetch_array($r))) !== null) {
                         $prev_answer_position = (int) $m['answer_position'];
                     }
                 } else {
@@ -328,7 +354,7 @@ switch ($menu_mode) {
                         . K_TABLE_ANSWERS
                         . ' SET
 					answer_enabled=\''
-                        . $answer_enabled
+                        . f_tce_edit_answer_string($answer_enabled)
                         . '\',
 					answer_position='
                         . f_zero_to_null($answer_position)
@@ -336,7 +362,7 @@ switch ($menu_mode) {
 					WHERE answer_id='
                         . $answer_id
                         . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = f_tce_edit_answer_query($sql, $db))) {
                         F_display_db_error(false);
                     } else {
                         $strmsg = $l['w_record_status'] . ': ';
@@ -358,7 +384,10 @@ switch ($menu_mode) {
                 if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $chksql =
                         "dbms_lob.instr(answer_description,'" . F_escape_sql($db, $answer_description) . "',1,1)>0";
-                } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                } elseif (
+                    f_legacy_literal_equals(K_DATABASE_TYPE, 'MYSQL')
+                    && f_tce_edit_answer_bool(K_MYSQL_QA_BIN_UNIQUITY)
+                ) {
                     $chksql =
                         "answer_description='"
                         . F_escape_sql($db, $answer_description)
@@ -385,7 +414,7 @@ switch ($menu_mode) {
                 }
 
                 $sql = 'START TRANSACTION';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
                     break;
                 }
@@ -446,9 +475,9 @@ switch ($menu_mode) {
                             . '';
                     }
 
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = f_tce_edit_answer_query($sql, $db))) {
                         F_display_db_error(false);
-                        F_db_query('ROLLBACK', $db); // rollback transaction
+                        f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                     }
                 }
 
@@ -484,15 +513,15 @@ switch ($menu_mode) {
 					WHERE answer_id='
                     . $answer_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
-                    F_db_query('ROLLBACK', $db); // rollback transaction
+                    f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                 } else {
                     F_print_error('MESSAGE', $l['m_updated']);
                 }
 
                 $sql = 'COMMIT';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
                     break;
                 }
@@ -507,7 +536,10 @@ switch ($menu_mode) {
                 if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
                     $chksql =
                         "dbms_lob.instr(answer_description,'" . F_escape_sql($db, $answer_description) . "',1,1)>0";
-                } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                } elseif (
+                    f_legacy_literal_equals(K_DATABASE_TYPE, 'MYSQL')
+                    && f_tce_edit_answer_bool(K_MYSQL_QA_BIN_UNIQUITY)
+                ) {
                     $chksql =
                         "answer_description='"
                         . F_escape_sql($db, $answer_description)
@@ -529,7 +561,7 @@ switch ($menu_mode) {
                 }
 
                 $sql = 'START TRANSACTION';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
                     break;
                 }
@@ -547,9 +579,9 @@ switch ($menu_mode) {
 						AND answer_position>='
                         . $answer_position
                         . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = f_tce_edit_answer_query($sql, $db))) {
                         F_display_db_error(false);
-                        F_db_query('ROLLBACK', $db); // rollback transaction
+                        f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                     }
                 }
 
@@ -591,15 +623,15 @@ switch ($menu_mode) {
                     . ($answer_weight === null ? 'NULL' : (string) $answer_weight)
                     . '
 					)';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
-                    F_db_query('ROLLBACK', $db); // rollback transaction
+                    f_tce_edit_answer_query('ROLLBACK', $db); // rollback transaction
                 } else {
                     $answer_id = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
                 }
 
                 $sql = 'COMMIT';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_tce_edit_answer_query($sql, $db))) {
                     F_display_db_error(false);
                     break;
                 }
@@ -625,9 +657,8 @@ switch ($menu_mode) {
 // select default module/subject (if not specified)
 if ($subject_module_id <= 0) {
     $sql = F_select_modules_sql() . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            /** @var int|numeric-string $default_module_id */
+    if ($r = f_tce_edit_answer_query($sql, $db)) {
+        if (($m = f_tce_edit_answer_module_id_row(F_db_fetch_array($r))) !== null) {
             $default_module_id = $m['module_id'];
             $subject_module_id = (int) $default_module_id;
         } else {
@@ -641,9 +672,8 @@ if ($subject_module_id <= 0) {
 // select default subject
 if ($changemodule > 0 || $question_subject_id <= 0) {
     $sql = F_select_subjects_sql('subject_module_id=' . $subject_module_id . '') . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            /** @var int|numeric-string $default_subject_id */
+    if ($r = f_tce_edit_answer_query($sql, $db)) {
+        if (($m = f_tce_edit_answer_subject_id_row(F_db_fetch_array($r))) !== null) {
             $default_subject_id = $m['subject_id'];
             $question_subject_id = (int) $default_subject_id;
         } else {
@@ -666,9 +696,8 @@ if ($changesubject > 0 || $changemodule > 0 || $answer_question_id <= 0) {
         $sql .= 'question_description LIMIT 1';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            /** @var int|numeric-string $default_question_id */
+    if ($r = f_tce_edit_answer_query($sql, $db)) {
+        if (($m = f_tce_edit_answer_question_id_row(F_db_fetch_array($r))) !== null) {
             $default_question_id = $m['question_id'];
             $answer_question_id = (int) $default_question_id;
         } else {
@@ -692,23 +721,19 @@ if ($formstatus && $menu_mode !== 'clear') {
         $answer_weight = null;
     } else {
         $sql = 'SELECT *
-				FROM ' . K_TABLE_ANSWERS . '
-				WHERE answer_id=' . $answer_id . '
+					FROM ' . K_TABLE_ANSWERS . '
+					WHERE answer_id=' . f_tce_edit_answer_string($answer_id) . '
 				LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
-                /** @var int|numeric-string $stored_answer_id */
+        if ($r = f_tce_edit_answer_query($sql, $db)) {
+            if (($m = f_tce_edit_answer_record_row(F_db_fetch_array($r))) !== null) {
                 $stored_answer_id = $m['answer_id'];
-                /** @var int|numeric-string $stored_question_id */
                 $stored_question_id = $m['answer_question_id'];
-                /** @var int|numeric-string $stored_answer_position */
                 $stored_answer_position = $m['answer_position'];
-                /** @var int|numeric-string|null $stored_keyboard_key */
                 $stored_keyboard_key = $m['answer_keyboard_key'];
                 $answer_id = (int) $stored_answer_id;
                 $answer_question_id = (int) $stored_question_id;
-                $answer_description = $m['answer_description'];
-                $answer_explanation = $m['answer_explanation'];
+                $answer_description = f_tce_edit_answer_string($m['answer_description']);
+                $answer_explanation = f_tce_edit_answer_string($m['answer_explanation']);
                 $answer_isright = f_get_boolean($m['answer_isright']);
                 $answer_enabled = f_get_boolean($m['answer_enabled']);
                 $answer_position = (int) $stored_answer_position;
@@ -770,11 +795,10 @@ echo
         . K_NEWLINE
 ;
 $sql = F_select_modules_sql();
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_tce_edit_answer_query($sql, $db)) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_answer_module_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['module_id'] . '"';
-        /** @var int|numeric-string $listed_module_id */
         $listed_module_id = $m['module_id'];
         if ((int) $listed_module_id === $subject_module_id) {
             echo ' selected="selected"';
@@ -796,7 +820,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem === 1) {
+    if (f_tce_edit_answer_is_first_item($countitem)) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -824,10 +848,9 @@ echo
 ;
 $countitem = 1; //number of already inserted answers
 $sql = F_select_subjects_sql('subject_module_id=' . $subject_module_id);
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
+if ($r = f_tce_edit_answer_query($sql, $db)) {
+    while (($m = f_tce_edit_answer_subject_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['subject_id'] . '"';
-        /** @var int|numeric-string $listed_subject_id */
         $listed_subject_id = $m['subject_id'];
         if ((int) $listed_subject_id === $question_subject_id) {
             echo ' selected="selected"';
@@ -849,7 +872,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem === 1) {
+    if (f_tce_edit_answer_is_first_item($countitem)) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -887,11 +910,10 @@ if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $sql .= 'question_description';
 }
 
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_tce_edit_answer_query($sql, $db)) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_answer_question_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['question_id'] . '"';
-        /** @var int|numeric-string $listed_question_id */
         $listed_question_id = $m['question_id'];
         if ((int) $listed_question_id === $answer_question_id) {
             echo ' selected="selected"';
@@ -901,7 +923,7 @@ if ($r = F_db_query($sql, $db)) {
         if (!f_get_boolean($m['question_enabled'])) {
             echo '-';
         } else {
-            echo $qtype[$m['question_type'] - 1];
+            echo f_tce_edit_answer_question_type_label($qtype, $m['question_type']);
         }
 
         echo
@@ -917,7 +939,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem === 1) {
+    if (f_tce_edit_answer_is_first_item($countitem)) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -959,11 +981,10 @@ if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $sql .= 'answer_description';
 }
 
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_tce_edit_answer_query($sql, $db)) {
     $countitem = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_edit_answer_list_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['answer_id'] . '"';
-        /** @var int|numeric-string $listed_answer_id */
         $listed_answer_id = $m['answer_id'];
         if ((int) $listed_answer_id === $answer_id) {
             echo ' selected="selected"';
@@ -991,7 +1012,7 @@ if ($r = F_db_query($sql, $db)) {
         ++$countitem;
     }
 
-    if ($countitem === 1) {
+    if (f_tce_edit_answer_is_first_item($countitem)) {
         echo '<option value="0">&nbsp;</option>' . K_NEWLINE;
     }
 } else {
@@ -1029,7 +1050,7 @@ echo '</div>';
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-if (K_ENABLE_ANSWER_EXPLANATION) {
+if (f_tce_edit_answer_bool(K_ENABLE_ANSWER_EXPLANATION)) {
     echo '<div class="row">' . K_NEWLINE;
     echo '<span class="label">' . K_NEWLINE;
     echo '<label for="answer_explanation">' . $l['w_explanation'] . '</label>' . K_NEWLINE;
@@ -1068,7 +1089,7 @@ if (K_ENABLE_ANSWER_EXPLANATION) {
             . '"'
     ;
 
-    echo '>' . htmlspecialchars((string) ($answer_explanation ?? ''), ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
+    echo '>' . htmlspecialchars($answer_explanation, ENT_NOQUOTES, $l['a_meta_charset']) . '</textarea>' . K_NEWLINE;
     echo '<br />' . K_NEWLINE;
     echo '<div class="tcecode-toolbar">';
     echo tcecode_editor_tag_buttons('form_answereditor', 'answer_explanation');
@@ -1103,15 +1124,15 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="answer_position" id="answer_position" title="' . $l['h_position'] . '">' . K_NEWLINE;
 $matching_position_limit = 0;
-if (isset($answer_id) && $answer_id > 0) {
+if ((int) $answer_id > 0) {
     $max_position =
         1
-        + F_count_rows(
+        + (int) F_count_rows(
             K_TABLE_ANSWERS,
             'WHERE answer_question_id='
             . $answer_question_id
             . ' AND answer_position>0 AND answer_id<>'
-            . $answer_id
+            . f_tce_edit_answer_string($answer_id)
             . '',
         );
 } else {
@@ -1119,10 +1140,10 @@ if (isset($answer_id) && $answer_id > 0) {
 }
 $matching_question_sql = 'SELECT question_type,question_description FROM ' . K_TABLE_QUESTIONS
     . ' WHERE question_id=' . (int) $answer_question_id . ' LIMIT 1';
-if ($matching_question_result = F_db_query($matching_question_sql, $db)) {
-    if ($matching_question = F_db_fetch_array($matching_question_result)) {
-        $configured_positions = F_tmf_question_options(
-            (string) $matching_question['question_description'],
+if ($matching_question_result = f_tce_edit_answer_query($matching_question_sql, $db)) {
+    if (($matching_question = f_tce_edit_answer_question_options_row(F_db_fetch_array($matching_question_result))) !== null) {
+        $configured_positions = (int) F_tmf_question_options(
+            $matching_question['question_description'],
         )['matching_positions'];
         if ((int) $matching_question['question_type'] === 5 && $configured_positions > 0) {
             $matching_position_limit = (int) $configured_positions;
@@ -1131,8 +1152,10 @@ if ($matching_question_result = F_db_query($matching_question_sql, $db)) {
             $maximum_position_sql = 'SELECT MAX(answer_position) AS maximum_position FROM '
                 . K_TABLE_ANSWERS . ' WHERE answer_question_id=' . (int) $answer_question_id
                 . ' AND answer_enabled=\'1\'';
-            if ($maximum_position_result = F_db_query($maximum_position_sql, $db)) {
-                if ($maximum_position_row = F_db_fetch_array($maximum_position_result)) {
+            if ($maximum_position_result = f_tce_edit_answer_query($maximum_position_sql, $db)) {
+                if (($maximum_position_row = f_tce_edit_answer_maximum_position_row(
+                    F_db_fetch_array($maximum_position_result),
+                )) !== null) {
                     $max_position = max($max_position, (int) $maximum_position_row['maximum_position']);
                 }
             } else {
@@ -1201,7 +1224,7 @@ echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
 
-if (isset($answer_id) && $answer_id > 0) {
+if ((int) $answer_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -1294,3 +1317,174 @@ echo '<div class="pagehelp">' . $l['hp_edit_answer'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_edit_answer_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+function f_tce_edit_answer_bool(mixed $value): bool
+{
+    if (is_array($value)) {
+        return $value !== [];
+    }
+    if (is_object($value) || is_resource($value)) {
+        return true;
+    }
+    return is_bool($value) || is_int($value) || is_float($value) || is_string($value)
+        ? (bool) $value
+        : false;
+}
+
+function f_tce_edit_answer_is_first_item(int $value): bool
+{
+    return $value === 1;
+}
+
+/** Preserve legacy positive-value comparisons. */
+function f_tce_edit_answer_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+    return false;
+}
+
+/** @return object|resource|bool */
+function f_tce_edit_answer_query(string $sql, mixed $db): mixed
+{
+    return f_tce_edit_answer_query_result(F_db_query($sql, $db));
+}
+
+/** @return object|resource|bool */
+function f_tce_edit_answer_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array{question_type:int|string,question_description:string}|null */
+function f_tce_edit_answer_question_options_row(mixed $row): ?array
+{
+    /** @var array{question_type:int|string,question_description:string}|null $row */
+    return $row;
+}
+
+/** @return array{subject_module_id:int|string,question_subject_id:int|string,answer_question_id:int|string}|null */
+function f_tce_edit_answer_authorization_row(mixed $row): ?array
+{
+    /** @var array{subject_module_id:int|string,question_subject_id:int|string,answer_question_id:int|string}|null $row */
+    return $row;
+}
+
+/** @return array{answer_position:int|string|null}|null */
+function f_tce_edit_answer_position_row(mixed $row): ?array
+{
+    /** @var array{answer_position:int|string|null}|null $row */
+    return $row;
+}
+
+/** @return array{module_id:int|string}|null */
+function f_tce_edit_answer_module_id_row(mixed $row): ?array
+{
+    /** @var array{module_id:int|string}|null $row */
+    return $row;
+}
+
+/** @return array{subject_id:int|string}|null */
+function f_tce_edit_answer_subject_id_row(mixed $row): ?array
+{
+    /** @var array{subject_id:int|string}|null $row */
+    return $row;
+}
+
+/** @return array{question_id:int|string}|null */
+function f_tce_edit_answer_question_id_row(mixed $row): ?array
+{
+    /** @var array{question_id:int|string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     answer_id:int|string,answer_question_id:int|string,answer_description:string,answer_explanation:string|null,
+ *     answer_isright:mixed,answer_enabled:mixed,answer_position:int|string|null,
+ *     answer_keyboard_key:int|string|null,answer_weight:int|string|null
+ * }|null
+ */
+function f_tce_edit_answer_record_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     answer_id:int|string,answer_question_id:int|string,answer_description:string,answer_explanation:string|null,
+     *     answer_isright:mixed,answer_enabled:mixed,answer_position:int|string|null,
+     *     answer_keyboard_key:int|string|null,answer_weight:int|string|null
+     * }|null $row
+     */
+    return $row;
+}
+
+/** @return array{module_id:int|string,module_enabled:mixed,module_name:string}|null */
+function f_tce_edit_answer_module_row(mixed $row): ?array
+{
+    /** @var array{module_id:int|string,module_enabled:mixed,module_name:string}|null $row */
+    return $row;
+}
+
+/** @return array{subject_id:int|string,subject_enabled:mixed,subject_name:string}|null */
+function f_tce_edit_answer_subject_row(mixed $row): ?array
+{
+    /** @var array{subject_id:int|string,subject_enabled:mixed,subject_name:string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     question_id:int|string,question_enabled:mixed,question_type:int|string,question_description:string
+ * }|null
+ */
+function f_tce_edit_answer_question_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     question_id:int|string,question_enabled:mixed,question_type:int|string,question_description:string
+     * }|null $row
+     */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     answer_id:int|string,answer_enabled:mixed,answer_isright:mixed,answer_description:string
+ * }|null
+ */
+function f_tce_edit_answer_list_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     answer_id:int|string,answer_enabled:mixed,answer_isright:mixed,answer_description:string
+     * }|null $row
+     */
+    return $row;
+}
+
+/** @return array{maximum_position:int|string|null}|null */
+function f_tce_edit_answer_maximum_position_row(mixed $row): ?array
+{
+    /** @var array{maximum_position:int|string|null}|null $row */
+    return $row;
+}
+
+/** @param list{string,string,string,string,string} $types */
+function f_tce_edit_answer_question_type_label(array $types, mixed $question_type): string
+{
+    $index = (int) $question_type - 1;
+    return f_tce_edit_answer_string($types[$index] ?? null);
+}
