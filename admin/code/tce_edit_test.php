@@ -277,8 +277,9 @@ $aordmode = [$l['w_position'], $l['w_alphabetic'], $l['w_id']];
 
 $test_fieldset_name = '';
 
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$test_id_request = $_REQUEST['test_id'] ?? null;
+if (f_legacy_is_positive($test_id_request)) {
+    $test_id = (int) $test_id_request;
     // check user's authorization
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);

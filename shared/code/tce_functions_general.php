@@ -177,6 +177,26 @@ function f_legacy_equals(mixed $left, mixed $right): bool
 }
 
 /**
+ * Compare a legacy value with zero using PHP's ordering rules.
+ */
+function f_legacy_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+
+    return false;
+}
+
+/**
  * Prepare field value for SQL query.<br>
  * Returns the num if different from zero, NULL otherwise.
  * @param $num (string) string to check.
