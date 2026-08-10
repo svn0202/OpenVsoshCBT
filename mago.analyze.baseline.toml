@@ -2932,14 +2932,12 @@ count = 2
 file = "admin/code/XMLUserImporter.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 6
-
+count = 3
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 6
-
+count = 3
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "invalid-iterator"
@@ -2973,12 +2971,6 @@ count = 3
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "missing-parameter-type"
-message = "Parameter `$tsvfile` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "missing-parameter-type"
 message = "Parameter `$xmlfile` is missing a type hint."
 count = 1
 
@@ -3003,12 +2995,6 @@ count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "missing-return-type"
-message = "Function `f_import_tsv_users` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "missing-return-type"
 message = "Function `endElementHandler` is missing a return type hint."
 count = 1
 
@@ -3028,18 +3014,6 @@ count = 1
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `file_get_contents`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `file`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `min`: expected `int(1)|non-empty-array<array-key, int(1)|string>|string`, but found `mixed`."
 count = 1
 
 [[issues]]
@@ -3082,8 +3056,7 @@ count = 2
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 8
-
+count = 6
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
@@ -3094,8 +3067,7 @@ count = 1
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 16
-
+count = 11
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
@@ -3112,60 +3084,36 @@ count = 3
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Left operand in `<` comparison has `mixed` type."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Left operand in `>=` comparison has `mixed` type."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "mixed-operand"
 message = "Right operand in `>` comparison has `mixed` type."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 6
-
+count = 3
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "possibly-false-argument"
 message = "Argument #2 of function `xml_parse` is possibly `false`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `addslashes`: expected `string`, but possibly received `array<array-key, string>|null|string`."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `addslashes`: expected `string`, but possibly received `int(1)|truthy-string`."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #3 of `preg_replace`: expected `array<array-key, string>|string`, but possibly received `int(1)|truthy-string`."
 count = 1
 
 [[issues]]
@@ -3176,20 +3124,8 @@ count = 1
 
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `explode` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
 code = "possibly-null-array-access"
 message = "Cannot perform array access on possibly `null` value."
-count = 1
-
-[[issues]]
-file = "admin/code/XMLUserImporter.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `positive-int` accessed on `array<int, string>`."
 count = 1
 
 [[issues]]
@@ -3202,14 +3138,12 @@ count = 1
 file = "admin/code/XMLUserImporter.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 2
-
+count = 1
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('session_user_level')` accessed on `array<non-empty-string, mixed>`."
-count = 4
-
+count = 2
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "possibly-undefined-string-array-index"
@@ -3220,8 +3154,7 @@ count = 1
 file = "admin/code/XMLUserImporter.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 8
-
+count = 4
 [[issues]]
 file = "admin/code/XMLUserImporter.php"
 code = "undefined-variable"

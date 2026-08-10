@@ -567,23 +567,31 @@ class XMLUserImporter
  * @param $tsvfile (string) TSV (tab delimited text) file name
  * @return boolean TRUE in case of success, FALSE otherwise
  */
-function f_import_tsv_users($tsvfile)
+function f_import_tsv_users(mixed $tsvfile): bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
 
     // get file content as array
-    $tsvrows = file($tsvfile); // array of TSV lines
+    $tsvrows = file((string) $tsvfile); // array of TSV lines
     if ($tsvrows === false) {
         return false;
     }
 
     $nrows = count($tsvrows);
     for ($i = 1; $i < $nrows; ++$i) {
+        // @mago-expect analysis:possibly-undefined-int-array-index -- the loop is bounded by count($tsvrows)
         $rowdata = $tsvrows[$i];
 
         // get user data into array
+        // @mago-expect analysis:possibly-null-argument -- the count-bounded row lookup always returns a string
         $userdata = explode("\t", $rowdata);
+        /** @var array{
+         *   0: string, 1: string, 2: string, 3: string, 4: string, 5: string,
+         *   6: string, 7: string, 8: string, 9: string, 10: string, 11: string,
+         *   12: string, 13: string, 14: string, 15: string
+         * } $userdata
+         */
 
         // set some default values
         if (empty($userdata[4])) {
@@ -595,20 +603,23 @@ function f_import_tsv_users($tsvfile)
         }
 
         // user level
-        if (!isset($userdata[12]) || strlen($userdata[12]) === 0) {
-            $userdata[12] = 1;
+        if ($userdata[12] === '') {
+            $userdata[12] = '1';
         }
 
-        if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+        $session_user_level = (int) ($_SESSION['session_user_level'] ?? 0);
+        $session_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
+        if ($session_user_level < K_AUTH_ADMINISTRATOR) {
             // you cannot edit a user with a level equal or higher than yours
-            $userdata[12] = min(max(0, $_SESSION['session_user_level'] - 1), $userdata[12]);
+            $userdata[12] = (string) min(max(0, $session_user_level - 1), (int) $userdata[12]);
             // non-administrator can access only to his/her groups
             if (empty($userdata[15])) {
                 break;
             }
 
             $usrgroups = explode(',', addslashes($userdata[15]));
-            $common_groups = array_intersect(F_get_user_groups($_SESSION['session_user_id']), $usrgroups);
+            $available_groups = F_get_user_groups($session_user_id);
+            $common_groups = array_intersect($available_groups, $usrgroups);
             if ($common_groups === []) {
                 break;
             }
@@ -630,20 +641,24 @@ function f_import_tsv_users($tsvfile)
             . f_empty_to_null($userdata[11])
             . '
 			LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        /** @var mixed $r */
+        $r = F_db_query($sql, $db);
+        if ($r) {
+            /** @var mixed $m */
+            $m = F_db_fetch_array($r);
+            if (is_array($m)) {
                 // the user has been already added
-                $user_id = $m['user_id'];
+                $user_id = (int) ($m['user_id'] ?? 0);
                 if (
-                    $_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR
-                    || $_SESSION['session_user_level'] > $m['user_level']
+                    $session_user_level >= K_AUTH_ADMINISTRATOR
+                    || $session_user_level > (int) ($m['user_level'] ?? 0)
                 ) {
                     //update user data
                     $sqlu = 'UPDATE ' . K_TABLE_USERS . ' SET
 						user_name=\'' . F_escape_sql($db, $userdata[1]) . "',";
                     // update password only if it is specified
                     if (!empty($userdata[2])) {
-                        $sqlu .= " user_password='" . F_escape_sql($db, get_password_hash((string) $userdata[2])) . "',";
+                        $sqlu .= " user_password='" . F_escape_sql($db, get_password_hash($userdata[2])) . "',";
                     }
 
                     $sqlu .=
@@ -687,7 +702,9 @@ function f_import_tsv_users($tsvfile)
 						WHERE user_id='
                         . $user_id
                         . '';
-                    if (!($ru = F_db_query($sqlu, $db))) {
+                    /** @var mixed $ru */
+                    $ru = F_db_query($sqlu, $db);
+                    if (!$ru) {
                         F_display_db_error(false);
                         return false;
                     }
@@ -720,7 +737,7 @@ function f_import_tsv_users($tsvfile)
                     . F_escape_sql($db, $userdata[1])
                     . '\',
 					\''
-                    . F_escape_sql($db, get_password_hash((string) $userdata[2]))
+                    . F_escape_sql($db, get_password_hash($userdata[2]))
                     . '\',
 					'
                     . f_empty_to_null($userdata[3])
@@ -759,12 +776,14 @@ function f_import_tsv_users($tsvfile)
                     . f_empty_to_null($userdata[14])
                     . '
 					)';
-                if (!($ru = F_db_query($sqlu, $db))) {
+                /** @var mixed $ru */
+                $ru = F_db_query($sqlu, $db);
+                if (!$ru) {
                     F_display_db_error(false);
                     return false;
                 }
 
-                $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
+                $user_id = (int) F_db_insert_id($db, K_TABLE_USERS, 'user_id');
             }
         } else {
             F_display_db_error(false);
@@ -775,17 +794,21 @@ function f_import_tsv_users($tsvfile)
         if (!empty($userdata[15])) {
             $groups = preg_replace("/[\r\n]+/", '', $userdata[15]);
             $groups = explode(',', addslashes($groups));
-            foreach ($groups as $key => $group_name) {
+            foreach ($groups as $group_name) {
                 $group_name = F_escape_sql($db, $group_name);
                 // check if group already exist
                 $sql = 'SELECT group_id
 					FROM ' . K_TABLE_GROUPS . '
 					WHERE group_name=\'' . $group_name . '\'
 					LIMIT 1';
-                if ($r = F_db_query($sql, $db)) {
-                    if ($m = F_db_fetch_array($r)) {
+                /** @var mixed $r */
+                $r = F_db_query($sql, $db);
+                if ($r) {
+                    /** @var mixed $m */
+                    $m = F_db_fetch_array($r);
+                    if (is_array($m)) {
                         // the group already exist
-                        $group_id = $m['group_id'];
+                        $group_id = (int) ($m['group_id'] ?? 0);
                     } else {
                         // create a new group
                         $sqli = 'INSERT INTO ' . K_TABLE_GROUPS . ' (
@@ -793,12 +816,14 @@ function f_import_tsv_users($tsvfile)
 							) VALUES (
 							\'' . $group_name . '\'
 							)';
-                        if (!($ri = F_db_query($sqli, $db))) {
+                        /** @var mixed $ri */
+                        $ri = F_db_query($sqli, $db);
+                        if (!$ri) {
                             F_display_db_error(false);
                             return false;
                         }
 
-                        $group_id = F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
+                        $group_id = (int) F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
                     }
                 } else {
                     F_display_db_error(false);
@@ -818,8 +843,12 @@ function f_import_tsv_users($tsvfile)
                     . $user_id
                     . '\'
 					LIMIT 1';
-                if ($rs = F_db_query($sqls, $db)) {
-                    if (!($ms = F_db_fetch_array($rs))) {
+                /** @var mixed $rs */
+                $rs = F_db_query($sqls, $db);
+                if ($rs) {
+                    /** @var mixed $ms */
+                    $ms = F_db_fetch_array($rs);
+                    if (!$ms) {
                         // associate group to user
                         $sqlg =
                             'INSERT INTO ' . K_TABLE_USERGROUP . ' (
@@ -829,7 +858,9 @@ function f_import_tsv_users($tsvfile)
 							' . $user_id . ',
 							' . $group_id . '
 							)';
-                        if (!($rg = F_db_query($sqlg, $db))) {
+                        /** @var mixed $rg */
+                        $rg = F_db_query($sqlg, $db);
+                        if (!$rg) {
                             F_display_db_error(false);
                             return false;
                         }
