@@ -16,6 +16,7 @@ function f_get_onboarding_config(): array
         return $defaults;
     }
 
+    /** @var mixed $data */
     $data = json_decode((string) file_get_contents($path), true);
     if (!is_array($data)) {
         return $defaults;
@@ -35,7 +36,7 @@ function f_save_onboarding_config(int $instruction_test_id, int $demo_test_id): 
             'instruction_test_id' => max(0, (int) $instruction_test_id),
             'demo_test_id' => max(0, (int) $demo_test_id),
         ],
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
     );
 
     return file_put_contents($path, $payload . "\n", LOCK_EX) !== false;
@@ -47,6 +48,14 @@ function f_save_onboarding_config(int $instruction_test_id, int $demo_test_id): 
 function f_get_pending_onboarding_tests(int $user_id): array
 {
     global $db, $l;
+    /**
+     * @var array{
+     *     ov_onboarding_instruction_eyebrow: mixed,
+     *     ov_onboarding_instruction_label: mixed,
+     *     ov_onboarding_demo_eyebrow: mixed,
+     *     ov_onboarding_demo_label: mixed
+     * } $l
+     */
     $config = f_get_onboarding_config();
     $labels = [
         'instruction_test_id' => [
@@ -61,6 +70,7 @@ function f_get_pending_onboarding_tests(int $user_id): array
         ],
     ];
     $pending = [];
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
 
     foreach ($labels as $key => $meta) {
         $test_id = (int) ($config[$key] ?? 0);
@@ -77,13 +87,14 @@ function f_get_pending_onboarding_tests(int $user_id): array
             continue;
         }
         $sql = 'SELECT test_id, test_name FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id;
-        if ($r = F_db_query($sql, $db)) {
-            if ($test = F_db_fetch_array($r)) {
-                $pending[] = $meta + [
-                    'test_id' => (int) $test['test_id'],
-                    'test_name' => (string) $test['test_name'],
-                ];
-            }
+        $result = F_db_query($sql, $db);
+        /** @var \mysqli_result|\PgSql\Result|false $result */
+        $test = $result === false ? null : $normalize_row(F_db_fetch_array($result));
+        if ($test !== null) {
+            $pending[] = $meta + [
+                'test_id' => (int) ($test['test_id'] ?? 0),
+                'test_name' => (string) ($test['test_name'] ?? ''),
+            ];
         }
     }
 

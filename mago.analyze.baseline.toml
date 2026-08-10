@@ -13981,42 +13981,6 @@ message = 'Potentially unhandled exception `Random\RandomException` in `f_tmf_of
 count = 1
 
 [[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_onboarding.php"
-code = "possibly-false-operand"
-message = "Possibly false left operand used in string concatenation (type `false|non-empty-string`)."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_openvsosh_settings.php"
 code = "impossible-condition"
 message = "Redundant ternary operator: condition is always falsy."
