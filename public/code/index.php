@@ -23,7 +23,39 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_PUBLIC_INDEX;
+/**
+ * @var array{
+ *     t_test_list:string,
+ *     hp_public_index:string,
+ *     a_meta_charset:string,
+ *     ov_catalog_welcome_title:string,
+ *     ov_catalog_welcome_text:string,
+ *     ov_onboarding_kicker:string,
+ *     ov_onboarding_title:string,
+ *     ov_onboarding_description:string,
+ *     ov_catalog_search_label:string,
+ *     ov_catalog_search_placeholder:string,
+ *     a_meta_language:string,
+ *     ov_status_available:string,
+ *     ov_status_progress:string,
+ *     ov_status_repeat:string,
+ *     ov_status_upcoming:string,
+ *     ov_status_closed:string,
+ *     ov_test_unavailable:string,
+ *     ov_section_active:string,
+ *     ov_section_active_description:string,
+ *     ov_section_future:string,
+ *     ov_section_future_description:string,
+ *     ov_section_past:string,
+ *     ov_section_past_description:string,
+ *     ov_test_count:string,
+ *     ov_search_count:string
+ * } $l
+ */
+/** @var array{session_user_id:int,session_test_completion_message?:mixed} $session */
+$session = &$_SESSION;
 $thispage_title = $l['t_test_list'];
 $thispage_description = $l['hp_public_index'];
 
@@ -33,20 +65,20 @@ require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
 require_once '../../shared/code/tce_functions_openvsosh_settings.php';
 
-$pending_onboarding = f_get_pending_onboarding_tests((int) $_SESSION['session_user_id']);
+$pending_onboarding = f_get_pending_onboarding_tests($session['session_user_id']);
 $site_settings = openvsosh_get_site_settings();
 
 echo '<div class="container">' . K_NEWLINE;
 
-if (!empty($_SESSION['session_test_completion_message'])) {
+if (!empty($session['session_test_completion_message'])) {
     echo '<div class="tcecontentbox" role="status">'
         . nl2br(htmlspecialchars(
-            (string) $_SESSION['session_test_completion_message'],
+            (string) $session['session_test_completion_message'],
             ENT_QUOTES,
             $l['a_meta_charset'],
         ))
         . '</div>' . K_NEWLINE;
-    unset($_SESSION['session_test_completion_message']);
+    unset($session['session_test_completion_message']);
 }
 
 echo '<div class="catalog-welcome">' . K_NEWLINE;
@@ -94,7 +126,9 @@ echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="tcecontentbox">' . K_NEWLINE;
-echo f_get_user_tests();
+/** @var string $user_tests */
+$user_tests = f_get_user_tests();
+echo $user_tests;
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="pagehelp">' . $thispage_description . '</div>' . K_NEWLINE;
@@ -102,7 +136,7 @@ echo '<div class="pagehelp">' . $thispage_description . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 $catalog_translations = [
-    'locale' => str_replace('_', '-', strtolower((string) $l['a_meta_language'])),
+    'locale' => str_replace('_', '-', strtolower($l['a_meta_language'])),
     'statusAvailable' => $l['ov_status_available'],
     'statusProgress' => $l['ov_status_progress'],
     'statusRepeat' => $l['ov_status_repeat'],
@@ -119,7 +153,7 @@ $catalog_translations = [
     'searchCount' => $l['ov_search_count'],
 ];
 echo '<script type="application/json" id="catalog-i18n">'
-    . json_encode($catalog_translations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
+    . (string) json_encode($catalog_translations, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
     . '</script>' . K_NEWLINE;
 
 echo <<<'HTML'
