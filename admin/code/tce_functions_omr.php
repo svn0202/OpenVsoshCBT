@@ -293,7 +293,7 @@ function f_import_omr_test_data($user_id, $date, $omr_testdata, $omr_answers, $o
     }
 
     // get test data
-    $testdata = F_getTestData($test_id);
+    $testdata = f_get_test_data($test_id);
     // 1. check if test is repeatable
     $sqls = 'SELECT test_id FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . " AND test_repeatable='1' LIMIT 1";
     if ($rs = F_db_query($sqls, $db)) {

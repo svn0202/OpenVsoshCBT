@@ -45,7 +45,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
 // get test basic score
 $test_basic_score = 1;
 
-$testdata = F_getTestData($test_id);
+$testdata = f_get_test_data($test_id);
 if (!F_tmf_results_are_published($testdata)) {
     exit();
 }

@@ -91,7 +91,7 @@ $align_hex = $rgb($align_mark_color);
 $omr_line_style = ['lineWidth' => $line_width, 'lineColor' => $grid_hex];
 
 // get test data
-$testdata = F_getTestData($test_id);
+$testdata = f_get_test_data($test_id);
 $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
 $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
 $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];

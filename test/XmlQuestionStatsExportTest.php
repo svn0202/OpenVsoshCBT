@@ -13,7 +13,7 @@ final class XmlQuestionStatsExportTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; require_once "../config/tce_config.php"; $GLOBALS["calls"] = []; '
-                    . 'function F_getTestData($id) { $GLOBALS["calls"]["test"] = $id; return []; } '
+                    . 'function f_get_test_data($id) { $GLOBALS["calls"]["test"] = $id; return []; } '
                     . 'function F_count_rows($tables, $where) { '
                     . '$GLOBALS["calls"]["count"] = [$tables, $where]; return 0; } '
                     . 'function F_db_query($query, $db) { '

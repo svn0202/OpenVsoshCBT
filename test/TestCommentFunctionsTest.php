@@ -20,7 +20,7 @@ final class TestCommentFunctionsTest extends TestCase
                     . '$GLOBALS["rows"] = [["testuser_comment" => "<unsafe>"], false]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . '$GLOBALS["l"] = ["w_comment" => "Comment", "h_testcomment" => "Test comment"]; '
-                    . 'function F_getTestData($testId) { return ["test_comment_enabled" => '
+                    . 'function f_get_test_data($testId) { return ["test_comment_enabled" => '
                     . 'array_shift($GLOBALS["enabled"])]; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
