@@ -31,6 +31,7 @@ $test_password = isset($_POST['test_password']) && is_string($_POST['test_passwo
 $sslcerts = isset($_POST['sslcerts']) && is_array($_POST['sslcerts']) ? $_POST['sslcerts'] : [];
 $user_groups = $_POST['user_groups'] ?? [];
 $test_name = $_REQUEST['test_name'] ?? '';
+/** @var string $test_name */
 $test_description = isset($_REQUEST['test_description']) && is_string($_REQUEST['test_description'])
     ? $_REQUEST['test_description']
     : '';
@@ -309,7 +310,7 @@ switch ($menu_mode) {
 			WHERE test_id='
                 . $test_id
                 . '';
-            if (!($r = F_db_query($sql, $db))) {
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                 F_display_db_error(false);
             } else {
                 F_print_error('MESSAGE', $l['m_updated']);
@@ -329,7 +330,7 @@ switch ($menu_mode) {
 			WHERE test_id='
                 . $test_id
                 . '';
-            if (!($r = F_db_query($sql, $db))) {
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                 F_display_db_error(false);
             } else {
                 F_print_error('MESSAGE', $l['m_updated']);
@@ -359,7 +360,7 @@ switch ($menu_mode) {
                             . ' AND tsubset_id='
                             . $selected_tsubset_id
                             . '';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                             F_display_db_error(false);
                         } else {
                             F_print_error('MESSAGE', $l['m_deleted']);
@@ -399,7 +400,7 @@ switch ($menu_mode) {
                         // module ID
                         $modid = (int) substr($subid, 1);
                         $sqlsm = F_select_subjects_sql('subject_module_id=' . $modid . '');
-                        if ($rsm = F_db_query($sqlsm, $db)) {
+                        if ($rsm = f_legacy_db_query_result(F_db_query($sqlsm, $db))) {
                             while ($msm = F_db_fetch_array($rsm)) {
                                 $subjids .= $msm['subject_id'] . ',';
                             }
@@ -518,7 +519,7 @@ switch ($menu_mode) {
                 }
 
                 $numofrows = 0;
-                if ($rq = F_db_query($sqlq, $db)) {
+                if ($rq = f_legacy_db_query_result(F_db_query($sqlq, $db))) {
                     if ($mq = F_db_fetch_array($rq)) {
                         $numofrows = $mq['numquestions'];
                     }
@@ -558,7 +559,7 @@ switch ($menu_mode) {
                         . $tsubset_answers
                         . '\'
 						)';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                         F_display_db_error(false);
                     } else {
                         $tsubset_id = F_db_insert_id($db, K_TABLE_TEST_SUBJSET, 'tsubset_id');
@@ -578,7 +579,7 @@ switch ($menu_mode) {
                                 . $subid
                                 . '\'
 								)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error(false);
                             }
                         }
@@ -599,7 +600,7 @@ switch ($menu_mode) {
         <div>
         <input type="hidden" name="test_id" id="test_id" value="<?php echo $test_id; ?>" />
         <input type="hidden" name="test_name" id="test_name" value="<?php echo
-            htmlspecialchars((string) $test_name, ENT_QUOTES, $l['a_meta_charset'])
+            htmlspecialchars($test_name, ENT_QUOTES, $l['a_meta_charset'])
         ; ?>" />
         <?php
 
@@ -619,7 +620,7 @@ switch ($menu_mode) {
             if ($forcedelete === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 // delete test
                 $sql = 'DELETE FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                     F_display_db_error(false);
                 } else {
                     $test_id = false;
@@ -760,7 +761,7 @@ switch ($menu_mode) {
 				WHERE test_id='
                     . $test_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', $l['m_updated']);
@@ -769,7 +770,7 @@ switch ($menu_mode) {
                 // delete previous groups
                 $sql = 'DELETE FROM ' . K_TABLE_TEST_GROUPS . '
 				WHERE tstgrp_test_id=' . $test_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                     F_display_db_error(false);
                 }
 
@@ -790,7 +791,7 @@ switch ($menu_mode) {
                             . (int) $group_id
                             . '\'
 						)';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                             F_display_db_error(false);
                         }
                     }
@@ -799,7 +800,7 @@ switch ($menu_mode) {
                 // delete previous SSL certificates
                 $sql = 'DELETE FROM ' . K_TABLE_TEST_SSLCERTS . '
 				WHERE tstssl_test_id=' . $test_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                     F_display_db_error(false);
                 }
 
@@ -820,7 +821,7 @@ switch ($menu_mode) {
                             . (int) $ssl_id
                             . '\'
 						)';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                             F_display_db_error(false);
                         }
                     }
@@ -969,7 +970,7 @@ switch ($menu_mode) {
                     . f_empty_to_null($test_password)
                     . '
 				)';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                     F_display_db_error(false);
                 } else {
                     $test_id = F_db_insert_id($db, K_TABLE_TESTS, 'test_id');
@@ -992,7 +993,7 @@ switch ($menu_mode) {
                             . (int) $group_id
                             . '\'
 						)';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                             F_display_db_error(false);
                         }
                     }
@@ -1015,7 +1016,7 @@ switch ($menu_mode) {
                             . (int) $ssl_id
                             . '\'
 						)';
-                        if (!($r = F_db_query($sql, $db))) {
+                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
                             F_display_db_error(false);
                         }
                     }
@@ -1026,7 +1027,7 @@ switch ($menu_mode) {
                     $sql = 'SELECT *
 					FROM ' . K_TABLE_TEST_SUBJSET . '
 					WHERE tsubset_test_id=\'' . $old_test_id . "'";
-                    if ($r = F_db_query($sql, $db)) {
+                    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
                         while ($m = F_db_fetch_array($r)) {
                             // insert new subject
                             $sqlu =
@@ -1055,7 +1056,7 @@ switch ($menu_mode) {
                                 . $m['tsubset_answers']
                                 . '\'
 							)';
-                            if (!($ru = F_db_query($sqlu, $db))) {
+                            if (!($ru = f_legacy_db_query_result(F_db_query($sqlu, $db)))) {
                                 F_display_db_error();
                             } else {
                                 $tsubset_id = F_db_insert_id($db, K_TABLE_TEST_SUBJSET, 'tsubset_id');
@@ -1067,7 +1068,7 @@ switch ($menu_mode) {
 								WHERE subjset_tsubset_id=\''
                                     . $m['tsubset_id']
                                     . "'";
-                                if ($rs = F_db_query($sqls, $db)) {
+                                if ($rs = f_legacy_db_query_result(F_db_query($sqls, $db))) {
                                     while ($ms = F_db_fetch_array($rs)) {
                                         $sqlp =
                                             'INSERT INTO '
@@ -1083,7 +1084,7 @@ switch ($menu_mode) {
                                             . $ms['subjset_subject_id']
                                             . '\'
 										)';
-                                        if (!($rp = F_db_query($sqlp, $db))) {
+                                        if (!($rp = f_legacy_db_query_result(F_db_query($sqlp, $db)))) {
                                             F_display_db_error();
                                         }
                                     }
@@ -1176,8 +1177,13 @@ if ($formstatus && $menu_mode !== 'clear') {
         $test_logout_on_timeout = false;
         $test_password = '';
     } else {
-        $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
+        $sql =
+            'SELECT * FROM '
+            . K_TABLE_TESTS
+            . ' WHERE test_id='
+            . f_general_string($test_id)
+            . ' LIMIT 1';
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             if ($m = F_db_fetch_array($r)) {
                 $test_id = $m['test_id'];
                 $test_name = $m['test_name'];
@@ -1276,7 +1282,7 @@ if (f_legacy_int_equals($test_id, 0)) {
 
 echo '>+</option>' . K_NEWLINE;
 $sql = F_select_tests_sql();
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['test_id'] . '"';
@@ -1418,7 +1424,7 @@ echo
 echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple">' . K_NEWLINE;
 //$sql = F_user_group_select_sql();
 $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['group_id'] . '"';
         if (isset($test_id) && $test_id > 0 && f_is_test_on_group($test_id, $m['group_id'])) {
@@ -1443,7 +1449,7 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<select name="sslcerts[]" id="sslcerts" size="5" multiple="multiple">' . K_NEWLINE;
 $sql = 'SELECT * FROM ' . K_TABLE_SSLCERTS . ' ORDER BY ssl_name';
-if ($r = F_db_query($sql, $db)) {
+if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="' . $m['ssl_id'] . '"';
         if (isset($test_id) && $test_id > 0 && f_is_test_on_ssl_certs($test_id, $m['ssl_id'])) {
@@ -1747,9 +1753,9 @@ if (isset($test_id) && $test_id > 0) {
     ;
     // select subject_id
     $sql = F_select_module_subjects_sql("module_enabled='1' AND subject_enabled='1'");
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         $prev_module_id = 0;
-        while ($m = F_db_fetch_array($r)) {
+        while (($m = f_tce_edit_test_module_subject_row(F_db_fetch_array($r))) !== null) {
             /** @var int|numeric-string $raw_module_id */
             $raw_module_id = $m['module_id'];
             $module_id = (int) $raw_module_id;
@@ -1785,7 +1791,7 @@ if (isset($test_id) && $test_id > 0) {
                 . '
 					AND question_enabled=\'1\'
 				GROUP BY question_type, question_difficulty';
-            if ($rn = F_db_query($sqln, $db)) {
+            if ($rn = f_legacy_db_query_result(F_db_query($sqln, $db))) {
                 while ($mn = F_db_fetch_array($rn)) {
                     $qstat .= ' ' . $mn['numquestions'] . $qtype[$mn['question_type'] - 1] . $mn['question_difficulty'];
                     // count min and max alternative answers
@@ -1811,7 +1817,7 @@ if (isset($test_id) && $test_id > 0) {
 							AND question_enabled=\'1\'
 							AND answer_enabled=\'1\'
 						GROUP BY question_id';
-                    if ($ra = F_db_query($sqla, $db)) {
+                    if ($ra = f_legacy_db_query_result(F_db_query($sqla, $db))) {
                         while ($ma = F_db_fetch_array($ra)) {
                             if ($ma['numanswers'] < $amin) {
                                 $amin = $ma['numanswers'];
@@ -1983,12 +1989,13 @@ if (isset($test_id) && $test_id > 0) {
     echo '<br />' . K_NEWLINE;
     echo '<div class="preview">' . K_NEWLINE;
     $subjlist = '';
+    /** @var int|float|numeric-string $test_score_right */
     $sql = 'SELECT * FROM ' . K_TABLE_TEST_SUBJSET . '
 		WHERE tsubset_test_id=\'' . $test_id . '\'
 		ORDER BY tsubset_id';
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         $subjcount = 0;
-        while ($m = F_db_fetch_array($r)) {
+        while (($m = f_tce_edit_test_subject_set_row(F_db_fetch_array($r))) !== null) {
             $subjlist .= '<li>';
             $subjects_list = '';
             $sqls =
@@ -2003,8 +2010,8 @@ if (isset($test_id) && $test_id > 0) {
                 . $m['tsubset_id']
                 . '\'
 				ORDER BY subject_name';
-            if ($rs = F_db_query($sqls, $db)) {
-                while ($ms = F_db_fetch_array($rs)) {
+            if ($rs = f_legacy_db_query_result(F_db_query($sqls, $db))) {
+                while (($ms = f_tce_edit_test_subject_row(F_db_fetch_array($rs))) !== null) {
                     $subjects_list .=
                         '<a href="tce_edit_subject.php?subject_id='
                         . $ms['subject_id']
@@ -2066,7 +2073,7 @@ if (isset($test_id) && $test_id > 0) {
                     . ' WHERE test_id='
                     . $test_id
                     . '';
-                if (!($rup = F_db_query($sqlup, $db))) {
+                if (!($rup = f_legacy_db_query_result(F_db_query($sqlup, $db)))) {
                     F_display_db_error(false);
                 }
             }
@@ -2095,7 +2102,7 @@ if (isset($test_id) && $test_id > 0) {
 
     echo '<div class="row"><br /></div>' . K_NEWLINE;
 
-    if (isset($test_max_score_new) && is_numeric($test_max_score_new) && (float) $test_max_score_new > 0) {
+    if ($test_max_score_new > 0) {
         echo '<div class="row">' . K_NEWLINE;
         echo '<span class="label">' . K_NEWLINE;
         echo '<label for="test_num">' . $l['w_pdf_offline_test'] . '</label>' . K_NEWLINE;
@@ -2185,3 +2192,42 @@ echo '//]]>' . K_NEWLINE;
 echo '</script>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/**
+ * @return array{
+ *     tsubset_id:int|numeric-string,tsubset_quantity:int|numeric-string,tsubset_type:int|numeric-string,
+ *     tsubset_difficulty:int|numeric-string,tsubset_answers:int|numeric-string
+ * }|null
+ */
+function f_tce_edit_test_subject_set_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     tsubset_id:int|numeric-string,tsubset_quantity:int|numeric-string,tsubset_type:int|numeric-string,
+     *     tsubset_difficulty:int|numeric-string,tsubset_answers:int|numeric-string
+     * }|null $row
+     */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     module_id:int|string,module_name:string,subject_id:int|string,subject_name:string
+ * }|null
+ */
+function f_tce_edit_test_module_subject_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     module_id:int|string,module_name:string,subject_id:int|string,subject_name:string
+     * }|null $row
+     */
+    return $row;
+}
+
+/** @return array{subject_id:int|string,subject_name:string}|null */
+function f_tce_edit_test_subject_row(mixed $row): ?array
+{
+    /** @var array{subject_id:int|string,subject_name:string}|null $row */
+    return $row;
+}

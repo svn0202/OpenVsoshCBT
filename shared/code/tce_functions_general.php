@@ -196,6 +196,13 @@ function f_legacy_is_positive(mixed $value): bool
     return false;
 }
 
+/** @return object|resource|bool */
+function f_legacy_db_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
 /**
  * Prepare field value for SQL query.<br>
  * Returns the num if different from zero, NULL otherwise.
