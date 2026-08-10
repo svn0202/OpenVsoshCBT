@@ -35,7 +35,7 @@ $GLOBALS['rows'] = [[
 ], false];
 function f_get_boolean($value) { return $value === '1'; }
 function f_is_authorized_editor_for_user($userId) { return true; }
-function F_db_query($sql, $db) { $GLOBALS['queries'][] = $sql; return 'users'; }
+function F_db_query($sql, $db) { $GLOBALS['queries'][] = $sql; return fopen('php://memory', 'r'); }
 function F_db_fetch_array($result) { return array_shift($GLOBALS['rows']); }
 function F_display_db_error() { echo '<DB_ERROR>'; }
 function F_print_error($type, $message) { echo "<ERROR:$type:$message>"; }
