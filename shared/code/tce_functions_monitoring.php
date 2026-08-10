@@ -41,7 +41,7 @@ function f_tmf_monitor_status(
     if ($close_reason === 'completed' || $attempt_status >= 3) {
         return 'completed';
     }
-    if ($last_activity === null || strtotime($last_activity) < ($now - $lost_after)) {
+    if ($last_activity === null || (int) strtotime($last_activity) < ($now - $lost_after)) {
         return 'connection_lost';
     }
     return 'in_progress';
@@ -56,10 +56,12 @@ function f_tmf_monitor_attempt_is_authorized(int $testuser_id): bool
         FROM ' . K_TABLE_TEST_USER . '
         WHERE testuser_id=' . $testuser_id . '
         LIMIT 1';
-    $result = F_db_query($sql, $db);
-    $row = $result ? F_db_fetch_array($result) : false;
-    return is_array($row)
-        && f_is_authorized_user(K_TABLE_TESTS, 'test_id', (int) $row['testuser_test_id'], 'test_user_id');
+    $row = f_tmf_monitor_fetch_row(F_db_query($sql, $db));
+    if ($row === null) {
+        return false;
+    }
+    /** @var array{testuser_test_id:mixed} $row */
+    return f_is_authorized_user(K_TABLE_TESTS, 'test_id', (int) $row['testuser_test_id'], 'test_user_id');
 }
 
 /**
@@ -86,7 +88,7 @@ function f_tmf_monitor_apply_action(
     ) {
         return ['status' => 'forbidden', 'testuser_id' => $testuser_id];
     }
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!f_tmf_monitor_query_succeeded(F_db_query('START TRANSACTION', $db))) {
         return ['status' => 'error', 'testuser_id' => $testuser_id];
     }
 
@@ -96,13 +98,20 @@ function f_tmf_monitor_apply_action(
             FROM ' . K_TABLE_TEST_USER . '
             WHERE testuser_id=' . $testuser_id . '
             FOR UPDATE';
-        $result = F_db_query($sql, $db);
-        $attempt = $result ? F_db_fetch_array($result) : false;
-        if (!is_array($attempt)) {
+        $attempt = f_tmf_monitor_fetch_row(F_db_query($sql, $db));
+        if ($attempt === null) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'not_found', 'testuser_id' => $testuser_id];
         }
 
+        /** @var array{
+         *     testuser_test_id:mixed,
+         *     testuser_user_id:mixed,
+         *     testuser_status:mixed,
+         *     testuser_creation_time:mixed,
+         *     testuser_close_reason:mixed
+         * } $attempt
+         */
         $test_id = (int) $attempt['testuser_test_id'];
         $target_user_id = (int) $attempt['testuser_user_id'];
         $now = date(K_TIMESTAMP_FORMAT);
@@ -149,7 +158,7 @@ function f_tmf_monitor_apply_action(
             }
             $new_start = date(
                 K_TIMESTAMP_FORMAT,
-                strtotime((string) $attempt['testuser_creation_time'])
+                (int) strtotime((string) $attempt['testuser_creation_time'])
                     + ($extend_minutes * K_SECONDS_IN_MINUTE),
             );
             $details = 'minutes=' . $extend_minutes;
@@ -165,14 +174,14 @@ function f_tmf_monitor_apply_action(
                 . '
                 WHERE testuser_id=' . $testuser_id;
         } else {
-            $status_result = F_db_query(
+            $status_row = f_tmf_monitor_fetch_row(F_db_query(
                 'SELECT MAX(testuser_status) AS max_status
                 FROM ' . K_TABLE_TEST_USER . '
                 WHERE testuser_test_id=' . $test_id . '
                     AND testuser_user_id=' . $target_user_id,
                 $db,
-            );
-            $status_row = $status_result ? F_db_fetch_array($status_result) : false;
+            ));
+            /** @var array{max_status?:mixed}|null $status_row */
             $archive_status = max(5, (int) ($status_row['max_status'] ?? 4) + 1);
             $sql = 'UPDATE ' . K_TABLE_TEST_USER . "
                 SET testuser_status=" . $archive_status . ",
@@ -181,7 +190,7 @@ function f_tmf_monitor_apply_action(
                 WHERE testuser_id=" . $testuser_id;
         }
 
-        if (!F_db_query($sql, $db)) {
+        if (!f_tmf_monitor_query_succeeded(F_db_query($sql, $db))) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'testuser_id' => $testuser_id];
         }
@@ -191,7 +200,7 @@ function f_tmf_monitor_apply_action(
                 F_db_query('ROLLBACK', $db);
                 return ['status' => 'error', 'testuser_id' => $testuser_id];
             }
-            $new_attempt_result = F_db_query(
+            $new_attempt = f_tmf_monitor_fetch_row(F_db_query(
                 'SELECT testuser_id
                 FROM ' . K_TABLE_TEST_USER . '
                 WHERE testuser_test_id=' . $test_id . '
@@ -200,9 +209,9 @@ function f_tmf_monitor_apply_action(
                 ORDER BY testuser_id DESC
                 LIMIT 1',
                 $db,
-            );
-            $new_attempt = $new_attempt_result ? F_db_fetch_array($new_attempt_result) : false;
-            $new_testuser_id = is_array($new_attempt) ? (int) $new_attempt['testuser_id'] : 0;
+            ));
+            /** @var array{testuser_id?:mixed}|null $new_attempt */
+            $new_testuser_id = (int) ($new_attempt['testuser_id'] ?? 0);
             if ($new_testuser_id <= 0) {
                 F_db_query('ROLLBACK', $db);
                 return ['status' => 'error', 'testuser_id' => $testuser_id];
@@ -212,6 +221,8 @@ function f_tmf_monitor_apply_action(
 
         $details_sql = $details === null ? 'NULL' : "'" . F_escape_sql($db, $details) . "'";
         $ip = F_escape_sql($db, (string) get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? ''));
+        /** @mago-expect analysis:possibly-undefined-string-array-index */
+        $actor_user_id = (int) $_SESSION['session_user_id'];
         $audit_sql = 'INSERT INTO ' . F_tmf_monitor_audit_table() . ' (
                 monitor_audit_time,
                 monitor_actor_user_id,
@@ -223,7 +234,7 @@ function f_tmf_monitor_apply_action(
                 monitor_ip
             ) VALUES (
                 \'' . $now . '\',
-                ' . (int) $_SESSION['session_user_id'] . ',
+                ' . $actor_user_id . ',
                 ' . $testuser_id . ',
                 ' . $test_id . ',
                 ' . $target_user_id . ",
@@ -231,7 +242,10 @@ function f_tmf_monitor_apply_action(
                 " . $details_sql . ",
                 '" . $ip . "'
             )";
-        if (!F_db_query($audit_sql, $db) || !F_db_query('COMMIT', $db)) {
+        if (
+            !f_tmf_monitor_query_succeeded(F_db_query($audit_sql, $db))
+            || !f_tmf_monitor_query_succeeded(F_db_query('COMMIT', $db))
+        ) {
             F_db_query('ROLLBACK', $db);
             return ['status' => 'error', 'testuser_id' => $testuser_id];
         }
@@ -245,4 +259,39 @@ function f_tmf_monitor_apply_action(
         F_db_query('ROLLBACK', $db);
         return ['status' => 'error', 'testuser_id' => $testuser_id];
     }
+}
+
+function f_tmf_monitor_query_succeeded(mixed $result): bool
+{
+    return (bool) f_tmf_monitor_query_result($result);
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_monitor_fetch_row(mixed $result): ?array
+{
+    $result = f_tmf_monitor_query_result($result);
+    if (!$result) {
+        return null;
+    }
+    return f_tmf_monitor_row(F_db_fetch_array($result));
+}
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_monitor_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_monitor_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
 }

@@ -100,24 +100,20 @@ function date($format, $timestamp = null) { return '2026-08-10 12:34:56'; }
 function F_db_query($sql, $db) {
     $sql = preg_replace('/\s+/', ' ', trim($sql));
     $GLOBALS['queries'][] = $sql;
-    if (str_contains($sql, 'SELECT testuser_test_id FROM')) { return 'authorized'; }
-    if (str_contains($sql, 'FOR UPDATE')) { return 'attempt'; }
-    if (str_contains($sql, 'SELECT MAX(testuser_status)')) { return 'status'; }
-    if (str_contains($sql, 'ORDER BY testuser_id DESC')) { return 'new_attempt'; }
+    if (str_starts_with($sql, 'SELECT')) { return fopen('php://memory', 'r'); }
     return true;
 }
 function F_db_fetch_array($result) {
-    return match ($result) {
-        'authorized' => ['testuser_test_id' => '7'],
-        'attempt' => [
+    $sql = end($GLOBALS['queries']);
+    if (str_contains($sql, 'SELECT testuser_test_id FROM')) { return ['testuser_test_id' => '7']; }
+    if (str_contains($sql, 'FOR UPDATE')) { return [
             'testuser_test_id' => '7', 'testuser_user_id' => '11',
             'testuser_status' => '1', 'testuser_creation_time' => '2026-08-10 10:00:00',
             'testuser_close_reason' => null,
-        ],
-        'status' => ['max_status' => '6'],
-        'new_attempt' => ['testuser_id' => '88'],
-        default => false,
-    };
+        ]; }
+    if (str_contains($sql, 'SELECT MAX(testuser_status)')) { return ['max_status' => '6']; }
+    if (str_contains($sql, 'ORDER BY testuser_id DESC')) { return ['testuser_id' => '88']; }
+    return false;
 }
 function f_is_authorized_user(...$arguments) { return true; }
 function f_create_test($test_id, $user_id) {
