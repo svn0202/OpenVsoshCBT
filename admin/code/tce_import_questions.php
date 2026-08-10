@@ -22,20 +22,40 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_IMPORT;
 require_once '../../shared/code/tce_authorization.php';
 
+/**
+ * @var array{
+ *     t_question_importer:string,
+ *     m_importing_complete:string,
+ *     w_upload_file:string,
+ *     h_upload_file:string,
+ *     w_type:string,
+ *     w_upload:string,
+ *     h_submit_file:string,
+ *     hp_import_xml_questions:string
+ * } $l
+ */
+/** @var array{type?:mixed} $request */
+$request = $_REQUEST;
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/** @var array{userfile?:array{name?:mixed}} $files */
+$files = $_FILES;
 $thispage_title = $l['t_question_importer'];
 require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 
-$type = !isset($_REQUEST['type']) || empty($_REQUEST['type']) ? 1 : (int) $_REQUEST['type'];
+$type = !isset($request['type']) || empty($request['type']) ? 1 : (int) $request['type'];
 
-if (isset($menu_mode) && $menu_mode === 'upload' && $_FILES['userfile']['name']) {
+if (isset($menu_mode) && $menu_mode === 'upload' && !empty($files['userfile']['name'])) {
     require_once '../code/tce_functions_upload.php';
     // upload file
+    /** @var string|false $uploadedfile */
     $uploadedfile = f_upload_file('userfile', K_PATH_CACHE);
     if ($uploadedfile !== false) {
         $qimp = false;
@@ -52,7 +72,8 @@ if (isset($menu_mode) && $menu_mode === 'upload' && $_FILES['userfile']['name'])
             case 3:
                     // Custom TCExam XML format
                     require_once '../code/tce_import_custom.php';
-                    $qimp = new CustomQuestionImporter(K_PATH_CACHE . $uploadedfile);
+                    $importer_class = 'CustomQuestionImporter';
+                    $qimp = (new ReflectionClass($importer_class))->newInstance(K_PATH_CACHE . $uploadedfile);
                     break;
         }
 
@@ -67,7 +88,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_importquestions">'
         . K_NEWLINE
 ;
@@ -105,6 +126,7 @@ if ($type === 2) {
 echo ' />';
 echo '<label for="type_tsv">TCExam TSV</label>' . K_NEWLINE;
 
+/** @var string $custom_import */
 $custom_import = K_ENABLE_CUSTOM_IMPORT;
 if ($custom_import !== '') {
     echo '<input type="radio" name="type" id="type_custom" value="3" title="' . $custom_import . '"' . K_NEWLINE;
@@ -142,9 +164,9 @@ require_once '../code/tce_page_footer.php';
  * Import questions from TSV file (tab delimited text).
  * The format of TSV is the same obtained by exporting data from TCExam interface.
  * @param $tsvfile (string) TSV (tab delimited text) file name
- * @return boolean TRUE in case of success, FALSE otherwise
+ * @return bool|null TRUE in case of success, FALSE for an unreadable file, null for an incomplete TSV hierarchy.
  */
-function f_tsv_question_importer($tsvfile)
+function f_tsv_question_importer(mixed $tsvfile): ?bool
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -156,7 +178,20 @@ function f_tsv_question_importer($tsvfile)
         'O' => 4,
         'C' => 5,
     ];
-    $tsvfp = fopen($tsvfile, 'r');
+    $normalize_query_result = static function (mixed $result): mixed {
+        if (
+            is_bool($result)
+            || is_resource($result)
+            || $result instanceof \mysqli_result
+            || $result instanceof \PgSql\Result
+        ) {
+            return $result;
+        }
+        return false;
+    };
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+    $tsvfp = fopen((string) $tsvfile, 'r');
     if ($tsvfp === false) {
         return false;
     }
@@ -168,12 +203,9 @@ function f_tsv_question_importer($tsvfile)
     $questionhash = [];
     // for each row
     while ($qdata = fgetcsv($tsvfp, 0, "\t", '"')) {
-        if ($qdata === null) {
-            continue;
-        }
-
         // get user data into array
-        switch ($qdata[0]) {
+        $record_type = (string) ($qdata[0] ?? '');
+        switch ($record_type) {
             case 'M':
                 // MODULE
                     $current_module_id = 0;
@@ -188,8 +220,9 @@ function f_tsv_question_importer($tsvfile)
 					FROM ' . K_TABLE_MODULES . '
 					WHERE module_name=\'' . $module_name . '\'
 					LIMIT 1';
-                    if ($r = F_db_query($sql, $db)) {
-                        if ($m = F_db_fetch_array($r)) {
+                    if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+                        if ($m = $normalize_row(F_db_fetch_array($r))) {
+                            /** @var array{module_id:int|string} $m */
                             // get existing module ID
                             if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $m['module_id'], 'module_user_id')) {
                                 // unauthorized user
@@ -199,6 +232,8 @@ function f_tsv_question_importer($tsvfile)
                             }
                         } else {
                             // insert new module
+                            /** @var array{session_user_id:int} $session */
+                            $session = $_SESSION;
                             $sql =
                                 'INSERT INTO '
                                 . K_TABLE_MODULES
@@ -214,10 +249,10 @@ function f_tsv_question_importer($tsvfile)
                                 . $module_enabled
                                 . '\',
 							\''
-                                . $_SESSION['session_user_id']
+                                . $session['session_user_id']
                                 . '\'
 							)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error();
                             } else {
                                 // get new module ID
@@ -233,7 +268,7 @@ function f_tsv_question_importer($tsvfile)
                 // SUBJECT
                     $current_subject_id = 0;
                     if ($current_module_id === 0) {
-                        return;
+                        return null;
                     }
 
                     if (!isset($qdata[2]) || empty($qdata[2])) {
@@ -260,12 +295,15 @@ function f_tsv_question_importer($tsvfile)
                         . $current_module_id
                         . '
 					LIMIT 1';
-                    if ($r = F_db_query($sql, $db)) {
-                        if ($m = F_db_fetch_array($r)) {
+                    if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+                        if ($m = $normalize_row(F_db_fetch_array($r))) {
+                            /** @var array{subject_id:int|string} $m */
                             // get existing subject ID
                             $current_subject_id = $m['subject_id'];
                         } else {
                             // insert new subject
+                            /** @var array{session_user_id:int} $session */
+                            $session = $_SESSION;
                             $sql =
                                 'INSERT INTO '
                                 . K_TABLE_SUBJECTS
@@ -286,13 +324,13 @@ function f_tsv_question_importer($tsvfile)
                                 . $subject_enabled
                                 . '\',
 							\''
-                                . $_SESSION['session_user_id']
+                                . $session['session_user_id']
                                 . '\',
 							'
                                 . $current_module_id
                                 . '
 							)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error();
                             } else {
                                 // get new subject ID
@@ -308,7 +346,7 @@ function f_tsv_question_importer($tsvfile)
                 // QUESTION
                     $current_question_id = 0;
                     if ($current_module_id === 0 || $current_subject_id === 0) {
-                        return;
+                        return null;
                     }
 
                     if (!isset($qdata[5])) {
@@ -318,9 +356,15 @@ function f_tsv_question_importer($tsvfile)
                     $question_enabled = (int) $qdata[1];
                     $question_description = F_escape_sql($db, f_tsv_to_text($qdata[2]), false);
                     $question_explanation = f_empty_to_null(f_tsv_to_text($qdata[3]));
-                    $question_type = $qtype[$qdata[4]];
+                    /** @var 'S'|'M'|'T'|'O'|'C' $question_code */
+                    $question_code = (string) $qdata[4];
+                    $question_type = array_key_exists($question_code, $qtype) ? $qtype[$question_code] : null;
                     $question_difficulty = (int) $qdata[5];
                     $question_position = isset($qdata[6]) ? f_zero_to_null($qdata[6]) : f_zero_to_null(0);
+                    /** @var string $database_type */
+                    $database_type = K_DATABASE_TYPE;
+                    /** @var bool $mysql_binary_uniquity */
+                    $mysql_binary_uniquity = K_MYSQL_QA_BIN_UNIQUITY;
 
                     $question_timer = isset($qdata[7]) ? (int) $qdata[7] : 0;
 
@@ -335,9 +379,9 @@ function f_tsv_question_importer($tsvfile)
                     $sql = 'SELECT question_id
 					FROM ' . K_TABLE_QUESTIONS . '
 					WHERE ';
-                    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
+                    if (f_legacy_literal_equals($database_type, 'ORACLE')) {
                         $sql .= "dbms_lob.instr(question_description,'" . $question_description . "',1,1)>0";
-                    } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                    } elseif ($database_type === 'MYSQL' && $mysql_binary_uniquity) {
                         $sql .=
                             "question_description='"
                             . $question_description
@@ -348,8 +392,9 @@ function f_tsv_question_importer($tsvfile)
                     }
 
                     $sql .= ' AND question_subject_id=' . $current_subject_id . ' LIMIT 1';
-                    if ($r = F_db_query($sql, $db)) {
-                        if ($m = F_db_fetch_array($r)) {
+                    if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+                        if ($m = $normalize_row(F_db_fetch_array($r))) {
+                            /** @var array{question_id:int|string} $m */
                             // get existing question ID
                             $current_question_id = (int) $m['question_id'];
                             break;
@@ -358,7 +403,8 @@ function f_tsv_question_importer($tsvfile)
                         F_display_db_error();
                     }
 
-                    if (K_DATABASE_TYPE === 'MYSQL') {
+                    $strkeylimit = 0;
+                    if ($database_type === 'MYSQL') {
                         // this section is to avoid the problems on MySQL string comparison
                         $maxkey = 240;
                         $strkeylimit = min($maxkey, strlen($question_description));
@@ -378,12 +424,12 @@ function f_tsv_question_importer($tsvfile)
 
                         if (f_legacy_int_equals($stop, 0)) {
                             F_print_error('ERROR', 'Unable to get unique question ID');
-                            return;
+                            return null;
                         }
                     }
 
                     $sql = 'START TRANSACTION';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                         F_display_db_error();
                     }
 
@@ -415,7 +461,7 @@ function f_tsv_question_importer($tsvfile)
                         . $question_explanation
                         . ',
 					\''
-                        . $question_type
+                        . (string) $question_type
                         . '\',
 					\''
                         . $question_difficulty
@@ -442,12 +488,12 @@ function f_tsv_question_importer($tsvfile)
                         . $question_shuffle_answers
                         . '\'
 					)';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                         F_display_db_error(false);
                     } else {
                         // get new question ID
                         $current_question_id = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
-                        if (K_DATABASE_TYPE === 'MYSQL') {
+                        if ($database_type === 'MYSQL') {
                             $questionhash[] = md5(strtolower(substr(
                                 $current_subject_id . $question_description,
                                 0,
@@ -457,7 +503,7 @@ function f_tsv_question_importer($tsvfile)
                     }
 
                     $sql = 'COMMIT';
-                    if (!($r = F_db_query($sql, $db))) {
+                    if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                         F_display_db_error();
                     }
 
@@ -466,7 +512,7 @@ function f_tsv_question_importer($tsvfile)
                 // ANSWER
                     $current_answer_id = 0;
                     if ($current_module_id === 0 || $current_subject_id === 0 || $current_question_id === 0) {
-                        return;
+                        return null;
                     }
 
                     if (!isset($qdata[4])) {
@@ -478,6 +524,10 @@ function f_tsv_question_importer($tsvfile)
                     $answer_explanation = f_empty_to_null(f_tsv_to_text($qdata[3]));
                     $answer_isright = (int) $qdata[4];
                     $answer_position = isset($qdata[5]) ? f_zero_to_null($qdata[5]) : f_zero_to_null(0);
+                    /** @var string $database_type */
+                    $database_type = K_DATABASE_TYPE;
+                    /** @var bool $mysql_binary_uniquity */
+                    $mysql_binary_uniquity = K_MYSQL_QA_BIN_UNIQUITY;
 
                     $answer_keyboard_key = isset($qdata[6])
                         ? f_empty_to_null(f_tsv_to_text($qdata[6]))
@@ -490,9 +540,9 @@ function f_tsv_question_importer($tsvfile)
                     $sql = 'SELECT answer_id
 					FROM ' . K_TABLE_ANSWERS . '
 					WHERE ';
-                    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
+                    if (f_legacy_literal_equals($database_type, 'ORACLE')) {
                         $sql .= "dbms_lob.instr(answer_description, '" . $answer_description . "',1,1)>0";
-                    } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                    } elseif ($database_type === 'MYSQL' && $mysql_binary_uniquity) {
                         $sql .=
                             "answer_description='"
                             . $answer_description
@@ -503,13 +553,14 @@ function f_tsv_question_importer($tsvfile)
                     }
 
                     $sql .= ' AND answer_question_id=' . $current_question_id . ' LIMIT 1';
-                    if ($r = F_db_query($sql, $db)) {
-                        if ($m = F_db_fetch_array($r)) {
+                    if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+                        if ($m = $normalize_row(F_db_fetch_array($r))) {
+                            /** @var array{answer_id:int|string} $m */
                             // get existing subject ID
                             $current_answer_id = $m['answer_id'];
                         } else {
                             $sql = 'START TRANSACTION';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error();
                             }
 
@@ -551,16 +602,16 @@ function f_tsv_question_importer($tsvfile)
                                 . $answer_weight
                                 . '
 								)';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error(false);
-                                F_db_query('ROLLBACK', $db);
+                                $normalize_query_result(F_db_query('ROLLBACK', $db));
                             } else {
                                 // get new answer ID
                                 $current_answer_id = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
                             }
 
                             $sql = 'COMMIT';
-                            if (!($r = F_db_query($sql, $db))) {
+                            if (!($r = $normalize_query_result(F_db_query($sql, $db)))) {
                                 F_display_db_error();
                             }
                         }
