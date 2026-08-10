@@ -22,6 +22,7 @@ function f_tmf_monitor_action_is_valid(string $action): bool
     return in_array($action, TMF_MONITOR_ACTIONS, true);
 }
 
+/** @return 'blocked'|'completed'|'connection_lost'|'in_progress'|'not_started'|'timed_out' */
 function f_tmf_monitor_status(
     ?int $attempt_status,
     ?string $close_reason,
