@@ -21,24 +21,28 @@
  */
 
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{expmode?:int|string,module_id?:int|string,subject_id?:int|string,format?:string} $request */
+$request = $_REQUEST;
+
 if (
-    !isset($_REQUEST['expmode'])
-    || $_REQUEST['expmode'] <= 0
-    || !isset($_REQUEST['module_id'])
-    || $_REQUEST['module_id'] <= 0
-    || (!isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
+    !isset($request['expmode'])
+    || $request['expmode'] <= 0
+    || !isset($request['module_id'])
+    || $request['module_id'] <= 0
+    || (!isset($request['subject_id']) || $request['subject_id'] <= 0)
 ) {
     exit();
 }
 
-$expmode = (int) $_REQUEST['expmode'];
-$module_id = (int) $_REQUEST['module_id'];
-$subject_id = (int) $_REQUEST['subject_id'];
+$expmode = (int) $request['expmode'];
+$module_id = (int) $request['module_id'];
+$subject_id = (int) $request['subject_id'];
 
-$output_format = isset($_REQUEST['format']) ? strtoupper($_REQUEST['format']) : 'XML';
+$output_format = isset($request['format']) ? strtoupper($request['format']) : 'XML';
 
 // check user's authorization for module
 if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
@@ -102,9 +106,9 @@ switch ($output_format) {
  * @param $module_id (int)  module ID
  * @param $subject_id (int) topic ID
  * @param $expmode (int) export mode: 1 = selected topic; 2 = selected module; 3 = all modules.
- * @return XML data
+ * @return string XML data
  */
-function f_xml_export_questions($module_id, $subject_id, $expmode)
+function f_xml_export_questions(mixed $module_id, mixed $subject_id, mixed $expmode): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -114,15 +118,38 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
     $subject_id = (int) $subject_id;
     $expmode = (int) $expmode;
 
-    $boolean = ['false', 'true'];
-    $type = ['single', 'multiple', 'text', 'ordering', 'matching'];
+    $normalize_query_result = static function (mixed $result): mixed {
+        if (
+            is_bool($result)
+            || is_resource($result)
+            || $result instanceof \mysqli_result
+            || $result instanceof \PgSql\Result
+        ) {
+            return $result;
+        }
+        return false;
+    };
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
+    $boolean_text = static fn (mixed $value): string => match ((int) f_get_boolean($value)) {
+            0 => 'false',
+            1 => 'true',
+        };
+    $question_type = static fn (int $value): string => match ($value) {
+            1 => 'single',
+            2 => 'multiple',
+            3 => 'text',
+            4 => 'ordering',
+            5 => 'matching',
+            default => '',
+        };
 
     $xml = ''; // XML data to be returned
 
     $xml .= '<?xml version="1.0" encoding="UTF-8" ?>' . K_NEWLINE;
-    $xml .= '<tcexamquestions version="' . K_TCEXAM_VERSION . '">' . K_NEWLINE;
+    $xml .= '<tcexamquestions version="' . (string) K_TCEXAM_VERSION . '">' . K_NEWLINE;
     $xml .= K_TAB . '<header';
-    $xml .= ' lang="' . K_USER_LANG . '"';
+    $xml .= ' lang="' . (string) K_USER_LANG . '"';
     $xml .= ' date="' . date(K_TIMESTAMP_FORMAT) . '">' . K_NEWLINE;
     $xml .= K_TAB . '</header>' . K_NEWLINE;
     $xml .= K_TAB . '<body>' . K_NEWLINE;
@@ -134,8 +161,9 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
     }
 
     $sqlm = F_select_modules_sql($andmodwhere);
-    if ($rm = F_db_query($sqlm, $db)) {
-        while ($mm = F_db_fetch_array($rm)) {
+    if ($rm = $normalize_query_result(F_db_query($sqlm, $db))) {
+        while ($mm = $normalize_row(F_db_fetch_array($rm))) {
+            /** @var array{module_id:int|string,module_name:mixed,module_enabled:mixed} $mm */
             $xml .= K_TAB . K_TAB . '<module>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . '<name>';
@@ -143,7 +171,7 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
             $xml .= '</name>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . '<enabled>';
-            $xml .= $boolean[(int) f_get_boolean($mm['module_enabled'])];
+            $xml .= $boolean_text($mm['module_enabled']);
             $xml .= '</enabled>' . K_NEWLINE;
 
             // ---- topic
@@ -153,8 +181,16 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
             }
 
             $sqls = F_select_subjects_sql($where_sqls);
-            if ($rs = F_db_query($sqls, $db)) {
-                while ($ms = F_db_fetch_array($rs)) {
+            if ($rs = $normalize_query_result(F_db_query($sqls, $db))) {
+                while ($ms = $normalize_row(F_db_fetch_array($rs))) {
+                    /**
+                     * @var array{
+                     *     subject_id:int|string,
+                     *     subject_name:mixed,
+                     *     subject_description:mixed,
+                     *     subject_enabled:mixed
+                     * } $ms
+                     */
                     $xml .= K_TAB . K_TAB . K_TAB . '<subject>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<name>';
@@ -166,7 +202,7 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
                     $xml .= '</description>' . K_NEWLINE;
 
                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                    $xml .= $boolean[(int) f_get_boolean($ms['subject_enabled'])];
+                    $xml .= $boolean_text($ms['subject_enabled']);
                     $xml .= '</enabled>' . K_NEWLINE;
 
                     // ---- questions
@@ -179,16 +215,32 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
                         . $ms['subject_id']
                         . '
 						ORDER BY question_enabled DESC, question_position, question_description';
-                    if ($r = F_db_query($sql, $db)) {
-                        while ($m = F_db_fetch_array($r)) {
+                    if ($r = $normalize_query_result(F_db_query($sql, $db))) {
+                        while ($m = $normalize_row(F_db_fetch_array($r))) {
+                            /**
+                             * @var array{
+                             *     question_id:int|string,
+                             *     question_enabled:mixed,
+                             *     question_type:int,
+                             *     question_difficulty:int|string,
+                             *     question_position:int|string,
+                             *     question_timer:int|string,
+                             *     question_fullscreen:mixed,
+                             *     question_inline_answers:mixed,
+                             *     question_auto_next:mixed,
+                             *     question_shuffle_answers:mixed,
+                             *     question_description:mixed,
+                             *     question_explanation:mixed
+                             * } $m
+                             */
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<question>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                            $xml .= $boolean[(int) f_get_boolean($m['question_enabled'])];
+                            $xml .= $boolean_text($m['question_enabled']);
                             $xml .= '</enabled>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<type>';
-                            $xml .= $type[$m['question_type'] - 1];
+                            $xml .= $question_type($m['question_type']);
                             $xml .= '</type>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<difficulty>';
@@ -204,19 +256,19 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= '</timer>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<fullscreen>';
-                            $xml .= $boolean[(int) f_get_boolean($m['question_fullscreen'])];
+                            $xml .= $boolean_text($m['question_fullscreen']);
                             $xml .= '</fullscreen>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<inline_answers>';
-                            $xml .= $boolean[(int) f_get_boolean($m['question_inline_answers'])];
+                            $xml .= $boolean_text($m['question_inline_answers']);
                             $xml .= '</inline_answers>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<auto_next>';
-                            $xml .= $boolean[(int) f_get_boolean($m['question_auto_next'])];
+                            $xml .= $boolean_text($m['question_auto_next']);
                             $xml .= '</auto_next>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<shuffle_answers>';
-                            $xml .= $boolean[(int) f_get_boolean($m['question_shuffle_answers'])];
+                            $xml .= $boolean_text($m['question_shuffle_answers']);
                             $xml .= '</shuffle_answers>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<description>';
@@ -237,16 +289,27 @@ function f_xml_export_questions($module_id, $subject_id, $expmode)
                                 . $m['question_id']
                                 . '\'
 								ORDER BY answer_position,answer_isright DESC';
-                            if ($ra = F_db_query($sqla, $db)) {
-                                while ($ma = F_db_fetch_array($ra)) {
+                            if ($ra = $normalize_query_result(F_db_query($sqla, $db))) {
+                                while ($ma = $normalize_row(F_db_fetch_array($ra))) {
+                                    /**
+                                     * @var array{
+                                     *     answer_enabled:mixed,
+                                     *     answer_isright:mixed,
+                                     *     answer_position:int|string,
+                                     *     answer_keyboard_key:int|string,
+                                     *     answer_weight:int|float|string,
+                                     *     answer_description:mixed,
+                                     *     answer_explanation:mixed
+                                     * } $ma
+                                     */
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<answer>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<enabled>';
-                                    $xml .= $boolean[(int) f_get_boolean($ma['answer_enabled'])];
+                                    $xml .= $boolean_text($ma['answer_enabled']);
                                     $xml .= '</enabled>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<isright>';
-                                    $xml .= $boolean[(int) f_get_boolean($ma['answer_isright'])];
+                                    $xml .= $boolean_text($ma['answer_isright']);
                                     $xml .= '</isright>' . K_NEWLINE;
 
                                     $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<position>';
