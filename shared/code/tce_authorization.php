@@ -593,7 +593,7 @@ if (
     && isset($_POST['testid'])
 ) {
     require_once '../../shared/code/tce_functions_test.php';
-    $tph = F_getTestPassword($_POST['testid']);
+    $tph = f_get_test_password($_POST['testid']);
     $submitted_test_password = is_string($_POST['xtest_password']) ? $_POST['xtest_password'] : '';
     if (check_password($submitted_test_password, $tph)) {
         // test password is correct, save status on a session variable
