@@ -25,7 +25,7 @@ if (!isset($_REQUEST['examtime'])) {
     $enable_countdown = 'false';
     $timeout_logout = 'false';
 } else {
-    $examtime = (float) $_REQUEST['examtime'];
+    $examtime = floatval($_REQUEST['examtime']);
     $enable_countdown = 'true';
     $timeout_logout = isset($_REQUEST['timeout_logout']) && $_REQUEST['timeout_logout'] ? 'true' : 'false';
 }
@@ -33,7 +33,8 @@ require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
 $timer_settings = openvsosh_get_runtime_settings();
 $timer_warning_text = openvsosh_contrast_text($timer_settings['timer_warning_color']);
 $timer_critical_text = openvsosh_contrast_text($timer_settings['timer_critical_color']);
-$is_exam_timer = basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === 'tce_test_execute.php';
+/** @var array{w_remaining: string, w_time: string, w_clock_timer: string, m_exam_end_time: string} $l */
+$is_exam_timer = basename($_SERVER['SCRIPT_NAME']) === 'tce_test_execute.php';
 $timer_label = $is_exam_timer ? $l['w_remaining'] : $l['w_time'];
 
 echo '<form action="' . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES) . '" id="timerform" style="'
@@ -60,8 +61,14 @@ echo '//<![CDATA[' . K_NEWLINE;
 echo 'FJ_configure_timer('
     . (int) $timer_settings['timer_warning_seconds'] . ','
     . (int) $timer_settings['timer_critical_seconds'] . ','
-    . json_encode('Внимание: времени осталось мало', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) . ','
-    . json_encode('Критически мало времени', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT)
+    . json_encode(
+        'Внимание: времени осталось мало',
+        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR,
+    ) . ','
+    . json_encode(
+        'Критически мало времени',
+        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR,
+    )
     . ');' . K_NEWLINE;
 echo
     'FJ_start_timer('
