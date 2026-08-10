@@ -33,7 +33,7 @@ require_once __DIR__ . '/tce_functions_test_access.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
 require_once __DIR__ . '/tce_functions_result_publication.php';
 
-function F_getUserTests()
+function f_get_user_tests()
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';

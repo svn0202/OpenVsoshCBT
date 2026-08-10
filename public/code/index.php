@@ -94,7 +94,7 @@ echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="tcecontentbox">' . K_NEWLINE;
-echo F_getUserTests();
+echo f_get_user_tests();
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="pagehelp">' . $thispage_description . '</div>' . K_NEWLINE;
