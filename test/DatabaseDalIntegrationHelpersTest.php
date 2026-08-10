@@ -11,6 +11,59 @@ require_once __DIR__ . '/integration/DatabaseDalIntegrationTest.php';
 
 final class DatabaseDalIntegrationHelpersTest extends TestCase
 {
+    /**
+     * @return iterable<string,array{string,array{string,string}}>
+     */
+    public static function datetimeDriverCases(): iterable
+    {
+        yield 'PostgreSQL timestamps' => [
+            'POSTGRESQL',
+            ["TIMESTAMP '2024-01-01 00:00:00'", "TIMESTAMP '2024-01-01 00:01:00'"],
+        ];
+        yield 'MySQL date strings' => [
+            'MYSQL',
+            ["'2024-01-01 00:00:00'", "'2024-01-01 00:01:00'"],
+        ];
+    }
+
+    /**
+     * @param array{string,string} $expectedArguments
+     */
+    #[DataProvider('datetimeDriverCases')]
+    public function testDatetimeDifferenceUsesDriverExpression(string $driver, array $expectedArguments): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'putenv("TCEXAM_DB_TYPE=" . $argv[3]); '
+                    . 'function F_db_datetime_diff_seconds($start, $end) { '
+                    . '$GLOBALS["arguments"] = [$start, $end]; return "DIFF_EXPRESSION"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["query"] = [$sql, $db]; return "result"; } '
+                    . 'function F_db_fetch_assoc($result) { return ["d" => "60"]; } '
+                    . 'require $argv[1]; require $argv[2]; '
+                    . '$test = new Test\\Integration\\DatabaseDalIntegrationTest('
+                    . '"testDatetimeDiffSecondsExpressionEvaluates"); '
+                    . '$property = new ReflectionProperty($test, "db"); $property->setValue($test, "db-link"); '
+                    . '$test->testDatetimeDiffSecondsExpressionEvaluates(); echo json_encode(['
+                    . '"arguments" => $GLOBALS["arguments"], "query" => $GLOBALS["query"]]);',
+                dirname(__DIR__) . '/vendor/autoload.php',
+                __DIR__ . '/integration/DatabaseDalIntegrationTest.php',
+                $driver,
+            ],
+            dirname(__DIR__),
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'arguments' => $expectedArguments,
+                'query' => ['SELECT DIFF_EXPRESSION AS d', 'db-link'],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testInsertFetchDeleteRoundTripUsesGeneratedRow(): void
     {
         [$status, $output] = \F_tcecode_run_process(
