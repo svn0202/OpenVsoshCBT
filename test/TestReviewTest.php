@@ -120,6 +120,44 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testAnswerIdsAreMappedFromDisplayedPositions(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_LOG_ANSWER", "log_answers"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return $sql; } '
+                    . 'function F_db_fetch_array($sql) { preg_match("/logansw_order=([0-9]+)/", $sql, $m); '
+                    . 'return ["logansw_answer_id" => 100 + (int) $m[1]]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getAnswerIdFromPosition|f_get_answer_id_from_position)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$result = $qualified("7", [2 => "B", 5 => "E"]); '
+                    . 'echo json_encode([$result, $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [[102 => 'B', 105 => 'E'], [
+                'SELECT logansw_answer_id FROM log_answers WHERE logansw_testlog_id=7 AND logansw_order=2 LIMIT 1',
+                'SELECT logansw_answer_id FROM log_answers WHERE logansw_testlog_id=7 AND logansw_order=5 LIMIT 1',
+            ]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+
 
 
 
