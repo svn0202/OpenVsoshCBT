@@ -8210,228 +8210,6 @@ message = "Undefined variable: `$l`."
 count = 24
 
 [[issues]]
-file = "shared/code/tce_altauth.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
-count = 6
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `f_alt_login`: expected `array<array-key, mixed>`, but found `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "less-specific-nested-argument-type"
-message = "Argument type mismatch for argument #2 of `str_replace`: expected `array<array-key, string>|string`, but provided type `array<array-key, mixed>|false|null|string` is less specific."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "missing-return-type"
-message = "Function `f_alt_login` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `sort`: expected `array<array-key, ('T.sort() extends mixed)>`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `unserialize`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `ldap_bind`: expected `null|string`, but found `truthy-mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-assignment"
-message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 5
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `f_alt_login`. Saw type `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of function `ldap_bind` is possibly `false`, but parameter type `LDAP\Connection` does not accept it.'
-count = 2
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of function `ldap_get_entries` is possibly `false`, but parameter type `LDAP\Connection` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of function `ldap_search` is possibly `false`, but parameter type `LDAP\Connection` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of function `ldap_set_option` is possibly `false`, but parameter type `LDAP\Connection|null` does not accept it.'
-count = 2
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of function `ldap_unbind` is possibly `false`, but parameter type `LDAP\Connection` does not accept it.'
-count = 2
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #1 of method `Dapphp\Radius\Radius::accessRequest` is possibly `false`, but parameter type `string` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = "Argument #2 of function `str_replace` is possibly `false`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = 'Argument #2 of method `Dapphp\Radius\Radius::accessRequest` is possibly `false`, but parameter type `string` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-false-argument"
-message = "Argument #3 of function `ldap_bind` is possibly `false`, but parameter type `null|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-invalid-argument"
-message = 'Possible argument type mismatch for argument #1 of `Dapphp\Radius\Radius::accessRequest`: expected `string`, but possibly received `array<array-key, mixed>|false|null|string`.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #1 of `mb_convert_encoding`: expected `array<array-key, string>|string`, but possibly received `non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|null|string`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-invalid-argument"
-message = 'Possible argument type mismatch for argument #2 of `Dapphp\Radius\Radius::accessRequest`: expected `string`, but possibly received `array<array-key, mixed>|false|null|string`.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-invalid-argument"
-message = 'Possible argument type mismatch for argument #2 of `ldap_get_entries`: expected `LDAP\Result`, but possibly received `LDAP\Result|non-empty-array<array-key, mixed>`.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #3 of `ldap_bind`: expected `null|string`, but possibly received `array<array-key, mixed>|false|null|string`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `mb_convert_encoding` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-null-argument"
-message = 'Argument #1 of method `Dapphp\Radius\Radius::accessRequest` is possibly `null`, but parameter type `string` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-null-argument"
-message = "Argument #2 of function `str_replace` is possibly `null`, but parameter type `array<array-key, string>|string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-null-argument"
-message = 'Argument #2 of method `Dapphp\Radius\Radius::accessRequest` is possibly `null`, but parameter type `string` does not accept it.'
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(0)` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(0)` accessed on `non-empty-array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_name')` accessed on `array<non-empty-string, mixed>`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('xuser_name')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('xuser_password')` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always falsy and right operand is not evaluated."
-count = 6
-
-[[issues]]
-file = "shared/code/tce_altauth.php"
-code = "undefined-variable"
-message = "Undefined variable: `$ldap_attr`."
-count = 2
-
-[[issues]]
 file = "shared/code/tce_authorization.php"
 code = "array-to-string-conversion"
 message = "Potential array in middle operand of string concatenation."
@@ -8698,12 +8476,6 @@ count = 8
 [[issues]]
 file = "shared/code/tce_authorization.php"
 code = "redundant-comparison"
-message = "Redundant `!==` comparison: left-hand side is always not identical to right-hand side."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_authorization.php"
-code = "redundant-comparison"
 message = "Redundant `<=` comparison: left-hand side is always less than or equal to right-hand side."
 count = 1
 
@@ -8723,7 +8495,7 @@ count = 1
 file = "shared/code/tce_authorization.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 10
+count = 8
 
 [[issues]]
 file = "shared/code/tce_authorization.php"
@@ -8771,7 +8543,7 @@ count = 18
 file = "shared/code/tce_authorization.php"
 code = "unreachable-else-clause"
 message = "Unreachable else clause"
-count = 3
+count = 1
 
 [[issues]]
 file = "shared/code/tce_db_dal_mysql.php"
