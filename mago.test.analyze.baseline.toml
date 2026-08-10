@@ -8,20 +8,8 @@ count = 2
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
-code = "mixed-array-assignment"
-message = "Unsafe array assignment on type `mixed`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 3
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `json_decode` is possibly `null`, but parameter type `string` does not accept it."
 count = 1
 
 [[issues]]
@@ -64,7 +52,7 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 4
+count = 3
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -106,24 +94,6 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(8)` accessed on `array<int, string>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('payload_b64')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('signature')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$match`."
 count = 1
 
 [[issues]]

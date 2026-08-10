@@ -1654,8 +1654,10 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertSame(200, $status);
             $this->assertStringContainsString('default-src', $html);
             $this->assertMatchesRegularExpression('/var envelope = (\\{[^;]+\\});/', $html);
+            $match = [];
             preg_match('/var envelope = (\\{[^;]+\\});/', $html, $match);
-            $envelope = json_decode($match[1], true, 16, JSON_THROW_ON_ERROR);
+            /** @var array{payload_b64:string,signature:string} $envelope */
+            $envelope = json_decode($match[1] ?? '', true, 16, JSON_THROW_ON_ERROR);
             $this->assertIsArray($envelope);
 
             $offlineResult = json_encode([
@@ -1670,6 +1672,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     'reaction_time' => 1200,
                 ]],
             ], JSON_THROW_ON_ERROR);
+            /** @var array<string,mixed> $tampered */
             $tampered = json_decode($offlineResult, true, 16, JSON_THROW_ON_ERROR);
             $tampered['signature'] = str_repeat('0', 64);
             [$status, $body] = $this->httpUpload(
