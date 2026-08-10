@@ -15045,7 +15045,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "falsable-return-statement"
-message = "Function `F_getTestStartTime` is declared to return `int` but possibly returns 'false' (inferred as `false|int`)."
+message = "Function `f_get_test_start_time` is declared to return `int` but possibly returns 'false' (inferred as `false|int`)."
 count = 1
 
 [[issues]]
@@ -15153,7 +15153,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getTestStartTime`: expected `int`, but found `false|int`."
+message = "Invalid return type for function `f_get_test_start_time`: expected `int`, but found `false|int`."
 count = 1
 
 [[issues]]
@@ -15537,7 +15537,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_getTestStartTime` is missing a return type hint."
+message = "Function `f_get_test_start_time` is missing a return type hint."
 count = 1
 
 [[issues]]
