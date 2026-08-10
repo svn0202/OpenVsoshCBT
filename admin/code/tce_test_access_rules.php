@@ -1,6 +1,7 @@
 <?php
 
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_TESTS;
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -9,11 +10,14 @@ require_once '../../shared/code/tce_functions_test_access.php';
 require_once '../../shared/code/tce_functions_test.php';
 
 $thispage_title = 'Условия доступа и завершения теста';
+/** @var array{m_authorization_denied:string,a_meta_charset:string} $l */
+/** @var mixed $db */
 $test_id = isset($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
+/** @var array<int,array<array-key,mixed>> $tests */
 $tests = [];
-$result = F_db_query(F_select_tests_sql(), $db);
-while ($result && ($test = F_db_fetch_array($result))) {
-    $tests[(int) $test['test_id']] = $test;
+$result = f_tmf_access_rules_query_result(F_db_query(F_select_tests_sql(), $db));
+while ($result && ($test = f_tmf_access_rules_row(F_db_fetch_array($result))) !== null) {
+    $tests[(int) ($test['test_id'] ?? 0)] = $test;
 }
 if ($test_id > 0 && !isset($tests[$test_id])) {
     F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -61,11 +65,12 @@ if (isset($_POST['save_rules'])) {
     } elseif (
         $results_publish_at !== null
         && $results_unpublish_at !== null
-        && strtotime($results_unpublish_at) <= strtotime($results_publish_at)
+        && (int) strtotime($results_unpublish_at) <= (int) strtotime($results_publish_at)
     ) {
         $message = 'Дата отзыва должна быть позже даты публикации.';
     } else {
         $minimum_duration = max(0, min(1440, (int) ($_POST['minimum_duration'] ?? 0)));
+        // @mago-expect analysis:array-to-string-conversion -- controller preserves legacy post coercion
         $completion_message = trim((string) ($_POST['completion_message'] ?? ''));
         if (mb_strlen($completion_message) > 4000) {
             $completion_message = mb_substr($completion_message, 0, 4000);
@@ -94,10 +99,13 @@ if (isset($_POST['save_rules'])) {
                 ? 'NULL'
                 : "'" . F_escape_sql($db, $completion_message) . "'")
             . ' WHERE test_id=' . $test_id;
-        $message = F_db_query($sql, $db) ? 'Настройки сохранены.' : 'Не удалось сохранить настройки.';
+        $message = f_tmf_access_rules_query_result(F_db_query($sql, $db))
+            ? 'Настройки сохранены.'
+            : 'Не удалось сохранить настройки.';
     }
 }
 
+/** @var array<string,mixed> $rules */
 $rules = [
     'test_required_finished_id' => 0,
     'test_required_passed_id' => 0,
@@ -117,8 +125,10 @@ $rules = [
     'test_completion_message' => '',
 ];
 if ($test_id > 0) {
-    $rules_result = F_db_query('SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1', $db);
-    if ($rules_result && ($row = F_db_fetch_array($rules_result))) {
+    $rules_result = f_tmf_access_rules_query_result(
+        F_db_query('SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1', $db),
+    );
+    if ($rules_result && ($row = f_tmf_access_rules_row(F_db_fetch_array($rules_result))) !== null) {
         $rules = array_replace($rules, $row);
     }
 }
@@ -138,7 +148,7 @@ $test_options = static function (int $selected) use ($tests, $test_id, $html): s
         }
         $output .= '<option value="' . $candidate_id . '"'
             . ($candidate_id === $selected ? ' selected="selected"' : '') . '>'
-            . $html($candidate['test_name']) . '</option>';
+            . $html($candidate['test_name'] ?? '') . '</option>';
     }
     return $output;
 };
@@ -154,7 +164,7 @@ echo '<form action="tce_test_access_rules.php" method="get"><label for="test_id"
     . '<select name="test_id" id="test_id" required="required"><option value="">Выберите тест</option>';
 foreach ($tests as $available_id => $test) {
     echo '<option value="' . $available_id . '"' . ($available_id === $test_id ? ' selected="selected"' : '')
-        . '>' . $html($test['test_name']) . '</option>';
+        . '>' . $html($test['test_name'] ?? '') . '</option>';
 }
 echo '</select><button type="submit">Открыть</button></form>';
 
@@ -163,13 +173,13 @@ if ($test_id > 0) {
         . '<input type="hidden" name="test_id" value="' . $test_id . '" />'
         . '<div class="row"><span class="label"><label for="required_finished">Сначала завершить тест</label>'
         . '</span><span class="formw"><select name="required_finished" id="required_finished">'
-        . $test_options((int) $rules['test_required_finished_id']) . '</select></span></div>'
+        . $test_options((int) ($rules['test_required_finished_id'] ?? 0)) . '</select></span></div>'
         . '<div class="row"><span class="label"><label for="required_passed">Сначала пройти тест</label>'
         . '</span><span class="formw"><select name="required_passed" id="required_passed">'
-        . $test_options((int) $rules['test_required_passed_id']) . '</select></span></div>'
+        . $test_options((int) ($rules['test_required_passed_id'] ?? 0)) . '</select></span></div>'
         . '<div class="row"><span class="label"><label for="minimum_duration">Минимум до завершения, минут</label>'
         . '</span><span class="formw"><input type="number" name="minimum_duration" id="minimum_duration" '
-        . 'min="0" max="1440" value="' . (int) $rules['test_minimum_duration_time'] . '" /></span></div>';
+        . 'min="0" max="1440" value="' . (int) ($rules['test_minimum_duration_time'] ?? 0) . '" /></span></div>';
     foreach ([
         'require_all_answers' => ['test_require_all_answers', 'Требовать ответ на каждый вопрос'],
         'block_below_threshold' => ['test_block_finish_below_threshold', 'Не завершать ниже проходного балла'],
@@ -184,7 +194,7 @@ if ($test_id > 0) {
     ] as $name => [$field, $label]) {
         echo '<div class="row"><span class="label"><label for="' . $name . '">' . $label
             . '</label></span><span class="formw"><input type="checkbox" name="' . $name
-            . '" id="' . $name . '" value="1"' . (f_get_boolean($rules[$field]) ? ' checked="checked"' : '')
+            . '" id="' . $name . '" value="1"' . (f_get_boolean($rules[$field] ?? 0) ? ' checked="checked"' : '')
             . ' /></span></div>';
     }
     $datetime_value = static function (mixed $value): string {
@@ -193,18 +203,39 @@ if ($test_id > 0) {
     };
     echo '<div class="row"><span class="label"><label for="results_publish_at">Опубликовать не раньше</label>'
         . '</span><span class="formw"><input type="datetime-local" name="results_publish_at" '
-        . 'id="results_publish_at" value="' . $html($datetime_value($rules['test_results_publish_at'])) . '" />'
+        . 'id="results_publish_at" value="' . $html($datetime_value($rules['test_results_publish_at'] ?? '')) . '" />'
         . '</span></div>'
         . '<div class="row"><span class="label"><label for="results_unpublish_at">Отозвать публикацию</label>'
         . '</span><span class="formw"><input type="datetime-local" name="results_unpublish_at" '
-        . 'id="results_unpublish_at" value="' . $html($datetime_value($rules['test_results_unpublish_at'])) . '" />'
+        . 'id="results_unpublish_at" value="' . $html($datetime_value($rules['test_results_unpublish_at'] ?? '')) . '" />'
         . '</span></div>';
     echo '<div class="row"><span class="label"><label for="completion_message">Сообщение после завершения</label>'
         . '</span><span class="formw"><textarea name="completion_message" id="completion_message" '
-        . 'rows="5" cols="60">' . $html($rules['test_completion_message']) . '</textarea></span></div>'
+        . 'rows="5" cols="60">' . $html($rules['test_completion_message'] ?? '') . '</textarea></span></div>'
         . '<button type="submit" name="save_rules" value="1">Сохранить</button>'
         . f_get_csrf_token_field() . '</form>';
 }
 echo '</div></div>';
 
 require_once 'tce_page_footer.php';
+
+/** @return non-empty-array<array-key,mixed>|null */
+function f_tmf_access_rules_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function f_tmf_access_rules_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
