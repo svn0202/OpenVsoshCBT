@@ -67,6 +67,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             return;
         }
 
+        /** @var \mysqli|\PgSql\Connection|false $db */
         $db = $this->dbConnect();
         $this->assertNotFalse($db, 'seed: database connection should open');
 
@@ -81,6 +82,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
     /** Run a write/DDL statement via the DAL. */
     private function dbExec(string $sql): void
     {
+        /** @var \mysqli|\PgSql\Connection|false $db */
         $db = $this->dbConnect();
         \F_db_query($sql, $db);
         \F_db_close($db);
@@ -89,18 +91,22 @@ final class AdminControllerHttpTest extends AppHttpTestCase
     /** Return the first column of the first row of a query, or null if no row. */
     private function dbScalar(string $sql): ?string
     {
+        /** @var \mysqli|\PgSql\Connection|false $db */
         $db = $this->dbConnect();
+        /** @var \mysqli_result|\PgSql\Result|true|false $res */
         $res = \F_db_query($sql, $db);
         $val = null;
         if ($res !== false) {
-            $row = \F_db_fetch_assoc($res);
-            if (\is_array($row)) {
-                $val = (string) reset($row);
-            }
+            $val = self::scalarFromRow(\F_db_fetch_assoc($res));
         }
         \F_db_close($db);
 
         return $val;
+    }
+
+    private static function scalarFromRow(mixed $row): ?string
+    {
+        return is_array($row) ? (string) reset($row) : null;
     }
 
     /** Return the id of the group with the given name, or 0 if absent. */
