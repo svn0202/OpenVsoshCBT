@@ -22,9 +22,19 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *     t_user_select:string,
+ *     m_authorization_denied:string,
+ *     w_group:string,
+ *     a_meta_charset:string,
+ *     w_search:string
+ * } $l
+ */
+/** @var mixed $db */
 $thispage_title = $l['t_user_select'];
 
 require_once '../code/tce_page_header_popup.php';
@@ -35,12 +45,17 @@ $order_field = $_REQUEST['order_field'] ?? 'user_lastname,user_firstname';
 $orderdir = isset($_REQUEST['orderdir']) ? (int) $_REQUEST['orderdir'] : 0;
 $firstrow = isset($_REQUEST['firstrow']) ? (int) $_REQUEST['firstrow'] : 0;
 $rowsperpage = isset($_REQUEST['rowsperpage']) ? (int) $_REQUEST['rowsperpage'] : K_MAX_ROWS_PER_PAGE;
+/** @var string $searchterms */
 $searchterms = $_REQUEST['searchterms'] ?? '';
 
-$cid = isset($_REQUEST['cid']) ? preg_replace('/[^a-z0-9_]/', '', $_REQUEST['cid']) : '';
+/** @var string $cid_request */
+$cid_request = $_REQUEST['cid'] ?? '';
+$cid = preg_replace('/[^a-z0-9_]/', '', $cid_request) ?? '';
 
 // ID of the calling form field
-$uids = isset($_REQUEST['uids']) ? preg_replace('/[^x0-9]/', '', $_REQUEST['uids']) : '';
+/** @var string $uids_request */
+$uids_request = $_REQUEST['uids'] ?? '';
+$uids = preg_replace('/[^x0-9]/', '', $uids_request) ?? '';
 
 // selected user IDs
 $group_id = isset($_REQUEST['group_id']) ? (int) $_REQUEST['group_id'] : 0;
@@ -76,8 +91,10 @@ if ($group_id === 0) {
 
 echo '>&nbsp;</option>' . K_NEWLINE;
 $sql = F_user_group_select_sql();
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
+$r = f_tmf_select_users_popup_query_result(F_db_query($sql, $db));
+if ($r) {
+    while ($m = f_tmf_select_users_popup_row(F_db_fetch_array($r))) {
+        /** @var array{group_id:int|string,group_name:string} $m */
         echo '<option value="' . $m['group_id'] . '"';
         if ((int) $m['group_id'] === $group_id) {
             echo ' selected="selected"';
@@ -107,6 +124,9 @@ echo '</span></div>' . K_NEWLINE;
 $wherequery = '';
 if (strlen($searchterms) > 0) {
     $terms = preg_split("/[\s]+/i", $searchterms); // Get all the words into an array
+    if ($terms === false) {
+        $terms = [];
+    }
     foreach ($terms as $word) {
         $word = F_escape_sql($db, $word);
         $wherequery .= " AND ((user_name LIKE '%" . $word . "%')";
@@ -121,20 +141,18 @@ if (strlen($searchterms) > 0) {
 }
 
 // select only specified User IDs
-if (isset($uids) && !empty($uids)) {
+if (!empty($uids)) {
     $uid_list = '';
     $uids = explode('x', $uids);
     foreach ($uids as $id) {
         $uid_list .= ',' . (int) $id;
     }
 
-    if ($uid_list !== '') {
-        if ($wherequery !== '') {
-            $wherequery .= ' AND ';
-        }
-
-        $wherequery .= '(user_id IN (' . substr($uid_list, 1) . '))';
+    if ($wherequery !== '') {
+        $wherequery .= ' AND ';
     }
+
+    $wherequery .= '(user_id IN (' . substr($uid_list, 1) . '))';
 }
 
 echo get_form_noscript_select();
@@ -146,3 +164,23 @@ echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer_popup.php';
+
+/** @return array<array-key,mixed>|null */
+function f_tmf_select_users_popup_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool */
+function f_tmf_select_users_popup_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
