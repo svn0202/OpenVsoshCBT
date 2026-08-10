@@ -76,7 +76,7 @@ if ($user_id !== $checkid) {
 $userdata = f_get_user_data($user_id);
 $teststat = f_get_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id, true);
 
-$teststat['testinfo'] = F_getUserTestStat($test_id, $user_id, $testuser_id, true);
+$teststat['testinfo'] = f_get_user_test_stat($test_id, $user_id, $testuser_id, true);
 $test_id = $teststat['testinfo']['test_id'];
 
 if (!F_tmf_results_are_published($teststat['testinfo'])) {

@@ -204,7 +204,7 @@ function f_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
         $passed = 0;
         while ($m = F_db_fetch_array($r)) {
             $testuser_id = $m['testuser_id'];
-            $usrtestdata = F_getUserTestStat($m['test_id'], $user_id);
+            $usrtestdata = f_get_user_test_stat($m['test_id'], $user_id);
             $halfscore = $usrtestdata['max_score'] / 2;
             $xml .= K_TAB . K_TAB . "<test id='" . $m['test_id'] . "'>" . K_NEWLINE;
             $xml .= K_TAB . K_TAB . K_TAB . '<start_time>' . $m['testuser_creation_time'] . '</start_time>' . K_NEWLINE;

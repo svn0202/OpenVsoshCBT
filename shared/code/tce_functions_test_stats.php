@@ -28,7 +28,7 @@
  * @param $pubmode (boolean) If true filter the results for the public interface.
  * return $data array containing test-user statistics.
  */
-function F_getUserTestStat($test_id, $user_id = 0, $testuser_id = 0, $pubmode = false)
+function f_get_user_test_stat($test_id, $user_id = 0, $testuser_id = 0, $pubmode = false)
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';
@@ -2005,7 +2005,7 @@ function F_getAllUsersTestStat(
         $statsdata['recurrence'] = [];
         while ($mr = F_db_fetch_array($rr)) {
             ++$itemcount;
-            $usrtestdata = F_getUserTestStat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
+            $usrtestdata = f_get_user_test_stat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
             if ($stats > 0) {
                 $teststat = f_get_test_stat(
                     $mr['testuser_test_id'],
