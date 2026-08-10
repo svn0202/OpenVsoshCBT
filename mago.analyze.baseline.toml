@@ -117,12 +117,6 @@ count = 12
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "possibly-invalid-argument"
-message = "Possible argument type mismatch for argument #2 of `date`: expected `int|null`, but possibly received `float|int`."
-count = 3
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-invalid-argument"
 message = "Possible argument type mismatch for argument #2 of `in_array`: expected `array<array-key, array<int|non-empty-string, mixed>|string>`, but possibly received `array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|non-empty-list<string>|truthy-string`."
 count = 1
 
