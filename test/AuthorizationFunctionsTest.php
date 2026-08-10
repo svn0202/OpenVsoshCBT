@@ -230,4 +230,67 @@ final class AuthorizationFunctionsTest extends TestCase
             $output,
         );
     }
+
+    public function testRecordAuthorizationPreservesAllDecisionBranches(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_AUTH_ADMINISTRATOR", 10); '
+                    . 'define("K_TABLE_USERGROUP", "user_groups"); $_SESSION["session_user_id"] = "11"; '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["counts"] = [1, 0, 1, 0, 0]; '
+                    . '$GLOBALS["query_results"] = [true, true, false]; $GLOBALS["rows"] = [[12], [1]]; '
+                    . '$GLOBALS["count_calls"] = []; $GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_escape_sql($db, $value) { return $value; } '
+                    . 'function F_count_rows($where) { $GLOBALS["count_calls"][] = $where; '
+                    . 'return array_shift($GLOBALS["counts"]); } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_isAuthorizedUser|f_is_authorized_user)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
+                    . '$_SESSION["session_user_level"] = 10; '
+                    . '$results[] = $qualified("records", "record_id", "7", "owner_id"); '
+                    . '$_SESSION["session_user_level"] = 0; '
+                    . 'foreach ([8, 9, 10, 11] as $id) { '
+                    . '$results[] = $qualified("records", "record_id", (string) $id, "owner_id"); } '
+                    . 'echo json_encode([$results, $GLOBALS["errors"], '
+                    . '$GLOBALS["count_calls"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [true, true, true, false, false],
+                1,
+                [
+                    'records WHERE record_id=8 AND owner_id=11 LIMIT 1',
+                    'records WHERE record_id=9 AND owner_id=11 LIMIT 1',
+                    "user_groups AS ta, user_groups AS tb\n"
+                        . "\t\tWHERE ta.usrgrp_group_id=tb.usrgrp_group_id\n"
+                        . "\t\t\tAND ta.usrgrp_user_id=12\n\t\t\tAND tb.usrgrp_user_id=11\n\t\t\tLIMIT 1",
+                    'records WHERE record_id=10 AND owner_id=11 LIMIT 1',
+                    'records WHERE record_id=11 AND owner_id=11 LIMIT 1',
+                ],
+                [
+                    'SELECT owner_id FROM records WHERE record_id=9 LIMIT 1',
+                    'SELECT owner_id FROM records WHERE record_id=10 LIMIT 1',
+                    'SELECT owner_id FROM records WHERE record_id=11 LIMIT 1',
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
 }
