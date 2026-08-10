@@ -179,6 +179,52 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testTestStatisticsWrapperNormalizesOnlyQuestionStatistics(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["raw"] = [['
+                    . '"test" => "plain"], ["qstats" => ["recurrence" => 0], "test" => "questions"]]; '
+                    . '$GLOBALS["raw_calls"] = []; $GLOBALS["normalized"] = []; '
+                    . 'function F_getRawTestStat(...$args) { $GLOBALS["raw_calls"][] = $args; '
+                    . 'return array_shift($GLOBALS["raw"]); } '
+                    . 'function F_normalizeTestStatAverages($data) { $GLOBALS["normalized"][] = $data; '
+                    . '$data["normalized"] = true; return $data; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestStat|f_get_test_stat)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([['
+                    . '$qualified("1", "2", "3", "start-a", "end-a", "6", "public-a"), '
+                    . '$qualified("7", "8", "9", "start-b", "end-b", "12", "public-b")], '
+                    . '$GLOBALS["raw_calls"], $GLOBALS["normalized"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [
+                    ['test' => 'plain'],
+                    ['qstats' => ['recurrence' => 0], 'test' => 'questions', 'normalized' => true],
+                ],
+                [
+                    ['1', '2', '3', 'start-a', 'end-a', '6', [], 'public-a'],
+                    ['7', '8', '9', 'start-b', 'end-b', '12', [], 'public-b'],
+                ],
+                [['qstats' => ['recurrence' => 0], 'test' => 'questions']],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
