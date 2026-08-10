@@ -388,7 +388,7 @@ count = 7
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$testuser_id` is missing a type hint."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -478,12 +478,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `f_get_test_password` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `f_get_test_start_time` is missing a return type hint."
 count = 1
 
 [[issues]]
