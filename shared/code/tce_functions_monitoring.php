@@ -59,7 +59,7 @@ function f_tmf_monitor_attempt_is_authorized(int $testuser_id): bool
     $result = F_db_query($sql, $db);
     $row = $result ? F_db_fetch_array($result) : false;
     return is_array($row)
-        && F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', (int) $row['testuser_test_id'], 'test_user_id');
+        && f_is_authorized_user(K_TABLE_TESTS, 'test_id', (int) $row['testuser_test_id'], 'test_user_id');
 }
 
 /**

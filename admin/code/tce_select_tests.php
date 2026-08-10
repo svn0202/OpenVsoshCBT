@@ -96,7 +96,7 @@ if (isset($menu_mode) && !empty($menu_mode)) {
         $keyname = 'testid' . $i;
         if (isset($_POST[$keyname])) {
             $test_id = (int) $_POST[$keyname];
-            if (F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+            if (f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
                 switch ($menu_mode) {
                     case 'lock': // lock test by changing end date (subtract 1000 years)
                         $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET

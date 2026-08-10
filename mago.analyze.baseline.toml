@@ -12963,12 +12963,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "missing-return-type"
-message = "Function `F_isAuthorizedUser` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "missing-return-type"
 message = "Function `f_login_form` is missing a return type hint."
 count = 1
 
@@ -13851,7 +13845,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_monitoring.php"
 code = "no-value"
-message = "Argument #3 passed to function `F_isAuthorizedUser` has type `never`, meaning it cannot produce a value."
+message = "Argument #3 passed to function `f_is_authorized_user` has type `never`, meaning it cannot produce a value."
 count = 1
 
 [[issues]]

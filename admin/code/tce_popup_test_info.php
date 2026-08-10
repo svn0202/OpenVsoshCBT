@@ -36,7 +36,7 @@ echo '<div class="popupcontainer">' . K_NEWLINE;
 $test_id = f_positive_request_int($_REQUEST['testid'] ?? null);
 if ($test_id > 0) {
     // check user's authorization
-    if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+    if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 

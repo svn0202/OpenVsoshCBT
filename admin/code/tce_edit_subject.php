@@ -76,8 +76,8 @@ if ($subject_id > 0) {
                 $subject_module_id = (int) $m['subject_module_id'];
                 // check user's authorization for parent module
                 if (
-                    !F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $subject_module_id, 'module_user_id')
-                    && !F_isAuthorizedUser(K_TABLE_SUBJECTS, 'subject_id', $subject_id, 'subject_user_id')
+                    !f_is_authorized_user(K_TABLE_MODULES, 'module_id', $subject_module_id, 'module_user_id')
+                    && !f_is_authorized_user(K_TABLE_SUBJECTS, 'subject_id', $subject_id, 'subject_user_id')
                 ) {
                     F_print_error('ERROR', $l['m_authorization_denied'], true);
                 }

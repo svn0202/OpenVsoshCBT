@@ -33,7 +33,7 @@ require_once '../code/tce_functions_auth_sql.php';
 if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     $test_id = (int) $_REQUEST['testid'];
     // check user's authorization
-    if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+    if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 

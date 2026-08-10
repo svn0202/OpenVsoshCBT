@@ -41,7 +41,7 @@ $subject_id = (int) $_REQUEST['subject_id'];
 $output_format = isset($_REQUEST['format']) ? strtoupper($_REQUEST['format']) : 'XML';
 
 // check user's authorization for module
-if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
+if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
     exit();
 }
 

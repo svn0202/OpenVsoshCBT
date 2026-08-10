@@ -8,7 +8,7 @@ require_once '../../shared/code/tce_functions_attachments.php';
 $attachment = F_tmf_attachment_find(isset($_GET['id']) ? (int) $_GET['id'] : 0);
 if (
     !$attachment
-    || !F_isAuthorizedUser(
+    || !f_is_authorized_user(
         K_TABLE_TESTS,
         'test_id',
         (int) $attachment['testuser_test_id'],

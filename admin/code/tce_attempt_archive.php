@@ -15,7 +15,7 @@ $result = F_db_query(
 $attempt = $result ? F_db_fetch_array($result) : false;
 if (
     !$attempt
-    || !F_isAuthorizedUser(
+    || !f_is_authorized_user(
         K_TABLE_TESTS,
         'test_id',
         (int) $attempt['testuser_test_id'],

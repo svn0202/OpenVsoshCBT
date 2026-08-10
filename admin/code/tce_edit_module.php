@@ -48,7 +48,7 @@ if (isset($_REQUEST['module_user_id'])) {
 if (isset($_REQUEST['module_id']) && $_REQUEST['module_id'] > 0) {
     $module_id = (int) $_REQUEST['module_id'];
     // check user's authorization for module
-    if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
+    if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 } else {

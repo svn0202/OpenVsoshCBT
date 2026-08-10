@@ -191,7 +191,7 @@ function f_tsv_question_importer($tsvfile)
                     if ($r = F_db_query($sql, $db)) {
                         if ($m = F_db_fetch_array($r)) {
                             // get existing module ID
-                            if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $m['module_id'], 'module_user_id')) {
+                            if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $m['module_id'], 'module_user_id')) {
                                 // unauthorized user
                                 $current_module_id = 0;
                             } else {
