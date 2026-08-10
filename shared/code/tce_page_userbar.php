@@ -24,6 +24,33 @@
 
 // IMPORTANT: DO NOT REMOVE OR ALTER THIS PAGE!
 
+/**
+ * @var array{
+ *     w_jump_timer:string,
+ *     w_jump_menu:string,
+ *     h_user_info:string,
+ *     w_user:string,
+ *     h_logout_link:string,
+ *     w_logout:string,
+ *     h_login_button:string,
+ *     w_login:string,
+ *     w_language:string,
+ *     a_meta_charset:string,
+ *     ov_institution_copyright:string,
+ *     ov_support_service:string,
+ *     ov_based_on:string,
+ *     ov_no_warranty:string
+ * } $l
+ */
+/** @var array{session_user_level:int,session_user_name:string} $session */
+$session = $_SESSION;
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/** @var bool $language_selector */
+$language_selector = K_LANGUAGE_SELECTOR;
+/** @return array<array-key,mixed>|null */
+$normalize_array = static fn (mixed $value): ?array => is_array($value) ? $value : null;
+
 // skip links
 echo '<div class="minibutton" dir="ltr">' . K_NEWLINE;
 echo
@@ -45,7 +72,7 @@ echo
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="userbar">' . K_NEWLINE;
-if ($_SESSION['session_user_level'] > 0) {
+if ($session['session_user_level'] > 0) {
     // display user information
     echo
         '<span title="'
@@ -53,7 +80,7 @@ if ($_SESSION['session_user_level'] > 0) {
             . '">'
             . $l['w_user']
             . ': '
-            . htmlspecialchars($_SESSION['session_user_name'], ENT_QUOTES)
+            . htmlspecialchars($session['session_user_name'], ENT_QUOTES)
             . '</span>'
     ;
     // display logout link
@@ -82,7 +109,7 @@ if ($_SESSION['session_user_level'] > 0) {
 echo '</div>' . K_NEWLINE;
 
 // language selector
-if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.php') === false) {
+if ($language_selector && stristr($server['SCRIPT_NAME'], 'tce_test_execute.php') === false) {
     echo '<div class="minibutton" dir="ltr">' . K_NEWLINE;
     echo
         '<span class="langselector" role="group" aria-label="'
@@ -90,7 +117,8 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
             . '">'
             . K_NEWLINE
     ;
-    $lang_array = unserialize(K_AVAILABLE_LANGUAGES);
+    $lang_array = $normalize_array(unserialize((string) K_AVAILABLE_LANGUAGES, ['allowed_classes' => false])) ?? [];
+    /** @var array<string,string> $lang_array */
     $lngstr = '';
     foreach ($lang_array as $lang_code => $lang_name) {
         $lngstr .= ' | ';
@@ -109,7 +137,7 @@ if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.ph
             //if (isset($querystr) AND (strlen($querystr)>0)) {
             //	$langlink = $_SERVER['SCRIPT_NAME'].'?'.str_replace('&', '&amp;', $querystr).'&amp;lang='.$lang_code;
             //} else {
-            $langlink = $_SERVER['SCRIPT_NAME'] . '?lang=' . $lang_code;
+            $langlink = $server['SCRIPT_NAME'] . '?lang=' . $lang_code;
             //}
             $lngstr .=
                 '<a href="'
@@ -136,11 +164,11 @@ echo
         . htmlspecialchars($l['ov_support_service'], ENT_QUOTES, $l['a_meta_charset'])
         . ': olymp@gia66.ru</span><br />'
         . '<span class="upstream-credit"><a href="'
-        . htmlspecialchars(K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars((string) K_OPENVSOSHCBT_SOURCE_URL, ENT_QUOTES, $l['a_meta_charset'])
         . '" rel="noopener">OpenVsoshCBT</a> '
         . htmlspecialchars($l['ov_based_on'], ENT_QUOTES, $l['a_meta_charset'])
         . ' TCExam ver. '
-        . K_TCEXAM_VERSION
+        . (string) K_TCEXAM_VERSION
         . ' · Copyright &copy; 2004–2026 Nicola Asuni, Tecnick.com LTD · <a href="'
         . K_PATH_URL
         . 'LICENSE">AGPL-3.0-or-later</a> · '
