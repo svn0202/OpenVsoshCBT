@@ -604,6 +604,7 @@ final class DatabaseDalIntegrationTest extends TestCase
             $this->assertNotFalse($targetDb);
             $result = \F_db_query('SELECT probe_value FROM backup_probe', $targetDb);
             $this->assertNotFalse($result);
+            /** @var \mysqli_result|\PgSql\Result $result */
             $row = \F_db_fetch_array($result);
             $this->assertSame('before', $row[0] ?? null);
         } finally {
