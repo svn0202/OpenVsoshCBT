@@ -1606,7 +1606,7 @@ function F_createTest($test_id, $user_id)
                 ++$question_order;
                 $testlog_id = F_newTestLog($testuser_id, $q['id'], $q['score'], $question_order, $q['answers']);
                 // Add answers
-                if (!F_addQuestionAnswers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
+                if (!f_add_question_answers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
                     return false;
                 }
             }
@@ -1642,7 +1642,7 @@ function F_createTest($test_id, $user_id)
                     $m['testlog_num_answers'],
                 );
                 // Add answers
-                if (!F_addQuestionAnswers(
+                if (!f_add_question_answers(
                     $testlog_id,
                     $m['question_id'],
                     $m['question_type'],
@@ -1690,7 +1690,7 @@ function F_createTest($test_id, $user_id)
  * @param $testdata (array) array of test data.
  * @return boolean TRUE in case of success, FALSE otherwise.
  */
-function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_answers, $firsttest, $testdata)
+function f_add_question_answers($testlog_id, $question_id, $question_type, $num_answers, $firsttest, $testdata)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
