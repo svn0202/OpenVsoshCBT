@@ -23,10 +23,13 @@
 
 // check user's authorization
 require_once '../config/tce_config.php';
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_EXPORT_USERS;
 require_once '../../shared/code/tce_authorization.php';
 
-$output_format = isset($_REQUEST['format']) ? strtoupper($_REQUEST['format']) : 'XML';
+/** @var string $requested_format */
+$requested_format = $_REQUEST['format'] ?? 'XML';
+$output_format = strtoupper($requested_format);
 $out_filename = 'tcexam_users_' . date('YmdHis');
 $xml = F_xml_export_users();
 
@@ -72,9 +75,9 @@ switch ($output_format) {
  * Export all users to XML grouped by users' groups.
  * @author Nicola Asuni
  * @since 2006-03-17
- * @return XML data
+ * @return string XML data
  */
-function f_xml_export_users()
+function f_xml_export_users(): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
@@ -84,22 +87,30 @@ function f_xml_export_users()
     $xml = ''; // XML data to be returned
 
     $xml .= '<?xml version="1.0" encoding="UTF-8" ?>' . K_NEWLINE;
-    $xml .= '<tcexamusers version="' . K_TCEXAM_VERSION . '">' . K_NEWLINE;
+    /** @var string $tcexam_version */
+    $tcexam_version = K_TCEXAM_VERSION;
+    /** @var string $user_language */
+    $user_language = K_USER_LANG;
+    $xml .= '<tcexamusers version="' . $tcexam_version . '">' . K_NEWLINE;
     $xml .= K_TAB . '<header';
-    $xml .= ' lang="' . K_USER_LANG . '"';
+    $xml .= ' lang="' . $user_language . '"';
     $xml .= ' date="' . date(K_TIMESTAMP_FORMAT) . '">' . K_NEWLINE;
     $xml .= K_TAB . '</header>' . K_NEWLINE;
     $xml .= K_TAB . '<body>' . K_NEWLINE;
 
     // select users
     $sqla = 'SELECT * FROM ' . K_TABLE_USERS . ' WHERE (user_id>1)';
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    /** @var int|string $session_user_level */
+    $session_user_level = $_SESSION['session_user_level'] ?? 0;
+    /** @var int|string $session_user_id */
+    $session_user_id = $_SESSION['session_user_id'] ?? 0;
+    if ($session_user_level < K_AUTH_ADMINISTRATOR) {
         // filter for level
         $sqla .=
             ' AND ((user_level<'
-            . $_SESSION['session_user_level']
+            . $session_user_level
             . ') OR (user_id='
-            . $_SESSION['session_user_id']
+            . $session_user_id
             . '))';
         // filter for groups
         $sqla .=
@@ -111,15 +122,34 @@ function f_xml_export_users()
             . ' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
 				AND ta.usrgrp_user_id='
-            . (int) $_SESSION['session_user_id']
+            . (int) $session_user_id
             . '
 				AND tb.usrgrp_user_id=user_id)';
     }
 
     $sqla .= ' ORDER BY user_lastname,user_firstname,user_name';
-    if ($ra = F_db_query($sqla, $db)) {
-        while ($ma = F_db_fetch_array($ra)) {
-            $xml .= K_TAB . K_TAB . K_TAB . '<user id="' . $ma['user_id'] . '">' . K_NEWLINE;
+    $ra = F_db_query($sqla, $db);
+    /** @var \mysqli_result|\PgSql\Result|false $ra */
+    if ($ra !== false) {
+        while (($ma = f_xml_export_users_row(F_db_fetch_array($ra))) !== null) {
+            /** @var array{
+             *     user_id: mixed,
+             *     user_name: mixed,
+             *     user_email: mixed,
+             *     user_regdate: mixed,
+             *     user_ip: mixed,
+             *     user_firstname: mixed,
+             *     user_lastname: mixed,
+             *     user_birthdate?: mixed,
+             *     user_birthplace: mixed,
+             *     user_regnumber: mixed,
+             *     user_ssn: mixed,
+             *     user_level: mixed,
+             *     user_verifycode: mixed,
+             *     user_otpkey: mixed
+             * } $ma
+             */
+            $xml .= K_TAB . K_TAB . K_TAB . '<user id="' . (string) ($ma['user_id'] ?? '') . '">' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<name>';
             $xml .= f_text_to_xml($ma['user_name']);
@@ -151,7 +181,7 @@ function f_xml_export_users()
             $xml .= '</lastname>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<birthdate>';
-            $xml .= f_text_to_xml(substr($ma['user_birthdate'] ?? '', 0, 10));
+            $xml .= f_text_to_xml(substr((string) ($ma['user_birthdate'] ?? ''), 0, 10));
             $xml .= '</birthdate>' . K_NEWLINE;
 
             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<birthplace>';
@@ -188,12 +218,15 @@ function f_xml_export_users()
                 . '
 				WHERE usrgrp_group_id=group_id
 					AND usrgrp_user_id='
-                . $ma['user_id']
+                . (string) ($ma['user_id'] ?? '')
                 . '
 				ORDER BY group_name';
-            if ($rg = F_db_query($sqlg, $db)) {
-                while ($mg = F_db_fetch_array($rg)) {
-                    $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<group id="' . $mg['group_id'] . '">';
+            $rg = F_db_query($sqlg, $db);
+            /** @var \mysqli_result|\PgSql\Result|false $rg */
+            if ($rg !== false) {
+                while (($mg = f_xml_export_users_row(F_db_fetch_array($rg))) !== null) {
+                    /** @var array{group_id: mixed, group_name: mixed} $mg */
+                    $xml .= K_TAB . K_TAB . K_TAB . K_TAB . '<group id="' . (string) ($mg['group_id'] ?? '') . '">';
                     $xml .= f_text_to_xml($mg['group_name']);
                     $xml .= '</group>' . K_NEWLINE;
                 }
@@ -209,4 +242,10 @@ function f_xml_export_users()
 
     $xml .= K_TAB . '</body>' . K_NEWLINE;
     return $xml . ('</tcexamusers>' . K_NEWLINE);
+}
+
+/** @return non-empty-array<array-key, mixed>|null */
+function f_xml_export_users_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
 }
