@@ -759,6 +759,86 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestStatusCheckPreservesEveryStateTransition(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_users"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TIMESTAMP_FORMAT", "format"); '
+                    . 'define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["rows"] = [false, '
+                    . '["testuser_id" => 101, "testuser_status" => 1, '
+                    . '"testuser_creation_time" => "old", "testuser_pregenerated" => false], '
+                    . '["testuser_id" => 102, "testuser_status" => 0, '
+                    . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
+                    . '["testuser_id" => 103, "testuser_status" => 1, '
+                    . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
+                    . '["testuser_id" => 104, "testuser_status" => 2, '
+                    . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
+                    . '["testuser_id" => 105, "testuser_status" => 1, '
+                    . '"testuser_creation_time" => "old", "testuser_pregenerated" => true]]; '
+                    . '$GLOBALS["counts"] = [0, 0, 1]; $GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function date($format, $timestamp = null) { if ($timestamp === null) { '
+                    . 'return "2026-08-10 12:00:00"; } return $timestamp > 500 '
+                    . '? "2026-08-10 13:00:00" : "2026-08-10 11:00:00"; } '
+                    . 'function strtotime($value) { return $value === "future" ? 1000 : 100; } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_count_rows($table, $where) { return array_shift($GLOBALS["counts"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_checkTestStatus)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
+                    . 'for ($i = 0; $i < 6; ++$i) { $results[] = $qualified("11", "22", "5"); } '
+                    . 'echo json_encode([$results, $GLOBALS["queries"], $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        $select = 'SELECT testuser_id, testuser_status, testuser_creation_time, testuser_pregenerated '
+            . 'FROM test_users WHERE testuser_test_id=22 AND testuser_user_id=11 '
+            . 'ORDER BY testuser_status LIMIT 1';
+        self::assertSame(
+            [
+                [
+                    [0, 0, false],
+                    [4, 101, false],
+                    [0, 102, false],
+                    [2, 103, false],
+                    [3, 104, false],
+                    [1, 105, true],
+                ],
+                [
+                    $select,
+                    $select,
+                    "UPDATE test_users SET testuser_status=4, testuser_close_reason='timeout', "
+                        . "testuser_last_activity='2026-08-10 12:00:00' WHERE testuser_id=101",
+                    $select,
+                    'DELETE FROM test_users WHERE testuser_id=102',
+                    $select,
+                    'UPDATE test_users SET testuser_status=2 WHERE testuser_id=103',
+                    $select,
+                    'UPDATE test_users SET testuser_status=3 WHERE testuser_id=104',
+                    $select,
+                ],
+                0,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     private function logAnswersInsertSql(string $values): string
     {
         return "INSERT INTO log_answers (\n\t\t\tlogansw_testlog_id,\n"
