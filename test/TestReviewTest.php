@@ -668,6 +668,55 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testLogAnswersInsertPreservesEmptyOrderAndErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_LOG_ANSWER", "log_answers"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["results"] = [true, true, false]; $GLOBALS["queries"] = []; $GLOBALS["errors"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function F_display_db_error(...$args) { $GLOBALS["errors"][] = $args; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_addLogAnswers|f_add_log_answers)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("7", []), $qualified("8", [10 => 3, 20 => "4"]), '
+                    . '$qualified("9", [5])], $GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [true, true, false],
+                [[false]],
+                [
+                    $this->logAnswersInsertSql(''),
+                    $this->logAnswersInsertSql('(8, 3, -1, 1), (8, 4, -1, 2)'),
+                    $this->logAnswersInsertSql('(9, 5, -1, 1)'),
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+    private function logAnswersInsertSql(string $values): string
+    {
+        return "INSERT INTO log_answers (\n\t\t\tlogansw_testlog_id,\n"
+            . "\t\t\tlogansw_answer_id,\n\t\t\tlogansw_selected,\n\t\t\tlogansw_order\n"
+            . "\t\t\t) VALUES " . $values;
+    }
+
     public function testTestUserAuthorizationPreservesShortCircuitChecks(): void
     {
         [$status, $output] = \F_tcecode_run_process(
