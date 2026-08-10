@@ -55,7 +55,7 @@ $test_basic_score = $testdata['test_score_right'];
 F_lockUserTest($test_id, $_SESSION['session_user_id']);
 // get user's test stats
 $usrtestdata = F_getUserTestStat($test_id, $user_id, 0, true);
-$userdata = F_getUserData($user_id);
+$userdata = f_get_user_data($user_id);
 
 echo '<div class="container">' . K_NEWLINE;
 
