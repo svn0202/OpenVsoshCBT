@@ -205,12 +205,6 @@ message = "Reference created from a previously undefined variable `$versionMatch
 count = 1
 
 [[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\AdminControllerHttpTest::testTeacherQuestionBanksAreIsolatedAndSharedOnlyThroughGroups`.'
-count = 1
-
-[[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "impossible-condition"
 message = "This loop condition (type `false`) will always evaluate to false."
