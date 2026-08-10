@@ -10,7 +10,7 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-null-array-access"
 message = "Cannot perform array access on possibly `null` value."
-count = 2
+count = 1
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -28,18 +28,6 @@ count = 4
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key 3 accessed on `array{1?: int, 2?: int, 3?: int, 4?: int, 5?: int}`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(0)` accessed on `array<int, string>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<int, array<int, string>>`."
 count = 1
 
 [[issues]]
@@ -64,16 +52,4 @@ count = 2
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)|int(2)|int(4)|int(5)` accessed on `array{1?: array{1: int, 2: int}, 2?: array{1: int, 2: int}, 4?: array{1: int, 2: int}, 5?: array{1: int, 2: int}}`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(5)` accessed on `array<int, string>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(8)` accessed on `array<int, string>`."
 count = 1
