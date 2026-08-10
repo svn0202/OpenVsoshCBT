@@ -6,27 +6,46 @@
 
 const TMF_PREGENERATION_BATCH_MAX = 25;
 
+function f_tmf_pregeneration_query_succeeded(mixed $result): bool
+{
+    return $result !== false;
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tmf_pregeneration_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
 /**
  * Return query rows in a stable, JSON-safe representation.
+ *
+ * @return list<array<array-key, mixed>>
  */
 function f_tmf_pregeneration_hash_rows(string $sql): array
 {
     require_once '../config/tce_config.php';
     global $db;
+    /** @var mixed $db */
 
     $rows = [];
     $result = F_db_query($sql, $db);
-    while ($result && ($row = F_db_fetch_assoc($result))) {
+    /** @var \mysqli_result|\PgSql\Result|false $result */
+    while ($result !== false && ($row = F_tmf_pregeneration_row(F_db_fetch_assoc($result))) !== null) {
         ksort($row);
-        foreach ($row as $key => $value) {
+        array_walk($row, static function (mixed &$value): void {
             if (is_resource($value)) {
-                $row[$key] = stream_get_contents($value);
+                $value = stream_get_contents($value);
             } elseif (is_object($value) && method_exists($value, 'load')) {
-                $row[$key] = $value->load();
+                $value = (static fn(mixed $loaded): string|false => is_string($loaded) || $loaded === false
+                    ? $loaded
+                    : '')($value->load());
+            } elseif ($value instanceof Stringable) {
+                $value = (string) $value;
             } elseif (is_object($value)) {
-                $row[$key] = (string) $value;
+                throw new Error('Object cannot be converted to a pregeneration hash value');
             }
-        }
+        });
         $rows[] = $row;
     }
     return $rows;
@@ -106,6 +125,7 @@ function f_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
 {
     require_once '../config/tce_config.php';
     global $db;
+    /** @var mixed $db */
 
     $sql = 'SELECT testuser_id, testuser_user_id, testuser_generation_hash
         FROM ' . K_TABLE_TEST_USER . '
@@ -116,18 +136,19 @@ function f_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
         $sql .= ' AND testuser_user_id=' . $user_id;
     }
     $result = F_db_query($sql, $db);
+    /** @var \mysqli_result|\PgSql\Result|false $result */
     $removed = 0;
-    while ($result && ($attempt = F_db_fetch_array($result))) {
-        $current_hash = F_tmf_pregeneration_hash($test_id, (int) $attempt['testuser_user_id']);
-        if (!hash_equals((string) $attempt['testuser_generation_hash'], $current_hash)) {
-            $delete = F_db_query(
+    while ($result !== false && ($attempt = F_tmf_pregeneration_row(F_db_fetch_array($result))) !== null) {
+        $current_hash = F_tmf_pregeneration_hash($test_id, (int) ($attempt['testuser_user_id'] ?? 0));
+        if (!hash_equals((string) ($attempt['testuser_generation_hash'] ?? ''), $current_hash)) {
+            $deleted = F_tmf_pregeneration_query_succeeded(F_db_query(
                 'DELETE FROM ' . K_TABLE_TEST_USER . '
-                WHERE testuser_id=' . (int) $attempt['testuser_id'] . '
+                WHERE testuser_id=' . (int) ($attempt['testuser_id'] ?? 0) . '
                     AND testuser_status=1
                     AND testuser_pregenerated=\'1\'',
                 $db,
-            );
-            if ($delete) {
+            ));
+            if ($deleted) {
                 ++$removed;
             }
         }
@@ -144,6 +165,7 @@ function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
 {
     require_once '../config/tce_config.php';
     global $db;
+    /** @var mixed $db */
 
     $sql = 'SELECT testuser_id, testuser_generation_hash
         FROM ' . K_TABLE_TEST_USER . '
@@ -154,15 +176,16 @@ function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
         ORDER BY testuser_id DESC
         LIMIT 1';
     $result = F_db_query($sql, $db);
-    $attempt = $result ? F_db_fetch_array($result) : false;
-    if (!is_array($attempt)) {
+    /** @var \mysqli_result|\PgSql\Result|false $result */
+    $attempt = $result !== false ? F_tmf_pregeneration_row(F_db_fetch_array($result)) : null;
+    if ($attempt === null) {
         return 'none';
     }
     $current_hash = F_tmf_pregeneration_hash($test_id, $user_id);
-    if (!hash_equals((string) $attempt['testuser_generation_hash'], $current_hash)) {
+    if (!hash_equals((string) ($attempt['testuser_generation_hash'] ?? ''), $current_hash)) {
         F_db_query(
             'DELETE FROM ' . K_TABLE_TEST_USER . '
-            WHERE testuser_id=' . (int) $attempt['testuser_id'] . '
+            WHERE testuser_id=' . (int) ($attempt['testuser_id'] ?? 0) . '
                 AND testuser_status=1
                 AND testuser_pregenerated=\'1\'',
             $db,
@@ -170,16 +193,16 @@ function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
         return 'invalidated';
     }
     $started_at = date(K_TIMESTAMP_FORMAT);
-    $updated = F_db_query(
+    $updated = F_tmf_pregeneration_query_succeeded(F_db_query(
         'UPDATE ' . K_TABLE_TEST_USER . '
         SET testuser_pregenerated=\'0\',
             testuser_creation_time=\'' . $started_at . '\',
             testuser_last_activity=\'' . $started_at . '\'
-        WHERE testuser_id=' . (int) $attempt['testuser_id'] . '
+        WHERE testuser_id=' . (int) ($attempt['testuser_id'] ?? 0) . '
             AND testuser_status=1
             AND testuser_pregenerated=\'1\'',
         $db,
-    );
+    ));
     return $updated ? 'activated' : 'none';
 }
 
@@ -190,9 +213,10 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
 {
     require_once '../config/tce_config.php';
     global $db;
+    /** @var mixed $db */
 
     F_tmf_pregeneration_invalidate($test_id, $user_id);
-    if (!F_db_query('START TRANSACTION', $db)) {
+    if (!F_tmf_pregeneration_query_succeeded(F_db_query('START TRANSACTION', $db))) {
         return 'error';
     }
     try {
@@ -222,20 +246,21 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
             LIMIT 1',
             $db,
         );
-        $attempt = $result ? F_db_fetch_array($result) : false;
-        if (!is_array($attempt)) {
+        /** @var \mysqli_result|\PgSql\Result|false $result */
+        $attempt = $result !== false ? F_tmf_pregeneration_row(F_db_fetch_array($result)) : null;
+        if ($attempt === null) {
             F_db_query('ROLLBACK', $db);
             return 'error';
         }
-        $updated = F_db_query(
+        $updated = F_tmf_pregeneration_query_succeeded(F_db_query(
             'UPDATE ' . K_TABLE_TEST_USER . "
             SET testuser_generation_hash='" . $hash . "',
                 testuser_pregenerated='1'
-            WHERE testuser_id=" . (int) $attempt['testuser_id'] . '
+            WHERE testuser_id=" . (int) ($attempt['testuser_id'] ?? 0) . '
                 AND testuser_status=1',
             $db,
-        );
-        if (!$updated || !F_db_query('COMMIT', $db)) {
+        ));
+        if (!$updated || !F_tmf_pregeneration_query_succeeded(F_db_query('COMMIT', $db))) {
             F_db_query('ROLLBACK', $db);
             return 'error';
         }
@@ -255,6 +280,7 @@ function f_tmf_pregeneration_eligible_users(int $test_id): array
 {
     require_once '../config/tce_config.php';
     global $db;
+    /** @var mixed $db */
 
     $ids = [];
     $sql = 'SELECT DISTINCT ug.usrgrp_user_id
@@ -263,8 +289,9 @@ function f_tmf_pregeneration_eligible_users(int $test_id): array
         WHERE tg.tstgrp_test_id=' . $test_id . '
         ORDER BY ug.usrgrp_user_id';
     $result = F_db_query($sql, $db);
-    while ($result && ($row = F_db_fetch_array($result))) {
-        $ids[] = (int) $row['usrgrp_user_id'];
+    /** @var \mysqli_result|\PgSql\Result|false $result */
+    while ($result !== false && ($row = F_tmf_pregeneration_row(F_db_fetch_array($result))) !== null) {
+        $ids[] = (int) ($row['usrgrp_user_id'] ?? 0);
     }
     return $ids;
 }
