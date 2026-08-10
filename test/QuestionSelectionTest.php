@@ -42,6 +42,101 @@ final class QuestionSelectionTest extends TestCase
         );
     }
 
+    public function testQuestionSelectionRendersCardActionsAndPagination(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_DATABASE_TYPE', 'MYSQL');
+define('K_ENABLE_QUESTION_EXPLANATION', false);
+define('K_NEWLINE', "\n");
+define('K_TABLE_QUESTIONS', 'questions');
+$_REQUEST = ['checkall' => '1'];
+$_SERVER = ['SCRIPT_NAME' => '/admin/code/tce_show_all_questions.php'];
+$db = 'db';
+$l = [];
+foreach ([
+    'a_meta_charset', 'a_meta_dir', 'h_position', 'h_question_difficulty', 'h_question_timer',
+    'h_subject', 'h_update', 'm_databasempty', 'm_with_selected', 't_questions_editor', 'w_all',
+    'w_auto_next', 'w_check_all', 'w_copy', 'w_delete', 'w_disable', 'w_disabled', 'w_edit',
+    'w_enable', 'w_enabled', 'w_explanation', 'w_free_answer', 'w_fullscreen', 'w_inline_answers',
+    'w_matching_answer', 'w_move', 'w_multiple_answers', 'w_ordering_answer', 'w_select',
+    'w_single_answer', 'w_subject', 'w_uncheck_all', 'w_update',
+] as $key) { $l[$key] = $key; }
+$l['a_meta_charset'] = 'UTF-8';
+$l['a_meta_dir'] = 'ltr';
+$GLOBALS['queries'] = [];
+$GLOBALS['rows'] = [
+    'questions' => [[
+        'question_id' => '11', 'question_enabled' => '1', 'question_type' => '1',
+        'question_description' => 'Question body', 'question_explanation' => '',
+        'question_difficulty' => '3', 'question_position' => '2', 'question_fullscreen' => '0',
+        'question_inline_answers' => '0', 'question_auto_next' => '0', 'question_timer' => '30',
+    ]],
+    'subjects' => [[
+        'module_id' => '2', 'module_name' => 'Module & Two', 'subject_id' => '4',
+        'subject_name' => 'Destination',
+    ]],
+];
+$GLOBALS['navigator'] = null;
+function F_count_rows($table) { return 1; }
+function F_escape_sql($db, $value) { return (string) $value; }
+function f_legacy_literal_equals($value, $expected) { return $value === $expected; }
+function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; }
+function f_get_boolean($value) { return (bool) $value; }
+function F_db_query($sql, $db) {
+    $GLOBALS['queries'][] = preg_replace('/\s+/', ' ', trim($sql));
+    return str_contains($sql, 'FROM questions') ? 'questions' : 'subjects';
+}
+function F_db_fetch_array($result) { return array_shift($GLOBALS['rows'][$result]); }
+function F_display_db_error() { echo '<DB-ERROR>'; }
+function F_print_error($type, $message) { echo "<$type:$message>"; }
+function F_decode_tcecode($value) { return '[decoded:' . $value . ']'; }
+function f_text_to_xml($value) { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); }
+function F_select_module_subjects_sql($where) { return 'SELECT module_subjects WHERE ' . $where; }
+function F_submit_button($name, $value, $title) { echo '<SUBMIT:' . $name . ':' . $value . '>'; }
+function F_show_page_navigator($script, $sql, $first, $rows, $params) {
+    $GLOBALS['navigator'] = [$script, preg_replace('/\s+/', ' ', trim($sql)), $first, $rows, $params];
+}
+$source = file_get_contents($argv[1]);
+preg_match('/function [Ff]_show_select_questions\(/', $source, $match, PREG_OFFSET_CAPTURE);
+$function = substr($source, $match[0][1]);
+$function = preg_replace('/^\s*require_once [^;]+;\n/m', '', $function);
+ob_start();
+eval('namespace Harness; ' . $function);
+$result = f_show_select_questions('', 2, 3, 'question_id', 0, 0, 25, true);
+$html = ob_get_clean();
+echo json_encode([$result, $html, $GLOBALS['queries'], $GLOBALS['navigator']], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_show_all_questions.php'],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0:bool,1:string,2:list<string>,3:array{string,string,int,int,string}} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$result, $html, $queries, $navigator] = $decoded;
+        self::assertTrue($result);
+        self::assertStringContainsString('id="qid_11"', $html);
+        self::assertStringContainsString('name="questionid1"', $html);
+        self::assertStringContainsString('checked="checked"', $html);
+        self::assertStringContainsString('<span class="question-card__type">w_single_answer</span>', $html);
+        self::assertStringContainsString('[decoded:Question body]', $html);
+        self::assertStringContainsString('question_id=11&amp;firstrow=0', $html);
+        self::assertStringContainsString('<option value="4">&nbsp;&nbsp;&nbsp;&nbsp;Destination</option>', $html);
+        self::assertStringContainsString('<SUBMIT:update:w_update>', $html);
+        self::assertCount(2, $queries);
+        $question_query = $queries[0] ?? null;
+        self::assertIsString($question_query);
+        self::assertStringContainsString('ORDER BY question_id LIMIT 25 OFFSET 0', $question_query);
+        self::assertSame('/admin/code/tce_show_all_questions.php', $navigator[0]);
+        self::assertSame(0, $navigator[2]);
+        self::assertSame(25, $navigator[3]);
+        self::assertStringContainsString('&amp;subject_module_id=2', $navigator[4]);
+        self::assertStringNotContainsString('<DB-ERROR>', $html);
+    }
+
     public function testAddingQuestionAnswersPreservesFreeTextAndSelectionBehavior(): void
     {
         [$status, $output] = \F_tcecode_run_process(
