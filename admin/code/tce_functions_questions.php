@@ -30,6 +30,7 @@
 function f_question_set_enabled(mixed $question_id, mixed $enabled = true): void
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     $question_id = (int) $question_id;
     $sql =
@@ -42,7 +43,7 @@ function f_question_set_enabled(mixed $question_id, mixed $enabled = true): void
 		WHERE question_id='
         . $question_id
         . '';
-    if (!($r = F_db_query($sql, $db))) {
+    if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
         F_display_db_error(false);
     }
 }
@@ -57,6 +58,7 @@ function f_question_set_enabled(mixed $question_id, mixed $enabled = true): void
 function f_question_get_position(mixed $question_id): mixed
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     $question_id = (int) $question_id;
     $question_position = 0;
@@ -64,15 +66,17 @@ function f_question_get_position(mixed $question_id): mixed
 		FROM ' . K_TABLE_QUESTIONS . '
 		WHERE question_id=' . $question_id . '
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = f_tmf_questions_query_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = f_tmf_questions_row(F_db_fetch_array($r));
+        if ($m !== null) {
+            /** @var array{question_position: int|string} $m */
             $question_position = $m['question_position'];
         }
     } else {
         F_display_db_error();
     }
 
-    /** @var int|string|null $question_position */
     return $question_position;
 }
 
@@ -81,20 +85,37 @@ function f_question_get_position(mixed $question_id): mixed
  * @author Nicola Asuni
  * @since 2008-11-26
  * @param $question_id (int) question ID
- * @return array containing selected question data, false in case of error
+ * @return array<array-key, mixed>|false selected question data, false in case of error
  */
-function f_question_get_data($question_id)
+function f_question_get_data(mixed $question_id): array|false
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     $question_id = (int) $question_id;
-    $question_position = 0;
+    /** @var callable(mixed): (\mysqli_result|\PgSql\Result|resource|bool|string) $normalize_result */
+    $normalize_result = static function (mixed $result): mixed {
+        if (
+            is_bool($result)
+            || is_string($result)
+            || is_resource($result)
+            || $result instanceof \mysqli_result
+            || $result instanceof \PgSql\Result
+        ) {
+            return $result;
+        }
+        return false;
+    };
+    /** @var callable(mixed): ?array<array-key, mixed> $normalize_row */
+    $normalize_row = static fn (mixed $row): ?array => is_array($row) ? $row : null;
     $sql = 'SELECT *
 		FROM ' . K_TABLE_QUESTIONS . '
 		WHERE question_id=' . $question_id . '
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = $normalize_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = $normalize_row(F_db_fetch_array($r));
+        if ($m !== null) {
             return $m;
         }
     } else {
@@ -114,6 +135,7 @@ function f_question_get_data($question_id)
 function f_question_delete(mixed $question_id, mixed $subject_id): void
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     $question_id = (int) $question_id;
     $subject_id = (int) $subject_id;
@@ -122,7 +144,7 @@ function f_question_delete(mixed $question_id, mixed $subject_id): void
         f_question_set_enabled($question_id, false);
     } else {
         $sql = 'START TRANSACTION';
-        if (!($r = F_db_query($sql, $db))) {
+        if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
             F_display_db_error();
         }
 
@@ -130,12 +152,12 @@ function f_question_delete(mixed $question_id, mixed $subject_id): void
         $question_position = f_question_get_position($question_id);
         // delete question
         $sql = 'DELETE FROM ' . K_TABLE_QUESTIONS . ' WHERE question_id=' . $question_id . '';
-        if (!($r = F_db_query($sql, $db))) {
+        if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
             F_display_db_error(false);
             F_db_query('ROLLBACK', $db); // rollback transaction
         } else {
             // adjust questions ordering
-            if ($question_position > 0) {
+            if ((float) $question_position > 0) {
                 $sql =
                     'UPDATE '
                     . K_TABLE_QUESTIONS
@@ -145,16 +167,16 @@ function f_question_delete(mixed $question_id, mixed $subject_id): void
                     . $subject_id
                     . '
 						AND question_position>'
-                    . $question_position
+                    . (string) $question_position
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                     F_display_db_error(false);
                     F_db_query('ROLLBACK', $db); // rollback transaction
                 }
             }
 
             $sql = 'COMMIT';
-            if (!($r = F_db_query($sql, $db))) {
+            if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                 F_display_db_error();
             }
         }
@@ -171,13 +193,17 @@ function f_question_delete(mixed $question_id, mixed $subject_id): void
 function f_question_copy(mixed $question_id, mixed $new_subject_id): void
 {
     global $l, $db;
+    /** @var mixed $db */
     require_once '../config/tce_config.php';
     $question_id = (int) $question_id;
     $new_subject_id = (int) $new_subject_id;
     // check authorization
     $sql = 'SELECT subject_module_id FROM ' . K_TABLE_SUBJECTS . ' WHERE subject_id=' . $new_subject_id . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = f_tmf_questions_query_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = f_tmf_questions_row(F_db_fetch_array($r));
+        if ($m !== null) {
+            /** @var array{subject_module_id: scalar|null} $m */
             $subject_module_id = $m['subject_module_id'];
             // check user's authorization for parent module
             if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $subject_module_id, 'module_user_id')) {
@@ -188,13 +214,29 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
         F_display_db_error();
         return;
     }
+    /** @var scalar|null $subject_module_id */
 
     $q = F_question_get_data($question_id);
     if ($q !== false) {
-        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
+        /** @var array{
+         *     question_description: scalar|null,
+         *     question_explanation: scalar|null,
+         *     question_type: int|string,
+         *     question_difficulty: int|string,
+         *     question_enabled: int|string,
+         *     question_position: int|string,
+         *     question_timer: int|string,
+         *     question_fullscreen: int|string,
+         *     question_inline_answers: int|string,
+         *     question_auto_next: int|string,
+         *     question_shuffle_answers: int|string
+         * } $q
+         */
+        $database_type = f_tmf_questions_database_type();
+        if (strcmp($database_type, 'ORACLE') === 0) {
             $chksql =
                 "dbms_lob.instr(question_description,'" . F_escape_sql($db, $q['question_description']) . "',1,1)>0";
-        } elseif (K_DATABASE_TYPE === 'MYSQL' && defined('K_MYSQL_QA_BIN_UNIQUITY') && K_MYSQL_QA_BIN_UNIQUITY) {
+        } elseif ($database_type === 'MYSQL' && f_tmf_questions_mysql_binary_uniquity()) {
             $chksql =
                 "question_description='"
                 . F_escape_sql($db, $q['question_description'])
@@ -206,7 +248,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
 
         if (F_check_unique(K_TABLE_QUESTIONS, $chksql . ' AND question_subject_id=' . $new_subject_id . '')) {
             $sql = 'START TRANSACTION';
-            if (!($r = F_db_query($sql, $db))) {
+            if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                 F_display_db_error(false);
                 return;
             }
@@ -224,7 +266,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
 						AND question_position>='
                     . $q['question_position']
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                     F_display_db_error(false);
                     F_db_query('ROLLBACK', $db); // rollback transaction
                 }
@@ -284,7 +326,8 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
                 . $q['question_shuffle_answers']
                 . '\'
 				)';
-            if (!($r = F_db_query($sql, $db))) {
+            /** @var int|string $new_question_id */
+            if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                 F_display_db_error(false);
             } else {
                 $new_question_id = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
@@ -294,8 +337,19 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
             $sql = 'SELECT *
 				FROM ' . K_TABLE_ANSWERS . '
 				WHERE answer_question_id=' . $question_id . '';
-            if ($r = F_db_query($sql, $db)) {
-                while ($m = F_db_fetch_array($r)) {
+            $r = f_tmf_questions_query_result(F_db_query($sql, $db));
+            if ($r) {
+                while (($m = f_tmf_questions_row(F_db_fetch_array($r))) !== null) {
+                    /** @var array{
+                     *     answer_description: scalar|null,
+                     *     answer_explanation: scalar|null,
+                     *     answer_isright: int|string,
+                     *     answer_enabled: int|string,
+                     *     answer_position: scalar|null,
+                     *     answer_keyboard_key: scalar|null,
+                     *     answer_weight: scalar|null
+                     * } $m
+                     */
                     $sqli =
                         'INSERT INTO '
                         . K_TABLE_ANSWERS
@@ -334,7 +388,7 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
                         . ($m['answer_weight'] === null ? 'NULL' : (string) (int) $m['answer_weight'])
                         . '
 							)';
-                    if (!($ri = F_db_query($sqli, $db))) {
+                    if (!f_tmf_questions_query_succeeded(F_db_query($sqli, $db))) {
                         F_display_db_error(false);
                         F_db_query('ROLLBACK', $db); // rollback transaction
                     }
@@ -344,10 +398,47 @@ function f_question_copy(mixed $question_id, mixed $new_subject_id): void
             }
 
             $sql = 'COMMIT';
-            if (!($r = F_db_query($sql, $db))) {
+            if (!f_tmf_questions_query_succeeded(F_db_query($sql, $db))) {
                 F_display_db_error(false);
                 return;
             }
         }
     }
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tmf_questions_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
+
+function f_tmf_questions_query_succeeded(mixed $result): bool
+{
+    return (bool) f_tmf_questions_query_result($result);
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function f_tmf_questions_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
+
+function f_tmf_questions_database_type(): string
+{
+    return K_DATABASE_TYPE;
+}
+
+function f_tmf_questions_mysql_binary_uniquity(): bool
+{
+    /** @mago-expect analysis:redundant-logical-operation */
+    return defined('K_MYSQL_QA_BIN_UNIQUITY') && K_MYSQL_QA_BIN_UNIQUITY;
 }
