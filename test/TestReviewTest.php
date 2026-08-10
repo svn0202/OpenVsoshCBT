@@ -839,6 +839,64 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testRepeatTestPreservesAttemptUpdatesAndDatabaseErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); '
+                    . 'define("K_TABLE_TEST_USER", "test_users"); $GLOBALS["db"] = "db"; '
+                    . '$_SESSION["session_user_id"] = "011"; '
+                    . '$GLOBALS["results"] = [false, "empty", "test-3", false, '
+                    . '"test-4", "attempts", true, false]; '
+                    . '$GLOBALS["rows"] = ["empty" => [false], "test-3" => [["test_id" => 22]], '
+                    . '"test-4" => [["test_id" => 22]], "attempts" => [['
+                    . '"testuser_id" => 201], ["testuser_id" => 202], false]]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_repeatTest)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $returns = []; '
+                    . 'for ($i = 0; $i < 4; ++$i) { $returns[] = $qualified("022"); } '
+                    . 'echo json_encode([$returns, $GLOBALS["queries"], $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        $testQuery = "SELECT test_id FROM tests WHERE test_id=22 AND test_repeatable<>'0' LIMIT 1";
+        $attemptQuery = 'SELECT testuser_id FROM test_users WHERE testuser_test_id=22 '
+            . 'AND testuser_user_id=11 AND testuser_status>3 ORDER BY testuser_status DESC';
+        self::assertSame(
+            [
+                [null, null, null, null],
+                [
+                    $testQuery,
+                    $testQuery,
+                    $testQuery,
+                    $attemptQuery,
+                    $testQuery,
+                    $attemptQuery,
+                    'UPDATE test_users SET testuser_status=testuser_status+1 WHERE testuser_id=201',
+                    'UPDATE test_users SET testuser_status=testuser_status+1 WHERE testuser_id=202',
+                ],
+                3,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     private function logAnswersInsertSql(string $values): string
     {
         return "INSERT INTO log_answers (\n\t\t\tlogansw_testlog_id,\n"
