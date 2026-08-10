@@ -33,6 +33,19 @@ if (!$access_settings['password_reset_enabled']) {
 $pagelevel = 0;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *     t_password_assistance:string,
+ *     w_email:string,
+ *     a_meta_charset:string,
+ *     m_user_verification_sent:string,
+ *     h_index:string,
+ *     d_reset_password:string,
+ *     h_usered_email:string,
+ *     w_submit:string,
+ *     h_submit:string
+ * } $l
+ */
+/** @var mixed $db */
 $thispage_title = $l['t_password_assistance'];
 require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -46,18 +59,19 @@ if (isset($_POST['resetpassword']) && ($formstatus = F_check_form_fields())) {
     // Read the submitted email explicitly from $_POST instead of relying on the register-globals
     // emulation in tce_config.php (plan Stage 8.2). F_check_form_fields() above has already
     // validated that 'user_email' is present and matches the email format.
+    // @mago-expect analysis:array-to-string-conversion -- the form validator guarantees a scalar email here
     $user_email = isset($_POST['user_email']) ? (string) $_POST['user_email'] : '';
     // check submitted form fields
-    $user_verifycode = md5(uniqid(random_int(0, mt_getrandmax()), true));
+    $user_verifycode = md5(uniqid((string) random_int(0, mt_getrandmax()), true));
     // verification code
     $user_verifycode[0] = '@';
     // get user ID
     $user_id = 0;
     $sql = 'SELECT user_id FROM ' . K_TABLE_USERS . " WHERE user_email='" . F_escape_sql($db, $user_email) . "'";
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            $user_id = $m['user_id'];
-        }
+    $r = f_tmf_password_reset_query_result(F_db_query($sql, $db));
+    if ($r) {
+        $m = f_tmf_password_reset_row(F_db_fetch_array($r));
+        $user_id = $m === null ? 0 : (int) ($m['user_id'] ?? 0);
     } else {
         F_display_db_error();
     }
@@ -72,7 +86,8 @@ if (isset($_POST['resetpassword']) && ($formstatus = F_check_form_fields())) {
             . "' WHERE user_id="
             . $user_id
             . '';
-        if (!($ru = F_db_query($sqlu, $db))) {
+        $ru = f_tmf_password_reset_query_result(F_db_query($sqlu, $db));
+        if (!$ru) {
             F_display_db_error();
         }
 
@@ -134,3 +149,24 @@ echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** @return non-empty-array<array-key, mixed>|null */
+function f_tmf_password_reset_row(mixed $row): ?array
+{
+    return is_array($row) && $row !== [] ? $row : null;
+}
+
+/** @return \mysqli_result|\PgSql\Result|resource|bool|string */
+function f_tmf_password_reset_query_result(mixed $result): mixed
+{
+    if (
+        is_bool($result)
+        || is_string($result)
+        || is_resource($result)
+        || $result instanceof \mysqli_result
+        || $result instanceof \PgSql\Result
+    ) {
+        return $result;
+    }
+    return false;
+}
