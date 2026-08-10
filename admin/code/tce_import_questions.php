@@ -47,7 +47,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && $_FILES['userfile']['name'])
                     break;
             case 2:
                     // standard TCExam TSV format
-                    $qimp = F_TSVQuestionImporter(K_PATH_CACHE . $uploadedfile);
+                    $qimp = f_tsv_question_importer(K_PATH_CACHE . $uploadedfile);
                     break;
             case 3:
                     // Custom TCExam XML format
@@ -144,7 +144,7 @@ require_once '../code/tce_page_footer.php';
  * @param $tsvfile (string) TSV (tab delimited text) file name
  * @return boolean TRUE in case of success, FALSE otherwise
  */
-function F_TSVQuestionImporter($tsvfile)
+function f_tsv_question_importer($tsvfile)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

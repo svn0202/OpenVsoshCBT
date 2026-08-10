@@ -15,7 +15,7 @@ final class TsvQuestionImporterTest extends TestCase
                 'namespace Harness; $GLOBALS["open_calls"] = []; '
                     . 'function fopen($path, $mode) { $GLOBALS["open_calls"][] = [$path, $mode]; return false; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_TSVQuestionImporter|f_tsv_question_importer)\\(/", '
+                    . 'preg_match("/function (f_tsv_question_importer)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$function = substr($source, $start); '
