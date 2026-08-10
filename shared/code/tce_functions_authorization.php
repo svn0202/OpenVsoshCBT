@@ -422,7 +422,7 @@ function f_get_authorized_users($user_id): string
  * @author Nicola Asuni
  * @since 2012-09-11
  */
-function F_syncUserGroups($usrid, $grpids)
+function f_sync_user_groups($usrid, $grpids)
 {
     global $l, $db;
     require_once '../config/tce_config.php';

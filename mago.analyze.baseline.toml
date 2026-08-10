@@ -12975,7 +12975,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "missing-return-type"
-message = "Function `F_syncUserGroups` is missing a return type hint."
+message = "Function `f_sync_user_groups` is missing a return type hint."
 count = 1
 
 [[issues]]
