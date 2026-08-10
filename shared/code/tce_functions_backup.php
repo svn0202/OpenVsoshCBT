@@ -7,7 +7,7 @@
 require_once __DIR__ . '/TmfBackupException.php';
 
 /**
- * @param array<string,string> $config
+ * @param array{type:string,password:string,...<string,string>} $config
  * @return array<string,string>
  */
 function f_tmf_backup_environment(array $config): array
@@ -24,16 +24,18 @@ function f_tmf_backup_environment(array $config): array
 /**
  * @param list<string>         $command
  * @param array<string,string> $environment
+ * @param array<array-key,mixed> $pipes
  * @return resource
  */
 function f_tmf_backup_start_process(
     array $command,
     array $environment,
-    mixed &$pipes,
+    array &$pipes,
     ?string $stdin_file = null,
 ): mixed {
     $error_file = tempnam(sys_get_temp_dir(), 'openvsosh-db-command-');
     if ($error_file === false) {
+        // @mago-expect analysis:unhandled-thrown-type -- process launch failures use the established exception API
         throw new TmfBackupException('Не удалось создать файл диагностики команды БД.');
     }
     $descriptors = [
@@ -42,11 +44,12 @@ function f_tmf_backup_start_process(
         2 => ['file', $error_file, 'a'],
     ];
     $launch_error = '';
-    set_error_handler(static function (int $severity, string $message) use (&$launch_error): bool {
+    set_error_handler(static function (int $_severity, string $message) use (&$launch_error): bool {
         $launch_error = $message;
         return true;
     });
     try {
+        // @mago-expect analysis:possibly-invalid-argument -- proc_open validates an optional empty input path as before
         $process = proc_open($command, $descriptors, $pipes, null, $environment);
     } finally {
         restore_error_handler();
@@ -91,6 +94,7 @@ function f_tmf_backup_finish_process(
                 if ($error_file !== '' && is_file($error_file)) {
                     unlink($error_file);
                 }
+                // @mago-expect analysis:unhandled-thrown-type -- stream failures use the established exception API
                 throw new TmfBackupException('Не удалось записать резервную копию.');
             }
         }
@@ -135,7 +139,8 @@ function f_tmf_backup_ignorable_postgresql_restore_diagnostic(string $diagnostic
 }
 
 /**
- * @param array<string,string> $config
+ * @param array{type:string,host:string,port:string,user:string,name:string,pg_dump_binary?:string,
+ *     mysqldump_binary?:string,...<string,string>} $config
  * @return list<string>
  */
 function f_tmf_backup_dump_command(array $config): array
@@ -161,7 +166,8 @@ function f_tmf_backup_dump_command(array $config): array
 }
 
 /**
- * @param array<string,string> $config
+ * @param array{type:string,host:string,port:string,user:string,name:string,pg_restore_binary?:string,
+ *     mysql_binary?:string,...<string,string>} $config
  * @return list<string>
  */
 function f_tmf_backup_restore_command(array $config): array
@@ -188,13 +194,15 @@ function f_tmf_backup_restore_command(array $config): array
 }
 
 /**
- * @param array<string,string> $config
+ * @param array{type:string,host:string,port:string,user:string,name:string,password:string,
+ *     pg_dump_binary?:string,mysqldump_binary?:string,...<string,string>} $config
  */
 function f_tmf_backup_create(array $config, string $backup_directory, ?string $timestamp = null): string
 {
     $timestamp_is_fixed = $timestamp !== null;
     $timestamp ??= date('YmdHis');
     if (preg_match('/^\d{14}$/D', $timestamp) !== 1) {
+        // @mago-expect analysis:unhandled-thrown-type -- validation failures use the established exception API
         throw new TmfBackupException('Некорректная метка времени резервной копии.');
     }
     if (!is_dir($backup_directory) || !is_writable($backup_directory)) {
@@ -224,6 +232,7 @@ function f_tmf_backup_create(array $config, string $backup_directory, ?string $t
         if (is_file($partial_path)) {
             unlink($partial_path);
         }
+        // @mago-expect analysis:unhandled-thrown-type -- cleanup preserves the original throwable
         throw $exception;
     }
     gzclose($archive);
@@ -268,6 +277,7 @@ function f_tmf_backup_file_is_valid(string $filename): bool
 function f_tmf_backup_resolve_file(string $backup_directory, string $filename): string
 {
     if (!F_tmf_backup_file_is_valid($filename)) {
+        // @mago-expect analysis:unhandled-thrown-type -- invalid paths use the established exception API
         throw new TmfBackupException('Некорректное имя резервной копии.');
     }
     $directory = realpath($backup_directory);
@@ -285,11 +295,13 @@ function f_tmf_backup_resolve_file(string $backup_directory, string $filename): 
 }
 
 /**
- * @param array<string,string> $config
+ * @param array{type:string,host:string,port:string,user:string,name:string,password:string,
+ *     pg_restore_binary?:string,mysql_binary?:string,...<string,string>} $config
  */
 function f_tmf_backup_restore(array $config, string $archive_path): void
 {
     if (!is_file($archive_path) || !is_readable($archive_path)) {
+        // @mago-expect analysis:unhandled-thrown-type -- restore failures use the established exception API
         throw new TmfBackupException('Резервная копия недоступна для чтения.');
     }
     $temporary = tempnam(sys_get_temp_dir(), 'openvsosh-db-restore-');
@@ -354,7 +366,7 @@ function f_tmf_backup_restore(array $config, string $archive_path): void
 }
 
 /**
- * @return array<string,string>
+ * @return array{type:string,host:string,port:string,name:string,user:string,password:string}
  */
 function f_tmf_backup_config_from_constants(): array
 {
