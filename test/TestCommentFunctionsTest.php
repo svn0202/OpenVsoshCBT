@@ -17,7 +17,7 @@ final class TestCommentFunctionsTest extends TestCase
                     . 'function F_db_query($sql, $db) { $GLOBALS["captured_sql"] = $sql; return true; } '
                     . '$db = new stdClass(); $l = []; $_SESSION["session_user_id"] = "17"; '
                     . 'require "tce_functions_test.php"; '
-                    . '$result = F_updateTestComment("23", "teacher\'s note"); '
+                    . '$result = f_update_test_comment("23", "teacher\'s note"); '
                     . 'echo json_encode([$result, preg_replace("/\\s+/", " ", trim($captured_sql))]);',
             ],
             dirname(__DIR__) . '/shared/code',

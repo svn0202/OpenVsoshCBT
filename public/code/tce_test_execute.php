@@ -205,7 +205,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             // update user's test comment
             if (isset($_REQUEST['testcomment']) && !empty($_REQUEST['testcomment'])) {
                 $test_comment = $_REQUEST['testcomment'];
-                F_updateTestComment($test_id, $test_comment);
+                f_update_test_comment($test_id, $test_comment);
             }
 
             if (
