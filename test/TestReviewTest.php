@@ -526,6 +526,62 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestLimitChecksPreservePriorityAndBoundaries(): void
+    {
+        $cases = [
+            'remaining exhausted' => [[-1, 2, 3, 4], [], true, 0],
+            'daily limit reached' => [[0, 2, 0, false], [2], true, 1],
+            'monthly limit reached' => [[0, 2, 3, false], [1, 3], true, 2],
+            'yearly limit reached' => [[0, 0, 0, 4], [4], true, 1],
+            'all limits available' => [[0, 2, 3, 4], [1, 2, 3], false, 3],
+        ];
+
+        foreach ($cases as $label => [$limits, $counts, $expected, $expectedCalls]) {
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-r',
+                    'namespace Harness; $config = json_decode($argv[2], true); '
+                        . 'define("K_REMAINING_TESTS", $config[0][0]); define("K_MAX_TESTS_DAY", $config[0][1]); '
+                        . 'define("K_MAX_TESTS_MONTH", $config[0][2]); define("K_MAX_TESTS_YEAR", $config[0][3]); '
+                        . 'define("K_SECONDS_IN_DAY", 86400); define("K_SECONDS_IN_MONTH", 2592000); '
+                        . 'define("K_SECONDS_IN_YEAR", 31536000); define("K_TIMESTAMP_FORMAT", "\\\\F\\\\I\\\\X\\\\E\\\\D"); '
+                        . 'define("K_TABLE_TESTUSER_STAT", "test_stats"); '
+                        . '$GLOBALS["counts"] = $config[1]; $GLOBALS["calls"] = []; '
+                        . 'function F_count_rows($table, $where) { $GLOBALS["calls"][] = [$table, $where]; '
+                        . 'return array_shift($GLOBALS["counts"]); } '
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function (F_isTestOverLimits|f_is_test_over_limits)\\(/", '
+                        . '$source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$name = $match[1][0]; $start = $match[0][1]; '
+                        . '$end = strpos($source, "\\n/**", $start); '
+                        . '$function = substr($source, $start, $end - $start); '
+                        . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                        . 'eval("namespace Harness; " . $function); '
+                        . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                        . 'echo json_encode([$qualified(), $GLOBALS["calls"]]);',
+                    dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+                    json_encode([$limits, $counts], JSON_THROW_ON_ERROR),
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $label . ': ' . $output);
+            /** @var array{0: bool, 1: list<array{0: string, 1: string}>} $decoded */
+            $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            [$actual, $calls] = $decoded;
+            self::assertSame($expected, $actual, $label);
+            self::assertCount($expectedCalls, $calls, $label);
+            foreach ($calls as $call) {
+                self::assertSame(
+                    ['test_stats', "WHERE tus_date>='FIXED' AND tus_date<='FIXED'"],
+                    $call,
+                    $label,
+                );
+            }
+        }
+    }
+
 
 
 
