@@ -22,6 +22,7 @@
  */
 
 require_once '../config/tce_config.php';
+/** @var array{a_meta_language: string, a_meta_dir: string, a_meta_charset: string, w_login: string} $l */
 
 $pagelevel = 1;
 require_once '../../shared/code/tce_authorization.php';
