@@ -225,6 +225,44 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testUserTestStatisticsWrapperCastsIdsAndPreservesLeftValues(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["data_calls"] = []; $GLOBALS["totals_calls"] = []; '
+                    . 'function f_get_test_data($testId) { $GLOBALS["data_calls"][] = $testId; '
+                    . 'return ["shared" => "left", "test" => $testId]; } '
+                    . 'function F_getUserTestTotals(...$args) { $GLOBALS["totals_calls"][] = $args; '
+                    . 'return ["shared" => "right", "score" => 9]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getUserTestStat|f_get_user_test_stat)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("007", "008", "009", "public"), '
+                    . '$GLOBALS["data_calls"], $GLOBALS["totals_calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                ['shared' => 'left', 'test' => 7, 'score' => 9],
+                [7],
+                [[7, 8, 9, 'public']],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
