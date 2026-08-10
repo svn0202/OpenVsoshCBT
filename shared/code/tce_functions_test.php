@@ -783,7 +783,7 @@ function F_getUserData($user_id)
  * @param $test_id (int) test ID.
  * @return string test password or empty string in case of error.
  */
-function F_getTestPassword($test_id)
+function f_get_test_password($test_id)
 {
     $test_id = (int) $test_id;
     $td = F_getTestData($test_id);

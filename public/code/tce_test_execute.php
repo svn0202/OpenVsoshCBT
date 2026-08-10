@@ -46,7 +46,7 @@ $answer_save_error = '';
 if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     $test_id = (int) $_REQUEST['testid'];
     // check for test password
-    $tph = F_getTestPassword($test_id);
+    $tph = f_get_test_password($test_id);
     if (
         !empty($tph)
         && !F_tmf_test_session_is_unlocked($test_id)
