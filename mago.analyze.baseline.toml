@@ -10189,30 +10189,6 @@ message = "Undefined variable: `$l`."
 count = 29
 
 [[issues]]
-file = "public/code/tce_test_focus.php"
-code = "impossible-condition"
-message = "Redundant ternary operator: condition is always falsy."
-count = 3
-
-[[issues]]
-file = "public/code/tce_test_focus.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 2
-
-[[issues]]
-file = "public/code/tce_test_focus.php"
-code = "redundant-comparison"
-message = "Redundant `<=` comparison: left-hand side is always less than or equal to right-hand side."
-count = 1
-
-[[issues]]
-file = "public/code/tce_test_focus.php"
-code = "redundant-condition"
-message = "This condition (type `true`) will always evaluate to true."
-count = 3
-
-[[issues]]
 file = "public/code/tce_test_results.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
