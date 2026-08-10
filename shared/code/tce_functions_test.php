@@ -3251,7 +3251,7 @@ function f_get_test_groups($test_id): string
  * @param $test_id (int) ID of the selected test
  * @return string containing a comma separated list SSL certificates IDs.
  */
-function F_getTestSSLCerts($test_id)
+function f_get_test_ssl_certs($test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
