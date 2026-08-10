@@ -4,7 +4,7 @@ variant = "loose"
 file = "admin/code/tce_edit_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 58
+count = 31
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -28,7 +28,7 @@ count = 1
 file = "admin/code/tce_edit_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 19
+count = 6
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -51,12 +51,6 @@ count = 14
 [[issues]]
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
-message = "Invalid middle operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
 count = 3
 
@@ -70,7 +64,7 @@ count = 2
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 9
+count = 3
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -130,7 +124,7 @@ count = 1
 file = "admin/code/tce_edit_test.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
-count = 2
+count = 1
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
