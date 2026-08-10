@@ -15513,7 +15513,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_getUserTests` is missing a return type hint."
+message = "Function `f_get_user_tests` is missing a return type hint."
 count = 1
 
 [[issues]]
