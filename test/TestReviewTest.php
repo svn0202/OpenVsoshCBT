@@ -526,6 +526,51 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestDataLookupPreservesRowsMissingRowsAndQueryErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["query_results"] = [true, true, false]; '
+                    . '$GLOBALS["rows"] = [["test_id" => 7, "test_name" => "Final"], false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestData|f_get_test_data)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9")], '
+                    . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                [['test_id' => 7, 'test_name' => 'Final'], false, []],
+                1,
+                [
+                    "SELECT *\n\t\tFROM tests\n\t\tWHERE test_id=7\n\t\tLIMIT 1",
+                    "SELECT *\n\t\tFROM tests\n\t\tWHERE test_id=8\n\t\tLIMIT 1",
+                    "SELECT *\n\t\tFROM tests\n\t\tWHERE test_id=9\n\t\tLIMIT 1",
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testTestLimitChecksPreservePriorityAndBoundaries(): void
     {
         $cases = [
