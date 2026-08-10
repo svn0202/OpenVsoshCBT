@@ -18,7 +18,7 @@ final class TestReviewTest extends TestCase
         self::assertSame(
             '<div class="row"><span class="label"><span title="Description">Label: '
                 . '</span></span><span class="value">Value</span></div>' . K_NEWLINE,
-            \F_twoColRow('Label', 'Description', 'Value'),
+            \f_two_col_row('Label', 'Description', 'Value'),
         );
     }
 
