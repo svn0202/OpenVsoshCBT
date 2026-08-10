@@ -338,4 +338,47 @@ final class AuthorizationFunctionsTest extends TestCase
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
+
+    public function testUserGroupSynchronizationAddsOnlyMissingUniqueGroups(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_USERGROUP", "user_groups"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["rows"] = [["usrgrp_group_id" => 2], false]; '
+                    . '$GLOBALS["errors"] = 0; '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_syncUserGroups)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $qualified(11, "2,2,3"); '
+                    . 'echo json_encode([$GLOBALS["queries"], $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertJson($output);
+        self::assertSame(
+            [
+                [
+                    'SELECT usrgrp_group_id FROM user_groups WHERE usrgrp_user_id=11',
+                    "INSERT INTO user_groups (\n\t\t\t\tusrgrp_user_id,\n\t\t\t\tusrgrp_group_id\n"
+                        . "\t\t\t\t) VALUES (\n\t\t\t\t'11',\n\t\t\t\t'3'\n\t\t\t\t)",
+                ],
+                0,
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
 }
