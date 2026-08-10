@@ -487,7 +487,7 @@ function f_terminate_user_test($test_id, $reason = 'completed'): void
  * Count the number times of retries.<br>
  * @param $user_id (int) user ID
  * @param $test_id (int) test ID
- * @return retried times
+ * @return int number of completed attempts
  */
 function f_count_user_test($user_id, $test_id)
 {
