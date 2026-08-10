@@ -22,8 +22,27 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,h_add_five_minutes:string,h_answers_right:string,h_answers_wrong:string,h_cancel:string,
+ *     h_delete:string,h_email_result:string,h_pdf:string,h_questions_unanswered:string,h_questions_undisplayed:string,
+ *     h_questions_unrated:string,h_score_total:string,h_select_user:string,h_test:string,h_testcomment:string,
+ *     h_time_begin:string,h_time_end:string,hp_result_user:string,m_authorization_denied:string,m_delete_confirm:string,
+ *     m_deleted:string,m_updated:string,t_result_user:string,w_answers_right:string,w_answers_wrong:string,w_cancel:string,
+ *     w_comment:string,w_delete:string,w_email_result:string,w_lock:string,w_not_passed:string,w_passed:string,w_pdf:string,
+ *     w_questions_unanswered:string,w_questions_undisplayed:string,w_questions_unrated:string,w_score:string,w_select:string,
+ *     w_stats:string,w_test:string,w_test_time:string,w_time_begin:string,w_time_end:string,w_unlock:string,w_user:string
+ * } $l
+ */
+/** @var mixed $db */
+$formstatus = f_tce_admin_result_user_bool($formstatus ?? false);
+$menu_mode = f_tce_admin_result_user_string($menu_mode ?? '');
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
 
 $thispage_title = $l['t_result_user'];
 require_once 'tce_page_header.php';
@@ -40,7 +59,7 @@ $_REQUEST['ff_required_labels'] = '';
 
 $filter = '';
 
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+if (isset($_REQUEST['test_id']) && (int) $_REQUEST['test_id'] > 0) {
     $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
@@ -54,7 +73,7 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
 
 if (isset($_REQUEST['testuser_id'])) {
     $testuser_id = (int) $_REQUEST['testuser_id'];
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < K_AUTH_ADMINISTRATOR) {
         $sql =
             K_TABLE_TESTS
             . ', '
@@ -79,7 +98,7 @@ if (isset($_REQUEST['testuser_id'])) {
 
 if (isset($_REQUEST['user_id'])) {
     $user_id = (int) $_REQUEST['user_id'];
-    if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
+    if ((int) ($_SESSION['session_user_level'] ?? 0) < K_AUTH_ADMINISTRATOR) {
         $sql =
             K_TABLE_TESTS
             . ', '
@@ -121,7 +140,7 @@ switch ($menu_mode) {
         echo '<div class="confirmbox">' . K_NEWLINE;
         echo
             '<form action="'
-                . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
                 . '" method="post" enctype="multipart/form-data" id="form_delete">'
                 . K_NEWLINE
         ;
@@ -130,19 +149,20 @@ switch ($menu_mode) {
         F_submit_button('forcedelete', $l['w_delete'], $l['h_delete']);
         F_submit_button('cancel', $l['w_cancel'], $l['h_cancel']);
         echo '</div>' . K_NEWLINE;
-        echo f_get_csrf_token_field() . K_NEWLINE;
+        echo f_tce_admin_result_user_string(f_get_csrf_token_field()) . K_NEWLINE;
         echo '</form>' . K_NEWLINE;
         echo '</div>' . K_NEWLINE;
         break;
 
     case 'forcedelete':
         // Delete
-        if (f_form_option_is_selected((string) $l['w_delete'], $_POST['forcedelete'] ?? '')) { //check if delete button has been pushed (redundant check)
+        if (f_form_option_is_selected($l['w_delete'], $_POST['forcedelete'] ?? '')) { //check if delete button has been pushed (redundant check)
             require_once '../../shared/code/tce_functions_attachments.php';
             F_tmf_attachment_delete_attempt((int) $testuser_id);
             $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 					WHERE testuser_id=' . $testuser_id . '';
-            if (!($r = F_db_query($sql, $db))) {
+            $r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+            if (!$r) {
                 F_display_db_error();
             } else {
                 $testuser_id = false;
@@ -163,9 +183,10 @@ switch ($menu_mode) {
             . date(K_TIMESTAMP_FORMAT, f_get_test_start_time($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE))
             . '\'
 			WHERE testuser_id='
-            . $testuser_id
+            . f_tce_admin_result_user_string($testuser_id)
             . '';
-        if (!($ru = F_db_query($sqlu, $db))) {
+        $ru = f_tce_admin_result_user_query_result(F_db_query($sqlu, $db));
+        if (!$ru) {
             F_display_db_error();
         } else {
             F_print_error('MESSAGE', $l['m_updated']);
@@ -178,7 +199,8 @@ switch ($menu_mode) {
         $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 			SET testuser_status=4
 			WHERE testuser_id=' . $testuser_id . '';
-        if (!($ru = F_db_query($sqlu, $db))) {
+        $ru = f_tce_admin_result_user_query_result(F_db_query($sqlu, $db));
+        if (!$ru) {
             F_display_db_error();
         } else {
             F_print_error('MESSAGE', $l['m_updated']);
@@ -191,7 +213,8 @@ switch ($menu_mode) {
         $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 			SET testuser_status=1
 			WHERE testuser_id=' . $testuser_id . '';
-        if (!($ru = F_db_query($sqlu, $db))) {
+        $ru = f_tce_admin_result_user_query_result(F_db_query($sqlu, $db));
+        if (!$ru) {
             F_display_db_error();
         } else {
             F_print_error('MESSAGE', $l['m_updated']);
@@ -205,11 +228,18 @@ switch ($menu_mode) {
 
 // --- Initialize variables
 
+$test_start_time = '';
+$test_end_time = '';
+$testuser_status = 0;
+$test_duration_time = 0;
+$teststat = null;
+
 if ($test_id === 0 && f_form_option_is_selected(0, $testuser_id)) {
     // select default test ID
-    $sql = F_select_executed_tests_sql() . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $sql = f_tce_admin_result_user_string(F_select_executed_tests_sql()) . ' LIMIT 1';
+    $r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+    if ($r) {
+        if (($m = f_tce_admin_result_user_executed_test_row(F_db_fetch_array($r))) !== null) {
             $test_id = (int) $m['test_id'];
         }
     } else {
@@ -218,7 +248,7 @@ if ($test_id === 0 && f_form_option_is_selected(0, $testuser_id)) {
 }
 
 if ($formstatus) {
-    if (isset($changecategory) && $changecategory > 0 || $testuser_id === 0) {
+    if (isset($changecategory) || $testuser_id === 0) {
         $sql =
             'SELECT testuser_id, testuser_test_id, testuser_user_id, testuser_creation_time, testuser_status, SUM(testlog_score) AS test_score, MAX(testlog_change_time) AS test_end_time
 				FROM '
@@ -242,24 +272,27 @@ if ($formstatus) {
             . ', '
             . K_TABLE_TESTS_LOGS
             . '
-			WHERE testlog_testuser_id=testuser_id
-				AND testuser_id='
-            . $testuser_id
+				WHERE testlog_testuser_id=testuser_id
+					AND testuser_id='
+            . f_tce_admin_result_user_string($testuser_id)
             . '
 				AND testuser_status>0
 			GROUP BY testuser_id, testuser_test_id, testuser_user_id, testuser_creation_time, testuser_status
 			LIMIT 1';
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            $testuser_id = $m['testuser_id'];
-            $test_id = $m['testuser_test_id'];
-            $user_id = $m['testuser_user_id'];
+    $r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+    if ($r) {
+        if (($m = f_tce_admin_result_user_attempt_row(F_db_fetch_array($r))) !== null) {
+            $testuser_id = (int) $m['testuser_id'];
+            $test_id = (int) $m['testuser_test_id'];
+            $user_id = (int) $m['testuser_user_id'];
             $test_start_time = $m['testuser_creation_time'];
-            $testuser_status = $m['testuser_status'];
-            $teststat = f_get_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id);
-            $test_end_time = $m['test_end_time'];
+            $testuser_status = (int) $m['testuser_status'];
+            $teststat = f_tce_admin_result_user_test_stat(
+                f_get_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id),
+            );
+            $test_end_time = f_tce_admin_result_user_string($m['test_end_time']);
         } else {
             $testuser_id = '';
             $test_id = '';
@@ -276,10 +309,11 @@ if ($formstatus) {
 // get test basic score
 $test_basic_score = 1;
 $sql = 'SELECT test_score_right, test_duration_time	FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . (int) $test_id . '';
-if ($r = F_db_query($sql, $db)) {
-    if ($m = F_db_fetch_array($r)) {
-        $test_basic_score = $m['test_score_right'];
-        $test_duration_time = $m['test_duration_time'];
+$r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+if ($r) {
+    if (($m = f_tce_admin_result_user_basic_test_row(F_db_fetch_array($r))) !== null) {
+        $test_basic_score = (float) $m['test_score_right'];
+        $test_duration_time = (int) $m['test_duration_time'];
     }
 } else {
     F_display_db_error();
@@ -290,7 +324,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_resultuser">'
         . K_NEWLINE
 ;
@@ -300,7 +334,8 @@ echo '<span class="label">' . K_NEWLINE;
 echo '<label for="test_id">' . $l['w_test'] . '</label>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
-echo '<input type="hidden" name="testuser_id" id="testuser_id" value="' . $testuser_id . '" />' . K_NEWLINE;
+echo '<input type="hidden" name="testuser_id" id="testuser_id" value="'
+    . f_tce_admin_result_user_string($testuser_id) . '" />' . K_NEWLINE;
 echo '<input type="hidden" name="changecategory" id="changecategory" value="" />' . K_NEWLINE;
 echo
     '<select name="test_id" id="test_id" onchange="document.getElementById(\'form_resultuser\').changecategory.value=1;document.getElementById(\'form_resultuser\').submit()" title="'
@@ -308,9 +343,10 @@ echo
         . '">'
         . K_NEWLINE
 ;
-$sql = F_select_executed_tests_sql();
-if ($r = F_db_query($sql, $db)) {
-    while ($m = F_db_fetch_array($r)) {
+$sql = f_tce_admin_result_user_string(F_select_executed_tests_sql());
+$r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+if ($r) {
+    while (($m = f_tce_admin_result_user_executed_test_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['test_id'] . '"';
         if (f_form_option_is_selected((int) $test_id, $m['test_id'])) {
             echo ' selected="selected"';
@@ -338,7 +374,7 @@ echo '<button type="button" onclick="' . $jsaction . '" class="xmlbutton" title=
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo get_form_noscript_select('selectcategory');
+echo f_tce_admin_result_user_string(get_form_noscript_select('selectcategory'));
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -360,9 +396,10 @@ $sql =
     . (int) $test_id
     . '';
 $sql .= ' ORDER BY user_lastname, user_firstname, user_name, testuser_creation_time DESC';
-if ($r = F_db_query($sql, $db)) {
+$r = f_tce_admin_result_user_query_result(F_db_query($sql, $db));
+if ($r) {
     $usrcount = 1;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_admin_result_user_selection_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['testuser_id'] . '"';
         if (f_form_option_is_selected((int) $testuser_id, $m['testuser_id'])) {
             echo ' selected="selected"';
@@ -398,12 +435,14 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo get_form_noscript_select('selectrecord');
+echo f_tce_admin_result_user_string(get_form_noscript_select('selectrecord'));
 
 echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
-if (isset($teststat) && !empty($teststat)) {
-    $teststat['testinfo'] = f_get_user_test_stat($test_id, $user_id, $testuser_id);
+if ($teststat !== null && $teststat !== []) {
+    $teststat['testinfo'] = f_tce_admin_result_user_test_info(
+        f_get_user_test_stat((int) $test_id, (int) $user_id, (int) $testuser_id),
+    );
 
     echo '<div class="row">' . K_NEWLINE;
     echo '<span class="label">' . K_NEWLINE;
@@ -411,7 +450,7 @@ if (isset($teststat) && !empty($teststat)) {
     echo '</span>' . K_NEWLINE;
     echo '<span class="formw">' . K_NEWLINE;
     echo $test_start_time . ' ';
-    if (isset($test_id) && $test_id > 0 && isset($user_id) && $user_id > 0) {
+    if ((int) $test_id > 0 && (int) $user_id > 0) {
         F_submit_button('extendtime', '+' . K_EXTEND_TIME_MINUTES . ' min', $l['h_add_five_minutes']);
     }
 
@@ -421,19 +460,20 @@ if (isset($teststat) && !empty($teststat)) {
 
     echo get_form_description_line($l['w_time_end'] . ':', $l['h_time_end'], $test_end_time);
 
-    if (!isset($test_end_time) || $test_end_time <= 0 || strtotime($test_end_time) < strtotime($test_start_time)) {
+    $test_end_timestamp = (int) strtotime($test_end_time);
+    $test_start_timestamp = (int) strtotime($test_start_time);
+    if (f_tce_admin_result_user_is_non_positive($test_end_time) || $test_end_timestamp < $test_start_timestamp) {
         $time_diff = $test_duration_time * 60;
     } else {
-        $time_diff = strtotime($test_end_time) - strtotime($test_start_time); //sec
+        $time_diff = $test_end_timestamp - $test_start_timestamp; //sec
     }
 
     $time_diff = gmdate('H:i:s', $time_diff);
     echo get_form_description_line($l['w_test_time'] . ':', $l['w_test_time'], $time_diff);
     $passmsg = '';
-    if ($teststat['testinfo']['test_score_threshold'] > 0) {
+    if ((float) $teststat['testinfo']['test_score_threshold'] > 0) {
         if (
-            isset($teststat['testinfo']['user_score'])
-            && $teststat['testinfo']['user_score'] >= $teststat['testinfo']['test_score_threshold']
+            (float) $teststat['testinfo']['user_score'] >= (float) $teststat['testinfo']['test_score_threshold']
         ) {
             $passmsg = ' - ' . $l['w_passed'];
         } else {
@@ -441,13 +481,15 @@ if (isset($teststat) && !empty($teststat)) {
         }
     }
 
-    if ($teststat['testinfo']['test_max_score'] > 0) {
+    if ((float) $teststat['testinfo']['test_max_score'] > 0) {
         $score_all =
             $teststat['testinfo']['user_score']
             . ' / '
             . $teststat['testinfo']['test_max_score']
             . ' ('
-            . round((100 * $teststat['testinfo']['user_score']) / $teststat['testinfo']['test_max_score'])
+            . round(
+                (100 * (float) $teststat['testinfo']['user_score']) / (float) $teststat['testinfo']['test_max_score'],
+            )
             . '%)';
     } else {
         $score_all = $teststat['testinfo']['user_score'];
@@ -512,20 +554,22 @@ if (isset($teststat) && !empty($teststat)) {
         get_form_description_line(
             $l['w_comment'] . ':',
             $l['h_testcomment'],
-            F_decode_tcecode($teststat['testinfo']['user_comment']),
+            f_tce_admin_result_user_string(F_decode_tcecode($teststat['testinfo']['user_comment'])),
         )
     ;
 
-    if (isset($testuser_id) && $testuser_id !== 0 && !empty($teststat)) {
+    if ($testuser_id !== 0) {
         echo '<div class="rowl">' . K_NEWLINE;
-        echo f_print_user_test_stat($testuser_id);
+        echo f_tce_admin_result_user_string(f_print_user_test_stat((int) $testuser_id));
         echo '</div>' . K_NEWLINE;
 
         // print statistics for modules and subjects
         echo '<div class="rowl">' . K_NEWLINE;
         echo '<hr />' . K_NEWLINE;
         echo '<h2>' . $l['w_stats'] . '</h2>';
-        echo f_print_test_stat($test_id, 0, $user_id, 0, 0, $testuser_id, $teststat, 2);
+        echo f_tce_admin_result_user_string(
+            f_print_test_stat((int) $test_id, 0, (int) $user_id, 0, 0, (int) $testuser_id, $teststat, 2),
+        );
         echo '<hr />' . K_NEWLINE;
         echo '</div>' . K_NEWLINE;
     }
@@ -533,10 +577,10 @@ if (isset($teststat) && !empty($teststat)) {
     echo '<div class="row">' . K_NEWLINE;
 
     // show buttons by case
-    if ($test_id > 0 && $user_id > 0 && $testuser_id > 0) {
+    if ((int) $test_id > 0 && (int) $user_id > 0 && (int) $testuser_id > 0) {
         F_submit_button('delete', $l['w_delete'], $l['h_delete']);
 
-        if ($testuser_status < 4) {
+        if ((int) $testuser_status < 4) {
             // lock test button
             F_submit_button('lock', $l['w_lock'], $l['w_lock']);
         } else {
@@ -578,7 +622,7 @@ if (isset($teststat) && !empty($teststat)) {
     echo '</div>' . K_NEWLINE;
 }
 
-echo f_get_csrf_token_field() . K_NEWLINE;
+echo f_tce_admin_result_user_string(f_get_csrf_token_field()) . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;
@@ -587,3 +631,159 @@ echo '<div class="pagehelp">' . $l['hp_result_user'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+function f_tce_admin_result_user_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+function f_tce_admin_result_user_bool(mixed $value): bool
+{
+    if (is_array($value)) {
+        return $value !== [];
+    }
+
+    if (is_object($value) || is_resource($value)) {
+        return true;
+    }
+
+    if (is_bool($value)) {
+        return $value;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value)) {
+        return (bool) $value;
+    }
+
+    return false;
+}
+
+function f_tce_admin_result_user_is_non_positive(string $value): bool
+{
+    return $value <= 0;
+}
+
+/** @return object|resource|bool */
+function f_tce_admin_result_user_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */
+function f_tce_admin_result_user_executed_test_row(mixed $row): ?array
+{
+    /** @var array{test_id:int|string,test_begin_time:string,test_name:string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     testuser_id:int|string,
+ *     testuser_test_id:int|string,
+ *     testuser_user_id:int|string,
+ *     testuser_creation_time:string,
+ *     testuser_status:int|string,
+ *     test_end_time:string|null
+ * }|null
+ */
+function f_tce_admin_result_user_attempt_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     testuser_id:int|string,
+     *     testuser_test_id:int|string,
+     *     testuser_user_id:int|string,
+     *     testuser_creation_time:string,
+     *     testuser_status:int|string,
+     *     test_end_time:string|null
+     * }|null $row
+     */
+    return $row;
+}
+
+/** @return array{test_score_right:int|float|string,test_duration_time:int|string}|null */
+function f_tce_admin_result_user_basic_test_row(mixed $row): ?array
+{
+    /** @var array{test_score_right:int|float|string,test_duration_time:int|string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     testuser_id:int|string,
+ *     user_lastname:string,
+ *     user_firstname:string,
+ *     user_name:string,
+ *     testuser_creation_time:string
+ * }|null
+ */
+function f_tce_admin_result_user_selection_row(mixed $row): ?array
+{
+    /**
+     * @var array{
+     *     testuser_id:int|string,
+     *     user_lastname:string,
+     *     user_firstname:string,
+     *     user_name:string,
+     *     testuser_creation_time:string
+     * }|null $row
+     */
+    return $row;
+}
+
+/**
+ * @return array{qstats:array{
+ *     right:int|float|string,
+ *     recurrence:int|float|string,
+ *     right_perc:int|float|string,
+ *     wrong:int|float|string,
+ *     wrong_perc:int|float|string,
+ *     unanswered:int|float|string,
+ *     unanswered_perc:int|float|string,
+ *     undisplayed:int|float|string,
+ *     undisplayed_perc:int|float|string,
+ *     unrated:int|float|string,
+ *     unrated_perc:int|float|string
+ * }}
+ */
+function f_tce_admin_result_user_test_stat(mixed $stat): array
+{
+    /**
+     * @var array{qstats:array{
+     *     right:int|float|string,
+     *     recurrence:int|float|string,
+     *     right_perc:int|float|string,
+     *     wrong:int|float|string,
+     *     wrong_perc:int|float|string,
+     *     unanswered:int|float|string,
+     *     unanswered_perc:int|float|string,
+     *     undisplayed:int|float|string,
+     *     undisplayed_perc:int|float|string,
+     *     unrated:int|float|string,
+     *     unrated_perc:int|float|string
+     * }} $stat
+     */
+    return $stat;
+}
+
+/**
+ * @return array{
+ *     test_score_threshold:int|float|string,
+ *     user_score:int|float|string,
+ *     test_max_score:int|float|string,
+ *     user_comment:string
+ * }
+ */
+function f_tce_admin_result_user_test_info(mixed $info): array
+{
+    /**
+     * @var array{
+     *     test_score_threshold:int|float|string,
+     *     user_score:int|float|string,
+     *     test_max_score:int|float|string,
+     *     user_comment:string
+     * } $info
+     */
+    return $info;
+}
