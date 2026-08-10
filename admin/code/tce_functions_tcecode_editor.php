@@ -34,6 +34,7 @@ function tcecode_editor_tag_buttons(string $callingform, string $callingfield): 
     global $l, $db;
     global $uploadedfile;
     require_once '../config/tce_config.php';
+    /** @var array{w_undo: string, w_redo: string, w_font_size: string, w_font: string} $l */
 
     // sanitize input parameters
     $callingform = preg_replace('/[^a-z0-9_]/', '', $callingform) ?? '';
@@ -44,10 +45,10 @@ function tcecode_editor_tag_buttons(string $callingform, string $callingfield): 
     // --- buttons
 
     $onclick = "FJ_undo(document.getElementById('" . $callingform . "')." . $callingfield . ')';
-    $buttons .= get_image_button((string) $l['w_undo'], '', K_PATH_IMAGES . 'buttons/undo.gif', $onclick, 'z');
+    $buttons .= get_image_button($l['w_undo'], '', K_PATH_IMAGES . 'buttons/undo.gif', $onclick, 'z');
 
     $onclick = "FJ_redo(document.getElementById('" . $callingform . "')." . $callingfield . ')';
-    $buttons .= get_image_button((string) $l['w_redo'], '', K_PATH_IMAGES . 'buttons/redo.gif', $onclick, 'y');
+    $buttons .= get_image_button($l['w_redo'], '', K_PATH_IMAGES . 'buttons/redo.gif', $onclick, 'y');
 
     $onclick = "FJ_insert_tag(document.getElementById('" . $callingform . "')." . $callingfield . '';
     $buttons .= get_image_button('bold', '[b]', K_PATH_IMAGES . 'buttons/bold.gif', $onclick, 'b');
@@ -146,7 +147,12 @@ function tcecode_editor_tag_buttons(string $callingform, string $callingfield): 
     $buttons .= '</select>' . K_NEWLINE;
 
     // font
-    $tce_fonts = unserialize(K_AVAILABLE_FONTS);
+    /** @var mixed $configured_fonts */
+    $configured_fonts = unserialize((string) constant('K_AVAILABLE_FONTS'), ['allowed_classes' => false]);
+    /** @var array<array-key, bool|float|int|string> $tce_fonts */
+    $tce_fonts = is_array($configured_fonts)
+        ? array_filter($configured_fonts, static fn(mixed $font): bool => is_scalar($font))
+        : [];
     if (!empty($tce_fonts)) {
         $onselect = "FJ_insert_tag(document.getElementById('" . $callingform . "')." . $callingfield . ', ';
         $onselect .=
@@ -173,7 +179,7 @@ function tcecode_editor_tag_buttons(string $callingform, string $callingfield): 
             . $l['w_font']
             . '</option>';
         foreach ($tce_fonts as $fname => $font) {
-            $buttons .= '<option value="[font=' . $font . ']">' . $fname . '</option>';
+            $buttons .= '<option value="[font=' . (string) $font . ']">' . (string) $fname . '</option>';
         }
 
         $buttons .= '</select>' . K_NEWLINE;
