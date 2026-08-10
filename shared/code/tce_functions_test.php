@@ -818,9 +818,9 @@ function f_get_test_duration($test_id)
 /**
  * Returns the user's test start time in seconds since UNIX epoch (1970-01-01 00:00:00).
  * @param $testuser_id (int) user's test ID
- * @return int start time in seconds
+ * @return int|false Start time in seconds, or false when the stored date is invalid.
  */
-function f_get_test_start_time(mixed $testuser_id): mixed
+function f_get_test_start_time(mixed $testuser_id): int|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -2252,7 +2252,7 @@ function f_question_form($test_id, $testlog_id, $formname)
             $test_data = f_get_test_data($test_id);
             // store time information for interactive timer
             $examtime =
-                f_get_test_start_time($m['testlog_testuser_id'])
+                (int) f_get_test_start_time($m['testlog_testuser_id'])
                 + ($test_data['test_duration_time'] * K_SECONDS_IN_MINUTE);
             $str .= '<input type="hidden" name="examtime" id="examtime" value="' . $examtime . '" />' . K_NEWLINE;
             if (f_get_boolean($test_data['test_logout_on_timeout'])) {
