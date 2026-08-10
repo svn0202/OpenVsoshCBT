@@ -64,7 +64,7 @@ count = 2
 file = "admin/code/tce_edit_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 26
+count = 24
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
@@ -167,12 +167,6 @@ file = "admin/code/tce_edit_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `truthy-lowercase-string` accessed on `array<int|non-empty-string, non-empty-array<int|non-empty-string, array<int|non-empty-string, mixed>|string>|string>`."
 count = 1
-
-[[issues]]
-file = "admin/code/tce_edit_test.php"
-code = "possibly-undefined-variable"
-message = "Variable `$test_duration_time` might not have been defined on all execution paths leading to this point."
-count = 3
 
 [[issues]]
 file = "admin/code/tce_edit_test.php"
