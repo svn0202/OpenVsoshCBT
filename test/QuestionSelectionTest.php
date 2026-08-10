@@ -228,4 +228,78 @@ final class QuestionSelectionTest extends TestCase
         self::assertSame(1, $errors);
         self::assertSame(2800, $examtime);
     }
+
+    public function testQuestionsMenuPreservesSelectedReviewNavigationAndToolbarMarkup(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_NEWLINE", "\\n"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["l"] = ['
+                    . '"h_question_displayed" => "Displayed", "h_question_not_displayed" => "Not displayed", '
+                    . '"h_question_answered" => "Answered", "h_question_not_answered" => "Not answered", '
+                    . '"w_max_score" => "Maximum", "w_question" => "Question", '
+                    . '"ov_increase_text" => "Zoom in", "ov_decrease_text" => "Zoom out", '
+                    . '"ov_switch_theme" => "Theme", "ov_mark_for_review" => "Review", '
+                    . '"w_image" => "Image", "w_close" => "Close", "w_fullscreen" => "Fullscreen", '
+                    . '"w_previous" => "Previous", "w_next" => "Next", "w_questions" => "Questions", '
+                    . '"ov_answer_saving" => "Saving", "ov_answer_saved" => "Saved", '
+                    . '"ov_answer_not_saved" => "Error", "ov_answer_save_conflict" => "Conflict", '
+                    . '"ov_answer_unsaved" => "Unsaved", "ov_answer_retrying" => "Retrying", '
+                    . '"ov_save" => "Save", "a_meta_charset" => "UTF-8", "a_meta_language" => "ru"]; '
+                    . '$row = ["question_description" => "Question description", "question_difficulty" => 2, '
+                    . '"question_timer" => 0, "testlog_id" => 8, "testlog_answer_text" => "", '
+                    . '"testlog_display_time" => "shown", "testlog_change_time" => "answered", '
+                    . '"testlog_reviewed" => true]; $GLOBALS["rows"] = [$row, false]; '
+                    . '$GLOBALS["queries"] = []; '
+                    . 'function F_tmf_question_options($description) { return ["audio_play_limit" => 2]; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function f_tcecode_to_title($value) { return "TITLE:" . $value; } '
+                    . 'function f_tcecode_to_line($value) { return "LINE:" . $value; } '
+                    . 'function F_tmf_live_score($testId, $testUserId) { return null; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_questionsMenu)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$testdata = ["test_score_right" => 2, "test_id" => 7, '
+                    . '"test_menu_enabled" => true, "test_auto_fullscreen" => false, '
+                    . '"test_hide_exam_info" => false, "test_disable_previous" => false, '
+                    . '"test_disable_next" => false]; '
+                    . '$markup = $qualified($testdata, "055", "008", false); '
+                    . 'echo json_encode([$markup, $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: string, 1: array{0: string}} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$markup, $queries] = $decoded;
+        self::assertStringContainsString('data-audio-play-limit="2"', $markup);
+        self::assertStringContainsString('Question <span>1</span> / 1', $markup);
+        self::assertStringContainsString('class="selected marked-for-review" data-testlog-id="8"', $markup);
+        self::assertStringContainsString('title="Displayed">+', $markup);
+        self::assertStringContainsString('title="Answered">+', $markup);
+        self::assertStringContainsString('title="Maximum: 4">  4.0', $markup);
+        self::assertStringContainsString('LINE:Question description', $markup);
+        self::assertStringContainsString('data-reviewed="1" checked="checked"', $markup);
+        self::assertStringContainsString('id="prevquestion"', $markup);
+        self::assertStringContainsString('id="nextquestion"', $markup);
+        self::assertSame(3, substr_count($markup, 'disabled="disabled"'));
+        self::assertStringContainsString('id="saveanswer"', $markup);
+        self::assertStringContainsString('<details class="tcecontentbox exam-question-list" open="open">', $markup);
+        self::assertStringContainsString('testlog_testuser_id=55', $queries[0]);
+    }
 }
