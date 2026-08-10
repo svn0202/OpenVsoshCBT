@@ -30,7 +30,7 @@
 function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
 {
     // points to graph (values between 0 and 100)
-    $points = explode('x', $p);
+    $points = explode('x', strval($p));
 
     // count the of points
     $numpoints = count($points);
@@ -49,6 +49,7 @@ function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
     }
 
     // graph colors
+    /** @var array{0: string, 1: string} $color */
     $color = ['ff0000', '0000ff'];
 
     // font size for labels
@@ -89,16 +90,16 @@ function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
         . $fontsize
         . '">'
         . "\n";
+    /** @var array{0: string, 1: string} $graph */
     $graph = ['', ''];
     $step = 1;
     if ($numpoints > 30) {
         $step = 5;
-    } elseif ($numpoints > 100) {
-        $step = 10;
     }
 
-    for ($i = 0; $i < $numpoints; ++$i) {
-        $point = explode('v', $points[$i]);
+    foreach ($points as $i => $point_data) {
+        $point_parts = explode('v', $point_data);
+        $point = [$point_parts[0], $point_parts[1] ?? ''];
         $x = ($i * $hstep) + $label_space;
         // line
         $svg .= '	<line x1="' . $x . '" y1="' . $vstep . '" x2="' . $x . '" y2="' . $vh . '" />' . "\n";
@@ -108,29 +109,30 @@ function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
             $svg .= '	<text x="' . $x . '" y="' . $textpos . '" stroke-width="0">' . $xi . '</text>' . "\n";
         }
 
-        for ($k = 0; $k <= 1; ++$k) {
+        foreach ($color as $k => $series_color) {
             // graph path
-            $y = sprintf('%.3F', (11 * $vstep) - ((int) $point[$k] * $pstep));
-            $graph[$k] .= ' ' . $x . ',' . $y;
+            $y = sprintf('%.3F', (11 * $vstep) - ((int) ($point[$k] ?? 0) * $pstep));
+            $graph[$k] = ($graph[$k] ?? '') . ' ' . $x . ',' . $y;
             // point
             $svg .=
-                '	<circle cx="' . $x . '" cy="' . $y . '" r="4" stroke-width="0" fill="#' . $color[$k] . '" />' . "\n";
+                '	<circle cx="' . $x . '" cy="' . $y . '" r="4" stroke-width="0" fill="#' . $series_color . '" />' . "\n";
         }
     }
 
     $svg .= '</g>' . "\n";
 
     // draw graph
-    for ($k = 0; $k <= 1; ++$k) {
+    foreach ($color as $k => $series_color) {
+        $series_graph = $graph[$k] ?? '';
         $svg .=
             '<path fill-opacity="0.2" fill="#'
-            . $color[$k]
+            . $series_color
             . '" stroke-width="0" d="M '
             . $label_space
             . ' '
             . (11 * $vstep)
             . ' L '
-            . $graph[$k]
+            . $series_graph
             . ' '
             . ((($numpoints - 1) * $hstep) + $label_space)
             . ' '
@@ -138,7 +140,7 @@ function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
             . ' Z" />'
             . "\n";
         $svg .=
-            '<polyline fill="none" stroke="#' . $color[$k] . '" stroke-width="2" points="' . $graph[$k] . '" />' . "\n";
+            '<polyline fill="none" stroke="#' . $series_color . '" stroke-width="2" points="' . $series_graph . '" />' . "\n";
     }
 
     // close SVG graph
@@ -156,6 +158,9 @@ function f_get_svg_graph_code(mixed $p, mixed $w = '', mixed $h = ''): string
  */
 function f_get_svg_graph(mixed $p, mixed $w = '', mixed $h = ''): void
 {
+    $point_data = strval($p);
+    $width = strval($w);
+    $height = strval($h);
     // send headers
     header('Content-Description: SVG Data');
     header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
@@ -163,9 +168,9 @@ function f_get_svg_graph(mixed $p, mixed $w = '', mixed $h = ''): void
     header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Content-Type: image/svg+xml');
-    header('Content-Disposition: inline; filename="tce_svg_graph_' . md5($p . $w . $h) . '.svg";');
+    header('Content-Disposition: inline; filename="tce_svg_graph_' . md5($point_data . $width . $height) . '.svg";');
     // Turn on output buffering with the gzhandler
     //ob_start('ob_gzhandler');
     // output SVG code
-    echo f_get_svg_graph_code($p, $w, $h);
+    echo f_get_svg_graph_code($point_data, $width, $height);
 }
