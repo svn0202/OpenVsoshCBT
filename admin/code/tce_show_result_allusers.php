@@ -22,8 +22,26 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     a_meta_charset:string,a_meta_dir:string,h_add_five_minutes:string,h_delete:string,h_email_all_results:string,
+ *     h_pdf_all:string,h_pdf:string,h_test:string,h_tsv_export:string,h_xml_export:string,hp_result_alluser:string,
+ *     m_authorization_denied:string,m_delete_confirm:string,m_updated:string,m_with_selected:string,
+ *     t_result_all_users:string,w_answer:string,w_answers_right:string,w_check_all:string,w_datetime_format:string,
+ *     w_delete:string,w_disabled:string,w_email_all_results:string,w_graph:string,w_group:string,w_lock:string,
+ *     w_minimum:string,w_mode:string,w_module:string,w_pdf_all:string,w_pdf:string,w_question:string,
+ *     w_result_graph:string,w_score:string,w_select:string,w_stats:string,w_subject:string,w_test:string,
+ *     w_tests:string,w_time_begin:string,w_time_end:string,w_uncheck_all:string,w_unlock:string,w_user:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var string $menu_mode */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
 
 $thispage_title = $l['t_result_all_users'];
 require_once 'tce_page_header.php';
@@ -46,17 +64,19 @@ if (isset($_REQUEST['selectcategory'])) {
     $changecategory = 1;
 }
 
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$requested_test_id = $_REQUEST['test_id'] ?? null;
+if ($requested_test_id !== null && f_tce_show_allusers_is_positive($requested_test_id)) {
+    $test_id = (int) $requested_test_id;
     // check user's authorization
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
 
     $filter .= '&amp;test_id=' . $test_id . '';
-    $test_group_ids = f_get_test_groups($test_id);
+    $test_group_ids = f_tce_show_allusers_string(f_get_test_groups($test_id));
 } else {
     $test_id = 0;
+    $test_group_ids = '';
 }
 
 if (isset($_REQUEST['user_id'])) {
@@ -75,8 +95,8 @@ if (isset($_REQUEST['group_id']) && !empty($_REQUEST['group_id'])) {
 
 // filtering options
 if (isset($_REQUEST['startdate'])) {
-    $startdate = $_REQUEST['startdate'];
-    $startdate_time = strtotime($startdate);
+    $startdate = f_tce_show_allusers_string($_REQUEST['startdate']);
+    $startdate_time = f_tce_show_allusers_timestamp($startdate);
     $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
 } else {
     $startdate = date('Y') . '-01-01 00:00:00';
@@ -84,8 +104,8 @@ if (isset($_REQUEST['startdate'])) {
 
 $filter .= '&amp;startdate=' . urlencode($startdate);
 if (isset($_REQUEST['enddate'])) {
-    $enddate = $_REQUEST['enddate'];
-    $enddate_time = strtotime($enddate);
+    $enddate = f_tce_show_allusers_string($_REQUEST['enddate']);
+    $enddate_time = f_tce_show_allusers_timestamp($enddate);
     $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
 } else {
     $enddate = date('Y') . '-12-31 23:59:59';
@@ -128,10 +148,10 @@ if (isset($_POST['lock'])) {
     }
 }
 
+$requested_order_field = f_tce_show_allusers_string($_REQUEST['order_field'] ?? '');
 if (
-    isset($_REQUEST['order_field'])
-    && !empty($_REQUEST['order_field'])
-    && in_array($_REQUEST['order_field'], [
+    $requested_order_field !== ''
+    && in_array($requested_order_field, [
         'testuser_creation_time',
         'testuser_end_time',
         'user_name',
@@ -139,9 +159,9 @@ if (
         'user_firstname',
         'total_score',
         'testuser_test_id',
-    ])
+    ], true)
 ) {
-    $order_field = $_REQUEST['order_field'];
+    $order_field = $requested_order_field;
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
 }
@@ -163,7 +183,7 @@ $filter .= '&amp;orderdir=' . $orderdir . '';
 // bounds the loop that reads the testuserid<N> selection checkboxes below.
 $itemcount = isset($_REQUEST['itemcount']) ? (int) $_REQUEST['itemcount'] : 0;
 
-if (isset($menu_mode) && !empty($menu_mode)) {
+if (!empty($menu_mode)) {
     for ($i = 1; $i <= $itemcount; ++$i) {
         // for each selected item
         $keyname = 'testuserid' . $i;
@@ -173,7 +193,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                 case 'delete':
                     $sql = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 						WHERE testuser_id=' . $testuser_id . '';
-                    if (!($r = F_db_query($sql, $db))) {
+                    $r = f_tce_show_allusers_query_result(F_db_query($sql, $db));
+                    if (!$r) {
                         F_display_db_error();
                     }
 
@@ -187,11 +208,13 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 						FROM ' . K_TABLE_TEST_USER . '
 						WHERE testuser_id=' . $testuser_id . '
 						LIMIT 1';
-                    if ($rus = F_db_query($sqlus, $db)) {
-                        if ($mus = F_db_fetch_array($rus)) {
+                    $rus = f_tce_show_allusers_query_result(F_db_query($sqlus, $db));
+                    if ($rus) {
+                        $mus = f_tce_show_allusers_creation_row(F_db_fetch_array($rus));
+                        if ($mus !== null) {
                             $newstarttime = date(
                                 K_TIMESTAMP_FORMAT,
-                                strtotime($mus['testuser_creation_time']) + $extseconds,
+                                f_tce_show_allusers_timestamp($mus['testuser_creation_time']) + $extseconds,
                             );
                             $sqlu =
                                 'UPDATE '
@@ -203,7 +226,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 								WHERE testuser_id='
                                 . $testuser_id
                                 . '';
-                            if (!($ru = F_db_query($sqlu, $db))) {
+                            $ru = f_tce_show_allusers_query_result(F_db_query($sqlu, $db));
+                            if (!$ru) {
                                 F_display_db_error();
                             }
                         }
@@ -223,7 +247,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         . $testuser_id
                         . '
 						AND testuser_status<4';
-                    if (!($ru = F_db_query($sqlu, $db))) {
+                    $ru = f_tce_show_allusers_query_result(F_db_query($sqlu, $db));
+                    if (!$ru) {
                         F_display_db_error();
                     }
 
@@ -239,7 +264,8 @@ if (isset($menu_mode) && !empty($menu_mode)) {
                         . $testuser_id
                         . '
 						AND testuser_status<5';
-                    if (!($ru = F_db_query($sqlu, $db))) {
+                    $ru = f_tce_show_allusers_query_result(F_db_query($sqlu, $db));
+                    if (!$ru) {
                         F_display_db_error();
                     }
 
@@ -253,12 +279,12 @@ if (isset($menu_mode) && !empty($menu_mode)) {
 
 echo '<div class="container">' . K_NEWLINE;
 
-echo f_openvsosh_admin_test_context((int) $test_id, 'results');
+echo f_tce_show_allusers_string(f_openvsosh_admin_test_context($test_id, 'results'));
 
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_resultallusers">'
         . K_NEWLINE
 ;
@@ -275,15 +301,16 @@ echo
         . '">'
         . K_NEWLINE
 ;
-$sql = F_select_executed_tests_sql();
-if ($r = F_db_query($sql, $db)) {
+$sql = f_tce_show_allusers_string(F_select_executed_tests_sql());
+$r = f_tce_show_allusers_query_result(F_db_query($sql, $db));
+if ($r) {
     echo '<option value="0"';
     if ($test_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_show_allusers_test_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['test_id'] . '"';
         if (f_form_option_is_selected($test_id, $m['test_id'])) {
             echo ' selected="selected"';
@@ -311,9 +338,9 @@ echo '<button type="button" onclick="' . $jsaction . '" class="xmlbutton" title=
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo get_form_noscript_select('selectcategory');
+echo f_tce_show_allusers_string(get_form_noscript_select('selectcategory'));
 
-echo
+echo f_tce_show_allusers_string(
     get_form_row_text_input(
         'startdate',
         $l['w_time_begin'],
@@ -325,9 +352,9 @@ echo
         false,
         true,
         false,
-    )
-;
-echo
+    ),
+);
+echo f_tce_show_allusers_string(
     get_form_row_text_input(
         'enddate',
         $l['w_time_end'],
@@ -339,8 +366,8 @@ echo
         false,
         true,
         false,
-    )
-;
+    ),
+);
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -355,14 +382,15 @@ if ($test_id > 0) {
 }
 
 $sql .= ' ORDER BY group_name';
-if ($r = F_db_query($sql, $db)) {
+$r = f_tce_show_allusers_query_result(F_db_query($sql, $db));
+if ($r) {
     echo '<option value="0"';
     if ($group_id === 0) {
         echo ' selected="selected"';
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_show_allusers_group_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['group_id'] . '"';
         if (f_form_option_is_selected($group_id, $m['group_id'])) {
             echo ' selected="selected"';
@@ -379,7 +407,7 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo get_form_noscript_select('selectgroup');
+echo f_tce_show_allusers_string(get_form_noscript_select('selectgroup'));
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
@@ -399,7 +427,8 @@ if ($test_id > 0) {
 }
 
 $sql .= ' GROUP BY user_id, user_lastname, user_firstname, user_name ORDER BY user_lastname, user_firstname, user_name';
-if ($r = F_db_query($sql, $db)) {
+$r = f_tce_show_allusers_query_result(F_db_query($sql, $db));
+if ($r) {
     $countitem = 1;
     echo '<option value="0"';
     if ($user_id === 0) {
@@ -407,7 +436,7 @@ if ($r = F_db_query($sql, $db)) {
     }
 
     echo '>&nbsp;-&nbsp;</option>' . K_NEWLINE;
-    while ($m = F_db_fetch_array($r)) {
+    while (($m = f_tce_show_allusers_user_row(F_db_fetch_array($r))) !== null) {
         echo '<option value="' . $m['user_id'] . '"';
         if (f_form_option_is_selected($user_id, $m['user_id'])) {
             echo ' selected="selected"';
@@ -460,9 +489,11 @@ echo '</select>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
-echo get_form_noscript_select('display_mode');
+echo f_tce_show_allusers_string(get_form_noscript_select('display_mode'));
 
-echo get_form_row_checkbox('show_graph', $l['w_graph'], $l['w_result_graph'], '', 1, $show_graph, false, '');
+echo f_tce_show_allusers_string(
+    get_form_row_checkbox('show_graph', $l['w_graph'], $l['w_result_graph'], '', 1, $show_graph, false, ''),
+);
 
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">&nbsp;</span>' . K_NEWLINE;
@@ -480,7 +511,7 @@ echo '<div class="row"><hr /></div>' . K_NEWLINE;
 // ---------------------------------------------------------------------
 $itemcount = 0;
 if (isset($_REQUEST['sel'])) {
-    $data = f_get_all_users_test_stat(
+    $data = f_tce_show_allusers_stats(f_get_all_users_test_stat(
         $test_id,
         $group_id,
         $user_id,
@@ -489,14 +520,16 @@ if (isset($_REQUEST['sel'])) {
         $full_order_field,
         false,
         $display_mode,
-    );
+    ));
     if (isset($data['num_records'])) {
-        $itemcount = $data['num_records'];
+        $itemcount = (int) $data['num_records'];
     }
 
     echo '<div class="rowl">' . K_NEWLINE;
 
-    echo f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, false, $display_mode);
+    echo f_tce_show_allusers_string(
+        f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, false, $display_mode),
+    );
 
     if (!empty($data['testuser'])) {
         // check/uncheck all options
@@ -526,7 +559,7 @@ if (isset($_REQUEST['sel'])) {
     echo '</div>' . K_NEWLINE;
 
     // display svg graph
-    if ($show_graph && isset($data['svgpoints']) && preg_match_all('/[x]/', $data['svgpoints'], $match) > 1) {
+    if ($show_graph && isset($data['svgpoints']) && f_tce_show_allusers_graph_has_points($data['svgpoints'])) {
         $w = 800;
         $h = 300;
         echo '<div class="row">' . K_NEWLINE;
@@ -563,7 +596,9 @@ if (isset($_REQUEST['sel'])) {
     if ($display_mode > 1) {
         // display statistics for modules, subjects, questions and answers
         echo '<div class="rowl">' . K_NEWLINE;
-        echo f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode);
+        echo f_tce_show_allusers_string(
+            f_print_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $data, $display_mode),
+        );
         echo '<br />' . K_NEWLINE;
         echo '</div>' . K_NEWLINE;
     }
@@ -617,7 +652,7 @@ if (isset($_REQUEST['sel'])) {
                 . $l['w_pdf_all']
                 . '</a> '
         ;
-        if (K_DISPLAY_PDFTEXT_BUTTON) {
+        if (f_tce_show_allusers_bool(K_DISPLAY_PDFTEXT_BUTTON)) {
             echo
                 '<a href="tce_pdf_results.php?mode=5'
                     . $filter
@@ -647,7 +682,7 @@ if (isset($_REQUEST['sel'])) {
                 . $l['w_email_all_results']
                 . ' + PDF</a> '
         ;
-        $custom_export = K_ENABLE_CUSTOM_EXPORT;
+        $custom_export = f_tce_show_allusers_string(K_ENABLE_CUSTOM_EXPORT);
         if ($custom_export !== '') {
             echo
                 '<a href="tce_export_custom.php?menu_mode=startlongprocess'
@@ -667,7 +702,7 @@ echo '<input type="hidden" name="order_field" id="order_field" value="' . $order
 echo '<input type="hidden" name="orderdir" id="orderdir" value="' . $orderdir . '" />' . K_NEWLINE;
 echo '<input type="hidden" name="itemcount" id="itemcount" value="' . $itemcount . '" />' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
-echo f_get_csrf_token_field() . K_NEWLINE;
+echo f_tce_show_allusers_string(f_get_csrf_token_field()) . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
 
 echo '</div>' . K_NEWLINE;
@@ -676,3 +711,109 @@ echo '<div class="pagehelp">' . $l['hp_result_alluser'] . '</div>' . K_NEWLINE;
 echo '</div>';
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_show_allusers_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+function f_tce_show_allusers_bool(mixed $value): bool
+{
+    if (is_array($value)) {
+        return $value !== [];
+    }
+
+    if (is_object($value) || is_resource($value)) {
+        return true;
+    }
+
+    if (is_bool($value)) {
+        return $value;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value)) {
+        return (bool) $value;
+    }
+
+    return false;
+}
+
+function f_tce_show_allusers_is_positive(mixed $value): bool
+{
+    if (is_array($value) || is_object($value)) {
+        return true;
+    }
+
+    if (is_resource($value)) {
+        return (int) $value > 0;
+    }
+
+    if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+        return $value > 0;
+    }
+
+    return false;
+}
+
+function f_tce_show_allusers_graph_has_points(string $points): bool
+{
+    $count = preg_match_all('/[x]/', $points);
+    return $count !== false && $count > 1;
+}
+
+function f_tce_show_allusers_timestamp(string $date): int
+{
+    $timestamp = strtotime($date);
+    return $timestamp === false ? 0 : $timestamp;
+}
+
+/** @return object|resource|bool */
+function f_tce_show_allusers_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array{testuser_creation_time:string}|null */
+function f_tce_show_allusers_creation_row(mixed $row): ?array
+{
+    /** @var array{testuser_creation_time:string}|null $row */
+    return $row;
+}
+
+/** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */
+function f_tce_show_allusers_test_row(mixed $row): ?array
+{
+    /** @var array{test_id:int|string,test_begin_time:string,test_name:string}|null $row */
+    return $row;
+}
+
+/** @return array{group_id:int|string,group_name:string}|null */
+function f_tce_show_allusers_group_row(mixed $row): ?array
+{
+    /** @var array{group_id:int|string,group_name:string}|null $row */
+    return $row;
+}
+
+/** @return array{user_id:int|string,user_lastname:string,user_firstname:string,user_name:string}|null */
+function f_tce_show_allusers_user_row(mixed $row): ?array
+{
+    /** @var array{user_id:int|string,user_lastname:string,user_firstname:string,user_name:string}|null $row */
+    return $row;
+}
+
+/**
+ * @return array{
+ *     num_records?:int|string,testuser?:array<array-key,mixed>,svgpoints?:string,...<array-key,mixed>
+ * }
+ */
+function f_tce_show_allusers_stats(mixed $data): array
+{
+    /**
+     * @var array{
+     *     num_records?:int|string,testuser?:array<array-key,mixed>,svgpoints?:string,...<array-key,mixed>
+     * } $data
+     */
+    return $data;
+}
