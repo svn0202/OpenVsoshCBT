@@ -94,4 +94,65 @@ final class TestAccessTest extends TestCase
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
+
+    public function testUserTestCataloguePreservesEmptyAndBlockedResults(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); '
+                    . 'define("K_TABLE_TEST_SUBJSET", "subject_sets"); define("K_TIMESTAMP_FORMAT", "format"); '
+                    . 'define("K_NEWLINE", "\\n"); define("K_DISPLAY_TEST_DESCRIPTION", false); '
+                    . '$GLOBALS["db"] = "db"; $_SESSION = ["session_user_id" => "11", '
+                    . '"session_user_ip" => "127.0.0.1"]; '
+                    . '$GLOBALS["l"] = ["m_no_test_available" => "NONE", "t_test_list" => "Tests", '
+                    . '"w_test" => "Test", "w_from" => "From", "w_to" => "To", '
+                    . '"w_status" => "Status", "w_action" => "Action", "a_meta_charset" => "UTF-8"]; '
+                    . '$row = ["test_id" => 22, "test_ip_range" => "*", "test_duration_time" => 30, '
+                    . '"test_begin_time" => "2026-08-09 00:00:00", "test_end_time" => "2026-08-11 00:00:00", '
+                    . '"test_password" => null, "test_name" => "Exam", "test_repeatable" => 0]; '
+                    . '$GLOBALS["results"] = [false, "empty", "unauthorized", "blocked"]; '
+                    . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row, false], '
+                    . '"blocked" => [$row, false]]; $GLOBALS["ip"] = [false, true]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function date($format) { return "2026-08-10 12:00:00"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function f_is_valid_test_user(...$arguments) { return array_shift($GLOBALS["ip"]); } '
+                    . 'function F_tmf_test_access_status($testId, $userId) { '
+                    . 'return ["allowed" => false, "reason" => "required_test_not_passed"]; } '
+                    . 'function f_check_test_status(...$arguments) { return [0, 0, false]; } '
+                    . 'function F_tmf_catalog_test_status($status, $pregenerated) { return $status; } '
+                    . 'function f_test_info_link($testId, $name) { return "INFO:" . $name; } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getUserTests)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; $catalogues = []; '
+                    . 'for ($i = 0; $i < 4; ++$i) { $catalogues[] = $qualified(); } '
+                    . 'echo json_encode([$catalogues, count($GLOBALS["queries"]), $GLOBALS["errors"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: array{0: string, 1: string, 2: string, 3: string}, 1: int, 2: int} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$results, $queryCount, $errors] = $decoded;
+        self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
+        self::assertStringContainsString('<table class="testlist">', $results[3]);
+        self::assertStringContainsString('data-test-id="22"', $results[3]);
+        self::assertStringContainsString('Сначала пройдите обязательный тест', $results[3]);
+        self::assertStringNotContainsString('tce_test_execute.php', $results[3]);
+        self::assertSame(4, $queryCount);
+        self::assertSame(1, $errors);
+    }
 }
