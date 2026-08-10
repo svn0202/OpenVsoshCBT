@@ -28,4 +28,14 @@ final class SvgGraphTest extends TestCase
         self::assertStringContainsString('<svg width="100" height="250"', $svg);
         self::assertStringEndsWith("</svg>\n", $svg);
     }
+
+    public function testLargeGraphPreservesFivePointLabelCadence(): void
+    {
+        $svg = f_get_svg_graph_code(implode('x', array_fill(0, 101, '10v20')), 300, 250);
+
+        self::assertStringContainsString('>95</text>', $svg);
+        self::assertStringContainsString('>100</text>', $svg);
+        self::assertStringNotContainsString('>101</text>', $svg);
+        self::assertSame(202, substr_count($svg, '<circle '));
+    }
 }
