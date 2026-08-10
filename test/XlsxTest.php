@@ -168,4 +168,66 @@ final class XlsxTest extends TestCase
         self::assertStringStartsWith('$', (string) ($result['records'][2]['password_hash'] ?? ''));
         self::assertSame('2010-02-03', $result['records'][2]['birth_date'] ?? null);
     }
+
+    public function testUserImportKeepsItsTransactionAndSqlContract(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_TIMESTAMP_FORMAT', 'Y-m-d H:i:s');
+define('K_TABLE_USERS', 'users');
+define('K_TABLE_USERGROUP', 'user_groups');
+$db = 'db';
+$_SERVER['REMOTE_ADDR'] = '192.0.2.9';
+$GLOBALS['queries'] = [];
+function date($format) { return '2026-08-10 13:45:00'; }
+function get_normalized_ip($ip) { return $ip; }
+function F_escape_sql($db, $value) { return str_replace("'", "''", $value); }
+function F_db_query($sql, $db) {
+    $GLOBALS['queries'][] = preg_replace('/\s+/', ' ', trim($sql));
+    return true;
+}
+function F_db_insert_id($db, $table, $field) { return 55; }
+$source = file_get_contents($argv[1]);
+$source = preg_replace('/^<\?php\s*/', '', $source);
+$source = preg_replace('/^\s*require_once [^;]+;\s*$/m', '', $source);
+eval('namespace Harness; ' . $source);
+$count = F_tmf_users_xlsx_import([2 => [
+    'login' => "o'reilly", 'email' => 'student@example.test', 'password_hash' => '$hash',
+    'registration_number' => '', 'first_name' => 'Ada', 'last_name' => 'Lovelace',
+    'birth_date' => '2010-02-03', 'birth_place' => '', 'ssn' => '', 'level' => 2,
+    'group_ids' => [3, 7], 'group_names' => ['alpha', 'beta'],
+]]);
+echo json_encode([$count, $GLOBALS['queries']], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/shared/code/tce_functions_users_xlsx.php'],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{int,array{string,string,string,string,string}} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$count, $queries] = $decoded;
+        self::assertSame(1, $count);
+        self::assertSame('START TRANSACTION', $queries[0]);
+        self::assertSame(
+            "INSERT INTO users (user_regdate,user_ip,user_name,user_email,user_password,user_regnumber,"
+                . "user_firstname,user_lastname,user_birthdate,user_birthplace,user_ssn,user_level) VALUES "
+                . "('2026-08-10 13:45:00','192.0.2.9','o''reilly','student@example.test','"
+                . '$hash'
+                . "',NULL,"
+                . "'Ada','Lovelace','2010-02-03',NULL,NULL,2)",
+            $queries[1],
+        );
+        self::assertSame(
+            'INSERT INTO user_groups (usrgrp_user_id,usrgrp_group_id) VALUES (55,3)',
+            $queries[2],
+        );
+        self::assertSame(
+            'INSERT INTO user_groups (usrgrp_user_id,usrgrp_group_id) VALUES (55,7)',
+            $queries[3],
+        );
+        self::assertSame('COMMIT', $queries[4]);
+    }
 }
