@@ -1204,7 +1204,7 @@ function F_newTestLog($testuser_id, $question_id, $score, $order, $num_answers =
  * Returns false if the number of executed tests is under the limits, true otherwise.
  * @return boolean true/false.
  */
-function F_isTestOverLimits()
+function f_is_test_over_limits(): bool
 {
     require_once '../config/tce_config.php';
     if (K_REMAINING_TESTS && K_REMAINING_TESTS <= 0) {
@@ -1303,7 +1303,7 @@ function F_createTest($test_id, $user_id)
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
-    if (F_isTestOverLimits()) {
+    if (f_is_test_over_limits()) {
         return false;
     }
 

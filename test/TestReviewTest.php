@@ -551,7 +551,7 @@ final class TestReviewTest extends TestCase
                         . 'function F_count_rows($table, $where) { $GLOBALS["calls"][] = [$table, $where]; '
                         . 'return array_shift($GLOBALS["counts"]); } '
                         . '$source = file_get_contents($argv[1]); '
-                        . 'preg_match("/function (F_isTestOverLimits|f_is_test_over_limits)\\(/", '
+                        . 'preg_match("/function (f_is_test_over_limits)\\(/", '
                         . '$source, $match, PREG_OFFSET_CAPTURE); '
                         . '$name = $match[1][0]; $start = $match[0][1]; '
                         . '$end = strpos($source, "\\n/**", $start); '
