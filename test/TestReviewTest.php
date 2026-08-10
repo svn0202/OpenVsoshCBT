@@ -641,7 +641,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_count_rows($tables, $where) { $GLOBALS["count_calls"][] = [$tables, $where]; '
                     . 'return array_shift($GLOBALS["counts"]); } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_isValidTestUser|f_is_valid_test_user)\\(/", '
+                    . 'preg_match("/function (f_is_valid_test_user)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
