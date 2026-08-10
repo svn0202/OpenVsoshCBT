@@ -9,6 +9,19 @@ require_once __DIR__ . '/../shared/code/tce_functions_test.php';
 
 final class TestReviewTest extends TestCase
 {
+    public function testTwoColumnRowPreservesExactMarkup(): void
+    {
+        if (!defined('K_NEWLINE')) {
+            define('K_NEWLINE', "\n");
+        }
+
+        self::assertSame(
+            '<div class="row"><span class="label"><span title="Description">Label: '
+                . '</span></span><span class="value">Value</span></div>' . K_NEWLINE,
+            \F_twoColRow('Label', 'Description', 'Value'),
+        );
+    }
+
     #[DataProvider('reviewValues')]
     public function testReviewValueNormalization(mixed $value, int $expected): void
     {
