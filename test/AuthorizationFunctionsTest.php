@@ -114,7 +114,7 @@ final class AuthorizationFunctionsTest extends TestCase
                     . 'function get_form_row_text_input($field) { return "<FIELD:" . $field . ">"; } '
                     . 'function f_get_csrf_token_field() { return "<CSRF>"; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_loginForm|f_login_form_markup)\\(/", '
+                    . 'preg_match("/function (f_login_form_markup)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

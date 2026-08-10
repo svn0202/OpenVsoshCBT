@@ -34,9 +34,9 @@
  * @param fmethod String method attribute (get/post)
  * @param fenctype String enctype attribute
  * @param username String user name
- * @return XHTML string for login form
+ * @return string XHTML string for login form
  */
-function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
+function f_login_form_markup($faction, $fid, $fmethod, $fenctype, $username): string
 {
     global $l;
     require_once '../config/tce_config.php';
@@ -257,7 +257,7 @@ function f_login_form()
     require_once '../../shared/code/tce_functions_form.php';
     $thispage_title = $l['t_login_form']; //set page title
     require_once '../code/tce_page_header.php';
-    echo F_loginForm($_SERVER['SCRIPT_NAME'], 'form_login', 'post', 'multipart/form-data', $xuser_name);
+    echo f_login_form_markup($_SERVER['SCRIPT_NAME'], 'form_login', 'post', 'multipart/form-data', $xuser_name);
     require_once '../code/tce_page_footer.php';
     exit(); //break page here
 }

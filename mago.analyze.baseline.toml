@@ -1,6 +1,18 @@
 variant = "loose"
 
 [[issues]]
+file = "shared/code/tce_functions_authorization.php"
+code = "invalid-argument"
+message = "Invalid type for the first value."
+count = 1
+
+[[issues]]
+file = "shared/code/tce_functions_authorization.php"
+code = "non-existent-class-like"
+message = "Cannot find class, interface, enum, or type alias `XHTML`."
+count = 1
+
+[[issues]]
 file = "admin/code/index.php"
 code = "false-operand"
 message = "Implicit conversion of `false` to empty string for middle operand in string concatenation."
@@ -12848,21 +12860,9 @@ count = 7
 
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
-code = "invalid-argument"
-message = "Invalid type for the first value."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `F_loginForm`: expected `unknown-ref(XHTML)`, but found `truthy-string`."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
@@ -12969,12 +12969,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
 code = "missing-return-type"
-message = "Function `F_loginForm` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "missing-return-type"
 message = "Function `f_login_form` is missing a return type hint."
 count = 1
 
@@ -13049,12 +13043,6 @@ file = "shared/code/tce_functions_authorization.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_authorization.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `XHTML`."
-count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_authorization.php"
