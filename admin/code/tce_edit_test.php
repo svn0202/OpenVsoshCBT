@@ -159,25 +159,33 @@ if (isset($_REQUEST['group_id'])) {
 if (!isset($_REQUEST['test_score_right']) || empty($_REQUEST['test_score_right'])) {
     $test_score_right = 0;
 } else {
-    $test_score_right = (float) $_REQUEST['test_score_right'];
+    $test_score_right_input = $_REQUEST['test_score_right'];
+    /** @var int|float|numeric-string $test_score_right_input */
+    $test_score_right = (float) $test_score_right_input;
 }
 
 if (!isset($_REQUEST['test_score_wrong']) || empty($_REQUEST['test_score_wrong'])) {
     $test_score_wrong = 0;
 } else {
-    $test_score_wrong = (float) $_REQUEST['test_score_wrong'];
+    $test_score_wrong_input = $_REQUEST['test_score_wrong'];
+    /** @var int|float|numeric-string $test_score_wrong_input */
+    $test_score_wrong = (float) $test_score_wrong_input;
 }
 
 if (!isset($_REQUEST['test_score_unanswered']) || empty($_REQUEST['test_score_unanswered'])) {
     $test_score_unanswered = 0;
 } else {
-    $test_score_unanswered = (float) $_REQUEST['test_score_unanswered'];
+    $test_score_unanswered_input = $_REQUEST['test_score_unanswered'];
+    /** @var int|float|numeric-string $test_score_unanswered_input */
+    $test_score_unanswered = (float) $test_score_unanswered_input;
 }
 
 if (!isset($_REQUEST['test_score_threshold']) || empty($_REQUEST['test_score_threshold'])) {
     $test_score_threshold = 0;
 } else {
-    $test_score_threshold = (float) $_REQUEST['test_score_threshold'];
+    $test_score_threshold_input = $_REQUEST['test_score_threshold'];
+    /** @var int|float|numeric-string $test_score_threshold_input */
+    $test_score_threshold = (float) $test_score_threshold_input;
 }
 
 if (!isset($_REQUEST['test_random_questions_select']) || empty($_REQUEST['test_random_questions_select'])) {
@@ -258,7 +266,9 @@ if (!isset($_REQUEST['test_logout_on_timeout']) || empty($_REQUEST['test_logout_
     $test_logout_on_timeout = f_get_boolean($_REQUEST['test_logout_on_timeout']);
 }
 
-$test_max_score = isset($_REQUEST['test_max_score']) ? (float) $_REQUEST['test_max_score'] : 0;
+$test_max_score_input = $_REQUEST['test_max_score'] ?? 0;
+/** @var int|float|numeric-string $test_max_score_input */
+$test_max_score = (float) $test_max_score_input;
 
 $test_max_score_new = 0; // test max score
 $qtype = ['S', 'M', 'T', 'O', 'C']; // question types
