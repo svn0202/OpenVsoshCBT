@@ -1303,7 +1303,7 @@ function f_print_test_stat(
  * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
  * return HTML table string.
  */
-function F_printTestResultStat($data, $nextorderdir, $order_field, $filter, $pubmode = false, $stats = 1)
+function f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, $pubmode = false, $stats = 1)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
