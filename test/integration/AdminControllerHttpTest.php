@@ -319,6 +319,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertSame('1', $membership);
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     public function testTeacherQuestionBanksAreIsolatedAndSharedOnlyThroughGroups(): void
     {
         $credential = self::ADMIN_PW . '-bank';
