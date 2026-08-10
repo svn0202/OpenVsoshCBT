@@ -208,7 +208,7 @@ count = 1
 file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 4
+count = 2
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
@@ -239,9 +239,3 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "no-value"
-message = "Argument #2 passed to function `f_db_affected_rows` has type `never`, meaning it cannot produce a value."
-count = 2
