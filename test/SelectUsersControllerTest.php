@@ -38,10 +38,10 @@ final class SelectUsersControllerTest extends TestCase
         $result = self::runController(true);
 
         self::assertCount(2, $result['queries']);
-        self::assertSame('SELECT groups', $result['queries'][0]);
+        self::assertSame('SELECT groups', $result['queries'][0] ?? null);
         self::assertSame(
             'INSERT INTO usergroup ( usrgrp_user_id, usrgrp_group_id ) VALUES ( \'31\', \'9\' )',
-            preg_replace('/\s+/', ' ', $result['queries'][1]),
+            preg_replace('/\s+/', ' ', $result['queries'][1] ?? ''),
         );
         self::assertStringContainsString('[[MESSAGE:Updated]]', $result['html']);
     }
