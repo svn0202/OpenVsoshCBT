@@ -161,6 +161,7 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         if (!$maximumP95Setting) {
             $maximumP95Setting = 10_000;
         }
+        /** @var numeric-string|int $maximumP95Setting */
         $maximumP95 = (float) $maximumP95Setting;
 
         $suffix = bin2hex(random_bytes(5));

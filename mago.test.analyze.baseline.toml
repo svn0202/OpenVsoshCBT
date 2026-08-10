@@ -374,12 +374,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `truthy-string` implicitly cast to `float`."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
 count = 1
