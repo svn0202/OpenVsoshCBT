@@ -9115,36 +9115,6 @@ message = "Undefined variable: `$l`."
 count = 34
 
 [[issues]]
-file = "public/code/tce_login.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "public/code/tce_login.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 2
-
-[[issues]]
-file = "public/code/tce_login.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 7
-
-[[issues]]
-file = "public/code/tce_login.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 4
-
-[[issues]]
-file = "public/code/tce_login.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 7
-
-[[issues]]
 file = "public/code/tce_page_header.php"
 code = "impossible-condition"
 message = "Redundant ternary operator: condition is always falsy."
