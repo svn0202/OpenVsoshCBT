@@ -407,9 +407,3 @@ file = "test/integration/PregenerationLoadHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array index accessed on `non-empty-list<float>`."
 count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\PregenerationLoadHttpTest::testConcurrentStartsWithAndWithoutPregeneration`.'
-count = 1

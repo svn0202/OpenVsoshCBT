@@ -140,6 +140,9 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         return round($values[$index], 3);
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     public function testConcurrentStartsWithAndWithoutPregeneration(): void
     {
         $participantCount = (int) getenv('TMF_PREGEN_LOAD_PARTICIPANTS');
