@@ -795,7 +795,7 @@ function f_get_test_password($test_id)
  * @param $test_id (int) test ID.
  * @return string test name or empty string in case of error.
  */
-function F_getTestName($test_id)
+function f_get_test_name($test_id)
 {
     $test_id = (int) $test_id;
     $td = F_getTestData($test_id);

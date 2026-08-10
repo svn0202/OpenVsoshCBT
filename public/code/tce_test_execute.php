@@ -153,7 +153,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         }
 
         // the user is authorized to execute the selected test
-        $thispage_title .= ': ' . F_getTestName($test_id);
+        $thispage_title .= ': ' . f_get_test_name($test_id);
 
         require_once '../code/tce_page_header.php';
         echo '<div class="container">' . K_NEWLINE;
