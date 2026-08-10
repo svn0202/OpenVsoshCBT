@@ -160,7 +160,7 @@ switch ($menu_mode) {
             . K_TABLE_TEST_USER
             . '
 			SET testuser_creation_time=\''
-            . date(K_TIMESTAMP_FORMAT, F_getTestStartTime($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE))
+            . date(K_TIMESTAMP_FORMAT, f_get_test_start_time($testuser_id) + (K_EXTEND_TIME_MINUTES * K_SECONDS_IN_MINUTE))
             . '\'
 			WHERE testuser_id='
             . $testuser_id

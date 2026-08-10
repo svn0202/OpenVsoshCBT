@@ -820,7 +820,7 @@ function f_get_test_duration($test_id)
  * @param $testuser_id (int) user's test ID
  * @return int start time in seconds
  */
-function F_getTestStartTime($testuser_id)
+function f_get_test_start_time($testuser_id)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -2252,7 +2252,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
             $test_data = F_getTestData($test_id);
             // store time information for interactive timer
             $examtime =
-                F_getTestStartTime($m['testlog_testuser_id'])
+                f_get_test_start_time($m['testlog_testuser_id'])
                 + ($test_data['test_duration_time'] * K_SECONDS_IN_MINUTE);
             $str .= '<input type="hidden" name="examtime" id="examtime" value="' . $examtime . '" />' . K_NEWLINE;
             if (f_get_boolean($test_data['test_logout_on_timeout'])) {
