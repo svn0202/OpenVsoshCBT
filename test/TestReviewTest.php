@@ -496,7 +496,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getUserData|f_get_user_data)\\(/", '
+                    . 'preg_match("/function (f_get_user_data)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

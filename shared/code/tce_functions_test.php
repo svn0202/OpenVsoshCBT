@@ -759,7 +759,7 @@ function F_getTestData($test_id)
  * @param $user_id (int) User ID.
  * @return array containing test data.
  */
-function F_getUserData($user_id)
+function f_get_user_data($user_id)
 {
     require_once '../config/tce_config.php';
     global $db, $l;

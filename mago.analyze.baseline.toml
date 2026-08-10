@@ -15159,7 +15159,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `F_getUserData`: expected `array<array-key, mixed>`, but found `array{}|unknown-ref(Returns)`."
+message = "Invalid return type for function `f_get_user_data`: expected `array<array-key, mixed>`, but found `array{}|unknown-ref(Returns)`."
 count = 1
 
 [[issues]]
@@ -15537,7 +15537,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
-message = "Function `F_getUserData` is missing a return type hint."
+message = "Function `f_get_user_data` is missing a return type hint."
 count = 1
 
 [[issues]]
