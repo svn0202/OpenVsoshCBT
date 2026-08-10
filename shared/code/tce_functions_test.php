@@ -735,7 +735,7 @@ function F_printTestInfo($test_id, $showip = false)
  * @param $test_id (int) test ID.
  * @return array containing test data.
  */
-function F_getTestData($test_id)
+function f_get_test_data($test_id)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -786,7 +786,7 @@ function f_get_user_data($user_id)
 function f_get_test_password($test_id)
 {
     $test_id = (int) $test_id;
-    $td = F_getTestData($test_id);
+    $td = f_get_test_data($test_id);
     return $td['test_password'];
 }
 
@@ -798,7 +798,7 @@ function f_get_test_password($test_id)
 function f_get_test_name($test_id)
 {
     $test_id = (int) $test_id;
-    $td = F_getTestData($test_id);
+    $td = f_get_test_data($test_id);
     return $td['test_name'];
 }
 
@@ -811,7 +811,7 @@ function f_get_test_duration($test_id)
 {
     require_once '../config/tce_config.php';
     $test_id = (int) $test_id;
-    $td = F_getTestData($test_id);
+    $td = f_get_test_data($test_id);
     return $td['test_duration_time'] * K_SECONDS_IN_MINUTE;
 }
 
@@ -1311,7 +1311,7 @@ function F_createTest($test_id, $user_id)
     $user_id = (int) $user_id;
     $firsttest = 0; // id of the firts test of this type
     // get test data
-    $testdata = F_getTestData($test_id);
+    $testdata = f_get_test_data($test_id);
     $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
     $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
     $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
@@ -1830,7 +1830,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $unanswered = true;
     $answer_id = [];
     // get test data
-    $testdata = F_getTestData($test_id);
+    $testdata = f_get_test_data($test_id);
     // get question information
     $sql = 'SELECT *
 		FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
@@ -2174,7 +2174,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
         return;
     }
 
-    $testdata = F_getTestData($test_id);
+    $testdata = f_get_test_data($test_id);
     $noanswer_hidden = '';
     $noanswer_disabled = '';
     if (!f_get_boolean($testdata['test_noanswer_enabled'])) {
@@ -2249,7 +2249,7 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 . '" />'
                 . K_NEWLINE;
             // get test data
-            $test_data = F_getTestData($test_id);
+            $test_data = f_get_test_data($test_id);
             // store time information for interactive timer
             $examtime =
                 f_get_test_start_time($m['testlog_testuser_id'])
@@ -3071,7 +3071,7 @@ function f_test_comment($test_id): string
     require_once '../config/tce_config.php';
     global $db, $l;
     $test_id = (int) $test_id;
-    $td = F_getTestData($test_id);
+    $td = f_get_test_data($test_id);
     $user_id = (int) $_SESSION['session_user_id'];
     $str = '';
     // user's comment
@@ -3290,7 +3290,7 @@ function f_openvsosh_admin_test_context(int $test_id, string $active, ?array $te
         return '';
     }
     if ($test_data === null) {
-        $test_data = F_getTestData($test_id);
+        $test_data = f_get_test_data($test_id);
         if ($test_data === []) {
             return '';
         }

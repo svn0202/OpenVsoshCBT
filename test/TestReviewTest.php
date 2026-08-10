@@ -63,7 +63,7 @@ final class TestReviewTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["ids"] = []; '
-                    . 'function F_getTestData($id) { $GLOBALS["ids"][] = $id; '
+                    . 'function f_get_test_data($id) { $GLOBALS["ids"][] = $id; '
                     . 'return ["test_duration_time" => 5]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_duration)\\(/", '
@@ -163,7 +163,7 @@ final class TestReviewTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; $GLOBALS["ids"] = []; function F_getTestData($id) { '
+                'namespace Harness; $GLOBALS["ids"] = []; function f_get_test_data($id) { '
                     . '$GLOBALS["ids"][] = $id; return ["test_password" => "secret"]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_password)\\(/", '
@@ -188,7 +188,7 @@ final class TestReviewTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; $GLOBALS["ids"] = []; function F_getTestData($id) { '
+                'namespace Harness; $GLOBALS["ids"] = []; function f_get_test_data($id) { '
                     . '$GLOBALS["ids"][] = $id; return ["test_name" => "Final exam"]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_name)\\(/", '
@@ -541,7 +541,7 @@ final class TestReviewTest extends TestCase
                     . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_getTestData|f_get_test_data)\\(/", '
+                    . 'preg_match("/function (f_get_test_data)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '

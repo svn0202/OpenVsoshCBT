@@ -68,7 +68,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     }
 
     if (F_executeTest($test_id)) {
-        $execution_rules = F_getTestData($test_id);
+        $execution_rules = f_get_test_data($test_id);
         if (f_get_boolean($execution_rules['test_disable_previous'] ?? false)) {
             unset($_REQUEST['prevquestion'], $_POST['prevquestion']);
         }

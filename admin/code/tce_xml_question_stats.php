@@ -110,7 +110,7 @@ function f_xml_export_question_stats($test_id)
     $xml .= K_TAB . '<body>' . K_NEWLINE;
 
     // get test data
-    $testdata = F_getTestData($test_id);
+    $testdata = f_get_test_data($test_id);
 
     // get total number of questions for the selected test
     $num_questions = F_count_rows(
