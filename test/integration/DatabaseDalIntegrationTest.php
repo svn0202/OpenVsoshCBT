@@ -83,12 +83,21 @@ final class DatabaseDalIntegrationTest extends TestCase
         $this->db = null;
     }
 
+    private static function scalarFromRow(mixed $row): mixed
+    {
+        if ($row === false) {
+            return null;
+        }
+        assert(is_array($row), 'A fetched database row must be an array or false.');
+        return reset($row);
+    }
+
     private function dbScalar(string $sql): mixed
     {
         $result = \F_db_query($sql, $this->db);
         $this->assertNotFalse($result, $sql);
-        $row = \F_db_fetch_array($result);
-        return $row === false ? null : $row[0];
+        /** @var \mysqli_result|\PgSql\Result $result */
+        return self::scalarFromRow(\F_db_fetch_array($result));
     }
 
     private function dbExec(string $sql): void
