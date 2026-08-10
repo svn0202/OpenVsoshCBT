@@ -410,12 +410,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$running`."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\PregenerationLoadHttpTest::testConcurrentStartsWithAndWithoutPregeneration`.'
 count = 1
