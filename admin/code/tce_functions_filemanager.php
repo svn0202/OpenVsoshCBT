@@ -651,8 +651,6 @@ function f_get_dir_visual_table(
             if (in_array(strtolower($info['extension']), $imgformats)) {
                 $w = 150;
                 $h = 150;
-                // @mago-expect analysis:mixed-assignment -- legacy helper updates preview dimensions by reference
-                // @mago-expect analysis:mixed-assignment -- legacy helper updates preview dimensions by reference
                 $imgicon = F_objects_replacement(
                     $info['tcename'],
                     $info['extension'],
