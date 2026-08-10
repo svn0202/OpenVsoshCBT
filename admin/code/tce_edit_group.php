@@ -22,8 +22,45 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_GROUPS;
 require_once '../../shared/code/tce_authorization.php';
+
+/**
+ * @var array{
+ *     t_group_editor:string,
+ *     m_authorization_denied:string,
+ *     w_name:string,
+ *     a_meta_charset:string,
+ *     m_delete_confirm:string,
+ *     w_delete:string,
+ *     h_delete:string,
+ *     w_cancel:string,
+ *     h_cancel:string,
+ *     m_group_deleted:string,
+ *     m_form_missing_fields:string,
+ *     w_confirm:string,
+ *     w_update:string,
+ *     m_duplicate_name:string,
+ *     m_group_updated:string,
+ *     w_group:string,
+ *     w_search:string,
+ *     h_group_name:string,
+ *     h_update:string,
+ *     w_add:string,
+ *     h_add:string,
+ *     w_clear:string,
+ *     h_clear:string,
+ *     hp_edit_group:string
+ * } $l
+ */
+/** @var mixed $db */
+/** @var string $menu_mode */
+/** @var bool $formstatus */
+/** @var array{SCRIPT_NAME:string} $server */
+$server = $_SERVER;
+/** @var array{session_user_id:int|string,session_user_ip:string,session_user_level:int|string} $session */
+$session = $_SESSION;
 
 $thispage_title = $l['t_group_editor'];
 require_once '../code/tce_page_header.php';
@@ -32,9 +69,9 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_roles.php';
 require_once '../code/tce_functions_user_select.php';
 
-$user_id = (int) $_SESSION['session_user_id'];
-$userip = $_SESSION['session_user_ip'];
-$userlevel = (int) $_SESSION['session_user_level'];
+$user_id = (int) $session['session_user_id'];
+$userip = $session['session_user_ip'];
+$userlevel = (int) $session['session_user_level'];
 
 if (isset($_REQUEST['group_id'])) {
     $group_id = (int) $_REQUEST['group_id'];
@@ -46,10 +83,10 @@ if (isset($_REQUEST['group_id'])) {
     $group_id = 0;
 }
 
-$group_name = $_REQUEST['group_name'] ?? '';
-$group_searchterms = trim((string) ($_REQUEST['group_searchterms'] ?? ''));
+$group_name = f_tce_edit_group_request_string($_REQUEST['group_name'] ?? '');
+$group_searchterms = trim(f_tce_edit_group_request_string($_REQUEST['group_searchterms'] ?? ''));
 $group_name_sl = stripslashes($group_name);
-$group_name_db = F_escape_sql($db, $group_name);
+$group_name_db = f_tce_edit_group_string(F_escape_sql($db, $group_name));
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'group_name';
@@ -58,7 +95,7 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l[
 switch ($menu_mode) { // process submitted data
     case 'delete':
             // ask confirmation
-            if ($_SESSION['session_user_level'] < K_AUTH_DELETE_GROUPS) {
+            if ((int) $session['session_user_level'] < f_tce_edit_group_int(K_AUTH_DELETE_GROUPS)) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
                 break;
             }
@@ -71,7 +108,7 @@ switch ($menu_mode) { // process submitted data
             echo '<div class="confirmbox">' . K_NEWLINE;
             echo
                 '<form action="'
-                    . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+                    . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
                     . '" method="post" enctype="multipart/form-data" id="form_delete">'
                     . K_NEWLINE
             ;
@@ -79,7 +116,7 @@ switch ($menu_mode) { // process submitted data
             echo '<input type="hidden" name="group_id" id="group_id" value="' . $group_id . '" />' . K_NEWLINE;
             echo
                 '<input type="hidden" name="group_name" id="group_name" value="'
-                    . htmlspecialchars((string) $group_name_sl, ENT_QUOTES, $l['a_meta_charset'])
+                    . htmlspecialchars($group_name_sl, ENT_QUOTES, $l['a_meta_charset'])
                     . '" />'
                     . K_NEWLINE
             ;
@@ -93,7 +130,7 @@ switch ($menu_mode) { // process submitted data
 
     case 'forcedelete':
             // Delete specified user
-            if ($_SESSION['session_user_level'] < K_AUTH_DELETE_GROUPS) {
+            if ((int) $session['session_user_level'] < f_tce_edit_group_int(K_AUTH_DELETE_GROUPS)) {
                 F_print_error('ERROR', $l['m_authorization_denied']);
                 break;
             }
@@ -104,7 +141,8 @@ switch ($menu_mode) { // process submitted data
 
             if (($_POST['forcedelete'] ?? '') === $l['w_delete']) { //check if delete button has been pushed (redundant check)
                 $sql = 'DELETE FROM ' . K_TABLE_GROUPS . ' WHERE group_id=' . $group_id . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     $group_id = false;
@@ -145,7 +183,8 @@ switch ($menu_mode) { // process submitted data
 				WHERE group_id='
                     . $group_id
                     . '';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
                     F_print_error('MESSAGE', '[' . $group_name_sl . '] ' . $l['m_group_updated']);
@@ -169,9 +208,11 @@ switch ($menu_mode) { // process submitted data
 				group_name
 				) VALUES (
 				\'' . $group_name_db . "')";
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 } else {
+                    /** @var int|numeric-string $group_id */
                     $group_id = F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
                 }
 
@@ -184,13 +225,14 @@ switch ($menu_mode) { // process submitted data
 				usrgrp_group_id
 				) VALUES (
 				\''
-                    . $_SESSION['session_user_id']
+                    . $session['session_user_id']
                     . '\',
 				\''
                     . $group_id
                     . '\'
 				)';
-                if (!($r = F_db_query($sql, $db))) {
+                $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+                if (!$r) {
                     F_display_db_error(false);
                 }
             }
@@ -210,18 +252,21 @@ switch ($menu_mode) { // process submitted data
 
 // --- Initialize variables
 if ($formstatus && $menu_mode !== 'clear') {
-    if (!isset($group_id) || $group_id === 0) {
+    if ($group_id === 0) {
         $group_id = 0;
         $group_name = '';
         $group_name_sl = '';
         $group_name_db = '';
     } else {
-        $sql = F_user_group_select_sql('group_id=' . $group_id) . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
-                /** @var int|numeric-string $stored_group_id */
-                $stored_group_id = $m['group_id'];
-                $group_id = (int) $stored_group_id;
+        $sql = f_tce_edit_group_string(
+            F_user_group_select_sql('group_id=' . f_tce_edit_group_string($group_id)),
+        ) . ' LIMIT 1';
+        $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+        if ($r) {
+            $m = f_tce_edit_group_row(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{group_id:int|string,group_name:string} $m */
+                $group_id = (int) $m['group_id'];
                 $group_name = $m['group_name'];
             } else {
                 $group_name = '';
@@ -239,7 +284,7 @@ echo '<div class="container">' . K_NEWLINE;
 echo '<div class="tceformbox">' . K_NEWLINE;
 echo
     '<form action="'
-        . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES)
+        . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES)
         . '" method="post" enctype="multipart/form-data" id="form_groupeditor">'
         . K_NEWLINE
 ;
@@ -261,10 +306,10 @@ if ($group_id === 0) {
 echo '>+</option>' . K_NEWLINE;
 // Keep only the current group in the initial response. Additional groups are
 // loaded in bounded search results instead of rendering the entire table.
-if ($group_id > 0) {
+if (f_tce_edit_group_is_positive($group_id)) {
     echo
         '<option value="'
-            . $group_id
+            . f_tce_edit_group_string($group_id)
             . '" selected="selected">'
             . htmlspecialchars($group_name, ENT_NOQUOTES, $l['a_meta_charset'])
             . '</option>'
@@ -273,19 +318,19 @@ if ($group_id > 0) {
 }
 
 if ($group_searchterms !== '') {
-    $where = "group_name LIKE '%" . F_escape_sql($db, $group_searchterms) . "%'";
-    $sql = F_user_group_select_sql($where);
-    if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
-        $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . K_MAX_ROWS_PER_PAGE;
+    $where = "group_name LIKE '%" . f_tce_edit_group_string(F_escape_sql($db, $group_searchterms)) . "%'";
+    $sql = f_tce_edit_group_string(F_user_group_select_sql($where));
+    if (f_legacy_literal_equals(f_tce_edit_group_database_type(K_DATABASE_TYPE), 'ORACLE')) {
+        $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . f_tce_edit_group_int(K_MAX_ROWS_PER_PAGE);
     } else {
-        $sql .= ' LIMIT ' . K_MAX_ROWS_PER_PAGE;
+        $sql .= ' LIMIT ' . f_tce_edit_group_int(K_MAX_ROWS_PER_PAGE);
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
-            /** @var int|numeric-string $listed_group_id */
-            $listed_group_id = $m['group_id'];
-            if ((int) $listed_group_id === $group_id) {
+    $r = f_tce_edit_group_query_result(F_db_query($sql, $db));
+    if ($r) {
+        while ($m = f_tce_edit_group_row(F_db_fetch_array($r))) {
+            /** @var array{group_id:int|string,group_name:string} $m */
+            if ((int) $m['group_id'] === $group_id) {
                 continue;
             }
 
@@ -341,7 +386,7 @@ echo
 echo '<div class="row">' . K_NEWLINE;
 
 // show buttons by case
-if ($group_id > 0) {
+if (f_tce_edit_group_is_positive($group_id)) {
     echo '<span style="background-color:#999999;">';
     echo
         '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="'
@@ -357,7 +402,7 @@ if ($group_id > 0) {
     F_submit_button('update', $l['w_update'], $l['h_update']);
     echo '</span>';
     F_submit_button('add', $l['w_add'], $l['h_add']);
-    if ($_SESSION['session_user_level'] >= K_AUTH_DELETE_GROUPS) {
+    if ((int) $session['session_user_level'] >= f_tce_edit_group_int(K_AUTH_DELETE_GROUPS)) {
         // your account and anonymous user can't be deleted
         F_submit_button('delete', $l['w_delete'], $l['h_delete']);
     }
@@ -376,3 +421,50 @@ echo '<div class="pagehelp">' . $l['hp_edit_group'] . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** Preserve the configured database type without specializing it during static analysis. */
+function f_tce_edit_group_database_type(mixed $database_type): string
+{
+    return (string) $database_type;
+}
+
+/** Normalize scalar request fields while rejecting array-shaped input. */
+function f_tce_edit_group_request_string(mixed $value): string
+{
+    return is_scalar($value) ? (string) $value : '';
+}
+
+/** Preserve legacy string conversion at explicitly string-based boundaries. */
+function f_tce_edit_group_string(mixed $value): string
+{
+    return is_array($value) ? 'Array' : (string) $value;
+}
+
+/** Preserve legacy integer conversion without specializing configured constants. */
+function f_tce_edit_group_int(mixed $value): int
+{
+    return (int) $value;
+}
+
+/** Preserve legacy numeric comparison for group identifiers, including `false`. */
+function f_tce_edit_group_is_positive(int|string|bool $group_id): bool
+{
+    return $group_id > 0;
+}
+
+/**
+ * Preserve the active DAL result type across mutually exclusive database implementations.
+ *
+ * @return object|resource|bool
+ */
+function f_tce_edit_group_query_result(mixed $result): mixed
+{
+    /** @var object|resource|bool $result */
+    return $result;
+}
+
+/** @return array<array-key, mixed>|null */
+function f_tce_edit_group_row(mixed $row): ?array
+{
+    return is_array($row) ? $row : null;
+}
