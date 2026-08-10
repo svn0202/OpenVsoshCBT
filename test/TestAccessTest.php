@@ -206,4 +206,78 @@ final class TestAccessTest extends TestCase
             $fieldCalls,
         );
     }
+
+    public function testTestInfoPreservesEmptyUnauthorizedAndDetailedMarkup(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); define("K_NEWLINE", "\\n"); '
+                    . '$GLOBALS["db"] = "db"; $_SESSION["session_user_ip"] = "127.0.0.1"; '
+                    . '$GLOBALS["l"] = ["w_no" => "No", "w_yes" => "Yes", "a_meta_charset" => "UTF-8", '
+                    . '"w_time_begin" => "Begin", "h_time_begin" => "Begin help", '
+                    . '"w_time_end" => "End", "h_time_end" => "End help", '
+                    . '"w_test_time" => "Duration", "h_test_time" => "Duration help", "w_minutes" => "minutes", '
+                    . '"w_score_right" => "Right", "h_score_right" => "Right help", '
+                    . '"w_score_wrong" => "Wrong", "h_score_wrong" => "Wrong help", '
+                    . '"w_score_unanswered" => "Unanswered", "h_score_unanswered" => "Unanswered help", '
+                    . '"w_max_score" => "Maximum", "w_test_score_threshold" => "Threshold", '
+                    . '"h_test_score_threshold" => "Threshold help", "w_results_to_users" => "Results", '
+                    . '"h_results_to_users" => "Results help", "w_report_to_users" => "Report", '
+                    . '"h_report_to_users" => "Report help", "w_repeatable" => "Repeatable", '
+                    . '"h_repeatable_test" => "Repeat help", "w_ip_range" => "IP range", '
+                    . '"h_ip_range" => "IP help"]; '
+                    . '$row = ["test_ip_range" => "127.0.0.1", "test_name" => "<Exam & \\"Q\\">", '
+                    . '"test_description" => "Description", "test_begin_time" => "begin", '
+                    . '"test_end_time" => "end", "test_duration_time" => 30, "test_score_right" => 2, '
+                    . '"test_score_wrong" => -1, "test_score_unanswered" => 0, "test_max_score" => 20, '
+                    . '"test_score_threshold" => 10, "test_results_to_users" => true, '
+                    . '"test_report_to_users" => false, "test_repeatable" => 3]; '
+                    . '$GLOBALS["results"] = [false, "empty", "unauthorized", "authorized"]; '
+                    . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row], "authorized" => [$row]]; '
+                    . '$GLOBALS["valid"] = [false, true]; $GLOBALS["queries"] = []; '
+                    . '$GLOBALS["errors"] = 0; $GLOBALS["two_col"] = []; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . 'function f_is_valid_test_user(...$arguments) { return array_shift($GLOBALS["valid"]); } '
+                    . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function f_two_col_row(...$arguments) { $GLOBALS["two_col"][] = $arguments; '
+                    . 'return "<ROW:" . $arguments[0] . ":" . $arguments[2] . ">"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_printTestInfo)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$outputs = [$qualified("007", true), $qualified("007", true), '
+                    . '$qualified("007", true), $qualified("007", true)]; '
+                    . 'echo json_encode([$outputs, $GLOBALS["queries"], '
+                    . '$GLOBALS["errors"], $GLOBALS["two_col"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0: array{0: string, 1: string, 2: string, 3: string}, 1: list<string>, 2: int, 3: list<list<mixed>>} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$outputs, $queries, $errors, $rows] = $decoded;
+        self::assertSame(['</div>', '</div>', ''], array_slice($outputs, 0, 3));
+        self::assertStringContainsString('<h1>&lt;Exam &amp; "Q"&gt;</h1>', $outputs[3]);
+        self::assertStringContainsString('[Description]', $outputs[3]);
+        self::assertStringContainsString('<ROW:Repeatable:Yes ( 3 )>', $outputs[3]);
+        self::assertStringContainsString('<ROW:IP range:127.0.0.1>', $outputs[3]);
+        self::assertCount(12, $rows);
+        self::assertCount(4, $queries);
+        self::assertStringContainsString('test_id=007', $queries[0] ?? '');
+        self::assertSame(1, $errors);
+    }
 }
