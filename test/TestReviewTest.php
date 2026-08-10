@@ -680,7 +680,7 @@ final class TestReviewTest extends TestCase
                     . 'return array_shift($GLOBALS["results"]); } '
                     . 'function F_display_db_error(...$args) { $GLOBALS["errors"][] = $args; } '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (F_addLogAnswers|f_add_log_answers)\\(/", '
+                    . 'preg_match("/function (f_add_log_answers)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
