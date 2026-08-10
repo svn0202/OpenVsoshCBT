@@ -384,9 +384,9 @@ function f_is_valid_ip($user_ip, $test_ips): bool
 /**
  * Check if user's IP is valid over test IP range
  * @param $test_id (int) Test ID
- * @return true if the client certifiate is valid, false otherwise
+ * @return bool true if the client certificate is valid, false otherwise
  */
-function F_isValidSSLCert($test_id)
+function f_is_valid_ssl_cert($test_id): bool
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_authorization.php';
@@ -431,7 +431,7 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
     }
 
     // check user's SSL certificate
-    if (!F_isValidSSLCert($test_id)) {
+    if (!f_is_valid_ssl_cert($test_id)) {
         return false;
     }
 
