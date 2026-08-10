@@ -28,7 +28,7 @@
  */
 class XMLQuestionImporter
 {
-    public $parser;
+    public XMLParser $parser;
 
     /**
      * Current level: 'module', 'subject', 'question', 'answer'.
@@ -38,7 +38,7 @@ class XMLQuestionImporter
 
     /**
      * Array to store current level data.
-     * @var array<array-key, mixed>
+     * @var array<string, array<string, int|float|string|false>>
      * @private
      */
     private array $level_data = [];
@@ -57,7 +57,7 @@ class XMLQuestionImporter
 
     /**
      * Boolean values.
-     * @var array<array-key, mixed>
+     * @var array<string, string>
      * @private
      */
     private array $boolval = [
@@ -67,7 +67,7 @@ class XMLQuestionImporter
 
     /**
      * Type of questions.
-     * @var array<array-key, mixed>
+     * @var array<string, string>
      * @private
      */
     private array $qtype = [
@@ -111,7 +111,8 @@ class XMLQuestionImporter
         // sets the character data handler function for the XML parser
         xml_set_character_data_handler($this->parser, [$this, 'segContentHandler']);
         // start parsing an XML document
-        if (xml_parse($this->parser, file_get_contents($xmlfile)) === 0) {
+        $xml = file_get_contents($xmlfile);
+        if ($xml === false || xml_parse($this->parser, $xml) === 0) {
             die(sprintf(
                 'ERROR xmlResourceBundle :: XML error: %s at line %d',
                 xml_error_string(xml_get_error_code($this->parser)),
@@ -230,23 +231,18 @@ class XMLQuestionImporter
                 $elname = $this->level . '_' . $name;
                 if ($this->current_element === $elname) {
                     // convert XML special chars
-                    $this->level_data[$this->level][$this->current_element] = f_xml_to_text(utrim($this->current_data));
+                    $value = f_xml_to_text(utrim($this->current_data));
                     if (
                         $this->current_element === 'question_description'
                         || $this->current_element === 'answer_description'
                     ) {
                         // normalize UTF-8 string based on settings
-                        $this->level_data[$this->level][$this->current_element] = f_utf8_normalizer(
-                            $this->level_data[$this->level][$this->current_element],
-                            K_UTF8_NORMALIZATION_MODE,
-                        );
+                        $value = f_utf8_normalizer($value, K_UTF8_NORMALIZATION_MODE);
                     }
 
                     // escape for SQL
-                    $this->level_data[$this->level][$this->current_element] = F_escape_sql(
-                        $db,
-                        $this->level_data[$this->level][$this->current_element],
-                        false,
+                    $this->level_data[$this->level][$this->current_element] = $this->stringValue(
+                        F_escape_sql($db, $value, false),
                     );
                 }
 
@@ -277,7 +273,15 @@ class XMLQuestionImporter
         global $l, $db;
         require_once '../config/tce_config.php';
         require_once '../../shared/code/tce_functions_auth_sql.php';
-        if (isset($this->level_data['module']['module_id']) && $this->level_data['module']['module_id'] > 0) {
+        if (!isset($this->level_data['module'])) {
+            return;
+        }
+
+        /** @var array{module_id?:int|string|false,module_name:string,module_enabled:string,module_user_id:int|string} $module */
+        $module = &$this->level_data['module'];
+        /** @var array{session_user_id:int|string} $session */
+        $session = $_SESSION;
+        if (isset($module['module_id']) && $module['module_id'] !== false && $module['module_id'] > 0) {
             return;
         }
 
@@ -288,17 +292,21 @@ class XMLQuestionImporter
             . K_TABLE_MODULES
             . '
 			WHERE module_name=\''
-            . $this->level_data['module']['module_name']
+            . $module['module_name']
             . '\'
 			LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if ($r) {
+            $m = $this->databaseRow(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{module_id:int|string} $m */
                 // get existing module ID
                 if (!f_is_authorized_user(K_TABLE_MODULES, 'module_id', $m['module_id'], 'module_user_id')) {
                     // unauthorized user
-                    $this->level_data['module']['module_id'] = false;
+                    $module['module_id'] = false;
                 } else {
-                    $this->level_data['module']['module_id'] = $m['module_id'];
+                    $module['module_id'] = $m['module_id'];
                 }
             } else {
                 // insert new module
@@ -311,20 +319,24 @@ class XMLQuestionImporter
 					module_user_id
 					) VALUES (
 					\''
-                    . $this->level_data['module']['module_name']
+                    . $module['module_name']
                     . '\',
 					\''
-                    . $this->boolval[$this->level_data['module']['module_enabled']]
+                    . ($this->boolval[$module['module_enabled']] ?? '0')
                     . '\',
 					\''
-                    . $_SESSION['session_user_id']
+                    . $session['session_user_id']
                     . '\'
 					)';
-                if (!($r = F_db_query($sql, $db))) {
+                /** @var object|resource|bool $r */
+                $r = F_db_query($sql, $db);
+                if (!$r) {
                     F_display_db_error();
                 } else {
                     // get new module ID
-                    $this->level_data['module']['module_id'] = F_db_insert_id($db, K_TABLE_MODULES, 'module_id');
+                    /** @var int|numeric-string $module_id */
+                    $module_id = F_db_insert_id($db, K_TABLE_MODULES, 'module_id');
+                    $module['module_id'] = $module_id;
                 }
             }
         } else {
@@ -340,11 +352,21 @@ class XMLQuestionImporter
     {
         global $l, $db;
         require_once '../config/tce_config.php';
-        if ($this->level_data['module']['module_id'] === false) {
+        if (!isset($this->level_data['module'], $this->level_data['subject'])) {
             return;
         }
 
-        if (isset($this->level_data['subject']['subject_id']) && $this->level_data['subject']['subject_id'] > 0) {
+        /** @var array{module_id:int|string|false} $module */
+        $module = &$this->level_data['module'];
+        /** @var array{subject_id?:int|string|false,subject_name:string,subject_description:string,subject_enabled:string,subject_user_id:int|string,subject_module_id:int|string} $subject */
+        $subject = &$this->level_data['subject'];
+        /** @var array{session_user_id:int|string} $session */
+        $session = $_SESSION;
+        if ($module['module_id'] === false) {
+            return;
+        }
+
+        if (isset($subject['subject_id']) && $subject['subject_id'] !== false && $subject['subject_id'] > 0) {
             return;
         }
 
@@ -355,17 +377,21 @@ class XMLQuestionImporter
             . K_TABLE_SUBJECTS
             . '
 			WHERE subject_name=\''
-            . $this->level_data['subject']['subject_name']
+            . $subject['subject_name']
             . '\'
 				AND subject_module_id='
-            . $this->level_data['module']['module_id']
+            . $module['module_id']
             . '
 			LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if ($r) {
+            $m = $this->databaseRow(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{subject_id:int|string} $m */
                 // get existing subject ID
-                $this->level_data['subject']['subject_id'] = $m['subject_id'];
-            } elseif ($this->level_data['module']['module_id'] !== false) {
+                $subject['subject_id'] = $m['subject_id'];
+            } else {
                 // insert new subject
                 $sql =
                     'INSERT INTO '
@@ -378,29 +404,31 @@ class XMLQuestionImporter
 					subject_module_id
 					) VALUES (
 					\''
-                    . $this->level_data['subject']['subject_name']
+                    . $subject['subject_name']
                     . '\',
 					'
-                    . f_empty_to_null($this->level_data['subject']['subject_description'])
+                    . f_empty_to_null($subject['subject_description'])
                     . ',
 					\''
-                    . $this->boolval[$this->level_data['subject']['subject_enabled']]
+                    . ($this->boolval[$subject['subject_enabled']] ?? '0')
                     . '\',
 					\''
-                    . $_SESSION['session_user_id']
+                    . $session['session_user_id']
                     . '\',
 					'
-                    . $this->level_data['module']['module_id']
+                    . $module['module_id']
                     . '
 					)';
-                if (!($r = F_db_query($sql, $db))) {
+                /** @var object|resource|bool $r */
+                $r = F_db_query($sql, $db);
+                if (!$r) {
                     F_display_db_error();
                 } else {
                     // get new subject ID
-                    $this->level_data['subject']['subject_id'] = F_db_insert_id($db, K_TABLE_SUBJECTS, 'subject_id');
+                    /** @var int|numeric-string $subject_id */
+                    $subject_id = F_db_insert_id($db, K_TABLE_SUBJECTS, 'subject_id');
+                    $subject['subject_id'] = $subject_id;
                 }
-            } else {
-                $this->level_data['subject']['subject_id'] = false;
             }
         } else {
             F_display_db_error();
@@ -415,58 +443,74 @@ class XMLQuestionImporter
     {
         global $l, $db;
         require_once '../config/tce_config.php';
-        if ($this->level_data['module']['module_id'] === false) {
+        if (!isset($this->level_data['module'], $this->level_data['subject'], $this->level_data['question'])) {
             return;
         }
 
-        if ($this->level_data['subject']['subject_id'] === false) {
+        /** @var array{module_id:int|string|false} $module */
+        $module = &$this->level_data['module'];
+        /** @var array{subject_id:int|string|false} $subject */
+        $subject = &$this->level_data['subject'];
+        /** @var array{question_id?:int|string|false,question_subject_id:int|string,question_description:string,question_explanation:string,question_type:string,question_difficulty:int|string,question_enabled:string,question_position:int|string,question_timer:int|string,question_fullscreen:string,question_inline_answers:string,question_auto_next:string,question_shuffle_answers:string} $question */
+        $question = &$this->level_data['question'];
+        if ($module['module_id'] === false) {
             return;
         }
 
-        if (isset($this->level_data['question']['question_id']) && $this->level_data['question']['question_id'] > 0) {
+        if ($subject['subject_id'] === false) {
             return;
         }
+
+        if (isset($question['question_id']) && $question['question_id'] !== false && $question['question_id'] > 0) {
+            return;
+        }
+
+        $database_type = $this->databaseType(K_DATABASE_TYPE);
 
         // check if this question already exist
         $sql = 'SELECT question_id
 			FROM ' . K_TABLE_QUESTIONS . '
 			WHERE ';
-        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
+        if (strcmp($database_type, 'ORACLE') === 0) {
             $sql .=
                 "dbms_lob.instr(question_description,'"
-                . $this->level_data['question']['question_description']
+                . $question['question_description']
                 . "',1,1)>0";
-        } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+        } elseif ($database_type === 'MYSQL' && $this->booleanConfig(K_MYSQL_QA_BIN_UNIQUITY)) {
             $sql .=
                 "question_description='"
-                . $this->level_data['question']['question_description']
+                . $question['question_description']
                 . "' COLLATE "
                 . (defined('K_MYSQL_QA_BIN_COLLATION') ? K_MYSQL_QA_BIN_COLLATION : 'utf8_bin');
         } else {
-            $sql .= "question_description='" . $this->level_data['question']['question_description'] . "'";
+            $sql .= "question_description='" . $question['question_description'] . "'";
         }
 
-        $sql .= ' AND question_subject_id=' . $this->level_data['subject']['subject_id'] . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $sql .= ' AND question_subject_id=' . $subject['subject_id'] . ' LIMIT 1';
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if ($r) {
+            $m = $this->databaseRow(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{question_id:int|string} $m */
                 // get existing question ID
-                $this->level_data['question']['question_id'] = $m['question_id'];
+                $question['question_id'] = $m['question_id'];
                 return;
             }
         } else {
             F_display_db_error();
         }
 
-        if (K_DATABASE_TYPE === 'MYSQL') {
+        $strkeylimit = 0;
+        if ($database_type === 'MYSQL') {
             // this section is to avoid the problems on MySQL string comparison
             $maxkey = 240;
-            $strkeylimit = min($maxkey, strlen($this->level_data['question']['question_description']));
+            $strkeylimit = min($maxkey, strlen($question['question_description']));
             $stop = intdiv($maxkey, 3);
             while (
                 in_array(
                     md5(strtolower(substr(
-                        $this->level_data['subject']['subject_id']
-                        . $this->level_data['question']['question_description'],
+                        $subject['subject_id'] . $question['question_description'],
                         0,
                         $strkeylimit,
                     ))),
@@ -475,8 +519,7 @@ class XMLQuestionImporter
                 && $stop > 0
             ) {
                 // a similar question was already imported from this XML, so we change it a little bit to avoid duplicate keys
-                $this->level_data['question']['question_description'] =
-                    '_' . $this->level_data['question']['question_description'];
+                $question['question_description'] = '_' . $question['question_description'];
                 $strkeylimit = min($maxkey, $strkeylimit + 1);
                 --$stop; // variable used to avoid infinite loop
             }
@@ -488,7 +531,9 @@ class XMLQuestionImporter
         }
 
         $sql = 'START TRANSACTION';
-        if (!($r = F_db_query($sql, $db))) {
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if (!$r) {
             F_display_db_error();
         }
 
@@ -511,50 +556,54 @@ class XMLQuestionImporter
 			question_shuffle_answers
 			) VALUES (
 			'
-            . $this->level_data['subject']['subject_id']
+            . $subject['subject_id']
             . ',
 			\''
-            . $this->level_data['question']['question_description']
+            . $question['question_description']
             . '\',
 			'
-            . f_empty_to_null($this->level_data['question']['question_explanation'])
+            . f_empty_to_null($question['question_explanation'])
             . ',
 			\''
-            . $this->qtype[$this->level_data['question']['question_type']]
+            . ($this->qtype[$question['question_type']] ?? '1')
             . '\',
 			\''
-            . $this->level_data['question']['question_difficulty']
+            . $question['question_difficulty']
             . '\',
 			\''
-            . $this->boolval[$this->level_data['question']['question_enabled']]
+            . ($this->boolval[$question['question_enabled']] ?? '0')
             . '\',
 			'
-            . f_zero_to_null((int) $this->level_data['question']['question_position'])
+            . f_zero_to_null((int) $question['question_position'])
             . ',
 			\''
-            . $this->level_data['question']['question_timer']
+            . $question['question_timer']
             . '\',
 			\''
-            . $this->boolval[$this->level_data['question']['question_fullscreen']]
+            . ($this->boolval[$question['question_fullscreen']] ?? '0')
             . '\',
 			\''
-            . $this->boolval[$this->level_data['question']['question_inline_answers']]
+            . ($this->boolval[$question['question_inline_answers']] ?? '0')
             . '\',
 			\''
-            . $this->boolval[$this->level_data['question']['question_auto_next']]
+            . ($this->boolval[$question['question_auto_next']] ?? '0')
             . '\',
 			\''
-            . $this->boolval[$this->level_data['question']['question_shuffle_answers']]
+            . ($this->boolval[$question['question_shuffle_answers']] ?? '0')
             . '\'
 			)';
-        if (!($r = F_db_query($sql, $db))) {
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if (!$r) {
             F_display_db_error(false);
         } else {
             // get new question ID
-            $this->level_data['question']['question_id'] = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
-            if (K_DATABASE_TYPE === 'MYSQL') {
+            /** @var int|numeric-string $question_id */
+            $question_id = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
+            $question['question_id'] = $question_id;
+            if ($database_type === 'MYSQL') {
                 $this->questionhash[] = md5(strtolower(substr(
-                    $this->level_data['subject']['subject_id'] . $this->level_data['question']['question_description'],
+                    $subject['subject_id'] . $question['question_description'],
                     0,
                     $strkeylimit,
                 )));
@@ -562,7 +611,9 @@ class XMLQuestionImporter
         }
 
         $sql = 'COMMIT';
-        if (!($r = F_db_query($sql, $db))) {
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if (!$r) {
             F_display_db_error();
         }
     }
@@ -575,43 +626,70 @@ class XMLQuestionImporter
     {
         global $l, $db;
         require_once '../config/tce_config.php';
-        if ($this->level_data['module']['module_id'] === false) {
+        if (
+            !isset(
+                $this->level_data['module'],
+                $this->level_data['subject'],
+                $this->level_data['question'],
+                $this->level_data['answer'],
+            )
+        ) {
             return;
         }
 
-        if ($this->level_data['subject']['subject_id'] === false) {
+        /** @var array{module_id:int|string|false} $module */
+        $module = &$this->level_data['module'];
+        /** @var array{subject_id:int|string|false} $subject */
+        $subject = &$this->level_data['subject'];
+        /** @var array{question_id:int|string|false} $question */
+        $question = &$this->level_data['question'];
+        /** @var array{answer_id?:int|string|false,answer_question_id:int|string,answer_description:string,answer_explanation:string,answer_isright:string,answer_enabled:string,answer_position:int|string,answer_keyboard_key:string,answer_weight:int|float|string} $answer */
+        $answer = &$this->level_data['answer'];
+        if ($module['module_id'] === false) {
             return;
         }
 
-        if (isset($this->level_data['answer']['answer_id']) && $this->level_data['answer']['answer_id'] > 0) {
+        if ($subject['subject_id'] === false || $question['question_id'] === false) {
             return;
         }
+
+        if (isset($answer['answer_id']) && $answer['answer_id'] !== false && $answer['answer_id'] > 0) {
+            return;
+        }
+
+        $database_type = $this->databaseType(K_DATABASE_TYPE);
 
         // check if this answer already exist
         $sql = 'SELECT answer_id
 			FROM ' . K_TABLE_ANSWERS . '
 			WHERE ';
-        if (strcmp(K_DATABASE_TYPE, 'ORACLE') === 0) {
+        if (strcmp($database_type, 'ORACLE') === 0) {
             $sql .=
-                "dbms_lob.instr(answer_description, '" . $this->level_data['answer']['answer_description'] . "',1,1)>0";
-        } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                "dbms_lob.instr(answer_description, '" . $answer['answer_description'] . "',1,1)>0";
+        } elseif ($database_type === 'MYSQL' && $this->booleanConfig(K_MYSQL_QA_BIN_UNIQUITY)) {
             $sql .=
                 "answer_description='"
-                . $this->level_data['answer']['answer_description']
+                . $answer['answer_description']
                 . "' COLLATE "
                 . (defined('K_MYSQL_QA_BIN_COLLATION') ? K_MYSQL_QA_BIN_COLLATION : 'utf8_bin');
         } else {
-            $sql .= "answer_description='" . $this->level_data['answer']['answer_description'] . "'";
+            $sql .= "answer_description='" . $answer['answer_description'] . "'";
         }
 
-        $sql .= ' AND answer_question_id=' . $this->level_data['question']['question_id'] . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        $sql .= ' AND answer_question_id=' . $question['question_id'] . ' LIMIT 1';
+        /** @var object|resource|bool $r */
+        $r = F_db_query($sql, $db);
+        if ($r) {
+            $m = $this->databaseRow(F_db_fetch_array($r));
+            if ($m) {
+                /** @var array{answer_id:int|string} $m */
                 // get existing subject ID
-                $this->level_data['answer']['answer_id'] = $m['answer_id'];
+                $answer['answer_id'] = $m['answer_id'];
             } else {
                 $sql = 'START TRANSACTION';
-                if (!($r = F_db_query($sql, $db))) {
+                /** @var object|resource|bool $r */
+                $r = F_db_query($sql, $db);
+                if (!$r) {
                     F_display_db_error();
                 }
 
@@ -629,45 +707,72 @@ class XMLQuestionImporter
 						answer_weight
 					) VALUES (
 					'
-                    . $this->level_data['question']['question_id']
+                    . $question['question_id']
                     . ',
 					\''
-                    . $this->level_data['answer']['answer_description']
+                    . $answer['answer_description']
                     . '\',
 					'
-                    . f_empty_to_null($this->level_data['answer']['answer_explanation'])
+                    . f_empty_to_null($answer['answer_explanation'])
                     . ',
 					\''
-                    . $this->boolval[$this->level_data['answer']['answer_isright']]
+                    . ($this->boolval[$answer['answer_isright']] ?? '0')
                     . '\',
 					\''
-                    . $this->boolval[$this->level_data['answer']['answer_enabled']]
+                    . ($this->boolval[$answer['answer_enabled']] ?? '0')
                     . '\',
 					'
-                    . f_zero_to_null((int) $this->level_data['answer']['answer_position'])
+                    . f_zero_to_null((int) $answer['answer_position'])
                     . ',
 					'
-                    . f_empty_to_null($this->level_data['answer']['answer_keyboard_key'])
+                    . f_empty_to_null($answer['answer_keyboard_key'])
                     . ',
 						'
-                    . f_empty_to_null($this->level_data['answer']['answer_weight'])
+                    . f_empty_to_null($answer['answer_weight'])
                     . '
 						)';
-                if (!($r = F_db_query($sql, $db))) {
+                /** @var object|resource|bool $r */
+                $r = F_db_query($sql, $db);
+                if (!$r) {
                     F_display_db_error(false);
                     F_db_query('ROLLBACK', $db);
                 } else {
                     // get new answer ID
-                    $this->level_data['answer']['answer_id'] = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
+                    /** @var int|numeric-string $answer_id */
+                    $answer_id = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
+                    $answer['answer_id'] = $answer_id;
                 }
 
                 $sql = 'COMMIT';
-                if (!($r = F_db_query($sql, $db))) {
+                /** @var object|resource|bool $r */
+                $r = F_db_query($sql, $db);
+                if (!$r) {
                     F_display_db_error();
                 }
             }
         } else {
             F_display_db_error();
         }
+    }
+
+    /** @return array<array-key,mixed>|null */
+    private function databaseRow(mixed $row): ?array
+    {
+        return is_array($row) ? $row : null;
+    }
+
+    private function databaseType(mixed $database_type): string
+    {
+        return is_array($database_type) ? 'Array' : (string) $database_type;
+    }
+
+    private function stringValue(mixed $value): string
+    {
+        return is_array($value) ? 'Array' : (string) $value;
+    }
+
+    private function booleanConfig(bool $value): bool
+    {
+        return $value;
     }
 } // END OF CLASS
