@@ -64,7 +64,7 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 5
+count = 4
 
 [[issues]]
 file = "test/integration/AdminControllerHttpTest.php"
@@ -118,12 +118,6 @@ count = 1
 file = "test/integration/AdminControllerHttpTest.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('signature')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "test/integration/AdminControllerHttpTest.php"
-code = "reference-to-undefined-variable"
-message = "Reference created from a previously undefined variable `$m`."
 count = 1
 
 [[issues]]
