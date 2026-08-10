@@ -157,6 +157,32 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testTestPasswordReadsTheRequestedTestData(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["ids"] = []; function F_getTestData($id) { '
+                    . '$GLOBALS["ids"][] = $id; return ["test_password" => "secret"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestPassword|f_get_test_password)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("7"), $GLOBALS["ids"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(['secret', [7]], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
+
 
 
 
