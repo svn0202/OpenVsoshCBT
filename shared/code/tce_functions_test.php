@@ -59,7 +59,7 @@ function F_getUserTests()
             if (f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
                 // the user's IP is valid, check test status
-                [$test_status, $testuser_id, $test_pregenerated] = F_checkTestStatus(
+                [$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(
                     $user_id,
                     $m['test_id'],
                     $m['test_duration_time'],
@@ -504,7 +504,7 @@ function f_count_user_test($user_id, $test_id)
  * @param $duration (int) test duration in seconds
  * @return array of (test_status_code, testuser_id, testuser_pregenerated). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
  */
-function F_checkTestStatus($user_id, $test_id, $duration)
+function f_check_test_status($user_id, $test_id, $duration)
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -918,7 +918,7 @@ function F_executeTest($test_id)
                 return F_createTest($test_id, (int) $_SESSION['session_user_id']);
             }
             // the user's IP is valid, check test status
-            [$test_status, $testuser_id] = F_checkTestStatus(
+            [$test_status, $testuser_id] = f_check_test_status(
                 $_SESSION['session_user_id'],
                 $m['test_id'],
                 $m['test_duration_time'],
