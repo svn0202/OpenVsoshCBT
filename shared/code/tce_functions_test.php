@@ -963,7 +963,7 @@ function F_executeTest($test_id)
  * @param $testlog_id (int) test log ID
  * @return boolean TRUE in case of success, FALSE otherwise
  */
-function F_isRightTestlogUser($test_id, $testlog_id)
+function f_is_right_testlog_user($test_id, $testlog_id): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;

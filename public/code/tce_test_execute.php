@@ -95,7 +95,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
             $reaction_time = (int) $_REQUEST['reaction_time'];
         }
 
-        if (!empty($_REQUEST['forceterminate']) && F_isRightTestlogUser($test_id, $testlog_id)) {
+        if (!empty($_REQUEST['forceterminate']) && f_is_right_testlog_user($test_id, $testlog_id)) {
             if ($_REQUEST['forceterminate'] === 'lasttimedquestion') {
                 // update last question
                 if (isset($_REQUEST['answer_version'])) {
@@ -163,7 +163,7 @@ if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
         if (
             $_SERVER['REQUEST_METHOD'] === 'POST'
             && !isset($_REQUEST['terminationform'])
-            && F_isRightTestlogUser($test_id, $testlog_id)
+            && f_is_right_testlog_user($test_id, $testlog_id)
         ) {
             // the form has been submitted, update testlogid data
             $answer_saved = true;
