@@ -24,10 +24,31 @@
 
 require_once '../config/tce_config.php';
 
+/** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_OMR_IMPORT;
 $max_omr_sheets = 10;
 require_once '../../shared/code/tce_authorization.php';
 
+/** @var array{
+ *     t_omr_bulk_importer:string,
+ *     m_omr_wrong_test_data:string,
+ *     m_omr_wrong_answer_sheet:string,
+ *     m_import_ok:string,
+ *     t_result_user:string,
+ *     w_results:string,
+ *     m_import_error:string,
+ *     w_select:string,
+ *     w_date:string,
+ *     w_datetime_format:string,
+ *     w_omr_dir:string,
+ *     h_omr_dir:string,
+ *     w_overwrite:string,
+ *     h_omr_overwrite:string,
+ *     w_upload:string,
+ *     h_submit_file:string,
+ *     hp_omr_bulk_importer:string
+ * } $l
+ */
 $thispage_title = $l['t_omr_bulk_importer'];
 require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
@@ -38,16 +59,18 @@ require_once 'tce_functions_user_select.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 if (isset($_REQUEST['date'])) {
+    /** @var string $date */
     $date = $_REQUEST['date'];
-    $date_time = strtotime($date);
+    $date_time = (int) strtotime($date);
     $date = date(K_TIMESTAMP_FORMAT, $date_time);
 } else {
     $date = date(K_TIMESTAMP_FORMAT);
 }
 
-if (isset($_REQUEST['omrdir']) && str_starts_with($_REQUEST['omrdir'], K_PATH_CACHE . 'OMR')) {
-    /** @var string $omrdir */
-    $omrdir = $_REQUEST['omrdir'];
+/** @var string $requested_omrdir */
+$requested_omrdir = $_REQUEST['omrdir'] ?? '';
+if ($requested_omrdir !== '' && str_starts_with($requested_omrdir, K_PATH_CACHE . 'OMR')) {
+    $omrdir = $requested_omrdir;
     // Confirm the requested directory is safely contained within an allowed root.
     // tc-lib-file's isValidFile() rejects parent-directory traversal ('..'), stream wrappers
     // and (via realpath) symlink escapes from the allowed roots. Validate on a copy so $omrdir
@@ -55,7 +78,10 @@ if (isset($_REQUEST['omrdir']) && str_starts_with($_REQUEST['omrdir'], K_PATH_CA
     // K_FILE_ALLOWED_PATHS allowlist is honoured; the OMR cache directory is always trusted.
     $omrcheck = $omrdir;
     // defined() guard keeps pre-existing installs working until they merge the new config defaults
-    $omr_allowed_paths = defined('K_FILE_ALLOWED_PATHS') ? unserialize(K_FILE_ALLOWED_PATHS) : [];
+    /** @var string $allowed_paths_config */
+    $allowed_paths_config = defined('K_FILE_ALLOWED_PATHS') ? K_FILE_ALLOWED_PATHS : 'a:0:{}';
+    /** @var array<array-key,string>|false $omr_allowed_paths */
+    $omr_allowed_paths = unserialize($allowed_paths_config);
     $omr_allowed_paths = is_array($omr_allowed_paths) ? $omr_allowed_paths : [];
     $omr_allowed_paths[] = (string) realpath(K_PATH_CACHE . 'OMR');
     $omrvalidator = new \Com\Tecnick\File\File();
@@ -85,12 +111,14 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                 $filename = $omrdir . $file;
                 $matches = [];
                 if (!is_dir($filename) && preg_match('/OMR_([^_]+)_QR.([a-zA-Z]+)/', $file, $matches)) {
+                    /** @var array{0:string,1:string,2:string} $matches */
                     // read OMR DATA page
                     $omr_testdata = f_decode_omr_test_data_qr_code($filename);
                     if ($omr_testdata === false) {
                         F_print_error('ERROR', $l['m_omr_wrong_test_data']);
                         file_put_contents($logfile, 'ERROR	' . $file . "\t" . 'UNABLE TO DECODE' . "\n", FILE_APPEND);
                     } else {
+                        /** @var array{0:int|string,...<array-key,mixed>} $omr_testdata */
                         file_put_contents($logfile, 'OK	' . $file . "\t" . 'SUCCESSFULLY DECODED' . "\n", FILE_APPEND);
                         // read OMR ANSWER SHEET pages
                         $num_questions = count($omr_testdata) - 1;
@@ -99,7 +127,9 @@ if (isset($menu_mode) && $menu_mode === 'upload' && F_file_exists($omrdir)) {
                         for ($i = 1; $i <= $num_pages; ++$i) {
                             $answerfile = 'OMR_' . $matches[1] . '_A' . $i . '.' . $matches[2];
                             if (F_file_exists($omrdir . $answerfile)) {
-                                $answers_page = f_decode_omr_page($omrdir . $answerfile);
+                                $answers_page = f_tmf_import_omr_answers(
+                                    f_decode_omr_page($omrdir . $answerfile),
+                                );
                                 if ($answers_page !== false && !empty($answers_page)) {
                                     $omr_answers += $answers_page;
                                     file_put_contents(
@@ -237,7 +267,7 @@ if (F_file_exists(K_PATH_CACHE . 'OMR')) {
 
         // sort files alphabetically
         natcasesort($dirs);
-        echo get_form_row_select_box('omrdir', (string) $l['w_omr_dir'], (string) $l['h_omr_dir'], '', $omrdir, $dirs, '');
+        echo get_form_row_select_box('omrdir', $l['w_omr_dir'], $l['h_omr_dir'], '', $omrdir, $dirs, '');
     }
 }
 
@@ -258,3 +288,9 @@ echo '<div class="pagehelp">' . $l['hp_omr_bulk_importer'] . '</div>' . K_NEWLIN
 echo '</div>' . K_NEWLINE;
 
 require_once '../code/tce_page_footer.php';
+
+/** @return array<array-key,mixed>|false */
+function f_tmf_import_omr_answers(mixed $answers): array|false
+{
+    return is_array($answers) ? $answers : false;
+}
