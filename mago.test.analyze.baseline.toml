@@ -347,9 +347,3 @@ file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "reference-to-undefined-variable"
 message = "Reference created from a previously undefined variable `$verifyPipes`."
 count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Random\RandomException` in `Test\Integration\DatabaseDalIntegrationTest::testDatabaseBackupCanActuallyRestoreDisposableDatabase`.'
-count = 1
