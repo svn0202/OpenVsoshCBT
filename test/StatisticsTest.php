@@ -132,6 +132,53 @@ final class StatisticsTest extends TestCase
         );
     }
 
+    public function testPublishedTestIdsPreserveQueryResultsAndErrors(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TESTS", "tests"); '
+                    . 'define("K_TABLE_TEST_USER", "test_user"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["query_results"] = [true, false]; '
+                    . '$GLOBALS["rows"] = [["test_id" => 3], ["test_id" => "9"], false]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (F_getTestIDs|f_get_test_ids)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); if ($end === false) { $end = strlen($source); } '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("7x", "011", "custom_flag"), $qualified("8", "12")], '
+                    . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                ['0,3,9', '0'],
+                1,
+                [
+                    'SELECT test_id FROM tests WHERE test_id IN (SELECT DISTINCT testuser_test_id FROM test_user '
+                        . 'WHERE testuser_user_id=11 AND testuser_status>3) AND custom_flag=1',
+                    'SELECT test_id FROM tests WHERE test_id IN (SELECT DISTINCT testuser_test_id FROM test_user '
+                        . 'WHERE testuser_user_id=12 AND testuser_status>3) AND test_results_to_users=1',
+                ],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testEvenMedianAndStandardDeviationBranches(): void
     {
         /**
