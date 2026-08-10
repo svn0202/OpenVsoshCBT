@@ -4729,36 +4729,6 @@ message = "Parameter `$parser` is never used."
 count = 3
 
 [[issues]]
-file = "admin/code/tce_login.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_login.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "admin/code/tce_login.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 6
-
-[[issues]]
-file = "admin/code/tce_login.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 4
-
-[[issues]]
-file = "admin/code/tce_login.php"
-code = "undefined-variable"
-message = "Undefined variable: `$l`."
-count = 6
-
-[[issues]]
 file = "admin/code/tce_logout.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
