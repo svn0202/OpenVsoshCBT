@@ -116,7 +116,9 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         $milliseconds = [];
         foreach ($handles as $handle) {
             $statuses[] = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
-            $milliseconds[] = (float) curl_getinfo($handle, CURLINFO_TOTAL_TIME) * 1000;
+            /** @var float $totalTime */
+            $totalTime = curl_getinfo($handle, CURLINFO_TOTAL_TIME);
+            $milliseconds[] = $totalTime * 1000;
             curl_multi_remove_handle($multi, $handle);
         }
         curl_multi_close($multi);

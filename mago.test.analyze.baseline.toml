@@ -375,12 +375,6 @@ count = 1
 [[issues]]
 file = "test/integration/PregenerationLoadHttpTest.php"
 code = "invalid-type-cast"
-message = "Casting `mixed` to `float`."
-count = 1
-
-[[issues]]
-file = "test/integration/PregenerationLoadHttpTest.php"
-code = "invalid-type-cast"
 message = "Non numeric string of type `truthy-string` implicitly cast to `float`."
 count = 1
 
