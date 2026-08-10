@@ -21,42 +21,43 @@
  */
 
 require_once '../config/tce_config.php';
-$pagelevel = K_AUTH_ADMIN_RESULTS;
+$pagelevel = (int) constant('K_AUTH_ADMIN_RESULTS');
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
 
-if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
-    $test_id = (int) $_REQUEST['test_id'];
+$test_id = isset($_REQUEST['test_id']) && is_string($_REQUEST['test_id']) ? (int) $_REQUEST['test_id'] : 0;
+if ($test_id > 0) {
     if (!f_is_authorized_user(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit();
     }
-} else {
-    $test_id = 0;
 }
 
-$group_id = isset($_REQUEST['group_id']) && $_REQUEST['group_id'] > 0 ? (int) $_REQUEST['group_id'] : 0;
+$group_id = isset($_REQUEST['group_id']) && is_string($_REQUEST['group_id'])
+    ? max(0, (int) $_REQUEST['group_id']) : 0;
 
-$user_id = isset($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
+$user_id = isset($_REQUEST['user_id']) && is_string($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
 
-if (isset($_REQUEST['startdate'])) {
+if (isset($_REQUEST['startdate']) && is_string($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
     $startdate_time = strtotime($startdate);
-    $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
+    $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time === false ? 0 : $startdate_time);
 } else {
     $startdate = 0;
 }
 
-if (isset($_REQUEST['enddate'])) {
+if (isset($_REQUEST['enddate']) && is_string($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
     $enddate_time = strtotime($enddate);
-    $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
+    $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time === false ? 0 : $enddate_time);
 } else {
     $enddate = 0;
 }
 
-$display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
+$display_mode = isset($_REQUEST['display_mode']) && is_string($_REQUEST['display_mode'])
+    ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
 
-$output_format = isset($_REQUEST['format']) ? strtoupper($_REQUEST['format']) : 'XML';
+$output_format = isset($_REQUEST['format']) && is_string($_REQUEST['format'])
+    ? strtoupper($_REQUEST['format']) : 'XML';
 $out_filename = 'tcexam_results_' . date('YmdHis') . '_test_' . $test_id;
 $xml = F_xml_export_results($test_id, $group_id, $user_id, $startdate, $enddate, $display_mode);
 
@@ -100,26 +101,32 @@ switch ($output_format) {
 
 /**
  * Export results in XML format.
- * @param $test_id (int) test ID.
- * @param $group_id (int) group ID - if greater than zero, filter stats for the specified user group.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $startdate (int) start date ID - if greater than zero, filter stats for the specified starting date
- * @param $enddate (int) end date ID - if greater than zero, filter stats for the specified ending date
- * @param $display_mode (int) display mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question; 5 = answer.
+ * @param int|string $test_id test ID.
+ * @param int|string $group_id group ID - if greater than zero, filter stats for the specified user group.
+ * @param int|string $user_id user ID - if greater than zero, filter stats for the specified user.
+ * @param int|string $startdate start date ID - if greater than zero, filter stats for the specified starting date
+ * @param int|string $enddate end date ID - if greater than zero, filter stats for the specified ending date
+ * @param int|string $display_mode display mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question; 5 = answer.
  * @author Nicola Asuni
- * @return XML data
+ * @return string XML data
  */
-function f_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate = 0, $enddate = 0, $display_mode = 1)
-{
+function f_xml_export_results(
+    int|string $test_id,
+    int|string $group_id = 0,
+    int|string $user_id = 0,
+    int|string $startdate = 0,
+    int|string $enddate = 0,
+    int|string $display_mode = 1,
+): string {
     global $l, $db;
     require_once '../config/tce_config.php';
 
     $xml = ''; // XML data to be returned
 
     $xml .= '<?xml version="1.0" encoding="UTF-8" ?>' . K_NEWLINE;
-    $xml .= '<tcexamresults version="' . K_TCEXAM_VERSION . '">' . K_NEWLINE;
+    $xml .= '<tcexamresults version="' . (string) constant('K_TCEXAM_VERSION') . '">' . K_NEWLINE;
     $xml .= K_TAB . '<header';
-    $xml .= ' lang="' . K_USER_LANG . '"';
+    $xml .= ' lang="' . (string) constant('K_USER_LANG') . '"';
     $xml .= ' date="' . date(K_TIMESTAMP_FORMAT) . '">' . K_NEWLINE;
     $xml .= K_TAB . K_TAB . '<test_id>' . $test_id . '</test_id>' . K_NEWLINE;
     $xml .= K_TAB . K_TAB . '<group_id>' . $group_id . '</group_id>' . K_NEWLINE;
@@ -129,17 +136,18 @@ function f_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate 
     $xml .= K_TAB . '</header>' . K_NEWLINE;
     $xml .= K_TAB . '<body>' . K_NEWLINE;
 
-    $data = f_get_all_users_test_stat(
-        $test_id,
-        $group_id,
-        $user_id,
-        $startdate,
-        $enddate,
-        'total_score',
-        false,
-        $display_mode,
+    $xml .= get_data_xml(
+        f_get_all_users_test_stat(
+            $test_id,
+            $group_id,
+            $user_id,
+            $startdate,
+            $enddate,
+            'total_score',
+            false,
+            $display_mode,
+        ),
     );
-    $xml .= get_data_xml($data);
 
     $xml .= K_TAB . '</body>' . K_NEWLINE;
 
