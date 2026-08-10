@@ -230,18 +230,6 @@ count = 1
 
 [[issues]]
 file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mismatched-array-index"
-message = "Invalid array key type: `string('admin')` is not a valid key for this array."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
-code = "mismatched-array-index"
-message = "Invalid array key type: `string('anonymous')` is not a valid key for this array."
-count = 1
-
-[[issues]]
-file = "test/integration/DatabaseDalIntegrationTest.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
 count = 2
