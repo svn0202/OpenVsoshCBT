@@ -135,12 +135,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
-message = "Parameter `$disable` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
 message = "Parameter `$isright` is missing a type hint."
 count = 1
 
@@ -189,31 +183,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
-message = "Parameter `$testdata` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$testlog_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$testuser_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
 message = "Parameter `$value` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `f_questions_menu` is missing a return type hint."
 count = 1
 
 [[issues]]
