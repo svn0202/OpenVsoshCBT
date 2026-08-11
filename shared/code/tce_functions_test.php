@@ -865,7 +865,9 @@ function f_get_test_start_time(mixed $testuser_id): int|false
 		WHERE testuser_id=' . $testuser_id . '';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            $starttime = strtotime($m['testuser_creation_time']);
+            /** @var string $creation_time */
+            $creation_time = $m['testuser_creation_time'];
+            $starttime = strtotime($creation_time);
         }
     } else {
         F_display_db_error();
