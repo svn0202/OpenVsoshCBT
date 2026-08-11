@@ -32,8 +32,7 @@
  * @param $username (string) Name of the user that owns the server process.
  * @param $password (string) Password of the user that owns the server process.
  * @param $database (string) Database name.
- * @return Oracle link identifier on success, or FALSE on failure.
- * @mago-expect analysis:invalid-return-statement(2) -- remove after dependent baselines
+ * @return object|resource|false Oracle link identifier on success, or false on failure.
  */
 function f_db_connect(
     mixed $host = 'localhost',
@@ -145,8 +144,7 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
  * Fetch a result row as an associative and numeric array.
  * Note: This function sets NULL fields to PHP NULL value.
  * @param $result (resource) result resource to the query result.
- * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
- * @mago-expect analysis:falsable-return-statement,invalid-return-statement -- legacy shared DAL contract
+ * @return array<int|string, mixed>|false Row data, or false if there are no more rows.
  */
 function f_db_fetch_array(mixed $result): mixed
 {
@@ -165,8 +163,7 @@ function f_db_fetch_array(mixed $result): mixed
  * Fetch a result row as an associative array.
  * Note: This function sets NULL fields to PHP NULL value.
  * @param $result (resource) result resource to the query result.
- * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
- * @mago-expect analysis:falsable-return-statement,invalid-return-statement -- legacy shared DAL contract
+ * @return array<string, mixed>|false Row data, or false if there are no more rows.
  */
 function f_db_fetch_assoc(mixed $result): mixed
 {
@@ -184,8 +181,7 @@ function f_db_fetch_assoc(mixed $result): mixed
  * Returns number of rows (tuples) affected by the last INSERT, UPDATE or DELETE query associated with link_identifier.
  * @param $link_identifier (resource) database link identifier [UNUSED].
  * @param $result (resource) result resource to the query result.
- * @return Number of rows.
- * @mago-expect analysis:invalid-return-statement -- legacy shared DAL contract
+ * @return int|false Number of rows, or false on failure.
  */
 function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
@@ -196,8 +192,7 @@ function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 /**
  * Get number of rows in result.
  * @param $result (resource) result resource to the query result.
- * @return Number of affected rows.
- * @mago-expect analysis:invalid-return-statement -- legacy shared DAL contract
+ * @return int|string|false Number of affected rows, or false on failure.
  */
 function f_db_num_rows(mixed $result): mixed
 {

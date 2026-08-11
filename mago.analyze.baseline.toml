@@ -1,19 +1,2 @@
 variant = "loose"
-
-[[issues]]
-file = "shared/code/tce_db_dal_oracle.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `Number`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_db_dal_oracle.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `Oracle`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_db_dal_oracle.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `Returns`."
-count = 2
+issues = []

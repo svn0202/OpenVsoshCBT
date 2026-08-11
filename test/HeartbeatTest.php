@@ -16,8 +16,9 @@ final class HeartbeatTest extends TestCase
             '/if \(!\$result\) \{\s*F_tmf_heartbeat_json\(500, \[\'status\' => \'error\'\]\);/s',
             $source,
         );
+        self::assertStringContainsString('$affected_rows = F_db_affected_rows($db, $result);', $source);
         self::assertMatchesRegularExpression(
-            '/if \(F_db_affected_rows\(\$db, \$result\) < 1\) \{\s*'
+            '/if \(\$affected_rows === false \|\| \$affected_rows < 1\) \{\s*'
                 . 'F_tmf_heartbeat_json\(409, \[\'status\' => \'closed\'\]\);/s',
             $source,
         );
