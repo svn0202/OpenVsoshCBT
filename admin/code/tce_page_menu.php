@@ -24,9 +24,10 @@ require_once '../config/tce_auth.php';
 require_once '../../shared/code/tce_functions_menu.php';
 require_once '../../shared/code/tce_functions_roles.php';
 
-/** @var array{h_index:string,h_info:string,h_login_button:string,h_logout_link:string,h_public_link:string,ov_instance_settings:string,t_answers_editor:string,t_backup_editor:string,t_filemanager:string,t_group_editor:string,t_modules_editor:string,t_omr_answers_importer:string,t_omr_bulk_importer:string,t_online_users:string,t_question_importer:string,t_questions_editor:string,t_questions_list:string,t_rating_editor:string,t_result_all_users:string,t_result_user:string,t_sslcerts:string,t_subjects_editor:string,t_test_select:string,t_tests_editor:string,t_user_editor:string,t_user_importer:string,t_user_select:string,w_answers:string,w_backup:string,w_file_manager:string,w_groups:string,w_guide:string,w_import:string,w_import_omr_answers:string,w_index:string,w_info:string,w_list:string,w_login:string,w_logout:string,w_modules:string,w_online:string,w_questions:string,w_rating:string,w_results:string,w_select:string,w_sslcerts:string,w_subjects:string,w_tests:string,w_users:string} $l */
+/** @var array{h_index:string,h_info:string,h_login_button:string,h_logout_link:string,h_public_link:string,ov_instance_settings?:string,t_answers_editor:string,t_backup_editor:string,t_filemanager:string,t_group_editor:string,t_modules_editor:string,t_omr_answers_importer:string,t_omr_bulk_importer:string,t_online_users:string,t_question_importer:string,t_questions_editor:string,t_questions_list:string,t_rating_editor:string,t_result_all_users:string,t_result_user:string,t_sslcerts:string,t_subjects_editor:string,t_test_select:string,t_tests_editor:string,t_user_editor:string,t_user_importer:string,t_user_select:string,w_answers:string,w_backup:string,w_file_manager:string,w_groups:string,w_guide:string,w_import:string,w_import_omr_answers:string,w_index:string,w_info:string,w_list:string,w_login:string,w_logout:string,w_modules:string,w_online:string,w_questions:string,w_rating:string,w_results:string,w_select:string,w_sslcerts:string,w_subjects:string,w_tests:string,w_users:string} $l */
 /** @var array{session_user_level:int|string} $session */
 $session = &$_SESSION;
+$instance_settings_label = $l['ov_instance_settings'] ?? 'Настройки системы';
 /** @var array<string,array<string,mixed>> $menu */
 $menu = [
     'index.php' => [
@@ -67,8 +68,8 @@ $menu = [
     ],
     'tce_onboarding_settings.php' => [
         'link' => 'tce_onboarding_settings.php',
-        'title' => $l['ov_instance_settings'],
-        'name' => $l['ov_instance_settings'],
+        'title' => $instance_settings_label,
+        'name' => $instance_settings_label,
         'level' => K_AUTH_ADMINISTRATOR,
         'key' => '',
         'enabled' => true,
