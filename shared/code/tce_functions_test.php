@@ -3560,13 +3560,14 @@ function f_test_comment(mixed $test_id): string
     require_once '../config/tce_config.php';
     global $db, $l;
     /** @var array{w_comment:string,h_testcomment:string} $l */
-    /** @var array{session_user_id:int|numeric-string} $_SESSION */
     /** @return non-empty-array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
     /** @var array{test_comment_enabled:mixed} $td */
-    $user_id = (int) $_SESSION['session_user_id'];
+    $session = $_SESSION;
+    /** @var array{session_user_id:int|numeric-string} $session */
+    $user_id = (int) $session['session_user_id'];
     $str = '';
     // user's comment
     if (f_get_boolean($td['test_comment_enabled'])) {
