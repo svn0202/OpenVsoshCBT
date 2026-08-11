@@ -1095,7 +1095,7 @@ function f_select_answers(
  * @param $answers_ids (array) array of answer IDs to add
  * @return boolean true in case of success, false otherwise
  */
-function f_add_log_answers($testlog_id, $answers_ids): bool
+function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
