@@ -196,13 +196,14 @@ function f_tmf_backup_restore_command(array $config): array
 /**
  * @param array{type:string,host:string,port:string,user:string,name:string,password:string,
  *     pg_dump_binary?:string,mysqldump_binary?:string,...<string,string>} $config
+ * @throws TmfBackupException When validation, process execution, or archive publication fails.
+ * @throws Throwable When an underlying operation fails after cleanup.
  */
 function f_tmf_backup_create(array $config, string $backup_directory, ?string $timestamp = null): string
 {
     $timestamp_is_fixed = $timestamp !== null;
     $timestamp ??= date('YmdHis');
     if (preg_match('/^\d{14}$/D', $timestamp) !== 1) {
-        // @mago-expect analysis:unhandled-thrown-type -- validation failures use the established exception API
         throw new TmfBackupException('Некорректная метка времени резервной копии.');
     }
     if (!is_dir($backup_directory) || !is_writable($backup_directory)) {
@@ -232,7 +233,6 @@ function f_tmf_backup_create(array $config, string $backup_directory, ?string $t
         if (is_file($partial_path)) {
             unlink($partial_path);
         }
-        // @mago-expect analysis:unhandled-thrown-type -- cleanup preserves the original throwable
         throw $exception;
     }
     gzclose($archive);
