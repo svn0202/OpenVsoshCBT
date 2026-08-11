@@ -1941,7 +1941,7 @@ function f_add_question_answers(
  * Updates question log data (register user's answers and calculate scores).
  * @param mixed $test_id Test ID
  * @param mixed $testlog_id Test log ID
- * @param mixed $answpos Array of answer positions
+ * @param array<array-key,mixed>|bool|float|int|string $answpos Answer positions from request data.
  * @param mixed $answer_text Answer text
  * @param mixed $reaction_time Reaction time in milliseconds
  * @return bool TRUE in case of success, FALSE otherwise
