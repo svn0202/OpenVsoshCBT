@@ -489,7 +489,7 @@ function f_terminate_user_test($test_id, $reason = 'completed'): void
  * @param $test_id (int) test ID
  * @return int number of completed attempts
  */
-function f_count_user_test($user_id, $test_id)
+function f_count_user_test(mixed $user_id, mixed $test_id): int
 {
     return F_count_rows(
         K_TABLE_TEST_USER,
