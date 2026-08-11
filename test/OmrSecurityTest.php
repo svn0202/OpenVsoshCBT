@@ -6,6 +6,25 @@ use PHPUnit\Framework\TestCase;
 
 final class OmrSecurityTest extends TestCase
 {
+    public function testMissingOmrDirectoryReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_omr.php"; '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$handle = f_omr_open_dir_silently(K_PATH_CACHE . "missing-omr-directory/"); '
+                    . 'restore_error_handler(); echo json_encode([$handle, $warnings]);',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[]]', $output);
+    }
+
     public function testOmrPageDecoderStopsWhenBarcodeHasNoQuestionNumber(): void
     {
         [$status, $output] = \F_tcecode_run_process(
