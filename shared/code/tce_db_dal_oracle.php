@@ -52,8 +52,13 @@ function f_db_connect(
         $dbstring .= '/' . $database;
     }
 
-    // @mago-expect lint:no-error-control-operator -- connection failures follow the DAL's false-return contract
-    if (!($db = @oci_connect($username, $password, $dbstring, 'UTF8'))) {
+    set_error_handler(static fn(): bool => true);
+    try {
+        $db = oci_connect($username, $password, $dbstring, 'UTF8');
+    } finally {
+        restore_error_handler();
+    }
+    if (!$db) {
         return false;
     }
 
