@@ -3342,9 +3342,13 @@ function f_test_comment(mixed $test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array{w_comment:string,h_testcomment:string} $l */
+    /** @var array{session_user_id:int|numeric-string} $_SESSION */
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
-    /** @var array<array-key,mixed> $td */
+    /** @var array{test_comment_enabled:mixed} $td */
     $user_id = (int) $_SESSION['session_user_id'];
     $str = '';
     // user's comment
@@ -3364,10 +3368,13 @@ function f_test_comment(mixed $test_id): string
             . '
 			AND testuser_status<4
 		LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches test comment rows as arrays
-                $comment = $m['testuser_comment'];
+        $r = F_db_query($sql, $db);
+        /** @var mixed $r */
+        if ($r) {
+            $m = $normalize_row(F_db_fetch_array($r));
+            if ($m !== null) {
+                /** @var array{testuser_comment:string|null} $m */
+                $comment = (string) $m['testuser_comment'];
             }
         } else {
             F_display_db_error();
