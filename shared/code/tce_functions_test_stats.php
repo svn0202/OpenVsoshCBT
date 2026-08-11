@@ -2217,6 +2217,7 @@ function f_get_safe_users_test_stat_order_by(mixed $full_order_field): string
             continue;
         }
 
+        /** @var array{0:string,1:string,2?:string} $matches */
         $field = strtolower($matches[1]);
         if (!in_array($field, $allowed_fields, true)) {
             continue;

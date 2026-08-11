@@ -818,18 +818,6 @@ count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-null-argument"
-message = "Argument #1 of function `strtolower` is possibly `null`, but parameter type `string` does not accept it."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('test_score_right')` accessed on `array<array-key, mixed>`."
 count = 1
