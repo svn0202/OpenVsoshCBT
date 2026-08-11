@@ -38,15 +38,24 @@ final class EditBackupControllerTest extends TestCase
         );
     }
 
+    public function testBackupListHidesDownloadWhenDisabled(): void
+    {
+        $result = self::runController(false, false);
+
+        self::assertStringNotContainsString('<button name="download">', $result['html']);
+        self::assertStringContainsString('<button name="backup">Backup</button>', $result['html']);
+        self::assertStringContainsString('<button name="restore">Restore</button>', $result['html']);
+    }
+
     /** @return array{html: string, calls: list<list<mixed>>} */
-    private static function runController(bool $restore): array
+    private static function runController(bool $restore, bool $downloadsEnabled = true): array
     {
         $script = <<<'PHP'
 namespace Harness;
 define('K_AUTH_BACKUP', 10);
 define('K_NEWLINE', "\n");
 define('K_PATH_BACKUP', '/backups/');
-define('K_DOWNLOAD_BACKUPS', true);
+define('K_DOWNLOAD_BACKUPS', $argv[3] === '1');
 $l = [
     't_backup_editor' => 'Backup editor', 'm_restore_confirm' => 'Confirm restore',
     'w_restore' => 'Restore', 'h_restore' => 'Restore help', 'w_cancel' => 'Cancel',
@@ -101,6 +110,7 @@ PHP;
                 $script,
                 dirname(__DIR__) . '/admin/code/tce_edit_backup.php',
                 $restore ? '1' : '0',
+                $downloadsEnabled ? '1' : '0',
             ],
             dirname(__DIR__) . '/admin/code',
         );
