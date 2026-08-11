@@ -2448,7 +2448,7 @@ function f_lock_user_test(mixed $test_id, mixed $user_id): void
         . $user_id
         . '
 				AND testuser_status<4';
-    if (!($r = F_db_query($sql, $db))) {
+    if (!f_legacy_db_query_result(F_db_query($sql, $db))) {
         F_display_db_error();
     }
 }
