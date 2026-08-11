@@ -313,6 +313,28 @@ final class FileManagerFunctionsTest extends TestCase
         self::assertStringStartsWith('-', $fields[6] ?? '');
     }
 
+    public function testMissingFileInformationKeepsStableFallbacks(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "tce_functions_filemanager.php"; '
+                    . '$info = f_get_file_info($argv[1]); '
+                    . 'echo json_encode(["owner" => $info["owner"], "perms" => $info["perms"], '
+                    . '"size" => $info["size"], "aperms" => $info["aperms"]]);',
+                sys_get_temp_dir() . '/openvsosh-missing-media-file',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['owner' => false, 'perms' => false, 'size' => false, 'aperms' => '----------'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testFormatsFileSizesUsingLegacyUnitsAndRounding(): void
     {
         self::assertSame('0', f_format_file_size(0));
