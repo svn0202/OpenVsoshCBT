@@ -759,7 +759,7 @@ function f_get_test_data(mixed $test_id): mixed
  * @param $user_id (int) User ID.
  * @return array containing test data.
  */
-function f_get_user_data($user_id)
+function f_get_user_data(mixed $user_id): mixed
 {
     require_once '../config/tce_config.php';
     global $db, $l;
