@@ -989,22 +989,26 @@ function f_get_test_duration(mixed $test_id): int|float
 
 /**
  * Returns the user's test start time in seconds since UNIX epoch (1970-01-01 00:00:00).
- * @param $testuser_id (int) user's test ID
+ * @param mixed $testuser_id User's test ID
  * @return int|false Start time in seconds, or false when the stored date is invalid.
  */
 function f_get_test_start_time(mixed $testuser_id): int|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $testuser_id = (int) $testuser_id;
     $starttime = 0;
     // select test control row (if any)
     $sql = 'SELECT testuser_creation_time
 		FROM ' . K_TABLE_TEST_USER . '
 		WHERE testuser_id=' . $testuser_id . '';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            /** @var string $creation_time */
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /** @var array{testuser_creation_time:string} $m */
             $creation_time = $m['testuser_creation_time'];
             $starttime = strtotime($creation_time);
         }

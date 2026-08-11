@@ -373,9 +373,12 @@ final class TestReviewTest extends TestCase
                 'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["rows"] = [['
                     . '"testuser_creation_time" => "1970-01-01 00:00:01 UTC"], '
-                    . '["testuser_creation_time" => "invalid"]]; $GLOBALS["queries"] = []; '
-                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
+                    . '["testuser_creation_time" => "invalid"], false]; $GLOBALS["queries"] = []; '
+                    . '$GLOBALS["query_results"] = [true, true, true, false]; $GLOBALS["errors"] = 0; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_start_time)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
@@ -385,7 +388,8 @@ final class TestReviewTest extends TestCase
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
-                    . 'echo json_encode([$qualified("7"), $qualified("8"), $GLOBALS["queries"]]);',
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9"), '
+                    . '$qualified("10")], $GLOBALS["queries"], $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -393,10 +397,12 @@ final class TestReviewTest extends TestCase
 
         self::assertSame(0, $status, $output);
         self::assertSame(
-            [1, false, [
+            [[1, false, 0, 0], [
                 "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=7",
                 "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=8",
-            ]],
+                "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=9",
+                "SELECT testuser_creation_time\n\t\tFROM test_user\n\t\tWHERE testuser_id=10",
+            ], 1],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
