@@ -47,7 +47,26 @@ $create = match ($database_type) {
         . ' (migration_name VARCHAR2(191) NOT NULL PRIMARY KEY,migration_sha256 CHAR(64) NOT NULL,'
         . 'migration_applied_at DATE NOT NULL,migration_mode VARCHAR2(16) NOT NULL)',
 };
-if ($database_type === 'ORACLE') {
+$journal_exists = true;
+if ($dry_run) {
+    $escaped_table = F_escape_sql($db, $table);
+    $exists_sql = match ($database_type) {
+        'MYSQL' => "SELECT COUNT(*) AS migration_table_count FROM information_schema.tables "
+            . "WHERE table_schema=DATABASE() AND table_name='{$escaped_table}'",
+        'POSTGRESQL' => "SELECT COUNT(*) AS migration_table_count FROM information_schema.tables "
+            . "WHERE table_schema=current_schema() AND table_name='{$escaped_table}'",
+        default => "SELECT COUNT(*) AS migration_table_count FROM user_tables "
+            . "WHERE table_name=UPPER('{$escaped_table}')",
+    };
+    $exists_result = F_db_query($exists_sql, $db);
+    $exists_row = $exists_result ? F_db_fetch_assoc($exists_result) : false;
+    if (!is_array($exists_row)) {
+        fwrite(STDERR, "[openvsosh-migrate] Cannot inspect migration journal.\n");
+        exit(4);
+    }
+
+    $journal_exists = (int) ($exists_row['migration_table_count'] ?? $exists_row['MIGRATION_TABLE_COUNT'] ?? 0) > 0;
+} elseif ($database_type === 'ORACLE') {
     @F_db_query($create, $db);
 } elseif (!F_db_query($create, $db)) {
     fwrite(STDERR, "[openvsosh-migrate] Cannot create migration journal.\n");
@@ -55,9 +74,11 @@ if ($database_type === 'ORACLE') {
 }
 
 $applied = [];
-$result = F_db_query('SELECT migration_name,migration_sha256 FROM ' . $table, $db);
-while ($result && ($row = F_db_fetch_array($result))) {
-    $applied[(string) $row['migration_name']] = (string) $row['migration_sha256'];
+if ($journal_exists) {
+    $result = F_db_query('SELECT migration_name,migration_sha256 FROM ' . $table, $db);
+    while ($result && ($row = F_db_fetch_array($result))) {
+        $applied[(string) $row['migration_name']] = (string) $row['migration_sha256'];
+    }
 }
 $files = F_tmf_migration_files(__DIR__ . '/upgrade/' . $dialect['dir']);
 $pending = 0;

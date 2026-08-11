@@ -332,6 +332,28 @@ final class DatabaseDalIntegrationTest extends TestCase
 
     public function testMigrationCliBaselinesAndVerifiesFreshSchema(): void
     {
+        $this->assertNotFalse(\F_db_query('DROP TABLE tce_schema_migrations', $this->db));
+        $dryRunPipes = [];
+        $dryRun = proc_open(
+            [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--dry-run'],
+            [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $dryRunPipes,
+            dirname(__DIR__, 2)
+        );
+        $this->assertIsResource($dryRun);
+        $dryRunOut = self::readAndClosePipe($dryRunPipes[1] ?? null, 'Dry-run stdout');
+        $dryRunErr = self::readAndClosePipe($dryRunPipes[2] ?? null, 'Dry-run stderr');
+        $this->assertSame(0, proc_close($dryRun), $dryRunErr);
+        $this->assertStringContainsString('pending openvsosh_access_settings.sql', $dryRunOut);
+        $this->assertSame(
+            '0',
+            $this->dbScalar(
+                "SELECT COUNT(*) FROM information_schema.tables "
+                . "WHERE table_schema=current_schema() AND table_name='tce_schema_migrations'"
+            ),
+            '--dry-run must not create the migration journal',
+        );
+
         $command = [PHP_BINARY, __DIR__ . '/../../install/migrate.php', '--baseline'];
         $pipes = [];
         $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname(__DIR__, 2));
