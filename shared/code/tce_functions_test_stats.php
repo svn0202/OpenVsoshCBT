@@ -2170,7 +2170,7 @@ function f_get_all_users_test_stat(
  * @param mixed $full_order_field Raw ORDER BY input.
  * @return string
  */
-function f_get_safe_users_test_stat_order_by($full_order_field): string
+function f_get_safe_users_test_stat_order_by(mixed $full_order_field): string
 {
     $allowed_fields = [
         'testuser_creation_time',
