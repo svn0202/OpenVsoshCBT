@@ -423,6 +423,11 @@ final class StatisticsTest extends TestCase
                     . '$module["id"] = "10"; $module["name"] = "Module"; '
                     . '$module["recurrence"] = "2"; $module["subject"] = []; '
                     . '$moduleStats = $qstats; $moduleStats["module"] = ["m" => $module]; '
+                    . '$subject = $qstats; unset($subject["module"]); '
+                    . '$subject["id"] = "20"; $subject["name"] = "Subject"; '
+                    . '$subject["recurrence"] = "3"; $subject["question"] = []; '
+                    . '$subjectModule = $module; $subjectModule["subject"] = ["s" => $subject]; '
+                    . '$subjectStats = $qstats; $subjectStats["module"] = ["m" => $subjectModule]; '
                     . '$resultData = ["num_records" => 1, "testuser" => [], "passed_perc" => 0, '
                     . '"passed" => 0, "statistics" => []]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
@@ -430,7 +435,8 @@ final class StatisticsTest extends TestCase
                     . '$resultName(["num_records" => 0], 1, "score", ""), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $qstats], "2"), '
                     . '$resultName($resultData, "1", "score", "filter", false, "0"), '
-                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $moduleStats], "2")]; '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $moduleStats], "2"), '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $subjectStats], "3")]; '
                     . 'echo json_encode($returns);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -438,7 +444,7 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string} $returns */
+        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string} $returns */
         $returns = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         self::assertSame([null, null, null], array_slice($returns, 0, 3));
         self::assertStringStartsWith('<table class="userselect">', $returns[3]);
@@ -452,6 +458,11 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('2 P:0', $returns[5]);
         self::assertStringContainsString('D:Module', $returns[5]);
         self::assertStringEndsWith('</table>' . "\n", $returns[5]);
+        self::assertStringContainsString('subject_id=20', $returns[6]);
+        self::assertStringContainsString('<strong>S1</strong>', $returns[6]);
+        self::assertStringContainsString('3 P:0', $returns[6]);
+        self::assertStringContainsString('D:Subject', $returns[6]);
+        self::assertStringEndsWith('</table>' . "\n", $returns[6]);
     }
 
 
