@@ -275,8 +275,7 @@ function f_alt_login(): array|false
                 $ldap_dn = $ldap_entry['dn'] ?? '';
                 if (
                     $ldap_dn !== ''
-                    // @mago-expect lint:no-error-control-operator -- invalid LDAP credentials are an expected authentication result
-                    && @ldap_bind($ldapconn, $ldap_dn, $ldappassword)
+                    && f_tmf_alt_ldap_bind_silently($ldapconn, $ldap_dn, $ldappassword)
                 ) {
                     f_tmf_alt_ldap_unbind_silently($ldapconn);
                     $usr = [];
@@ -354,6 +353,20 @@ function f_tmf_alt_ldap_unbind_silently(\LDAP\Connection $connection): bool
     set_error_handler(static fn(): bool => true);
     try {
         return ldap_unbind($connection);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+function f_tmf_alt_ldap_bind_silently(
+    \LDAP\Connection $connection,
+    string $dn,
+    #[\SensitiveParameter] string $password,
+): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return ldap_bind($connection, $dn, $password);
     } finally {
         restore_error_handler();
     }
