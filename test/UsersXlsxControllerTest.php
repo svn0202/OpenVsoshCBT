@@ -6,6 +6,19 @@ use PHPUnit\Framework\TestCase;
 
 final class UsersXlsxControllerTest extends TestCase
 {
+    public function testSessionLevelIsReadOnlyAfterAuthorization(): void
+    {
+        $source = file_get_contents(dirname(__DIR__) . '/admin/code/tce_users_xlsx.php');
+
+        self::assertIsString($source);
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $sessionLevel = strpos($source, "\$_SESSION['session_user_level']");
+
+        self::assertIsInt($authorization);
+        self::assertIsInt($sessionLevel);
+        self::assertLessThan($sessionLevel, $authorization);
+    }
+
     public function testExportKeepsRoleFilterAndWorkbookContract(): void
     {
         $script = <<<'PHP'

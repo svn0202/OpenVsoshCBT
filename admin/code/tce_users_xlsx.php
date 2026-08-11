@@ -9,6 +9,8 @@ require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_users_xlsx.php';
 
 /** @var mixed $db */
+/** @var array{session_user_level:int, ...} $_SESSION */
+$session_user_level = (int) $_SESSION['session_user_level'];
 
 function f_tmf_users_xlsx_send(string $bytes, string $name): never
 {
@@ -63,8 +65,6 @@ if (isset($_GET['download']) && $_GET['download'] === 'export') {
         'registration_number', 'ssn', 'level', 'registration_date', 'groups',
     ]];
     $sql = 'SELECT * FROM ' . K_TABLE_USERS . ' WHERE user_id>1';
-    /** @mago-expect analysis:possibly-undefined-string-array-index */
-    $session_user_level = (int) $_SESSION['session_user_level'];
     if ($session_user_level < K_AUTH_ADMINISTRATOR) {
         $sql .= ' AND user_level<' . $session_user_level;
     }
@@ -188,8 +188,6 @@ if (isset($_POST['xlsx_action'])) {
              *     token?: string
              * } $preview
              */
-            /** @mago-expect analysis:possibly-undefined-string-array-index */
-            $session_user_level = (int) $_SESSION['session_user_level'];
             $preview = F_tmf_users_xlsx_validate(
                 F_tmf_xlsx_read($temporary),
                 $logins,
