@@ -889,10 +889,10 @@ function f_tmf_review_value(mixed $value): int
 /**
  * Returns true if the current user is authorized to execute the selected test.<br>
  * Generates the test if it's not already generated.
- * @param $test_id (int) test ID.
+ * @param mixed $test_id Test ID.
  * @return bool True if the user is authorized, false otherwise.
  */
-function f_execute_test($test_id)
+function f_execute_test(mixed $test_id): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
