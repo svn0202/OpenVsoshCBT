@@ -73,8 +73,7 @@ switch ($menu_mode) {
     case 'update': // Update user
         if ($formstatus = F_check_form_fields()) {
             // check password
-            // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
-            if (empty($newpassword) || empty($newpassword_repeat) || $newpassword !== $newpassword_repeat) {
+            if (empty($newpassword) || empty($newpassword_repeat) || !hash_equals($newpassword, $newpassword_repeat)) {
                 //print message and exit
                 F_print_error('WARNING', $l['m_different_passwords']);
                 $formstatus = false;
