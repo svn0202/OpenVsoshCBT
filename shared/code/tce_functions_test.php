@@ -1237,7 +1237,7 @@ function f_is_test_over_limits(): bool
     $enddate = date(K_TIMESTAMP_FORMAT, $now);
     if (K_MAX_TESTS_DAY) {
         // check day limit (last 24 hours)
-        $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_DAY);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_DAY));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
@@ -1249,7 +1249,7 @@ function f_is_test_over_limits(): bool
 
     if (K_MAX_TESTS_MONTH) {
         // check month limit (last 30 days)
-        $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_MONTH);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_MONTH));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
@@ -1261,7 +1261,7 @@ function f_is_test_over_limits(): bool
 
     if (K_MAX_TESTS_YEAR !== false) {
         // check year limit (last 365 days)
-        $startdate = date(K_TIMESTAMP_FORMAT, $now - K_SECONDS_IN_YEAR);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_YEAR));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
