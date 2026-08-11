@@ -25,22 +25,20 @@ final class FormValidationTest extends TestCase
 {
     public function testFormFieldDecoderReturnsCurrentRequestData(): void
     {
-        // @mago-expect lint:no-global -- legacy decoder reads the request superglobal directly
-        if (is_array($GLOBALS['_REQUEST'])) {
-            // @mago-expect lint:no-global -- type-checked snapshot of the request state
-            $original = $GLOBALS['_REQUEST'];
-        } else {
-            $original = [];
-        }
         $request = ['user_email' => 'student@example.com', 'group_id' => '7'];
-        try {
-            // @mago-expect lint:no-global -- test setup for the legacy request decoder
-            $GLOBALS['_REQUEST'] = $request;
-            $this->assertSame($request, \F_decode_form_fields());
-        } finally {
-            // @mago-expect lint:no-global -- restore the request state after the test
-            $GLOBALS['_REQUEST'] = $original;
-        }
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$_REQUEST = ["user_email" => "student@example.com", "group_id" => "7"]; '
+                    . 'require $argv[1]; echo json_encode(F_decode_form_fields());',
+                dirname(__DIR__) . '/shared/code/tce_functions_form.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame($request, json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
     public function testRequiredFieldCheckPreservesNoRulesAndCompleteFormResults(): void
