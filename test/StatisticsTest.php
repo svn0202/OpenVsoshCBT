@@ -435,6 +435,13 @@ final class StatisticsTest extends TestCase
                     . '$questionSubject = $subject; $questionSubject["question"] = ["q" => $question]; '
                     . '$questionModule = $module; $questionModule["subject"] = ["s" => $questionSubject]; '
                     . '$questionStats = $qstats; $questionStats["module"] = ["m" => $questionModule]; '
+                    . '$answer = ["id" => "40", "description" => "Answer", "recurrence" => "5", '
+                    . '"recurrence_perc" => "0", "right" => "6", "right_perc" => "0", '
+                    . '"wrong" => "7", "wrong_perc" => "0", "unanswered" => "8", "unanswered_perc" => "0"]; '
+                    . '$answerQuestion = $question; $answerQuestion["answer"] = ["a" => $answer]; '
+                    . '$answerSubject = $subject; $answerSubject["question"] = ["q" => $answerQuestion]; '
+                    . '$answerModule = $module; $answerModule["subject"] = ["s" => $answerSubject]; '
+                    . '$answerStats = $qstats; $answerStats["module"] = ["m" => $answerModule]; '
                     . '$resultData = ["num_records" => 1, "testuser" => [], "passed_perc" => 0, '
                     . '"passed" => 0, "statistics" => []]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
@@ -444,7 +451,8 @@ final class StatisticsTest extends TestCase
                     . '$resultName($resultData, "1", "score", "filter", false, "0"), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $moduleStats], "2"), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $subjectStats], "3"), '
-                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $questionStats], "4")]; '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $questionStats], "4"), '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $answerStats], "5")]; '
                     . 'echo json_encode($returns);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -452,7 +460,7 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string,7:string} $returns */
+        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string,7:string,8:string} $returns */
         $returns = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         self::assertSame([null, null, null], array_slice($returns, 0, 3));
         self::assertStringStartsWith('<table class="userselect">', $returns[3]);
@@ -477,6 +485,12 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('4 P:0', $returns[7]);
         self::assertStringContainsString('D:Question', $returns[7]);
         self::assertStringEndsWith('</table>' . "\n", $returns[7]);
+        self::assertStringContainsString('answer_id=40', $returns[8]);
+        self::assertStringContainsString('<strong>A1</strong>', $returns[8]);
+        self::assertStringContainsString('5 P:0', $returns[8]);
+        self::assertStringContainsString('6 P:0', $returns[8]);
+        self::assertStringContainsString('D:Answer', $returns[8]);
+        self::assertStringEndsWith('</table>' . "\n", $returns[8]);
     }
 
 
