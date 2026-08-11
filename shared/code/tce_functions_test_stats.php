@@ -2125,6 +2125,7 @@ function f_get_all_users_test_stat(
     $group_id = (int) $group_id;
     $user_id = (int) $user_id;
     $full_order_field = f_get_safe_users_test_stat_order_by($full_order_field);
+    /** @var int|numeric-string $stats */
     $include_user_stats = $stats > 0;
     $data = [];
     $data['svgpoints'] = '';

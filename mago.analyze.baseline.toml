@@ -176,12 +176,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Left operand in `>` comparison has `mixed` type."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
 count = 1
