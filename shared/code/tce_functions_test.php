@@ -2730,13 +2730,18 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 
 /**
  * Returns a questions menu and navigator buttons.
- * @param $testdata (array) test data
- * @param $testuser_id (int) user's test ID
- * @param $testlog_id (int) test log ID
- * @param $disable (boolean) if TRUE disable the questions list.
+ * @param mixed $testdata Test data
+ * @param mixed $testuser_id User's test ID
+ * @param mixed $testlog_id Test log ID
+ * @param mixed $disable If TRUE disable the questions list.
  * @return string XHTML code
  */
-function f_questions_menu($testdata, $testuser_id, $testlog_id = 0, $disable = false)
+function f_questions_menu(
+    mixed $testdata,
+    mixed $testuser_id,
+    mixed $testlog_id = 0,
+    mixed $disable = false,
+): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
