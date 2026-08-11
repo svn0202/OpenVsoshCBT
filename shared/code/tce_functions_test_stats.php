@@ -125,29 +125,32 @@ function f_get_user_test_totals(
 
 /**
  * Returns statistic array for the selected test.
- * @param $test_id (int) test ID.
- * @param $group_id (int) group ID - if greater than zero, filter stats for the specified user group.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $startdate (int) start date ID - if greater than zero, filter stats for the specified starting date
- * @param $enddate (int) end date ID - if greater than zero, filter stats for the specified ending date
- * @param $testuser_id (int) test-user ID - if greater than zero, filter stats for the specified test-user.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * return $data array containing test statistics.
+ * @param mixed $test_id Test ID.
+ * @param mixed $group_id Group ID - if greater than zero, filter stats for the specified user group.
+ * @param mixed $user_id User ID - if greater than zero, filter stats for the specified user.
+ * @param mixed $startdate Start date - if greater than zero, filter stats for the specified starting date.
+ * @param mixed $enddate End date - if greater than zero, filter stats for the specified ending date.
+ * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @return array<array-key, mixed> Test statistics.
  */
 function f_get_test_stat(
-    $test_id,
-    $group_id = 0,
-    $user_id = 0,
-    $startdate = 0,
-    $enddate = 0,
-    $testuser_id = 0,
-    $pubmode = false,
-) {
+    mixed $test_id,
+    mixed $group_id = 0,
+    mixed $user_id = 0,
+    mixed $startdate = 0,
+    mixed $enddate = 0,
+    mixed $testuser_id = 0,
+    mixed $pubmode = false,
+): array {
     $data = f_get_raw_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, [], $pubmode);
+    /** @var array<array-key, mixed> $data */
     if (isset($data['qstats']['recurrence'])) {
-        return f_normalize_test_stat_averages($data);
+        $data = f_normalize_test_stat_averages($data);
+        /** @var array<array-key, mixed> $data */
     }
 
+    /** @var array<array-key, mixed> $data */
     return $data;
 }
 
@@ -876,6 +879,7 @@ function f_print_test_stat(
         // get statistics array
         $ts = f_get_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, $pubmode);
     }
+    /** @var array{qstats:array{recurrence:mixed,recurrence_perc:mixed,average_score_perc:mixed,average_time:mixed,right:mixed,right_perc:mixed,wrong:mixed,wrong_perc:mixed,unanswered:mixed,unanswered_perc:mixed,undisplayed:mixed,undisplayed_perc:mixed,unrated:mixed,unrated_perc:mixed,module:array<array-key,mixed>}} $ts */
 
     $txtdir = (($l['a_meta_dir'] <=> 'rtl') === 0) ? 'right' : 'left';
 
@@ -2119,12 +2123,13 @@ function f_get_all_users_test_stat(
                 - $usrtestdata['test_duration_time'];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['user_comment'] = $usrtestdata['user_comment'];
             // SVG points
+            $current_testuser = $data['testuser']["'" . $mr['testuser_id'] . "'"];
+            /** @var array{total_score_perc:float|int,right_perc:float|int|string} $current_testuser */
             $data['svgpoints'] .=
                 'x'
-                . $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score_perc']
+                . $current_testuser['total_score_perc']
                 . 'v'
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
-                . $data['testuser']["'" . $mr['testuser_id'] . "'"]['right_perc'];
+                . $current_testuser['right_perc'];
             // collects data for descriptive statistics
             // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
             $statsdata['score'][] = $mr['total_score'];
