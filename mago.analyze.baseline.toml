@@ -110,12 +110,6 @@ count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "less-specific-nested-argument-type"
-message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `array<array-key, mixed>` is less specific."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `f_tmf_short_answer_score`: expected `string`, but found `mixed`."
 count = 1

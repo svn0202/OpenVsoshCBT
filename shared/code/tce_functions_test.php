@@ -1756,11 +1756,13 @@ function f_add_question_answers(
                     $answers_ids += f_select_answers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
                     if (f_legacy_int_equals($ordmode, 1)) {
                         // reorder answers alphabetically
+                        $answer_ids_sql = $answers_ids;
+                        /** @var array<array-key,int|string> $answer_ids_sql */
                         $sql =
                             'SELECT answer_id FROM '
                             . K_TABLE_ANSWERS
                             . ' WHERE answer_id IN ('
-                            . implode(',', $answers_ids)
+                            . implode(',', $answer_ids_sql)
                             . ') ORDER BY answer_description';
                         $answers_ids = [];
                         if ($r = F_db_query($sql, $db)) {
