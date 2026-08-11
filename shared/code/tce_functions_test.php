@@ -3317,6 +3317,7 @@ function f_get_num_omitted_questions(mixed $test_id): int
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array{session_user_id:int|numeric-string} $_SESSION */
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     // get the number of omitted questions
