@@ -3558,6 +3558,8 @@ function f_get_test_ssl_certs(mixed $test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $ids = '0';
     // select SSL certificates in this test
@@ -3567,9 +3569,11 @@ function f_get_test_ssl_certs(mixed $test_id): string
         . ' WHERE tstssl_test_id='
         . $test_id
         . ' ORDER BY tstssl_ssl_id';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_assoc($r)) {
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches SSL certificate rows as arrays
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        while (($m = $normalize_row(F_db_fetch_assoc($r))) !== null) {
+            /** @var array{tstssl_ssl_id:int|numeric-string} $m */
             $ids .= ',' . $m['tstssl_ssl_id'];
         }
     } else {
