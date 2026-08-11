@@ -172,11 +172,11 @@ function f_tmf_users_xlsx_validate(
         }
         foreach ($group_names as $group_name) {
             $group_key = mb_strtolower($group_name);
-            if (!isset($available_groups[$group_key])) {
+            $group_id = $available_groups[$group_key] ?? null;
+            if ($group_id === null) {
                 $row_errors[] = 'Неизвестная группа: ' . $group_name . '.';
             } else {
-                /** @mago-expect analysis:possibly-undefined-string-array-index */
-                $group_ids[] = $available_groups[$group_key];
+                $group_ids[] = $group_id;
             }
         }
         if ($row_errors !== []) {
