@@ -112,8 +112,12 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
         return true;
     }
     if ($query === 'COMMIT') {
-        // @mago-expect lint:no-error-control-operator -- transaction failures follow the DAL's false-return contract
-        $committed = @oci_commit($link_identifier);
+        set_error_handler(static fn(): bool => true);
+        try {
+            $committed = oci_commit($link_identifier);
+        } finally {
+            restore_error_handler();
+        }
         unset($transactions[$connection_id]);
         return $committed;
     }
