@@ -151,6 +151,7 @@ PHP;
                     . '$GLOBALS["selection_fails"] = false; $GLOBALS["ordered_rows"] = '
                     . '[["answer_id" => "13"], ["answer_id" => "17"], false]; '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function f_get_boolean($value) { return filter_var($value, FILTER_VALIDATE_BOOLEAN); } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return $sql; } '
                     . 'function F_db_fetch_array($result) { '

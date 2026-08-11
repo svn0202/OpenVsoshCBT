@@ -1980,18 +1980,28 @@ function f_add_question_answers(
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var int|numeric-string $question_id */
+    /** @var int|numeric-string $num_answers */
+    /** @var int|numeric-string $firsttest */
+    /**
+     * @var array{
+     *   test_random_answers_order:mixed,test_answers_order_mode:int|numeric-string,
+     *   test_random_questions_select:mixed,test_random_answers_select:mixed
+     * } $testdata
+     */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     if (f_legacy_int_equals($question_type, 3)) {
         // free text question
         return true;
     }
 
-    $question_options_result = F_db_query(
+    $question_options_result = f_legacy_db_query_result(F_db_query(
         'SELECT question_shuffle_answers FROM ' . K_TABLE_QUESTIONS
         . ' WHERE question_id=' . (int) $question_id . ' LIMIT 1',
         $db,
-    );
-    $question_options = $question_options_result ? F_db_fetch_array($question_options_result) : false;
-    /** @var array{question_shuffle_answers?:mixed}|false $question_options */
+    ));
+    $question_options = $question_options_result ? $normalize_row(F_db_fetch_array($question_options_result)) : null;
+    /** @var array{question_shuffle_answers?:mixed}|null $question_options */
     $randorder = f_get_boolean($testdata['test_random_answers_order'])
         || f_get_boolean($question_options['question_shuffle_answers'] ?? false);
     $ordmode = (int) $testdata['test_answers_order_mode'];
@@ -2022,9 +2032,9 @@ function f_add_question_answers(
                             . implode(',', $answer_ids_sql)
                             . ') ORDER BY answer_description';
                         $answers_ids = [];
-                        if ($r = F_db_query($sql, $db)) {
-                            while ($m = F_db_fetch_array($r)) {
-                                /** @var int|numeric-string $selected_answer_id */
+                        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
+                            while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                                /** @var array{answer_id:int|numeric-string} $m */
                                 $selected_answer_id = $m['answer_id'];
                                 $answers_ids[] = $selected_answer_id;
                             }
@@ -2083,10 +2093,10 @@ function f_add_question_answers(
             $sql .= ' ORDER BY logansw_order';
         }
 
-        if ($r = F_db_query($sql, $db)) {
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             $answers_ids = [];
-            while ($m = F_db_fetch_array($r)) {
-                /** @var int|numeric-string $copied_answer_id */
+            while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /** @var array{logansw_answer_id:int|numeric-string} $m */
                 $copied_answer_id = $m['logansw_answer_id'];
                 $answers_ids[] = $copied_answer_id;
             }
