@@ -33,6 +33,19 @@ function f_omr_open_dir_silently(string $directory): mixed
 }
 
 /**
+ * Remove a best-effort OMR upload artifact without exposing cleanup races.
+ */
+function f_omr_unlink_silently(string $filename): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return unlink($filename);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
  * Encode OMR test data array as a string to be printed on QR-Code.
  * @param $data (array) array to be encoded
  * @return string encoded data.
