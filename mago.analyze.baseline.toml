@@ -104,12 +104,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "invalid-return-statement"
-message = "Invalid return type for function `f_select_answers`: expected `array<array-key, mixed>`, but found `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "invalid-type-cast"
 message = "Casting `mixed` to `array`."
 count = 2
@@ -135,61 +129,13 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
-message = "Parameter `$isright` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
 message = "Parameter `$label` is missing a type hint."
 count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
-message = "Parameter `$limit` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$ordering` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$ordmode` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$question_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$randorder` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$startindex` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
 message = "Parameter `$value` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `f_select_answers` is missing a return type hint."
 count = 1
 
 [[issues]]

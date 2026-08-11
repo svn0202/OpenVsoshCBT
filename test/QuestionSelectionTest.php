@@ -145,11 +145,13 @@ PHP;
                 '-r',
                 'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); $GLOBALS["db"] = "db"; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["select_calls"] = []; $GLOBALS["logged"] = []; '
+                    . '$GLOBALS["selection_fails"] = false; '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_get_boolean($value) { return filter_var($value, FILTER_VALIDATE_BOOLEAN); } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
                     . 'function F_db_fetch_array($result) { return ["question_shuffle_answers" => false]; } '
                     . 'function f_select_answers(...$arguments) { $GLOBALS["select_calls"][] = $arguments; '
+                    . 'if ($GLOBALS["selection_fails"]) { return false; } '
                     . 'return [2 => 17, 0 => 13]; } '
                     . 'function f_add_log_answers($testlogId, $answerIds) { '
                     . '$GLOBALS["logged"][] = [$testlogId, $answerIds]; } '
@@ -166,7 +168,10 @@ PHP;
                     . '"test_random_questions_select" => true, "test_random_answers_select" => false]; '
                     . '$freeText = $qualified(31, 41, 3, 0, 0, $testdata); '
                     . '$multiple = $qualified(32, 42, 2, 2, 0, $testdata); '
-                    . 'echo json_encode([$freeText, $multiple, $GLOBALS["queries"], '
+                    . '$GLOBALS["selection_fails"] = true; '
+                    . 'try { $qualified(33, 43, 2, 2, 0, $testdata); $failure = null; '
+                    . '} catch (\TypeError $error) { $failure = get_class($error); } '
+                    . 'echo json_encode([$freeText, $multiple, $failure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -178,8 +183,12 @@ PHP;
             [
                 true,
                 true,
-                ['SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1'],
-                [[42, '', false, 2, 0, false, 0]],
+                'TypeError',
+                [
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=43 LIMIT 1',
+                ],
+                [[42, '', false, 2, 0, false, 0], [43, '', false, 2, 0, false, 0]],
                 [[32, [0 => 13, 2 => 17]]],
             ],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
