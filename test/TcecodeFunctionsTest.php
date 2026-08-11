@@ -7,6 +7,25 @@ use PHPUnit\Framework\TestCase;
 
 final class TcecodeFunctionsTest extends TestCase
 {
+    public function testMissingImageSizeReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_tcecode.php"; '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$size = f_tcecode_get_image_size(K_PATH_CACHE . "missing-image-size.png"); '
+                    . 'restore_error_handler(); echo json_encode([$size, $warnings]);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[]]', $output);
+    }
+
     public function testDecoderReturnsEmptyStringForEmptyInput(): void
     {
         [$status, $output] = \F_tcecode_run_process(

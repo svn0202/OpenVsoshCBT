@@ -38,6 +38,22 @@ function f_tcecode_preview_input(mixed $value): string
 }
 
 /**
+ * Read image dimensions without exposing expected filesystem races to the
+ * application's error handler.
+ *
+ * @return array{0:int,1:int,2:int,3:string,bits?:int,channels?:int,mime:string}|false
+ */
+function f_tcecode_get_image_size(string $filename): array|false
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return getimagesize($filename);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
  * Returns XHTML code from text marked-up with TCExam Code Tags
  * @param $text_to_decode (string) text to convert
  * @return string XHTML code
@@ -607,8 +623,7 @@ function f_latex_callback(mixed $matches): mixed
                 if ($ret !== 0) {
                     $error = $output;
                 } else {
-                    // @mago-expect lint:no-error-control-operator -- renderer output validation handles an unreadable image as a failed render
-                    $imsize = @getimagesize($imgpath . '.' . $image_format);
+                    $imsize = f_tcecode_get_image_size($imgpath . '.' . $image_format);
                     $w = $imsize[0] ?? 0;
                     $h = $imsize[1] ?? 0;
                     if (($w / $dr) > K_LATEX_MAX_WIDTH || ($h / $dr) > K_LATEX_MAX_HEIGHT) {
@@ -649,8 +664,7 @@ function f_latex_callback(mixed $matches): mixed
     ];
     $alt_latex = strtr($alt_latex, $replaceTable);
     // XHTML code for image
-    // @mago-expect lint:no-error-control-operator -- the generated image may disappear between rendering and response assembly
-    $imsize = @getimagesize($imgpath . '.' . $image_format);
+    $imsize = f_tcecode_get_image_size($imgpath . '.' . $image_format);
     $w = $imsize[0] ?? 0;
     $h = $imsize[1] ?? 0;
 
@@ -841,12 +855,7 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                     $htmlcode .= ' alt="image:' . $filename . '"';
                 }
 
-                set_error_handler(static fn(): bool => true);
-                try {
-                    $imsize = getimagesize(K_PATH_CACHE . $filename);
-                } finally {
-                    restore_error_handler();
-                }
+                $imsize = f_tcecode_get_image_size(K_PATH_CACHE . $filename);
                 $pixw = 0;
                 $pixh = 0;
                 if ($imsize !== false) {
