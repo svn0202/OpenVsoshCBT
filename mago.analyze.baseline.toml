@@ -75,12 +75,6 @@ count = 11
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `nonnull`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
 count = 1
 
