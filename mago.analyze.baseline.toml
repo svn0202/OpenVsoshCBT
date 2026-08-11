@@ -99,12 +99,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `explode`: expected `string`, but found `truthy-mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
 count = 1
 
