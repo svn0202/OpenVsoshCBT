@@ -164,15 +164,9 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-array-access"
-message = "Unsafe array access on type `mixed`."
-count = 13
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 14
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
