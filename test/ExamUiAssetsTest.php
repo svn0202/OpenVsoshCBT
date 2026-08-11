@@ -269,12 +269,14 @@ final class ExamUiAssetsTest extends TestCase
     public function testReviewControlReplacesConfirmAndHighlightsQuestionList(): void
     {
         $renderer = (string) file_get_contents(__DIR__ . '/../shared/code/tce_functions_test.php');
+        $theme = (string) file_get_contents(__DIR__ . '/../public/config.default/theme/picoman.php');
         $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/mobile-exam.js');
         $stylesheet = (string) file_get_contents(__DIR__ . '/../public/styles/tmf-reference.css');
 
         self::assertStringContainsString('exam-review-toggle exam-review-nav', $renderer);
         self::assertStringContainsString("array_unshift(\$item_classes, 'selected')", $renderer);
         self::assertStringNotContainsString('name="confirmanswer"', $renderer);
+        self::assertStringContainsString('if(fTestForm && qNum){', $theme);
         self::assertStringContainsString('exam-question-menu-description', $renderer);
         self::assertStringContainsString(
             'class="tcecontentbox exam-question-list" open="open"',

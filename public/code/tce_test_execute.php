@@ -79,7 +79,6 @@ $request = &$_REQUEST;
 $post = &$_POST;
 $files = &$_FILES;
 $server = &$_SERVER;
-$session = &$_SESSION;
 
 if (isset($post['examtime'])) {
     $examtime = $post['examtime'];
@@ -92,6 +91,7 @@ $thispage_description = $l['hp_test_execute'];
 require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../../shared/code/tce_functions_test.php';
+$session = &$_SESSION;
 
 /** @var array{session_test_completion_message?:string, session_test_login?:string, session_user_id:int, session_user_ip:string} $session */
 $formname = 'testform';

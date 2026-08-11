@@ -501,16 +501,24 @@ PHP;
                     . '"test_disable_next" => false]; '
                     . '$markup = $qualified($testdata, "055", "008", false); '
                     . '$emptyMarkup = $qualified($testdata, "056", "009", false); '
-                    . 'echo json_encode([$markup, $emptyMarkup, $GLOBALS["queries"]]);',
+                    . 'foreach (["ov_answer_saving", "ov_answer_saved", "ov_answer_not_saved", '
+                    . '"ov_answer_save_conflict", "ov_answer_unsaved", "ov_answer_retrying", "ov_save"] as $key) '
+                    . '{ unset($GLOBALS["l"][$key]); } '
+                    . '$GLOBALS["warnings"] = []; set_error_handler(static function ($severity, $message) '
+                    . '{ $GLOBALS["warnings"][] = [$severity, $message]; return true; }); '
+                    . '$GLOBALS["rows"] = [$row, false]; '
+                    . '$fallbackMarkup = $qualified($testdata, "057", "010", false); '
+                    . 'echo json_encode([$markup, $emptyMarkup, $GLOBALS["queries"], '
+                    . '$fallbackMarkup, $GLOBALS["warnings"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:string,1:string,2:array{0:string,1:string}} $decoded */
+        /** @var array{0:string,1:string,2:array<int,string>,3:string,4:array<int,array{int,string}>} $decoded */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$markup, $emptyMarkup, $queries] = $decoded;
+        [$markup, $emptyMarkup, $queries, $fallbackMarkup, $warnings] = $decoded;
         self::assertStringContainsString('data-audio-play-limit="2"', $markup);
         self::assertStringContainsString('data-image-preview-label="Image" data-image-preview-close="Close"', $markup);
         self::assertStringContainsString('data-audio-plays-left="Plays &lt;{count}&gt;"', $markup);
@@ -534,7 +542,14 @@ PHP;
                 . 'data-answer-conflict="Conflict" data-answer-unsaved="Unsaved" data-answer-retrying="Retrying">Save',
             $markup,
         );
+        self::assertSame([], $warnings);
+        self::assertStringContainsString(
+            'data-answer-saving="Сохраняется…" data-answer-saved="Сохранено" '
+                . 'data-answer-error="Не сохранено"',
+            $fallbackMarkup,
+        );
+        self::assertStringContainsString('>Сохранить</button>', $fallbackMarkup);
         self::assertStringContainsString('<details class="tcecontentbox exam-question-list" open="open">', $markup);
-        self::assertStringContainsString('testlog_testuser_id=55', $queries[0]);
+        self::assertStringContainsString('testlog_testuser_id=55', $queries[0] ?? '');
     }
 }
