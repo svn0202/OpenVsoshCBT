@@ -173,8 +173,7 @@ function f_db_fetch_array(mixed $result): mixed
     if ($arr !== false) {
         // @mago-expect analysis:less-specific-argument -- OCI_BOTH intentionally returns numeric and string keys
         $arr = array_change_key_case($arr, CASE_LOWER);
-        // @mago-expect analysis:possibly-invalid-argument -- OCI values use weak scalar conversion in this legacy DAL
-        $arr = array_map('stripslashes', $arr);
+        $arr = array_map(static fn(mixed $value): string => f_db_oracle_strip_slashes($value), $arr);
     }
 
     return $arr;
@@ -191,11 +190,19 @@ function f_db_fetch_assoc(mixed $result): mixed
     $arr = oci_fetch_assoc($result);
     if ($arr !== false) {
         $arr = array_change_key_case($arr, CASE_LOWER);
-        // @mago-expect analysis:possibly-invalid-argument -- OCI values use weak scalar conversion in this legacy DAL
-        $arr = array_map('stripslashes', $arr);
+        $arr = array_map(static fn(mixed $value): string => f_db_oracle_strip_slashes($value), $arr);
     }
 
     return $arr;
+}
+
+function f_db_oracle_strip_slashes(mixed $value): string
+{
+    if ($value !== null && !is_scalar($value)) {
+        throw new TypeError('Oracle row values must be scalar or null.');
+    }
+
+    return stripslashes((string) ($value ?? ''));
 }
 
 /**
