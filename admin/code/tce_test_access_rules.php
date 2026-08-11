@@ -70,8 +70,9 @@ if (isset($_POST['save_rules'])) {
         $message = 'Дата отзыва должна быть позже даты публикации.';
     } else {
         $minimum_duration = max(0, min(1440, (int) ($_POST['minimum_duration'] ?? 0)));
-        // @mago-expect analysis:array-to-string-conversion -- controller preserves legacy post coercion
-        $completion_message = trim((string) ($_POST['completion_message'] ?? ''));
+        $completion_message = isset($_POST['completion_message']) && is_string($_POST['completion_message'])
+            ? trim($_POST['completion_message'])
+            : '';
         if (mb_strlen($completion_message) > 4000) {
             $completion_message = mb_substr($completion_message, 0, 4000);
         }
