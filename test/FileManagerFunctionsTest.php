@@ -104,6 +104,23 @@ final class FileManagerFunctionsTest extends TestCase
         self::assertSame('false', $output);
     }
 
+    public function testMissingMediaDirectoryCannotBeDeleted(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . '$_SESSION["session_user_level"] = K_AUTH_ADMIN_DIRS; '
+                    . 'echo json_encode(f_delete_media_dir(K_PATH_CACHE . "missing-directory/"));',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('false', $output);
+    }
+
     public function testRejectsTraversalWhenCreatingMediaDirectory(): void
     {
         [$status, $output] = F_tcecode_run_process(
