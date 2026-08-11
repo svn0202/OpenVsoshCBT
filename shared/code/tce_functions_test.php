@@ -1951,7 +1951,7 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 		WHERE testuser_id='
         . $testuser_id
         . '';
-    if (!($r = F_db_query($sql, $db))) {
+    if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
         F_display_db_error(false);
         return false;
     }

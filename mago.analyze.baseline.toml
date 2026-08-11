@@ -136,4 +136,4 @@ count = 4
 file = "shared/code/tce_functions_test.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 3
+count = 2
