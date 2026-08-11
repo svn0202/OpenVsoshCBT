@@ -32,6 +32,7 @@ final class BackupTest extends TestCase
         }
     }
 
+    /** @throws \TmfBackupException */
     public function testBackupFilenameValidationRejectsTraversalAndSymlinks(): void
     {
         self::assertTrue(\F_tmf_backup_file_is_valid('20260727120000_tcexam_backup.sql.gz'));

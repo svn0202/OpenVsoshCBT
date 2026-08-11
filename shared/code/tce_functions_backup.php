@@ -274,10 +274,10 @@ function f_tmf_backup_file_is_valid(string $filename): bool
     return preg_match('/^\d{14}_tcexam_backup\.(?:sql|tar)\.gz$/D', $filename) === 1;
 }
 
+/** @throws TmfBackupException When the requested archive path is invalid or unsafe. */
 function f_tmf_backup_resolve_file(string $backup_directory, string $filename): string
 {
     if (!F_tmf_backup_file_is_valid($filename)) {
-        // @mago-expect analysis:unhandled-thrown-type -- invalid paths use the established exception API
         throw new TmfBackupException('Некорректное имя резервной копии.');
     }
     $directory = realpath($backup_directory);
