@@ -166,7 +166,7 @@ count = 9
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 242
+count = 236
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

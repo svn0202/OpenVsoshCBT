@@ -72,6 +72,8 @@ function f_get_user_test_totals(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';
     global $db, $l;
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $test_id = (int) $test_id;
     $user_id = (int) $user_id;
     $testuser_id = (int) $testuser_id;
@@ -107,7 +109,13 @@ function f_get_user_test_totals(
             . '
 		GROUP BY testuser_id, testuser_creation_time, testuser_status, testuser_comment';
         if ($ru = F_db_query($sqlu, $db)) {
-            if ($mu = F_db_fetch_array($ru)) {
+            if (($mu = $normalize_row(F_db_fetch_array($ru))) !== null) {
+                /**
+                 * @var array{
+                 *   testuser_id:mixed,total_score:mixed,testuser_creation_time:mixed,test_end_time:mixed,
+                 *   testuser_status:mixed,testuser_comment:mixed
+                 * } $mu
+                 */
                 $data['testuser_id'] = $mu['testuser_id'];
                 $data['user_score'] = $mu['total_score'];
                 $data['user_test_start_time'] = $mu['testuser_creation_time'];
