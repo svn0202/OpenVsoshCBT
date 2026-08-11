@@ -1101,22 +1101,26 @@ function f_execute_test(mixed $test_id): bool
          *     test_repeatable:int|numeric-string
          * }|null $m
          */
+        /** @var string|null $session_user_ip */
+        $session_user_ip = $_SESSION['session_user_ip'] ?? null;
+        /** @var int|numeric-string $session_user_id */
+        $session_user_id = $_SESSION['session_user_id'] ?? 0;
         // check user's authorization
         if (
             $m !== null
-            && f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
-            && F_tmf_test_access_status($test_id, (int) $_SESSION['session_user_id'])['allowed']
+            && f_is_valid_test_user($m['test_id'], $session_user_ip, $m['test_ip_range'])
+            && F_tmf_test_access_status($test_id, (int) $session_user_id)['allowed']
         ) {
             $pregeneration = F_tmf_pregeneration_activate(
                 $test_id,
-                (int) $_SESSION['session_user_id'],
+                (int) $session_user_id,
             );
             if ($pregeneration === 'invalidated') {
-                return f_create_test($test_id, (int) $_SESSION['session_user_id']);
+                return f_create_test($test_id, (int) $session_user_id);
             }
             // the user's IP is valid, check test status
             [$test_status, $testuser_id] = f_check_test_status(
-                $_SESSION['session_user_id'],
+                $session_user_id,
                 $m['test_id'],
                 $m['test_duration_time'],
             );
@@ -1124,18 +1128,18 @@ function f_execute_test(mixed $test_id): bool
             if (
                 $test_status > 4
                 && (
-                    f_count_user_test($_SESSION['session_user_id'], $test_id) < $m['test_repeatable']
+                    f_count_user_test($session_user_id, $test_id) < $m['test_repeatable']
                     || f_legacy_int_equals($m['test_repeatable'], 1)
                 )
             ) {
-                return f_create_test($test_id, $_SESSION['session_user_id']);
+                return f_create_test($test_id, $session_user_id);
             }
 
             switch ($test_status) {
                 case 0:
                     // 0 = test is not yet created
                         // create new test session for the current user
-                        return f_create_test($test_id, $_SESSION['session_user_id']);
+                        return f_create_test($test_id, $session_user_id);
                 case 1: // 1 = the test has been successfully created
                 case 2: // 2 = all questions have been displayed to the user
                 case 3:
@@ -1178,8 +1182,10 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
     if ($r) {
         if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
             /** @var array{testuser_test_id:int|numeric-string,testuser_user_id:int|numeric-string} $m */
+            /** @var int|numeric-string $session_user_id */
+            $session_user_id = $_SESSION['session_user_id'] ?? 0;
             if (
-                !f_legacy_int_equals($m['testuser_user_id'], (int) $_SESSION['session_user_id'])
+                !f_legacy_int_equals($m['testuser_user_id'], (int) $session_user_id)
                 || !f_legacy_int_equals($m['testuser_test_id'], $test_id)
             ) {
                 return false;
