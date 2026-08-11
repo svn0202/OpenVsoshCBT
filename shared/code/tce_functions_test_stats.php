@@ -808,30 +808,31 @@ function f_normalize_test_stat_averages(mixed $data): mixed
 
 /**
  * Returns test stats as HTML table
- * @param $test_id (int) test ID.
- * @param $group_id (int) group ID - if greater than zero, filter stats for the specified user group.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $startdate (int) start date ID - if greater than zero, filter stats for the specified starting date
- * @param $enddate (int) end date ID - if greater than zero, filter stats for the specified ending date
- * @param $testuser_id (int) test-user ID - if greater than zero, filter stats for the specified test-user.
- * @param $ts (array) array of stats to print (leave empty to automatically generate new data).
- * @param $display_mode display (int) mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question; 5 = answer.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * return $data string containing HTML table.
+ * @param mixed $test_id Test ID.
+ * @param mixed $group_id Group ID - if greater than zero, filter stats for the specified user group.
+ * @param mixed $user_id User ID - if greater than zero, filter stats for the specified user.
+ * @param mixed $startdate Start date - if greater than zero, filter stats for the specified starting date.
+ * @param mixed $enddate End date - if greater than zero, filter stats for the specified ending date.
+ * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
+ * @param mixed $ts Statistics to print (leave empty to automatically generate new data).
+ * @param mixed $display_mode Display mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question;
+ *     5 = answer.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @return string|null HTML table, or null when statistics are disabled or empty.
  */
 function f_print_test_stat(
-    $test_id,
-    $group_id = 0,
-    $user_id = 0,
-    $startdate = 0,
-    $enddate = 0,
-    $testuser_id = 0,
-    $ts = [],
-    $display_mode = 2,
-    $pubmode = false,
-) {
+    mixed $test_id,
+    mixed $group_id = 0,
+    mixed $user_id = 0,
+    mixed $startdate = 0,
+    mixed $enddate = 0,
+    mixed $testuser_id = 0,
+    mixed $ts = [],
+    mixed $display_mode = 2,
+    mixed $pubmode = false,
+): ?string {
     if ($display_mode < 2) {
-        return;
+        return null;
     }
 
     require_once '../config/tce_config.php';
@@ -869,7 +870,7 @@ function f_print_test_stat(
      * } $l
      */
     if (empty($ts['qstats']['recurrence'])) {
-        return;
+        return null;
     }
 
     $test_id = (int) $test_id;

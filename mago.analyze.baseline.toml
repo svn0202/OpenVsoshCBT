@@ -633,25 +633,7 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "missing-parameter-type"
-message = "Parameter `$display_mode` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$enddate` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
 message = "Parameter `$filter` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$group_id` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -670,12 +652,6 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "missing-parameter-type"
 message = "Parameter `$pubmode` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$startdate` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -686,38 +662,8 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$test_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$testuser_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$ts` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-parameter-type"
-message = "Parameter `$user_id` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "missing-return-type"
 message = "Function `f_print_test_result_stat` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "missing-return-type"
-message = "Function `f_print_test_stat` is missing a return type hint."
 count = 1
 
 [[issues]]
