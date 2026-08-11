@@ -781,12 +781,13 @@ function f_get_user_data($user_id)
 /**
  * Returns the test password.
  * @param $test_id (int) test ID.
- * @return string test password or empty string in case of error.
+ * @return string|null Test password or null when the database value is null.
  */
-function f_get_test_password($test_id)
+function f_get_test_password(mixed $test_id): ?string
 {
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
+    /** @var array{test_password:string|null} $td */
     return $td['test_password'];
 }
 
