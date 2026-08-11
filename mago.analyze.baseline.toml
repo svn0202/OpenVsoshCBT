@@ -202,7 +202,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
-count = 39
+count = 38
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -298,13 +298,13 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 24
+count = 22
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 88
+count = 87
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -322,7 +322,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
-count = 94
+count = 92
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -388,24 +388,6 @@ count = 3
 file = "shared/code/tce_functions_test_stats.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('test_score_right')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-variable"
-message = "Variable `$itemcount` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-variable"
-message = "Variable `$passed` might not have been defined on all execution paths leading to this point."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-variable"
-message = "Variable `$statsdata` might not have been defined on all execution paths leading to this point."
 count = 1
 
 [[issues]]

@@ -2021,18 +2021,18 @@ function f_get_all_users_test_stat(
         $data += f_get_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, 0, $pubmode);
     }
 
+    $itemcount = 0;
+    $passed = 0;
+    $statsdata = [];
+    $statsdata['score'] = [];
+    $statsdata['right'] = [];
+    $statsdata['wrong'] = [];
+    $statsdata['unanswered'] = [];
+    $statsdata['undisplayed'] = [];
+    $statsdata['unrated'] = [];
     $sqlr .= ' GROUP BY testuser_id, testuser_test_id, testuser_creation_time, user_id, user_lastname, user_firstname, user_name, user_email, testuser_status
 		ORDER BY ' . $full_order_field . '';
     if ($rr = F_db_query($sqlr, $db)) {
-        $itemcount = 0;
-        $passed = 0;
-        $statsdata = [];
-        $statsdata['score'] = [];
-        $statsdata['right'] = [];
-        $statsdata['wrong'] = [];
-        $statsdata['unanswered'] = [];
-        $statsdata['undisplayed'] = [];
-        $statsdata['unrated'] = [];
         $statsdata['recurrence'] = [];
         while ($mr = F_db_fetch_array($rr)) {
             ++$itemcount;
