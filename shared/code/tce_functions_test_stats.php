@@ -1999,6 +1999,8 @@ function f_get_all_users_test_stat(
     require_once '../../shared/code/tce_functions_test.php';
     require_once '../../shared/code/tce_functions_statistics.php';
     global $db, $l;
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $test_id = (int) $test_id;
     $group_id = (int) $group_id;
     $user_id = (int) $user_id;
@@ -2075,7 +2077,15 @@ function f_get_all_users_test_stat(
 		ORDER BY ' . $full_order_field . '';
     if ($rr = F_db_query($sqlr, $db)) {
         $statsdata['recurrence'] = [];
-        while ($mr = F_db_fetch_array($rr)) {
+        while (($mr = $normalize_row(F_db_fetch_array($rr))) !== null) {
+            /**
+             * @var array{
+             *   testuser_id:int|numeric-string,testuser_test_id:int|numeric-string,
+             *   testuser_creation_time:string,testuser_end_time:mixed,testuser_status:int|numeric-string,
+             *   user_id:int|numeric-string,user_lastname:mixed,user_firstname:mixed,user_name:mixed,user_email:mixed,
+             *   total_score:int|float|numeric-string
+             * } $mr
+             */
             ++$itemcount;
             $usrtestdata = f_get_user_test_stat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
             /**
@@ -2115,13 +2125,13 @@ function f_get_all_users_test_stat(
             if (
                 $mr['testuser_end_time'] <= 0
                 || (int) strtotime((string) $mr['testuser_end_time'])
-                    < (int) strtotime((string) $mr['testuser_creation_time'])
+                    < (int) strtotime($mr['testuser_creation_time'])
             ) {
                 $time_diff = $usrtestdata['test_duration_time'] * K_SECONDS_IN_MINUTE;
             } else {
                 $time_diff =
                     (int) strtotime((string) $mr['testuser_end_time'])
-                    - (int) strtotime((string) $mr['testuser_creation_time']); //sec
+                    - (int) strtotime($mr['testuser_creation_time']); //sec
             }
 
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['time_diff'] = gmdate('H:i:s', (int) $time_diff);
@@ -2196,7 +2206,6 @@ function f_get_all_users_test_stat(
                 . 'v'
                 . $current_testuser['right_perc'];
             // collects data for descriptive statistics
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
             $statsdata['score'][] = $mr['total_score'];
             $statsdata['score_perc'][] = $total_score_perc;
             if ($teststat !== null) {

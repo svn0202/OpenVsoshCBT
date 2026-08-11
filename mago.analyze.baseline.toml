@@ -166,7 +166,7 @@ count = 9
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 303
+count = 242
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -184,7 +184,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
-count = 16
+count = 15
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -232,7 +232,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 310
+count = 269
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -262,19 +262,19 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 17
+count = 16
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 56
+count = 53
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
-count = 40
+count = 39
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
