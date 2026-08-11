@@ -232,7 +232,7 @@ count = 13
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Left operand in `||` operation has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -550,12 +550,6 @@ count = 3
 file = "shared/code/tce_functions_test.php"
 code = "redundant-null-coalesce"
 message = "Redundant null coalesce: left-hand side is always `null`."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "undefined-variable"
-message = "Undefined variable: `$question_timer`."
 count = 2
 
 [[issues]]
