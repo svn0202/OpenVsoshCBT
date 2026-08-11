@@ -2078,7 +2078,13 @@ function f_get_all_users_test_stat(
         while ($mr = F_db_fetch_array($rr)) {
             ++$itemcount;
             $usrtestdata = f_get_user_test_stat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
-            /** @var array{test_max_score:mixed,test_duration_time:mixed,test_score_threshold:mixed,user_score:mixed,user_test_start_time:string,user_comment:mixed} $usrtestdata */
+            /**
+             * @var array{
+             *   test_max_score:int|float|numeric-string,test_duration_time:int|float|numeric-string,
+             *   test_score_threshold:int|float|numeric-string,user_score:int|float|numeric-string,
+             *   user_test_start_time:string,user_comment:mixed
+             * } $usrtestdata
+             */
             $teststat = $include_user_stats
                 ? f_get_test_stat(
                     $mr['testuser_test_id'],
@@ -2108,15 +2114,17 @@ function f_get_all_users_test_stat(
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['testuser_end_time'] = $mr['testuser_end_time'];
             if (
                 $mr['testuser_end_time'] <= 0
-                || (int) strtotime($mr['testuser_end_time']) < (int) strtotime($mr['testuser_creation_time'])
+                || (int) strtotime((string) $mr['testuser_end_time'])
+                    < (int) strtotime((string) $mr['testuser_creation_time'])
             ) {
                 $time_diff = $usrtestdata['test_duration_time'] * K_SECONDS_IN_MINUTE;
             } else {
                 $time_diff =
-                    (int) strtotime($mr['testuser_end_time']) - (int) strtotime($mr['testuser_creation_time']); //sec
+                    (int) strtotime((string) $mr['testuser_end_time'])
+                    - (int) strtotime((string) $mr['testuser_creation_time']); //sec
             }
 
-            $data['testuser']["'" . $mr['testuser_id'] . "'"]['time_diff'] = gmdate('H:i:s', $time_diff);
+            $data['testuser']["'" . $mr['testuser_id'] . "'"]['time_diff'] = gmdate('H:i:s', (int) $time_diff);
             $passmsg = false;
             if ($usrtestdata['test_score_threshold'] > 0) {
                 if ($usrtestdata['user_score'] >= $usrtestdata['test_score_threshold']) {
