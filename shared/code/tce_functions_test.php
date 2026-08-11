@@ -1956,6 +1956,8 @@ function f_update_question_log(
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     /** @var string $answer_text */
     $question_id = 0; // question ID
     $question_type = 3; // question type
@@ -1978,13 +1980,23 @@ function f_update_question_log(
 		WHERE testlog_question_id=question_id
 			AND testlog_id=' . $testlog_id . '
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *     testlog_answer_text:string|null,
+             *     question_id:int|numeric-string,
+             *     question_type:int|numeric-string,
+             *     question_difficulty:int|float|numeric-string,
+             *     question_description:string|null
+             * } $m
+             */
             // get previous answer text
             $oldtext = $m['testlog_answer_text'];
             $question_id = $m['question_id'];
             $question_type = $m['question_type'];
-            /** @var int|float|numeric-string $question_difficulty */
             $question_difficulty = $m['question_difficulty'];
             $question_description = $m['question_description'];
         }
@@ -2034,8 +2046,20 @@ function f_update_question_log(
             . $testlog_id
             . '
 			ORDER BY logansw_order';
-        if ($r = F_db_query($sql, $db)) {
-            while ($m = F_db_fetch_array($r)) {
+        $r = F_db_query($sql, $db);
+        /** @var mixed $r */
+        if ($r) {
+            while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /**
+                 * @var array{
+                 *     logansw_selected:int|numeric-string,
+                 *     logansw_answer_id:int|numeric-string,
+                 *     answer_weight:int|numeric-string|null,
+                 *     answer_isright:bool|int|numeric-string,
+                 *     answer_position:int|numeric-string,
+                 *     logansw_position:int|numeric-string
+                 * } $m
+                 */
                 ++$num_answers;
                 // update each answer
                 $sqlu = 'UPDATE ' . K_TABLE_LOG_ANSWER . ' SET';
@@ -2219,9 +2243,12 @@ function f_update_question_log(
                 . '
 					AND answer_enabled=\'1\'
 					AND answer_isright=\'1\'';
-            if ($r = F_db_query($sql, $db)) {
+            $r = F_db_query($sql, $db);
+            /** @var mixed $r */
+            if ($r) {
                 $short_answer_keys = [];
-                while ($m = F_db_fetch_array($r)) {
+                while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                    /** @var array{answer_description:string|null,answer_weight:int|numeric-string|null} $m */
                     $short_answer_keys[] = [
                         'answer_description' => (string) $m['answer_description'],
                         'answer_weight' => $m['answer_weight'] === null ? null : (int) $m['answer_weight'],
