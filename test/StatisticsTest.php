@@ -33,10 +33,11 @@ final class StatisticsTest extends TestCase
                     . '"logansw_selected" => "1", "answer_isright" => "1", '
                     . '"answer_description" => "Choice", "answer_explanation" => ""]; '
                     . '$GLOBALS["results"] = [false, "questions", "invalid-questions", '
-                    . '"choice-questions", "answers"]; '
+                    . '"choice-questions", "answers", "failed-choice-questions", false]; '
                     . '$GLOBALS["rows"] = ["questions" => [$row, false], '
                     . '"invalid-questions" => [$invalidRow, false], '
-                    . '"choice-questions" => [$choiceRow, false], "answers" => [$answerRow, false]]; '
+                    . '"choice-questions" => [$choiceRow, false], "answers" => [$answerRow, false], '
+                    . '"failed-choice-questions" => [$choiceRow, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["attachments"] = []; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
@@ -62,7 +63,8 @@ final class StatisticsTest extends TestCase
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$failed = $qualified("007"); $markup = $qualified("007"); '
                     . '$invalid = $qualified("007"); $choices = $qualified("007"); '
-                    . 'echo json_encode([$failed, $markup, $invalid, $choices, $GLOBALS["queries"], '
+                    . '$failedChoices = $qualified("007"); '
+                    . 'echo json_encode([$failed, $markup, $invalid, $choices, $failedChoices, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["attachments"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -72,12 +74,13 @@ final class StatisticsTest extends TestCase
         self::assertSame(0, $status, $output);
         /**
          * @var array{
-         *   0:string,1:string,2:string,3:string,4:array{0:string,1:string,2:string,3:string,4:string},
-         *   5:int,6:array{0:int,1:int}
+         *   0:string,1:string,2:string,3:string,4:string,
+         *   5:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string},
+         *   6:int,7:array{0:int,1:int}
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$failed, $markup, $invalid, $choices, $queries, $errors, $attachments] = $decoded;
+        [$failed, $markup, $invalid, $choices, $failedChoices, $queries, $errors, $attachments] = $decoded;
         self::assertSame('', $failed);
         self::assertStringContainsString('<ol class="question">', $markup);
         self::assertStringContainsString('<strong>[2.5]', $markup);
@@ -90,11 +93,15 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('| TIME:0', $invalid);
         self::assertStringContainsString('class="okbox">x</abbr>', $choices);
         self::assertStringContainsString('class="onbox">&reg;</abbr> [Choice]', $choices);
-        self::assertCount(5, $queries);
+        self::assertStringContainsString('[Question]', $failedChoices);
+        self::assertStringContainsString('<ol class="answer">', $failedChoices);
+        self::assertStringNotContainsString('[Choice]', $failedChoices);
+        self::assertCount(7, $queries);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[0]);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[1]);
         self::assertStringContainsString('logansw_testlog_id=\'77\'', $queries[4]);
-        self::assertSame(1, $errors);
+        self::assertStringContainsString('logansw_testlog_id=\'77\'', $queries[6]);
+        self::assertSame(2, $errors);
         self::assertSame([77, 77], $attachments);
     }
 

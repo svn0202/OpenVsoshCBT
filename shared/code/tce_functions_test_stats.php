@@ -1896,7 +1896,7 @@ function f_print_user_test_stat(mixed $testuser_id): string
                     . $m['testlog_id']
                     . '\'
 					ORDER BY logansw_order';
-                if ($ra = F_db_query($sqla, $db)) {
+                if ($ra = f_legacy_db_query_result(F_db_query($sqla, $db))) {
                     while (($ma = $normalize_row(F_db_fetch_array($ra))) !== null) {
                         /**
                          * @var array{
