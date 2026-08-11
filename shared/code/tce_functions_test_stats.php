@@ -1907,7 +1907,7 @@ function f_print_user_test_stat(mixed $testuser_id): string
              *   testlog_answer_text:mixed,testlog_change_time:string|null,testlog_comment:mixed,
              *   testlog_display_time:string|null,testlog_id:int|numeric-string,
              *   testlog_reaction_time:int|float|numeric-string|null,
-             *   testlog_score:mixed,testlog_user_ip:mixed
+             *   testlog_score:int|float|numeric-string,testlog_user_ip:mixed
              * } $m
              */
             $ret .= '<li>' . K_NEWLINE;
