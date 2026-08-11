@@ -215,15 +215,18 @@ function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_fie
 
 /**
  * Escape a string for insertion into a SQL text field (avoiding SQL injection).
- * @param $link_identifier (resource) database link identifier.
- * @param $str (string) The string that is to be escaped.
- * @param $stripslashes (boolean) if true strip slashes from string
- * @return string Returns the escaped string, or FALSE on error.
+ * @param \PgSql\Connection $link_identifier Database connection.
+ * @param string $str The string that is to be escaped.
+ * @param bool $stripslashes If true, strip slashes from the string.
+ * @return string Escaped string.
  * @since 5.0.005 2007-12-05
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_escape_sql($link_identifier, $str, $stripslashes = true)
+function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
+    /** @var \PgSql\Connection $link_identifier */
+    /** @var string $str */
+    /** @var bool $stripslashes */
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
     if ($stripslashes) {
         $str = stripslashes($str);
