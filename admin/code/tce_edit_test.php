@@ -2208,11 +2208,15 @@ require_once '../code/tce_page_footer.php';
  */
 function f_tce_edit_test_subject_set_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     tsubset_id:int|numeric-string,tsubset_quantity:int|numeric-string,tsubset_type:int|numeric-string,
      *     tsubset_difficulty:int|numeric-string,tsubset_answers:int|numeric-string
-     * }|null $row
+     * } $row
      */
     return $row;
 }
@@ -2224,10 +2228,14 @@ function f_tce_edit_test_subject_set_row(mixed $row): ?array
  */
 function f_tce_edit_test_module_subject_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     module_id:int|string,module_name:string,subject_id:int|string,subject_name:string
-     * }|null $row
+     * } $row
      */
     return $row;
 }
