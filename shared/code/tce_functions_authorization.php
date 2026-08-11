@@ -495,8 +495,7 @@ function f_sync_user_groups(mixed $usrid, mixed $grpids): void
         }
     } else {
         // single default group
-        // @mago-expect analysis:mixed-operand -- alternate-auth configuration retains PHP's legacy scalar comparison
-        if ($grpids > 0) {
+        if (f_legacy_is_positive($grpids)) {
             $newgrps[] = (int) $grpids;
         }
     }
