@@ -2943,54 +2943,56 @@ function f_questions_menu(
             'limit_exhausted' => 'Audio play limit reached',
         ],
     };
+    /** @var string $charset */
+    $charset = $l['a_meta_charset'];
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
         . ' data-image-preview-label="'
-        . htmlspecialchars($l['w_image'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($l['w_image'], ENT_QUOTES, $charset)
         . '" data-image-preview-close="'
-        . htmlspecialchars($l['w_close'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($l['w_close'], ENT_QUOTES, $charset)
         . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
         . '" data-audio-plays-left="'
         . htmlspecialchars(
             $l['ov_audio_plays_left'] ?? $audio_labels['plays_left'],
             ENT_QUOTES,
-            $l['a_meta_charset'],
+            $charset,
         )
         . '" data-audio-limit-exhausted="'
         . htmlspecialchars(
             $l['ov_audio_limit_exhausted'] ?? $audio_labels['limit_exhausted'],
             ENT_QUOTES,
-            $l['a_meta_charset'],
+            $charset,
         )
         . '" data-auto-fullscreen="' . (f_get_boolean($testdata['test_auto_fullscreen'] ?? false) ? '1' : '0')
         . '" data-hide-exam-info="' . (f_get_boolean($testdata['test_hide_exam_info'] ?? false) ? '1' : '0')
         . '">' . K_NEWLINE;
     $toolbar .= '<strong class="exam-question-number">'
-        . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($mobile_labels['question'], ENT_QUOTES, $charset)
         . ' <span>' . $qsel . '</span> / ' . $i . '</strong>' . K_NEWLINE;
     $toolbar .= '<div class="exam-mobile-actions">' . K_NEWLINE;
     $toolbar .= '<button type="button" data-exam-action="zoom-out" title="'
-        . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $l['a_meta_charset'])
-        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $charset)
+        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_out'], ENT_QUOTES, $charset)
         . '">&minus;</button>' . K_NEWLINE;
     $toolbar .= '<button type="button" data-exam-action="zoom-in" title="'
-        . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $l['a_meta_charset'])
-        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $charset)
+        . '" aria-label="' . htmlspecialchars($mobile_labels['zoom_in'], ENT_QUOTES, $charset)
         . '">&plus;</button>' . K_NEWLINE;
     $toolbar .= '<button type="button" data-exam-action="theme" title="'
-        . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $l['a_meta_charset'])
-        . '" aria-label="' . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $charset)
+        . '" aria-label="' . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $charset)
         . '">◐</button>' . K_NEWLINE;
     $toolbar .= '<button type="button" data-exam-action="fullscreen" title="'
-        . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
-        . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $l['a_meta_charset'])
+        . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $charset)
+        . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $charset)
         . '">⛶</button>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;
     $live_score = F_tmf_live_score((int) ($testdata['test_id'] ?? 0), $testuser_id);
     if ($live_score !== null) {
         $toolbar .= '<output id="exam-live-score" class="exam-live-score" aria-live="polite">'
             . 'Текущий балл: <span>'
-            . htmlspecialchars((string) $live_score, ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars((string) $live_score, ENT_QUOTES, $charset)
             . '</span></output>'
             . K_NEWLINE;
     }
@@ -3022,23 +3024,23 @@ function f_questions_menu(
             . ' /><span>('
             . $qsel
             . ') '
-            . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($mobile_labels['review'], ENT_QUOTES, $charset)
             . '</span></label>';
         $navlink .=
             '<button type="button" id="saveanswer" data-answer-save="tce_test_answer_save.php" data-answer-saving="'
-            . htmlspecialchars($l['ov_answer_saving'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_saving'], ENT_QUOTES, $charset)
             . '" data-answer-saved="'
-            . htmlspecialchars($l['ov_answer_saved'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_saved'], ENT_QUOTES, $charset)
             . '" data-answer-error="'
-            . htmlspecialchars($l['ov_answer_not_saved'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_not_saved'], ENT_QUOTES, $charset)
             . '" data-answer-conflict="'
-            . htmlspecialchars($l['ov_answer_save_conflict'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_save_conflict'], ENT_QUOTES, $charset)
             . '" data-answer-unsaved="'
-            . htmlspecialchars($l['ov_answer_unsaved'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_unsaved'], ENT_QUOTES, $charset)
             . '" data-answer-retrying="'
-            . htmlspecialchars($l['ov_answer_retrying'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_answer_retrying'], ENT_QUOTES, $charset)
             . '">'
-            . htmlspecialchars($l['ov_save'], ENT_QUOTES, $l['a_meta_charset'])
+            . htmlspecialchars($l['ov_save'], ENT_QUOTES, $charset)
             . '</button>';
         $navlink .=
             '<span id="answer-save-status" class="answer-save-status" role="status" aria-live="polite"></span>';
