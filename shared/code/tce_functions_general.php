@@ -171,9 +171,7 @@ function f_legacy_literal_equals(mixed $value, string $expected): bool
  */
 function f_legacy_equals(mixed $left, mixed $right): bool
 {
-    // @mago-expect analysis:mixed-operand -- this compatibility boundary intentionally delegates PHP comparison rules
-    // @mago-expect analysis:mixed-operand -- both legacy operands may have any request or database value type
-    return ($left <=> $right) === 0;
+    return in_array($left, [$right], false);
 }
 
 /**
