@@ -121,22 +121,21 @@ function f_tmf_users_xlsx_validate(
             }
         }
         foreach ([
-            'registration_number' => [
+            [
+                'value' => $values['registration_number'],
                 'existing' => $existing_registration_numbers,
                 'seen' => &$seen_registration_numbers,
                 'label' => 'Регистрационный номер',
             ],
-            'ssn' => [
+            [
+                'value' => $values['ssn'],
                 'existing' => $existing_ssns,
                 'seen' => &$seen_ssns,
                 'label' => 'SSN',
             ],
-        ] as $field => &$identifier) {
-            /** @var array{existing:array<string,bool>,seen:array<string,int>,label:string} $identifier */
-            /** @mago-expect analysis:possibly-undefined-string-array-index */
-            /** @var string $identifier_value */
-            $identifier_value = $values[$field];
-            $identifier_value = trim($identifier_value);
+        ] as &$identifier) {
+            /** @var array{value:string,existing:array<string,bool>,seen:array<string,int>,label:string} $identifier */
+            $identifier_value = trim($identifier['value']);
             if ($identifier_value === '') {
                 continue;
             }

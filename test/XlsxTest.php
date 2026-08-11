@@ -186,6 +186,26 @@ final class XlsxTest extends TestCase
         self::assertSame('2010-02-03', $result['records'][2]['birth_date'] ?? null);
     }
 
+    public function testUserPreviewReportsExistingRegistrationNumberAndRepeatedSsn(): void
+    {
+        $rows = [
+            \TMF_USERS_XLSX_HEADERS,
+            ['first-user', 'long-password', '', '', '', '', '', 'REG-1', 'SSN-1', '1', 'default'],
+            ['second-user', 'long-password', '', '', '', '', '', '', 'SSN-1', '1', 'default'],
+        ];
+
+        $result = \F_tmf_users_xlsx_validate(
+            $rows,
+            [],
+            ['default' => 1],
+            10,
+            ['reg-1' => true],
+        );
+
+        self::assertStringContainsString('Регистрационный номер уже существует.', implode(' ', $result['errors'][2] ?? []));
+        self::assertStringContainsString('SSN повторяется в файле.', implode(' ', $result['errors'][3] ?? []));
+    }
+
     public function testUserImportKeepsItsTransactionAndSqlContract(): void
     {
         $script = <<<'PHP'
