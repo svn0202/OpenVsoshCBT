@@ -841,8 +841,12 @@ function f_objects_replacement(mixed $name, mixed $extension, mixed $width = 0, 
                     $htmlcode .= ' alt="image:' . $filename . '"';
                 }
 
-                // @mago-expect lint:no-error-control-operator -- missing or invalid cached media falls back to caller-provided dimensions
-                $imsize = @getimagesize(K_PATH_CACHE . $filename);
+                set_error_handler(static fn(): bool => true);
+                try {
+                    $imsize = getimagesize(K_PATH_CACHE . $filename);
+                } finally {
+                    restore_error_handler();
+                }
                 $pixw = 0;
                 $pixh = 0;
                 if ($imsize !== false) {

@@ -67,6 +67,31 @@ final class TcecodeFunctionsTest extends TestCase
         );
     }
 
+    public function testMissingObjectImageUsesRequestedDimensionsWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_tcecode.php"; '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$maxWidth = 0; $maxHeight = 0; '
+                    . '$markup = F_objects_replacement("missing-object-image", "png", 10, 20, "", '
+                    . '$maxWidth, $maxHeight); restore_error_handler(); '
+                    . 'echo json_encode([$markup, $maxWidth, $maxHeight, $warnings]);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            '["<img src=\"\\/cache\\/missing-object-image.png\" alt=\"image:missing-object-image.png\" '
+                . 'width=\"10\" height=\"20\" class=\"tcecode\" \\/>",0,0,[]]',
+            $output,
+        );
+    }
+
     public function testObjectCallbackReturnsImageMarkup(): void
     {
         [$status, $output] = \F_tcecode_run_process(
