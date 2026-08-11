@@ -27,6 +27,7 @@ function f_tmf_backup_environment(array $config): array
  * @param array<array-key,mixed> $pipes
  * @return resource
  * @throws TmfBackupException When the database process cannot be started.
+ * @throws ValueError When the optional standard-input path is empty.
  */
 function f_tmf_backup_start_process(
     array $command,
@@ -34,14 +35,17 @@ function f_tmf_backup_start_process(
     array &$pipes,
     ?string $stdin_file = null,
 ): mixed {
+    if ($stdin_file === '') {
+        throw new ValueError('Path must not be empty');
+    }
     $error_file = tempnam(sys_get_temp_dir(), 'openvsosh-db-command-');
-    if ($error_file === false) {
+    if ($error_file === false || $error_file === '') {
         throw new TmfBackupException('Не удалось создать файл диагностики команды БД.');
     }
     $descriptors = [
         0 => $stdin_file === null ? ['file', '/dev/null', 'r'] : ['file', $stdin_file, 'r'],
         1 => ['pipe', 'w'],
-        2 => ['file', $error_file, 'a'],
+        2 => ['file', $error_file, 'w'],
     ];
     $launch_error = '';
     set_error_handler(static function (int $_severity, string $message) use (&$launch_error): bool {
@@ -49,7 +53,6 @@ function f_tmf_backup_start_process(
         return true;
     });
     try {
-        // @mago-expect analysis:possibly-invalid-argument -- proc_open validates an optional empty input path as before
         $process = proc_open($command, $descriptors, $pipes, null, $environment);
     } finally {
         restore_error_handler();
