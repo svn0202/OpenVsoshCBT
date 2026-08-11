@@ -697,8 +697,12 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
                 return '';
             }
 
+            /** @var string $test_name */
+            $test_name = $m['test_name'];
+            /** @var string $charset */
+            $charset = $l['a_meta_charset'];
             $str .=
-                '<h1>' . htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']) . '</h1>' . K_NEWLINE;
+                '<h1>' . htmlspecialchars($test_name, ENT_NOQUOTES, $charset) . '</h1>' . K_NEWLINE;
             $str .=
                 '<div class="tcecontentbox">'
                 . F_decode_tcecode($m['test_description'])
