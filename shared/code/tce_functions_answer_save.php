@@ -6,6 +6,53 @@
 
 const TMF_ANSWER_OPERATION_PATTERN = '/^[a-f0-9]{32}$/';
 
+/**
+ * Return answer-save labels with language-aware defaults for installations
+ * whose instance-local translation file predates the save-status interface.
+ *
+ * @param array<array-key, string> $translations
+ * @return array{saving:string, saved:string, error:string, conflict:string,
+ *     unsaved:string, retrying:string, save:string}
+ */
+function f_tmf_answer_status_labels(array $translations): array
+{
+    $labels = match (strtolower($translations['a_meta_language'] ?? 'en')) {
+        'ru' => [
+            'saving' => 'Сохраняется…',
+            'saved' => 'Сохранено',
+            'error' => 'Не сохранено',
+            'conflict' => 'Более новый ответ уже сохранён. Проверьте текущий ответ и повторите попытку.',
+            'unsaved' => 'Есть несохранённые изменения',
+            'retrying' => 'Связь потеряна. Повтор {attempt} из {maximum} через {seconds} с…',
+            'save' => 'Сохранить',
+        ],
+        default => [
+            'saving' => 'Saving…',
+            'saved' => 'Saved',
+            'error' => 'Not saved',
+            'conflict' => 'A newer answer was already saved. Review the current answer and try again.',
+            'unsaved' => 'Unsaved changes',
+            'retrying' => 'Connection lost. Retry {attempt} of {maximum} in {seconds} s…',
+            'save' => 'Save',
+        ],
+    };
+    $translation_keys = [
+        'saving' => 'ov_answer_saving',
+        'saved' => 'ov_answer_saved',
+        'error' => 'ov_answer_not_saved',
+        'conflict' => 'ov_answer_save_conflict',
+        'unsaved' => 'ov_answer_unsaved',
+        'retrying' => 'ov_answer_retrying',
+        'save' => 'ov_save',
+    ];
+    foreach ($translation_keys as $label => $translation_key) {
+        if (array_key_exists($translation_key, $translations)) {
+            $labels[$label] = $translations[$translation_key];
+        }
+    }
+    return $labels;
+}
+
 function f_tmf_answer_operation_is_valid(string $operation_id): bool
 {
     return preg_match(TMF_ANSWER_OPERATION_PATTERN, $operation_id) === 1;

@@ -3313,37 +3313,18 @@ function f_questions_menu(
         'theme' => $l['ov_switch_theme'],
         'review' => $l['ov_mark_for_review'],
     ];
-    $answer_labels = match (strtolower($l['a_meta_language'] ?? 'en')) {
-        'ru' => [
-            'saving' => 'Сохраняется…',
-            'saved' => 'Сохранено',
-            'error' => 'Не сохранено',
-            'conflict' => 'Более новый ответ уже сохранён. Проверьте текущий ответ и повторите попытку.',
-            'unsaved' => 'Есть несохранённые изменения',
-            'retrying' => 'Связь потеряна. Повтор {attempt} из {maximum} через {seconds} с…',
-            'save' => 'Сохранить',
-        ],
-        default => [
-            'saving' => 'Saving…',
-            'saved' => 'Saved',
-            'error' => 'Not saved',
-            'conflict' => 'A newer answer was already saved. Review the current answer and try again.',
-            'unsaved' => 'Unsaved changes',
-            'retrying' => 'Connection lost. Retry {attempt} of {maximum} in {seconds} s…',
-            'save' => 'Save',
-        ],
-    };
+    $answer_labels = f_tmf_answer_status_labels($l);
     $menu_labels = [
         'image' => $l['w_image'],
         'close' => $l['w_close'],
         'fullscreen' => $l['w_fullscreen'],
-        'saving' => $l['ov_answer_saving'] ?? $answer_labels['saving'],
-        'saved' => $l['ov_answer_saved'] ?? $answer_labels['saved'],
-        'error' => $l['ov_answer_not_saved'] ?? $answer_labels['error'],
-        'conflict' => $l['ov_answer_save_conflict'] ?? $answer_labels['conflict'],
-        'unsaved' => $l['ov_answer_unsaved'] ?? $answer_labels['unsaved'],
-        'retrying' => $l['ov_answer_retrying'] ?? $answer_labels['retrying'],
-        'save' => $l['ov_save'] ?? $answer_labels['save'],
+        'saving' => $answer_labels['saving'],
+        'saved' => $answer_labels['saved'],
+        'error' => $answer_labels['error'],
+        'conflict' => $answer_labels['conflict'],
+        'unsaved' => $answer_labels['unsaved'],
+        'retrying' => $answer_labels['retrying'],
+        'save' => $answer_labels['save'],
     ];
     $audio_labels = match (strtolower($l['a_meta_language'] ?? 'en')) {
         'ar' => [
