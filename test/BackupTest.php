@@ -75,6 +75,19 @@ final class BackupTest extends TestCase
         );
     }
 
+    /**
+     * @throws \TmfBackupException
+     * @throws \ValueError
+     */
+    public function testEmptyBackupInputPathPreservesValueError(): void
+    {
+        $this->expectException(\ValueError::class);
+        $this->expectExceptionMessage('Path must not be empty');
+
+        $pipes = [];
+        \F_tmf_backup_start_process(['/bin/echo'], [], $pipes, '');
+    }
+
     public function testCommandArgumentsNeverContainDatabasePassword(): void
     {
         $config = [
