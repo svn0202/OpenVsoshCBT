@@ -156,26 +156,26 @@ function f_get_test_stat(
 
 /**
  * Returns raw statistic array for the selected test.
- * @param $test_id (int) test ID.
- * @param $group_id (int) group ID - if greater than zero, filter stats for the specified user group.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $startdate (int) start date ID - if greater than zero, filter stats for the specified starting date
- * @param $enddate (int) end date ID - if greater than zero, filter stats for the specified ending date
- * @param $testuser_id (int) test-user ID - if greater than zero, filter stats for the specified test-user.
- * @param $data (array) Array of existing data to be merged with the current one.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * return $data array containing test statistics.
+ * @param mixed $test_id Test ID.
+ * @param mixed $group_id Group ID - if greater than zero, filter stats for the specified user group.
+ * @param mixed $user_id User ID - if greater than zero, filter stats for the specified user.
+ * @param mixed $startdate Start date - if greater than zero, filter stats for the specified starting date.
+ * @param mixed $enddate End date - if greater than zero, filter stats for the specified ending date.
+ * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
+ * @param mixed $data Existing data to be merged with the current statistics.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @return mixed Test statistics, or the unchanged input when no test is selected.
  */
 function f_get_raw_test_stat(
-    $test_id,
-    $group_id = 0,
-    $user_id = 0,
-    $startdate = 0,
-    $enddate = 0,
-    $testuser_id = 0,
-    $data = [],
-    $pubmode = false,
-) {
+    mixed $test_id,
+    mixed $group_id = 0,
+    mixed $user_id = 0,
+    mixed $startdate = 0,
+    mixed $enddate = 0,
+    mixed $testuser_id = 0,
+    mixed $data = [],
+    mixed $pubmode = false,
+): mixed {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_authorization.php';
     require_once '../../shared/code/tce_functions_test.php';

@@ -188,6 +188,7 @@ final class StatisticsTest extends TestCase
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
                     . 'function F_db_fetch_array($result) { return false; } '
+                    . 'function F_db_fetch_assoc($result) { return false; } '
                     . 'function F_display_db_error() { throw new \\RuntimeException("unexpected error"); } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_raw_test_stat)\\(/", '
@@ -200,16 +201,23 @@ final class StatisticsTest extends TestCase
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$data = $qualified("07", "03", "011", "start", "end", "099", '
                     . '["seed" => "keep"], true); '
-                    . 'echo json_encode([$data, $GLOBALS["queries"]]);',
+                    . '$passthrough = $qualified("0", 0, 0, 0, 0, 0, 17, false); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: array{seed: string, qstats: array<string, mixed>}, 1: array{0: string}} $decoded */
+        /**
+         * @var array{
+         *   0: array{seed: string, qstats: array<string, mixed>},
+         *   1: array{0: string, 1: string},
+         *   2: int
+         * } $decoded
+         */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$data, $queries] = $decoded;
+        [$data, $queries, $passthrough] = $decoded;
         self::assertSame('keep', $data['seed']);
         self::assertSame(
             [
@@ -239,6 +247,7 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('testuser_user_id=user_id AND user_id=11', $queries[0]);
         self::assertStringContainsString("testuser_creation_time>='DATE:10'", $queries[0]);
         self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
+        self::assertSame(17, $passthrough);
     }
 
     public function testStatisticsPrintersPreserveDisabledAndEmptyResults(): void
