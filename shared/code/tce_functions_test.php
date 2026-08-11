@@ -1106,16 +1106,20 @@ function f_select_answers(
 
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
+            /** @var int|numeric-string $answer_id */
+            $answer_id = $m['answer_id'];
+            /** @var int|numeric-string $answer_position */
+            $answer_position = $m['answer_position'];
             if ($randorder || !f_legacy_int_equals($ordmode, 0)) {
                 if (f_legacy_int_equals($ordmode, 2)) {
                     // order by ID
-                    $answers_ids[$m['answer_id']] = $m['answer_id'];
+                    $answers_ids[$answer_id] = $answer_id;
                 } else {
                     // default
-                    $answers_ids[$startindex++] = $m['answer_id'];
+                    $answers_ids[$startindex++] = $answer_id;
                 }
             } else {
-                $answers_ids[$m['answer_position']] = $m['answer_id'];
+                $answers_ids[$answer_position] = $answer_id;
             }
         }
     } else {

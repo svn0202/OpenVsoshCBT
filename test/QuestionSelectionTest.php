@@ -222,8 +222,8 @@ PHP;
                     . '$GLOBALS["query_results"] = [[['
                     . '"answer_id" => 101, "answer_position" => 3], '
                     . '["answer_id" => 102, "answer_position" => 1]], [['
-                    . '"answer_id" => 21, "answer_position" => 4], '
-                    . '["answer_id" => 17, "answer_position" => 2]], false]; '
+                    . '"answer_id" => "21", "answer_position" => "4"], '
+                    . '["answer_id" => "17", "answer_position" => "2"]], false]; '
                     . 'function F_escape_sql($db, $value) { return (string) $value; } '
                     . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
@@ -255,7 +255,7 @@ PHP;
         self::assertSame(
             [
                 [3 => 101, 1 => 102],
-                [21 => 21, 17 => 17],
+                [21 => '21', 17 => '17'],
                 false,
                 [
                     "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=7\n"
