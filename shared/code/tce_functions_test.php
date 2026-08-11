@@ -296,11 +296,11 @@ function f_repeat_test(mixed $test_id): void
 
 /**
  * Check if user's IP is valid over test IP range
- * @param $user_ip (string) user's IP address (IPv4 or IPv6).
- * @param $test_ips (string) comma separated list of valid test IP addresses. The '*' character may be used to indicate any number in IPv4 addresses. Intervals must be specified using the '-' character.
+ * @param mixed $user_ip User's IP address (IPv4 or IPv6).
+ * @param mixed $test_ips Comma separated list of valid test IP addresses. The '*' character may be used to indicate any number in IPv4 addresses. Intervals must be specified using the '-' character.
  * @return bool true if IP is valid, false otherwise
  */
-function f_is_valid_ip($user_ip, $test_ips): bool
+function f_is_valid_ip(mixed $user_ip, mixed $test_ips): bool
 {
     if (empty($user_ip) || empty($test_ips)) {
         return false;
