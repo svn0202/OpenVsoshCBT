@@ -687,10 +687,10 @@ function f_get_raw_test_stat(
 
 /**
  * Calculate average values from TestStat array
- * @param $data (array) Raw data array.
- * return $data (array) Processed array.
+ * @param mixed $data Raw data.
+ * @return mixed Processed data, or the unchanged input when statistics are unavailable.
  */
-function f_normalize_test_stat_averages($data)
+function f_normalize_test_stat_averages(mixed $data): mixed
 {
     if (!isset($data['qstats']['recurrence']) || $data['qstats']['recurrence'] <= 0) {
         return $data;

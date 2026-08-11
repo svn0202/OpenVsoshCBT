@@ -621,7 +621,7 @@ final class StatisticsTest extends TestCase
                     . '$normalized = $qualified($data); $q = $normalized["qstats"]; $m = $q["module"]["m"]; '
                     . '$s = $m["subject"]["s"]; $question = $s["question"]["q"]; '
                     . '$a = $question["answer"]["a"]; '
-                    . 'echo json_encode([$qualified(["unchanged" => 1]), '
+                    . 'echo json_encode([$qualified(17), $qualified(["unchanged" => 1]), '
                     . '$qualified(["qstats" => ["recurrence" => 0, "marker" => 2]]), '
                     . '[$q["recurrence_perc"], $q["average_score"], $q["average_score_perc"], '
                     . '$q["average_time"], $q["right_perc"], $q["wrong_perc"], '
@@ -638,6 +638,7 @@ final class StatisticsTest extends TestCase
         self::assertSame(0, $status, $output);
         self::assertSame(
             [
+                17,
                 ['unchanged' => 1],
                 ['qstats' => ['recurrence' => 0, 'marker' => 2]],
                 [100, 5, 50, 4, 50, 25, 13, 13, 0],
