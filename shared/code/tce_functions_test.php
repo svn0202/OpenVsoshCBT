@@ -2941,6 +2941,7 @@ function f_questions_menu(
      *     test_menu_enabled:mixed
      * } $testdata
      */
+    /** @var bool $disable */
     $testuser_id = (int) $testuser_id;
     $testlog_id = (int) $testlog_id;
     $str = '';
@@ -3066,8 +3067,10 @@ function f_questions_menu(
             }
 
             $testlog_id_last = $m['testlog_id'];
+            /** @var string $question_line */
+            $question_line = f_tcecode_to_line($m['question_description']);
             $str .= '<span class="exam-question-menu-description">'
-                . f_tcecode_to_line($m['question_description'])
+                . $question_line
                 . '</span>';
             $str .= '</li>' . K_NEWLINE;
         }
