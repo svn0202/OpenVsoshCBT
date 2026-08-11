@@ -50,12 +50,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "invalid-iterator"
-message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "invalid-type-cast"
 message = "Casting `mixed` to `array`."
 count = 2
@@ -82,7 +76,7 @@ count = 91
 file = "shared/code/tce_functions_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 37
+count = 36
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

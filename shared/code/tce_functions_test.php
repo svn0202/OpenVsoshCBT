@@ -1947,6 +1947,7 @@ function f_update_question_log(
         return false;
     }
 
+    /** @var array<array-key, mixed> $answpos */
     $answer_id = f_get_answer_id_from_position($testlog_id, $answpos);
 
     // calculate question score
@@ -2200,7 +2201,7 @@ function f_update_question_log(
 /**
  * Returns the answer ID from position
  * @param mixed $testlog_id Test Log ID
- * @param mixed $answpos Answer positions (order in wich they are displayed)
+ * @param array<array-key, mixed> $answpos Answer positions in display order.
  * @return array<int, mixed> Answer values keyed by answer ID.
  */
 function f_get_answer_id_from_position(mixed $testlog_id, mixed $answpos): array
