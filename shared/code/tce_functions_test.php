@@ -600,7 +600,7 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
             $test_pregenerated = f_get_boolean($m['testuser_pregenerated'] ?? false);
             $endtime = date(
                 K_TIMESTAMP_FORMAT,
-                strtotime($m['testuser_creation_time']) + ($duration * K_SECONDS_IN_MINUTE),
+                (int) strtotime($m['testuser_creation_time']) + ($duration * K_SECONDS_IN_MINUTE),
             );
             if (!$test_pregenerated && $test_status > 0 && $test_status < 4 && $current_time > $endtime) {
                 // update test mode to 4 = test locked (for timeout)
