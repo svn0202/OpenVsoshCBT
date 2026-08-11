@@ -56,6 +56,25 @@ final class BackupTest extends TestCase
         }
     }
 
+    /** @throws \TmfBackupException */
+    public function testMissingBackupArchiveIsRejected(): void
+    {
+        $this->expectException(\TmfBackupException::class);
+        $this->expectExceptionMessage('Резервная копия недоступна для чтения.');
+
+        \F_tmf_backup_restore(
+            [
+                'type' => 'MYSQL',
+                'host' => 'db',
+                'port' => '3306',
+                'name' => 'exam',
+                'user' => 'backup',
+                'password' => 'secret',
+            ],
+            $this->temporaryDirectory . '/missing.sql.gz',
+        );
+    }
+
     public function testCommandArgumentsNeverContainDatabasePassword(): void
     {
         $config = [
