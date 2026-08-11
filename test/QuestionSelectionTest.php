@@ -143,13 +143,18 @@ PHP;
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); $GLOBALS["db"] = "db"; '
+                'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_ANSWERS", "answers"); $GLOBALS["db"] = "db"; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["select_calls"] = []; $GLOBALS["logged"] = []; '
-                    . '$GLOBALS["selection_fails"] = false; '
+                    . '$GLOBALS["selection_fails"] = false; $GLOBALS["ordered_rows"] = '
+                    . '[["answer_id" => 13], ["answer_id" => 17], false]; '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_get_boolean($value) { return filter_var($value, FILTER_VALIDATE_BOOLEAN); } '
-                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
-                    . 'function F_db_fetch_array($result) { return ["question_shuffle_answers" => false]; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return $sql; } '
+                    . 'function F_db_fetch_array($result) { '
+                    . 'if (str_contains($result, "question_shuffle_answers")) { '
+                    . 'return ["question_shuffle_answers" => false]; } '
+                    . 'return array_shift($GLOBALS["ordered_rows"]); } '
                     . 'function f_select_answers(...$arguments) { $GLOBALS["select_calls"][] = $arguments; '
                     . 'if ($GLOBALS["selection_fails"]) { return false; } '
                     . 'return [2 => 17, 0 => 13]; } '
@@ -168,10 +173,12 @@ PHP;
                     . '"test_random_questions_select" => true, "test_random_answers_select" => false]; '
                     . '$freeText = $qualified(31, 41, 3, 0, 0, $testdata); '
                     . '$multiple = $qualified(32, 42, 2, 2, 0, $testdata); '
+                    . '$orderedData = $testdata; $orderedData["test_answers_order_mode"] = 1; '
+                    . '$ordered = $qualified(34, 44, 1, 2, 0, $orderedData); '
                     . '$GLOBALS["selection_fails"] = true; '
                     . 'try { $qualified(33, 43, 2, 2, 0, $testdata); $failure = null; '
                     . '} catch (\TypeError $error) { $failure = get_class($error); } '
-                    . 'echo json_encode([$freeText, $multiple, $failure, $GLOBALS["queries"], '
+                    . 'echo json_encode([$freeText, $multiple, $ordered, $failure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -183,13 +190,21 @@ PHP;
             [
                 true,
                 true,
+                true,
                 'TypeError',
                 [
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=44 LIMIT 1',
+                    'SELECT answer_id FROM answers WHERE answer_id IN (17,13) ORDER BY answer_description',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=43 LIMIT 1',
                 ],
-                [[42, '', false, 2, 0, false, 0], [43, '', false, 2, 0, false, 0]],
-                [[32, [0 => 13, 2 => 17]]],
+                [
+                    [42, '', false, 2, 0, false, 0],
+                    [44, 1, false, 1, 0, false, 1],
+                    [44, 0, false, 1, 1, false, 1],
+                    [43, '', false, 2, 0, false, 0],
+                ],
+                [[32, [0 => 13, 2 => 17]], [34, [13, 17]]],
             ],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
