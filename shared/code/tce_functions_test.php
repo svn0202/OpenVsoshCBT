@@ -2112,6 +2112,7 @@ function f_update_question_log(
                 }
             }
 
+            /** @var int|float $answer_score */
             if ($question_type > 1) {
                 // normalize score
                 if (f_get_boolean($testdata['test_mcma_partial_score'])) {
