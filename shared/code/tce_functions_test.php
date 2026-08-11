@@ -757,9 +757,10 @@ function f_get_test_data(mixed $test_id): mixed
 /**
  * Returns user data.
  * @param $user_id (int) User ID.
- * @return array containing test data.
+ * @return array<array-key,mixed>|false User data, or false when no row is available.
+ * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
-function f_get_user_data(mixed $user_id): mixed
+function f_get_user_data(mixed $user_id): array|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -770,6 +771,7 @@ function f_get_user_data(mixed $user_id): mixed
 		WHERE user_id=' . $user_id . '
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
+        /** @var array<array-key,mixed>|false $ud */
         $ud = F_db_fetch_assoc($r);
     } else {
         F_display_db_error();
