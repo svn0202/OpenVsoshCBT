@@ -6,6 +6,17 @@ use PHPUnit\Framework\TestCase;
 
 final class ImportOmrAnswersControllerTest extends TestCase
 {
+    public function testSessionReferenceIsBoundAfterAuthorizationStartsTheSession(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../admin/code/tce_import_omr_answers.php');
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $sessionBinding = strpos($source, '$session = &$_SESSION;');
+
+        self::assertNotFalse($authorization);
+        self::assertNotFalse($sessionBinding);
+        self::assertGreaterThan($authorization, $sessionBinding);
+    }
+
     public function testFormRenderingAndUserSelectionRemainUnchanged(): void
     {
         $script = <<<'PHP'

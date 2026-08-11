@@ -54,12 +54,12 @@ $pagelevel = K_AUTH_PUBLIC_INDEX;
  *     ov_search_count:string
  * } $l
  */
-/** @var array{session_user_id:int,session_test_completion_message?:mixed} $session */
-$session = &$_SESSION;
 $thispage_title = $l['t_test_list'];
 $thispage_description = $l['hp_public_index'];
 
 require_once '../../shared/code/tce_authorization.php';
+/** @var array{session_user_id:int,session_test_completion_message?:mixed} $session */
+$session = &$_SESSION;
 require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_onboarding.php';
