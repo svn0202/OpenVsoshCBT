@@ -2189,12 +2189,12 @@ function f_get_answer_id_from_position(mixed $testlog_id, mixed $answpos): array
  * <li>div.rowl</li>
  * <li>textarea.answertext</li>
  * </ul>
- * @param $test_id (int) test ID
- * @param $testlog_id (int) test log ID
- * @param $formname (string) form name (form ID)
- * @return string XHTML code
+ * @param mixed $test_id Test ID
+ * @param mixed $testlog_id Test log ID
+ * @param mixed $formname Form name (form ID)
+ * @return string|null XHTML code, or null when no question can be selected
  */
-function f_question_form($test_id, $testlog_id, $formname)
+function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
@@ -2205,7 +2205,7 @@ function f_question_form($test_id, $testlog_id, $formname)
     $aswkeys = [];
     $str = '';
     if (!isset($test_id) || $test_id === 0) {
-        return;
+        return null;
     }
 
     $testdata = f_get_test_data($test_id);
@@ -2241,7 +2241,7 @@ function f_question_form($test_id, $testlog_id, $formname)
             if ($m = F_db_fetch_array($r)) {
                 $testlog_id = $m['testlog_id'];
             } else {
-                return;
+                return null;
             }
         } else {
             F_display_db_error();
