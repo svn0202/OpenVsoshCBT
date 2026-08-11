@@ -609,12 +609,11 @@ class XMLUserImporter
 
     /**
      * Sets the character data handler function for the XML parser parser.handler.
-     * @param $parser (resource) The first parameter, parser, is a reference to the XML parser calling the handler.
+     * @param mixed $_parser The XML parser calling the handler.
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
-    private function segContentHandler(mixed $parser, string $data): void
+    private function segContentHandler(mixed $_parser, string $data): void
     {
         if (strlen($this->current_element) > 0) {
             // we are inside an element
