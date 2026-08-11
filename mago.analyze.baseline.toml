@@ -208,7 +208,7 @@ count = 7
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 75
+count = 69
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
