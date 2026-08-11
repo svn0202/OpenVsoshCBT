@@ -242,8 +242,7 @@ function f_db_num_rows(mixed $result): mixed
  * @param $link_identifier (resource) database link identifier.
  * @param $tablename (string) Table name.
  * @param $fieldname (string) Field name (column name).
- * @return int ID generated from the last INSERT operation.
- * @mago-expect analysis:nullable-return-statement,invalid-return-statement -- Oracle may return a numeric string
+ * @return int|string ID generated from the last INSERT operation.
  */
 function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
@@ -260,7 +259,7 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
     if ($r) {
         $m = oci_fetch_array($r, OCI_NUM);
         if ($m !== false) {
-            /** @var array{0:int|string|null} $m */
+            /** @var array{0:int|string} $m Oracle CURRVAL is non-null. */
             return $m[0];
         }
     }
