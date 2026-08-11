@@ -106,4 +106,46 @@ PHP;
         self::assertStringContainsString('<a href="index.php" title="Home">Home &gt;</a>', $output);
         self::assertStringNotContainsString('[[DB-ERROR]]', $output);
     }
+
+    public function testPasswordResetTreatsNonStringEmailAsEmptyInput(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_NEWLINE', "\n");
+define('K_TABLE_USERS', 'users');
+$l = [
+    't_password_assistance' => 'Password assistance', 'w_email' => 'Email',
+    'a_meta_charset' => 'UTF-8', 'm_user_verification_sent' => 'Verification sent',
+    'h_index' => 'Home',
+];
+$db = 'db';
+$_POST = ['resetpassword' => '1', 'user_email' => ['alice@example.test']];
+$_REQUEST = [];
+function openvsosh_get_access_settings() { return ['password_reset_enabled' => true]; }
+function F_check_form_fields() { return true; }
+function random_int($min, $max) { return 123; }
+function uniqid($prefix = '', $moreEntropy = false) { return 'fixed'; }
+function F_escape_sql($db, $value) { return str_replace("'", "''", $value); }
+function F_db_query($sql, $db) { echo '[[QUERY:' . $sql . ']]'; return true; }
+function F_db_fetch_array($result) { return false; }
+function F_display_db_error(...$arguments) { echo '[[DB-ERROR]]'; }
+function F_send_user_reg_email($id, $email, $code) { echo "[[MAIL:$id:$email:$code]]"; }
+function F_print_error($type, $message) { echo "[[MESSAGE:$type:$message]]"; }
+$source = file_get_contents($argv[1]);
+$source = preg_replace('/^<\?php\s*/', '', $source);
+$source = preg_replace('/^\s*require_once [^;]+;\s*$/m', '', $source);
+eval('namespace Harness; ' . $source);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/public/code/tce_password_reset.php'],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertStringNotContainsString('Array to string conversion', $output);
+        self::assertStringContainsString("[[QUERY:SELECT user_id FROM users WHERE user_email='']]", $output);
+        self::assertStringNotContainsString('[[MAIL:', $output);
+        self::assertStringContainsString('[[MESSAGE:MESSAGE:: Verification sent]]', $output);
+    }
 }
