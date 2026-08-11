@@ -2570,7 +2570,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 				AND testuser_status<5
 			ORDER BY testlog_id
 			LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
                 /** @var array{testlog_id:int|numeric-string} $m */
                 $testlog_id = $m['testlog_id'];
