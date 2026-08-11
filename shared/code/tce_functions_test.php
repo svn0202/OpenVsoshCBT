@@ -2542,7 +2542,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
     }
 
     $testdata = f_get_test_data($test_id);
-    /** @var array<array-key,mixed> $testdata */
+    /** @var array{test_noanswer_enabled:mixed,test_mcma_radio:mixed} $testdata */
     $noanswer_hidden = '';
     $noanswer_disabled = '';
     if (!f_get_boolean($testdata['test_noanswer_enabled'])) {
@@ -2641,6 +2641,12 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
             $str .= '<span id="questionsection"></span>' . K_NEWLINE;
             $str .= '<div class="tcecontentbox">' . K_NEWLINE;
             $tmf_options = F_tmf_question_options((string) $m['question_description']);
+            /**
+             * @var array{
+             *   matching_positions:int|numeric-string,matching_reuse_positions:bool,checkbox:bool,
+             *   max_selections:int|numeric-string,headers:array{0:string,1:string,2:string,3:string}
+             * } $tmf_options
+             */
             $question_description = (string) $m['question_description'];
             $matching_labels = [];
             if ((int) $m['question_type'] === 5) {
@@ -2706,7 +2712,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                 ) {
                     $str .=
                         '<p class="mcma-heading">'
-                        . htmlspecialchars((string) $tmf_options['headers'][0], ENT_QUOTES, 'UTF-8')
+                        . htmlspecialchars($tmf_options['headers'][0], ENT_QUOTES, 'UTF-8')
                         . '</p>'
                         . K_NEWLINE;
                 }
@@ -2764,8 +2770,15 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                     . $testlog_id
                     . '
 					ORDER BY logansw_order';
-                if ($ra = F_db_query($sqla, $db)) {
-                    while ($ma = F_db_fetch_array($ra)) {
+                if ($ra = f_legacy_db_query_result(F_db_query($sqla, $db))) {
+                    while (($ma = $normalize_row(F_db_fetch_array($ra))) !== null) {
+                        /**
+                         * @var array{
+                         *   logansw_order:int|numeric-string,logansw_position:int|numeric-string,
+                         *   logansw_selected:int|numeric-string,answer_description:string|null,
+                         *   answer_keyboard_key:int|numeric-string
+                         * } $ma
+                         */
                         $anspos = $ma['logansw_order'];
                         $str .= '<li>';
                         switch ($m['question_type']) {
@@ -2810,9 +2823,9 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                             '<label for="answpos_'
                                             . $anspos
                                             . 'u" title="'
-                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio"'
@@ -2822,7 +2835,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                             . ']" id="answpos_'
                                             . $anspos
                                             . 'u" value="-1" title="'
-                                            . htmlspecialchars((string) $tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][3], ENT_QUOTES, 'UTF-8')
                                             . '"';
                                         if ((int) $ma['logansw_selected'] === -1) {
                                             $str .= ' checked="checked"';
@@ -2837,9 +2850,9 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                             '<label for="answpos_'
                                             . $anspos
                                             . 'f" title="'
-                                            . htmlspecialchars((string) $tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . htmlspecialchars((string) $tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][2], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio" name="answpos['
@@ -2860,9 +2873,9 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                             '<label for="answpos_'
                                             . $anspos
                                             . 't" title="'
-                                            . htmlspecialchars((string) $tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
                                             . '">'
-                                            . htmlspecialchars((string) $tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
+                                            . htmlspecialchars($tmf_options['headers'][1], ENT_QUOTES, 'UTF-8')
                                             . '</label>';
                                         $str .=
                                             '<input type="radio" name="answpos['

@@ -308,11 +308,15 @@ PHP;
                     . 'define("K_ANSWER_TEXTAREA_ROWS", 8); define("TMF_ATTACHMENT_MAX_FILES", 3); '
                     . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_NEWLINE", "\\n"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["l"] = ["w_answers" => "Answers", '
+                    . '"m_unanswered" => "Unanswered", '
                     . '"m_matching_position_reassigned" => "Position moved", "a_meta_charset" => "UTF-8"]; '
                     . '$_SESSION["session_user_id"] = "11"; '
                     . '$GLOBALS["examtime"] = 0; $GLOBALS["timeout_logout"] = false; '
                     . '$GLOBALS["results"] = ["first-empty", false, "question", true, "question-2", true, '
-                    . '"matching-question", "matching-maximum", "matching-answers", true]; '
+                    . '"matching-question", "matching-maximum", "matching-answers", true, '
+                    . '"single-question", "single-answers", true, '
+                    . '"multiple-question", "multiple-answers", true, '
+                    . '"ordering-question", "ordering-answers", true]; '
                     . '$row = ["question_fullscreen" => false, "testlog_answer_version" => 4, '
                     . '"testlog_testuser_id" => 55, "question_description" => "Question", '
                     . '"question_type" => 3, "testlog_answer_text" => "Saved answer", '
@@ -324,13 +328,29 @@ PHP;
                     . '$matchingAnswer = ["logansw_order" => "1", "logansw_position" => "2", '
                     . '"logansw_selected" => "0", "answer_description" => "Pair", '
                     . '"answer_keyboard_key" => "0"]; '
+                    . '$singleRow = $matchingRow; $singleRow["question_type"] = 1; '
+                    . '$singleRow["question_description"] = "Single"; '
+                    . '$multipleRow = $matchingRow; $multipleRow["question_type"] = 2; '
+                    . '$multipleRow["question_description"] = "Multiple"; '
+                    . '$orderingRow = $matchingRow; $orderingRow["question_type"] = 4; '
+                    . '$orderingRow["question_description"] = "Ordering"; '
+                    . '$singleAnswer = $matchingAnswer; $singleAnswer["logansw_selected"] = "1"; '
+                    . '$singleAnswer["answer_description"] = "Single choice"; '
+                    . '$singleAnswer["answer_keyboard_key"] = "65"; '
+                    . '$multipleAnswer = $singleAnswer; $multipleAnswer["answer_description"] = "Multiple choice"; '
+                    . '$multipleAnswer["answer_keyboard_key"] = "0"; '
+                    . '$orderingAnswer = $matchingAnswer; $orderingAnswer["answer_description"] = "Ordered choice"; '
                     . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row], '
                     . '"question-2" => [$row], "matching-question" => [$matchingRow], '
                     . '"matching-maximum" => [["maximum_position" => "2"]], '
-                    . '"matching-answers" => [$matchingAnswer, false]]; '
+                    . '"matching-answers" => [$matchingAnswer, false], '
+                    . '"single-question" => [$singleRow], "single-answers" => [$singleAnswer, false], '
+                    . '"multiple-question" => [$multipleRow], "multiple-answers" => [$multipleAnswer, false], '
+                    . '"ordering-question" => [$orderingRow], "ordering-answers" => [$orderingAnswer, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function f_get_test_data($testId) { return ["test_noanswer_enabled" => false, '
-                    . '"test_duration_time" => 30, "test_logout_on_timeout" => true]; } '
+                    . '"test_mcma_radio" => false, "test_duration_time" => 30, '
+                    . '"test_logout_on_timeout" => true]; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
                     . 'function F_count_rows(...$arguments) { return 2; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
@@ -338,11 +358,12 @@ PHP;
                     . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
-                    . '$GLOBALS["start_times"] = [1000, false, 500]; '
+                    . '$GLOBALS["start_times"] = [1000, false, 500, 600, 700, 800]; '
                     . 'function f_get_test_start_time($testUserId) { return array_shift($GLOBALS["start_times"]); } '
                     . 'function F_tmf_question_options($description) { return ["matching_positions" => 0, '
                     . '"matching_reuse_positions" => $description === "Matching", '
-                    . '"checkbox" => false, "max_selections" => 0]; } '
+                    . '"checkbox" => $description === "Multiple", "max_selections" => 0, '
+                    . '"headers" => ["Question", "True", "False", "Unanswered"]]; } '
                     . 'function F_tmf_matching_presentation($description, $positions) { return '
                     . '["description" => $description, "labels" => ["One &", "Two <"]]; } '
                     . 'function F_tmf_question_editor_description($description) { return "EDITED:" . $description; } '
@@ -364,7 +385,8 @@ PHP;
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$outputs = [$qualified(0, 0, "form"), $qualified(7, 0, "form"), '
                     . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(7, 8, "form"), '
-                    . '$qualified(7, 8, "matching-form")]; '
+                    . '$qualified(7, 8, "matching-form"), $qualified(7, 8, "single-form"), '
+                    . '$qualified(7, 8, "multiple-form"), $qualified(7, 8, "ordering-form")]; '
                     . 'echo json_encode([$outputs, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["examtime"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -373,10 +395,12 @@ PHP;
         );
 
         self::assertSame(0, $status, $output);
+        self::assertJson($output, $output);
         /**
          * @var array{
-         *     0:array{0:null,1:null,2:string,3:string,4:string,5:string},
-         *     1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string,9:string},
+         *     0:array{0:null,1:null,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
+         *     1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string,9:string,
+         *       10:string,11:string,12:string,13:string,14:string,15:string,16:string,17:string,18:string},
          *     2:int,
          *     3:int
          * } $decoded
@@ -400,12 +424,18 @@ PHP;
         self::assertStringContainsString('<option value="2" selected="selected">Two &lt;</option>', $outputs[5]);
         self::assertStringContainsString('name="examtime" id="examtime" value="2300"', $outputs[5]);
         self::assertStringContainsString('<MENU:55,8,0>', $outputs[5]);
-        self::assertCount(10, $queries);
+        self::assertStringContainsString('type="radio" name="answpos" id="answpos_1"', $outputs[6]);
+        self::assertStringContainsString('Single choice', $outputs[6]);
+        self::assertStringContainsString('type="checkbox" name="answpos[1]"', $outputs[7]);
+        self::assertStringContainsString('Multiple choice', $outputs[7]);
+        self::assertStringContainsString('<select name="answpos[1]" id="answpos_1">', $outputs[8]);
+        self::assertStringContainsString('<option value="2" selected="selected">2</option>', $outputs[8]);
+        self::assertCount(19, $queries);
         self::assertStringContainsString('SELECT MAX(answer_position) AS maximum_position', $queries[7]);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[3]);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[5]);
         self::assertSame(1, $errors);
-        self::assertSame(2300, $examtime);
+        self::assertSame(2600, $examtime);
     }
 
     public function testQuestionsMenuPreservesSelectedReviewNavigationAndToolbarMarkup(): void
