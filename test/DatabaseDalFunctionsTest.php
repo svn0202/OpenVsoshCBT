@@ -214,6 +214,36 @@ final class DatabaseDalFunctionsTest extends TestCase
         self::assertSame('[false,[]]', $output);
     }
 
+    public function testOracleCommitFailureReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; define("OCI_NO_AUTO_COMMIT", 1); define("OCI_COMMIT_ON_SUCCESS", 2); '
+                    . 'function oci_commit($connection) {'
+                    . 'trigger_error("commit failed", E_USER_WARNING); return false; } '
+                    . 'function oci_rollback($connection) { return true; } '
+                    . 'function oci_parse($connection, $query) { return "statement"; } '
+                    . 'function oci_execute($statement, $mode) { return true; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_query/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$value = F_db_query("COMMIT", new \\stdClass()); restore_error_handler(); '
+                    . 'echo json_encode([$value, $warnings]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_oracle.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[]]', $output);
+    }
+
     public function testSqlEscapingBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
