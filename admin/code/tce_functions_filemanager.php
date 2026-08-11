@@ -193,8 +193,15 @@ function f_delete_media_dir(mixed $dirname): bool
         return false;
     }
 
+    if (!is_dir($dirname)) {
+        return false;
+    }
+
     $entries = scandir($dirname);
-    // @mago-expect analysis:possibly-false-argument -- preserve the legacy failure if a validated directory disappears
+    if ($entries === false) {
+        return false;
+    }
+
     if (count($entries) > 2) {
         return false;
     }
