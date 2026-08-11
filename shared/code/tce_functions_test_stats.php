@@ -2242,20 +2242,22 @@ function f_lock_user_test(mixed $test_id, mixed $user_id): void
 
 /**
  * Returns a comma separated string of test IDs with test_results_to_users enabled
- * @param $test_id (int) Test ID.
+ * @param mixed $test_id Test ID.
+ * @param mixed $user_id User ID.
  * @return string
  */
-function f_get_test_id_results($test_id, $user_id): string
+function f_get_test_id_results(mixed $test_id, mixed $user_id): string
 {
     return f_get_test_ids($test_id, $user_id, 'test_results_to_users');
 }
 
 /**
  * Returns a comma separated string of test IDs with test_results_to_users enabled
- * @param $test_id (int) Test ID.
+ * @param mixed $test_id Test ID.
+ * @param mixed $user_id User ID.
  * @return string
  */
-function f_get_test_id_reports($test_id, $user_id): string
+function f_get_test_id_reports(mixed $test_id, mixed $user_id): string
 {
     return f_get_test_ids($test_id, $user_id, 'test_report_to_users');
 }
