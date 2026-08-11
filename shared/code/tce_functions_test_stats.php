@@ -974,7 +974,13 @@ function f_print_test_stat(
      *           unanswered:int|float|numeric-string,unanswered_perc:int|float|numeric-string,
      *           undisplayed:int|float|numeric-string,undisplayed_perc:int|float|numeric-string,
      *           unrated:int|float|numeric-string,unrated_perc:int|float|numeric-string,
-     *           answer:array<array-key,mixed>
+     *           answer:array<array-key,array{
+     *             id:int|numeric-string,description:string,
+     *             recurrence:int|float|numeric-string,recurrence_perc:int|float|numeric-string,
+     *             right:int|float|numeric-string,right_perc:int|float|numeric-string,
+     *             wrong:int|float|numeric-string,wrong_perc:int|float|numeric-string,
+     *             unanswered:int|float|numeric-string,unanswered_perc:int|float|numeric-string
+     *           }>
      *         }>
      *       }>
      *     }>
