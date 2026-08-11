@@ -6,6 +6,34 @@ use PHPUnit\Framework\TestCase;
 
 final class AlternativeAuthTest extends TestCase
 {
+    public function testLdapEntryReadFailureReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; '
+                    . 'function ldap_unbind($connection) { return true; } '
+                    . 'function ldap_bind($connection, $dn, $password) { return true; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function f_tmf_alt_ldap_entries"); '
+                    . 'eval("namespace Harness; " . substr($source, $start)); '
+                    . '$calls = 0; $warnings = []; '
+                    . 'set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$value = f_tmf_alt_ldap_entries(static function () use (&$calls) {'
+                    . '++$calls; trigger_error("entry read failed", E_USER_WARNING); return false; }); '
+                    . 'restore_error_handler(); echo json_encode([$value, $warnings, $calls]);',
+                dirname(__DIR__) . '/shared/code/tce_altauth.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[],1]', $output);
+    }
+
     public function testLdapSearchFailureReturnsNullWithoutLeakingWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(

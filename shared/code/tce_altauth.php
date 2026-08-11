@@ -266,8 +266,9 @@ function f_alt_login(): array|false
                 $search = f_tmf_alt_ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr);
                 $rdn = false;
                 if ($search instanceof \LDAP\Result) {
-                    // @mago-expect lint:no-error-control-operator -- a failed LDAP result lookup is treated as an authentication miss
-                    $rdn = f_tmf_alt_ldap_entries(@ldap_get_entries($ldapconn, $search));
+                    $rdn = f_tmf_alt_ldap_entries(
+                        static fn(): array|false => ldap_get_entries($ldapconn, $search),
+                    );
                 }
                 $ldap_entry = is_array($rdn) && isset($rdn[0]) && is_array($rdn[0]) ? $rdn[0] : [];
                 /** @var string $ldap_dn */
@@ -354,9 +355,19 @@ function f_tmf_alt_ldap_search(
     return $search instanceof \LDAP\Result ? $search : null;
 }
 
-/** @return array<array-key,mixed>|false */
-function f_tmf_alt_ldap_entries(mixed $entries): array|false
+/**
+ * @param \Closure():(array<array-key,mixed>|false) $read_entries
+ * @return array<array-key,mixed>|false
+ */
+function f_tmf_alt_ldap_entries(\Closure $read_entries): array|false
 {
+    set_error_handler(static fn(): bool => true);
+    try {
+        $entries = $read_entries();
+    } finally {
+        restore_error_handler();
+    }
+
     return is_array($entries) ? $entries : false;
 }
 
