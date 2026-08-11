@@ -657,6 +657,60 @@ final class TestReviewTest extends TestCase
         }
     }
 
+    public function testExecutedTestCountPreservesDateNormalizationAndFallbacks(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TIMESTAMP_FORMAT", "timestamp"); '
+                    . 'define("K_TABLE_TESTUSER_STAT", "test_stats"); '
+                    . '$GLOBALS["counts"] = [3, 4, 5]; $GLOBALS["calls"] = []; '
+                    . 'function strtotime($value) { $GLOBALS["calls"][] = ["strtotime", $value]; '
+                    . 'return $value === "invalid" ? false : 123; } '
+                    . 'function date($format, $timestamp = null) { '
+                    . '$GLOBALS["calls"][] = ["date", $format, $timestamp]; '
+                    . 'if ($format === "Y") { return "2026"; } '
+                    . 'return $timestamp === false ? "epoch" : "normalized"; } '
+                    . 'function F_count_rows($table, $where) { $GLOBALS["calls"][] = ["count", $table, $where]; '
+                    . 'return array_shift($GLOBALS["counts"]); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (f_count_executed_tests)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([[$qualified("start", "end"), $qualified("", ""), '
+                    . '$qualified("invalid", "invalid")], $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [[3, 4, 5], [
+                ['strtotime', 'start'],
+                ['date', 'timestamp', 123],
+                ['strtotime', 'end'],
+                ['date', 'timestamp', 123],
+                ['count', 'test_stats', "WHERE tus_date>='normalized' AND tus_date<='normalized'"],
+                ['date', 'Y', null],
+                ['date', 'Y', null],
+                ['count', 'test_stats', "WHERE tus_date>='2026-01-01 00:00:00' AND tus_date<='2026-12-31 23:59:59'"],
+                ['strtotime', 'invalid'],
+                ['date', 'timestamp', false],
+                ['strtotime', 'invalid'],
+                ['date', 'timestamp', false],
+                ['count', 'test_stats', "WHERE tus_date>='epoch' AND tus_date<='epoch'"],
+            ]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testGeneratedTestStatisticsPreserveInsertAndErrorHandling(): void
     {
         [$status, $output] = \F_tcecode_run_process(
