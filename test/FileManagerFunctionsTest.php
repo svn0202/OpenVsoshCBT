@@ -303,6 +303,7 @@ final class FileManagerFunctionsTest extends TestCase
         self::assertSame('2 KB', f_format_file_size(1536));
         self::assertSame('1 MB', f_format_file_size(1024 * 1024));
         self::assertSame('1 KB', f_format_file_size('1024'));
+        self::assertSame('1024 YB', f_format_file_size(1024 ** 9));
     }
 
     public function testFormatsLegacyZeroRepresentationsAsZero(): void
