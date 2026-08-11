@@ -6,6 +6,44 @@ use PHPUnit\Framework\TestCase;
 
 final class AdminUserEditorControllerTest extends TestCase
 {
+    public function testAddedUserPasswordConfirmationPreservesAllOutcomes(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; '
+                    . 'function get_password_hash($value) { return "hash:" . $value; } '
+                    . 'function f_get_random_otp_key() { return "new-otp"; } '
+                    . 'function F_print_error($type, $message) { $GLOBALS["errors"][] = [$type, $message]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$needle = "                // check password\\n                if (!empty(\\$newpassword)"; '
+                    . '$first = strpos($source, $needle); $start = strpos($source, $needle, $first + 1); '
+                    . '$end = strpos($source, "\\n\\n                \\$normalized_user_ip", $start); '
+                    . '$block = substr($source, $start, $end - $start); '
+                    . '$l = ["m_different_passwords" => "different", "m_empty_password" => "empty"]; '
+                    . '$results = []; foreach ([["same", "same"], ["same", "other"], ["", ""]] as $case) {'
+                    . '[$newpassword, $newpassword_repeat] = $case; $user_password = ""; $user_otpkey = ""; '
+                    . '$formstatus = true; $GLOBALS["errors"] = []; '
+                    . 'eval("namespace Harness; switch (1) { case 1: " . $block . " }"); '
+                    . '$results[] = [$user_password, $user_otpkey, $formstatus, $GLOBALS["errors"]]; } '
+                    . 'echo json_encode($results);',
+                dirname(__DIR__) . '/admin/code/tce_edit_user.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                ['hash:same', 'new-otp', true, []],
+                ['', '', false, [['WARNING', 'different']]],
+                ['', '', false, [['WARNING', 'empty']]],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testUpdatedUserPasswordConfirmationPreservesAllOutcomes(): void
     {
         [$status, $output] = \F_tcecode_run_process(
