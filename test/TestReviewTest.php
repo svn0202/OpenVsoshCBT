@@ -20,6 +20,11 @@ final class TestReviewTest extends TestCase
                 . '</span></span><span class="value">Value</span></div>' . K_NEWLINE,
             \f_two_col_row('Label', 'Description', 'Value'),
         );
+        self::assertSame(
+            '<div class="row"><span class="label"><span title="2.5">7: '
+                . '</span></span><span class="value">1</span></div>' . K_NEWLINE,
+            \f_two_col_row(7, 2.5, true),
+        );
     }
 
     public function testTestInfoLinkPreservesPopupOptionsAndPlainCaption(): void

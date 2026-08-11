@@ -1032,6 +1032,9 @@ function f_get_test_start_time(mixed $testuser_id): int|false
  */
 function f_two_col_row(mixed $label = '', mixed $description = '', mixed $value = ''): string
 {
+    $label = (string) $label;
+    $description = (string) $description;
+    $value = (string) $value;
     $str = '';
     $str .= '<div class="row">';
     $str .= '<span class="label">';
