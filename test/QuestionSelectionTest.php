@@ -370,7 +370,9 @@ PHP;
                     . '"ov_answer_saving" => "Saving", "ov_answer_saved" => "Saved", '
                     . '"ov_answer_not_saved" => "Error", "ov_answer_save_conflict" => "Conflict", '
                     . '"ov_answer_unsaved" => "Unsaved", "ov_answer_retrying" => "Retrying", '
-                    . '"ov_save" => "Save", "a_meta_charset" => "UTF-8", "a_meta_language" => "ru"]; '
+                    . '"ov_save" => "Save", "ov_audio_plays_left" => "Plays <{count}>", '
+                    . '"ov_audio_limit_exhausted" => "Limit & done", '
+                    . '"a_meta_charset" => "UTF-8", "a_meta_language" => "ru"]; '
                     . 'set_error_handler(static fn() => true); '
                     . '$row = ["question_description" => "Question description", "question_difficulty" => 2, '
                     . '"question_timer" => 0, "testlog_id" => 8, "testlog_answer_text" => "", '
@@ -412,6 +414,8 @@ PHP;
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$markup, $emptyMarkup, $queries] = $decoded;
         self::assertStringContainsString('data-audio-play-limit="2"', $markup);
+        self::assertStringContainsString('data-audio-plays-left="Plays &lt;{count}&gt;"', $markup);
+        self::assertStringContainsString('data-audio-limit-exhausted="Limit &amp; done"', $markup);
         self::assertStringContainsString('Question <span>1</span> / 1', $markup);
         self::assertStringContainsString('class="selected marked-for-review" data-testlog-id="8"', $markup);
         self::assertStringContainsString('title="Displayed">+', $markup);

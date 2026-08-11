@@ -2946,6 +2946,10 @@ function f_questions_menu(
     };
     /** @var string $charset */
     $charset = $l['a_meta_charset'];
+    /** @var string $audio_plays_left */
+    $audio_plays_left = $l['ov_audio_plays_left'] ?? $audio_labels['plays_left'];
+    /** @var string $audio_limit_exhausted */
+    $audio_limit_exhausted = $l['ov_audio_limit_exhausted'] ?? $audio_labels['limit_exhausted'];
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
         . ' data-image-preview-label="'
@@ -2955,13 +2959,13 @@ function f_questions_menu(
         . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
         . '" data-audio-plays-left="'
         . htmlspecialchars(
-            $l['ov_audio_plays_left'] ?? $audio_labels['plays_left'],
+            $audio_plays_left,
             ENT_QUOTES,
             $charset,
         )
         . '" data-audio-limit-exhausted="'
         . htmlspecialchars(
-            $l['ov_audio_limit_exhausted'] ?? $audio_labels['limit_exhausted'],
+            $audio_limit_exhausted,
             ENT_QUOTES,
             $charset,
         )
