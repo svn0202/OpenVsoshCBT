@@ -571,12 +571,14 @@ function f_terminate_user_test(mixed $test_id, mixed $reason = 'completed'): voi
 
 /**
  * Count the number times of retries.<br>
- * @param $user_id (int) user ID
- * @param $test_id (int) test ID
+ * @param mixed $user_id User ID
+ * @param mixed $test_id Test ID
  * @return int number of completed attempts
  */
 function f_count_user_test(mixed $user_id, mixed $test_id): int
 {
+    /** @var int|numeric-string $user_id */
+    /** @var int|numeric-string $test_id */
     return F_count_rows(
         K_TABLE_TEST_USER,
         'WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . ' AND testuser_status >= 4',

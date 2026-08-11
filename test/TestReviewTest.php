@@ -1005,6 +1005,42 @@ final class TestReviewTest extends TestCase
         );
     }
 
+    public function testCompletedAttemptCountPreservesNumericStringIdentifiers(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_TABLE_TEST_USER", "test_users"); '
+                    . '$GLOBALS["calls"] = []; '
+                    . 'function F_count_rows($table, $where) { $GLOBALS["calls"][] = [$table, $where]; return 3; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (f_count_user_test)\\(/", '
+                    . '$source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . 'echo json_encode([$qualified("011", "022"), $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                3,
+                [[
+                    'test_users',
+                    'WHERE testuser_test_id=022 AND testuser_user_id=011 AND testuser_status >= 4',
+                ]],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     private function logAnswersInsertSql(string $values): string
     {
         return "INSERT INTO log_answers (\n\t\t\tlogansw_testlog_id,\n"
