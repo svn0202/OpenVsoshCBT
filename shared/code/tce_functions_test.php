@@ -1548,7 +1548,17 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
     $firsttest = 0; // id of the firts test of this type
     // get test data
     $testdata = f_get_test_data($test_id);
-    /** @var array<array-key,mixed> $testdata */
+    /**
+     * @var array{
+     *     test_answers_order_mode:mixed,
+     *     test_questions_order_mode:mixed,
+     *     test_random_answers_order:mixed,
+     *     test_random_answers_select:mixed,
+     *     test_random_questions_order:mixed,
+     *     test_random_questions_select:mixed,
+     *     test_score_unanswered:int|float|numeric-string
+     * } $testdata
+     */
     $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
     $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
     $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
@@ -1612,7 +1622,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 		\'' . $date . '\',
 		\'' . $date . '\'
 		)';
-    if (!($r = F_db_query($sql, $db))) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if (!$r) {
         F_display_db_error(false);
         return false;
     }
@@ -1802,7 +1814,6 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 
                 if ($rq = F_db_query($sqlq, $db)) {
                     while ($mq = F_db_fetch_array($rq)) {
-                        /** @var int|float|numeric-string $test_score_unanswered */
                         $test_score_unanswered = $testdata['test_score_unanswered'];
                         /** @var int|float|numeric-string $question_difficulty */
                         $question_difficulty = $mq['question_difficulty'];
@@ -1874,7 +1885,6 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             while ($m = F_db_fetch_array($r)) {
                 ++$question_order;
                 // copy values to new user test
-                /** @var int|float|numeric-string $test_score_unanswered */
                 $test_score_unanswered = $testdata['test_score_unanswered'];
                 /** @var int|float|numeric-string $question_difficulty */
                 $question_difficulty = $m['question_difficulty'];
