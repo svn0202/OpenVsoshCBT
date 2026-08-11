@@ -3082,6 +3082,7 @@ function f_tmf_live_score(int $test_id, int $testuser_id): ?float
         $db,
     );
     $enabled = $enabled_result ? F_db_fetch_array($enabled_result) : false;
+    /** @var mixed $enabled */
     if (!is_array($enabled) || !f_get_boolean($enabled['test_live_score'] ?? false)) {
         return null;
     }
@@ -3091,7 +3092,13 @@ function f_tmf_live_score(int $test_id, int $testuser_id): ?float
         $db,
     );
     $score = $score_result ? F_db_fetch_array($score_result) : false;
-    return is_array($score) ? round((float) $score['live_score'], 3) : 0.0;
+    /** @var mixed $score */
+    if (!is_array($score)) {
+        return 0.0;
+    }
+
+    /** @var array{live_score:int|float|string} $score */
+    return round((float) $score['live_score'], 3);
 }
 
 /**
