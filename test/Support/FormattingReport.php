@@ -19,6 +19,12 @@ final class FormattingReport extends \TcePdfReport
     {
     }
 
+    /** @return array{0:int,1:int,2:int,3:string,bits?:int,channels?:int,mime:string}|false */
+    public static function optionalImageSize(string $filename): array|false
+    {
+        return parent::getImageSizeSilently($filename);
+    }
+
     public function writeReportHTML(string $html): void
     {
         $this->htmlBlocks[] = $html;
