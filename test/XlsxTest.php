@@ -146,6 +146,21 @@ final class XlsxTest extends TestCase
         self::assertStringNotContainsString('<v>0.1</v>', $xml);
     }
 
+    public function testUserPreviewReadsFirstKeyedRowAsHeader(): void
+    {
+        $result = \F_tmf_users_xlsx_validate(
+            [5 => \TMF_USERS_XLSX_HEADERS],
+            [],
+            [],
+            10,
+        );
+
+        self::assertSame([
+            'records' => [],
+            'errors' => [2 => ['Файл не содержит строк пользователей.']],
+        ], $result);
+    }
+
     public function testUserPreviewReportsDuplicatesUnknownGroupsAndInvalidRows(): void
     {
         $rows = [
