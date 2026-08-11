@@ -1955,7 +1955,7 @@ function f_print_user_test_stat(mixed $testuser_id): string
             $ret .= '<br />' . K_NEWLINE;
             // display question description
             $ret .= F_decode_tcecode($m['question_description']) . K_NEWLINE;
-            if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
+            if (f_get_boolean(K_ENABLE_QUESTION_EXPLANATION) && !empty($m['question_explanation'])) {
                 $ret .=
                     '<br /><span class="explanation">'
                     . $l['w_explanation']
@@ -2056,7 +2056,7 @@ function f_print_user_test_stat(mixed $testuser_id): string
 
                         $ret .= ' ';
                         $ret .= F_decode_tcecode($ma['answer_description']);
-                        if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                        if (f_get_boolean(K_ENABLE_ANSWER_EXPLANATION) && !empty($ma['answer_explanation'])) {
                             $ret .=
                                 '<br /><span class="explanation">'
                                 . $l['w_explanation']
