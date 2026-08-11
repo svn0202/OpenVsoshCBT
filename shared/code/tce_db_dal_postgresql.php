@@ -168,14 +168,17 @@ function f_db_num_rows(mixed $result): mixed
 
 /**
  * Get the ID generated from the previous INSERT operation
- * @param $link_identifier (resource) database link identifier.
- * @param $tablename (string) Table name.
- * @param $fieldname (string) Field name (column name).
- * @return int ID generated from the last INSERT operation.
+ * @param \PgSql\Connection $link_identifier Database connection.
+ * @param string $tablename Table name.
+ * @param string $fieldname Field name (column name).
+ * @return int|string ID generated from the last INSERT operation, or 0 when unavailable.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
+function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
+    /** @var \PgSql\Connection $link_identifier */
+    /** @var string $tablename */
+    /** @var string $fieldname */
     set_error_handler(static fn(): bool => true);
     try {
         $r = pg_query(
@@ -185,8 +188,12 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
     } finally {
         restore_error_handler();
     }
-    if ($r && ($m = pg_fetch_row($r, 0))) {
-        return $m[0];
+    if ($r) {
+        $m = pg_fetch_row($r, 0);
+        if ($m !== false) {
+            /** @var array{0:string} $m */
+            return $m[0];
+        }
     }
 
     return 0;

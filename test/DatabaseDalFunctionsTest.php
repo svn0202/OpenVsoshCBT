@@ -445,6 +445,34 @@ final class DatabaseDalFunctionsTest extends TestCase
         self::assertSame('[0,[]]', $output);
     }
 
+    public function testPostgresqlInsertIdPreservesNumericStringAndSequenceQuery(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; $GLOBALS["query"] = ""; '
+                    . 'function pg_query($connection, $query) { $GLOBALS["query"] = $query; return "result"; } '
+                    . 'function pg_fetch_row($result, $row) { return ["23"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_insert_id/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$id = F_db_insert_id("connection", "users", "id"); '
+                    . 'echo json_encode([$id, gettype($id), $GLOBALS["query"]]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_postgresql.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['23', 'string', "SELECT CURRVAL('users_id_seq')"],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testDatabaseQueryBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
