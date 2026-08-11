@@ -160,13 +160,13 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 9
+count = 8
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 236
+count = 226
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -232,7 +232,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 269
+count = 267
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -268,7 +268,7 @@ count = 16
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 53
+count = 52
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -290,24 +290,6 @@ count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "no-value"
-message = "Argument #1 passed to function `strlen` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "no-value"
-message = "Argument #1 passed to function `strtotime` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "no-value"
-message = "Argument #1 passed to function `substr` has type `never`, meaning it cannot produce a value."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
 count = 1
@@ -317,9 +299,3 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is evaluated and right operand is always falsy."
-count = 1
