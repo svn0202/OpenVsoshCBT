@@ -794,12 +794,13 @@ function f_get_test_password(mixed $test_id): ?string
 /**
  * Returns the test name.
  * @param $test_id (int) test ID.
- * @return string test name or empty string in case of error.
+ * @return string|null Test name or null when the database value is null.
  */
-function f_get_test_name($test_id)
+function f_get_test_name(mixed $test_id): ?string
 {
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
+    /** @var array{test_name:string|null} $td */
     return $td['test_name'];
 }
 
