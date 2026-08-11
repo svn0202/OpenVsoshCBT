@@ -589,12 +589,13 @@ function f_count_user_test(mixed $user_id, mixed $test_id): int
  * @param mixed $test_id Test ID
  * @param mixed $duration Test duration in seconds
  * @return array{int|string, int|string, bool} (test_status_code, testuser_id, testuser_pregenerated). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
- * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
 function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): array
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
     $test_status = 0;
@@ -617,8 +618,10 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
         . '
 		ORDER BY testuser_status
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
             /** @var array{testuser_id:int|string,testuser_status:int|string,testuser_creation_time:string,testuser_pregenerated?:mixed} $m */
             $testuser_id = $m['testuser_id'];
             $test_status = $m['testuser_status'];
@@ -649,7 +652,9 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
                             // delete incomplete test (also deletes test logs using database referential integrity)
                             $sqld = 'DELETE FROM ' . K_TABLE_TEST_USER . '
 							WHERE testuser_id=' . $testuser_id . '';
-                            if (!($rd = F_db_query($sqld, $db))) {
+                            $rd = F_db_query($sqld, $db);
+                            /** @var mixed $rd */
+                            if (!$rd) {
                                 F_display_db_error();
                             }
 
