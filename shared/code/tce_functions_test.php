@@ -1235,44 +1235,53 @@ function f_new_test_log(
 function f_is_test_over_limits(): bool
 {
     require_once '../config/tce_config.php';
-    if (K_REMAINING_TESTS && K_REMAINING_TESTS <= 0) {
+    /** @var int|false $remaining_tests */
+    $remaining_tests = constant('K_REMAINING_TESTS');
+    /** @var int|false $max_tests_day */
+    $max_tests_day = constant('K_MAX_TESTS_DAY');
+    /** @var int|false $max_tests_month */
+    $max_tests_month = constant('K_MAX_TESTS_MONTH');
+    /** @var int|false $max_tests_year */
+    $max_tests_year = constant('K_MAX_TESTS_YEAR');
+
+    if ($remaining_tests && $remaining_tests <= 0) {
         return true;
     }
 
     $now = time();
     $enddate = date(K_TIMESTAMP_FORMAT, $now);
-    if (K_MAX_TESTS_DAY) {
+    if ($max_tests_day) {
         // check day limit (last 24 hours)
         $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_DAY));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
         );
-        if ($numtests >= K_MAX_TESTS_DAY) {
+        if ($numtests >= $max_tests_day) {
             return true;
         }
     }
 
-    if (K_MAX_TESTS_MONTH) {
+    if ($max_tests_month) {
         // check month limit (last 30 days)
         $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_MONTH));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
         );
-        if ($numtests >= K_MAX_TESTS_MONTH) {
+        if ($numtests >= $max_tests_month) {
             return true;
         }
     }
 
-    if (K_MAX_TESTS_YEAR !== false) {
+    if ($max_tests_year !== false) {
         // check year limit (last 365 days)
         $startdate = date(K_TIMESTAMP_FORMAT, (int) ($now - K_SECONDS_IN_YEAR));
         $numtests = F_count_rows(
             K_TABLE_TESTUSER_STAT,
             "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'",
         );
-        if ($numtests >= K_MAX_TESTS_YEAR) {
+        if ($numtests >= $max_tests_year) {
             return true;
         }
     }
