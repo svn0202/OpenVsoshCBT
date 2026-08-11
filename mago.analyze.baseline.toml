@@ -64,7 +64,7 @@ count = 4
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 52
+count = 51
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -214,7 +214,7 @@ count = 4
 file = "shared/code/tce_functions_test.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 7
+count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
