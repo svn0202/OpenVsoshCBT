@@ -241,9 +241,9 @@ function f_login_form(): void
 
     // HTTP-Basic authentication
     require_once '../../shared/config/tce_httpbasic.php';
-    // @mago-expect analysis:redundant-logical-operation -- disabled in this installation, supported by shared code
-    // @mago-expect analysis:impossible-condition -- deployments can enable HTTP Basic authentication in configuration
-    if (K_HTTPBASIC_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
+    /** @var bool $httpbasic_enabled */
+    $httpbasic_enabled = K_HTTPBASIC_ENABLED;
+    if ($httpbasic_enabled && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
         // force HTTP Basic Authentication
         header('WWW-Authenticate: Basic realm="TCExam"');
         header('HTTP/1.0 401 Unauthorized');
