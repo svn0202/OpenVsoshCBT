@@ -33,6 +33,20 @@ function f_filemanager_allowed_extensions(): array
 }
 
 /**
+ * Create a directory without exposing an expected filesystem failure to the
+ * application's error handler.
+ */
+function f_filemanager_mkdir_silently(string $directory, int $permissions, bool $recursive): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return mkdir($directory, $permissions, $recursive);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
  * Delete the selected media file
  * @author Nicola Asuni
  * @param $filename (string) the file name
@@ -165,11 +179,9 @@ function f_create_media_dir(mixed $dirname): bool
 
     if (str_contains($dirname . '/', K_PATH_CACHE)) {
         $oldumask = umask(0);
-        set_error_handler(static fn(): bool => true);
         try {
-            $ret = mkdir($dirname, 0o744, false);
+            $ret = f_filemanager_mkdir_silently($dirname, 0o744, false);
         } finally {
-            restore_error_handler();
             umask($oldumask);
         }
         return $ret;

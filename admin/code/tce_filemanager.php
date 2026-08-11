@@ -58,8 +58,7 @@ if ((int) $session['session_user_level'] < f_tce_filemanager_int(K_AUTH_ADMINIST
     // create user directory if missing
     if (!F_file_exists($usr_dir)) {
         $oldumask = umask(0);
-        // @mago-expect lint:no-error-control-operator -- replace the filesystem warning with a localized error
-        if (!@mkdir($usr_dir, 0o744, true)) {
+        if (!f_filemanager_mkdir_silently($usr_dir, 0o744, true)) {
             F_print_error('ERROR', $l['m_directory_create_error']);
         }
 
