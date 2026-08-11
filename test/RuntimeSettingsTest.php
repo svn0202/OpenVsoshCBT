@@ -12,6 +12,35 @@ require_once __DIR__ . '/../shared/code/tce_functions_openvsosh_settings.php';
 
 final class RuntimeSettingsTest extends TestCase
 {
+    public function testSavingRuntimeSettingsPreservesEntropyFailure(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_AVAILABLE_LANGUAGES", serialize(["ru" => "Russian"])); '
+                    . 'function openvsosh_settings_array($value) { return is_array($value) ? $value : []; } '
+                    . 'function openvsosh_save_setting($key, $value) { return true; } '
+                    . 'function openvsosh_bootstrap_settings_path() { return "/unused/bootstrap.json"; } '
+                    . 'function random_bytes($length) { throw new \\Random\\RandomException("entropy unavailable"); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function openvsosh_save_runtime_settings"); '
+                    . '$end = strpos($source, "function openvsosh_contrast_text", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . 'try { openvsosh_save_runtime_settings(["default_language" => "ru", '
+                    . '"default_timezone" => "UTC", "timer_warning_seconds" => 600, '
+                    . '"timer_critical_seconds" => 300, "timer_warning_color" => "#b45309", '
+                    . '"timer_critical_color" => "#b91c1c"]); echo "completed"; } '
+                    . 'catch (\\Throwable $error) { echo get_class($error) . ":" . $error->getMessage(); }',
+                dirname(__DIR__) . '/shared/code/tce_functions_openvsosh_settings.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('Random\\RandomException:entropy unavailable', $output);
+    }
+
     public function testOfflineSecretPreservesEntropyFailure(): void
     {
         [$status, $output] = \F_tcecode_run_process(
