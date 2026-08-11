@@ -6,6 +6,19 @@ use PHPUnit\Framework\TestCase;
 
 final class PublicPdfResultsControllerTest extends TestCase
 {
+    public function testSessionUserIsReadOnlyAfterAuthorization(): void
+    {
+        $source = file_get_contents(dirname(__DIR__) . '/public/code/tce_pdf_results.php');
+
+        self::assertIsString($source);
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $userId = strpos($source, "\$_SESSION['session_user_id']");
+
+        self::assertIsInt($authorization);
+        self::assertIsInt($userId);
+        self::assertLessThan($userId, $authorization);
+    }
+
     public function testSummaryReportKeepsPublicFiltersAndRenderingContract(): void
     {
         $calls = self::runController([
