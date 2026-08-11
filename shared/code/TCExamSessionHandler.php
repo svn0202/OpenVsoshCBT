@@ -27,10 +27,6 @@
 //ini_set('session.save_handler', 'user');
 session_name('PHPSESSID');
 //ini_set('session.gc_maxlifetime', K_SESSION_LIFE);
-// @mago-expect lint:no-ini-set -- sessions are intentionally cookie-only across every entry point
-ini_set('session.use_cookies', true);
-// @mago-expect lint:no-ini-set -- reject attacker-supplied uninitialized session identifiers
-ini_set('session.use_strict_mode', 'On');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => (string) ini_get('session.cookie_path'),
@@ -39,6 +35,15 @@ session_set_cookie_params([
     'httponly' => K_COOKIE_HTTPONLY,
     'samesite' => K_COOKIE_SAMESITE,
 ]);
+
+/** @return array{use_cookies:true,use_strict_mode:true} */
+function f_get_session_start_options(): array
+{
+    return [
+        'use_cookies' => true,
+        'use_strict_mode' => true,
+    ];
+}
 
 /**
  * Return the baseline security headers used by every authenticated and public endpoint.
@@ -523,5 +528,5 @@ if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] !== 'startlongproce
     session_id($PHPSESSID); //set session id
 }
 
-session_start(); //start session
+session_start(f_get_session_start_options()); //start session
 header('Cache-control: private'); // fix IE6 bug
