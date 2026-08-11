@@ -39,6 +39,30 @@ final class PdfReportFormattingTest extends TestCase
         $this->report = new FormattingReport();
     }
 
+    public function testMalformedOptionalFileOptionsFallBackWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("PDF_MARGIN_LEFT", 15.0); define("PDF_MARGIN_TOP", 27.0); '
+                    . 'define("K_PDF_ALLOWED_PATHS", "not-serialized"); '
+                    . 'define("K_PDF_ALLOWED_HOSTS", "also-not-serialized"); '
+                    . 'require $argv[1]; class InspectablePdfReport extends TcePdfReport {'
+                    . 'public static function fileOptions() { return parent::buildFileOptions(); }} '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$options = InspectablePdfReport::fileOptions(); restore_error_handler(); '
+                    . 'echo json_encode([$options, $warnings]);',
+                dirname(__DIR__) . '/shared/code/tce_pdf_report.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[null,[]]', $output);
+    }
+
     /** @throws \Throwable */
     public function testQuestionStatisticsKeepLabelsAndFormattedValues(): void
     {

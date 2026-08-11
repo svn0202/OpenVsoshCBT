@@ -126,6 +126,28 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         $this->setSignature($data);
     }
 
+    /** @return list<string>|null */
+    private static function serializedStringList(mixed $value): ?array
+    {
+        if (!is_array($value)) {
+            return null;
+        }
+        return array_values(array_filter(array_map('strval', $value)));
+    }
+
+    /** @return list<string>|null */
+    private static function parseSerializedStringList(string $serialized): ?array
+    {
+        set_error_handler(static fn(): bool => true);
+        try {
+            return self::serializedStringList(unserialize($serialized, ['allowed_classes' => false]));
+        } catch (Throwable) {
+            return null;
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     /**
      * Build the tc-lib-file security options from TCExam configuration constants.
      * Mirrors the tc-lib-pdf fileOptions contract so the allowed local paths, remote
@@ -138,20 +160,16 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
     {
         $opts = [];
         if (defined('K_PDF_ALLOWED_PATHS')) {
-            // @mago-expect lint:no-error-control-operator -- malformed optional configuration falls back to library defaults
-            // @mago-expect analysis:mixed-assignment -- unserialize is checked immediately below
-            $paths = @unserialize((string) K_PDF_ALLOWED_PATHS, ['allowed_classes' => false]);
-            if (is_array($paths) && $paths !== []) {
-                $opts['allowedPaths'] = array_values(array_filter(array_map('strval', $paths)));
+            $paths = self::parseSerializedStringList((string) K_PDF_ALLOWED_PATHS);
+            if ($paths !== null && $paths !== []) {
+                $opts['allowedPaths'] = $paths;
             }
         }
         if (defined('K_PDF_ALLOWED_HOSTS')) {
-            // @mago-expect lint:no-error-control-operator -- malformed optional configuration keeps remote loading disabled
-            // @mago-expect analysis:mixed-assignment -- unserialize is checked immediately below
-            $hosts = @unserialize((string) K_PDF_ALLOWED_HOSTS, ['allowed_classes' => false]);
-            if (is_array($hosts)) {
+            $hosts = self::parseSerializedStringList((string) K_PDF_ALLOWED_HOSTS);
+            if ($hosts !== null) {
                 // Empty list keeps remote loading disabled (SSRF-safe default).
-                $opts['allowedHosts'] = array_values(array_filter(array_map('strval', $hosts)));
+                $opts['allowedHosts'] = $hosts;
             }
         }
         if (defined('K_PDF_MAX_REMOTE_SIZE')) {
