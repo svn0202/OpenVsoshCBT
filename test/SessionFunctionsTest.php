@@ -56,14 +56,35 @@ final class SessionFunctionsTest extends TestCase
     public function testSessionCookieConfigurationMatchesApplicationConstants(): void
     {
         self::assertSame('PHPSESSID', session_name());
-        self::assertSame('1', ini_get('session.use_cookies'));
-        self::assertSame('On', ini_get('session.use_strict_mode'));
+        $options = \f_get_session_start_options();
+        self::assertTrue($options['use_cookies']);
+        self::assertTrue($options['use_strict_mode']);
 
         $params = session_get_cookie_params();
         self::assertSame(0, $params['lifetime']);
         self::assertSame(K_COOKIE_SECURE, $params['secure']);
         self::assertSame(K_COOKIE_HTTPONLY, $params['httponly']);
         self::assertSame(K_COOKIE_SAMESITE, $params['samesite']);
+    }
+
+    public function testSessionStartOptionsEnableCookieAndStrictPolicies(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_COOKIE_SECURE", true); define("K_COOKIE_HTTPONLY", true); '
+                    . 'define("K_COOKIE_SAMESITE", "Strict"); require $argv[1]; '
+                    . 'session_start(f_get_session_start_options()); '
+                    . 'echo json_encode([ini_get("session.use_cookies"), ini_get("session.use_strict_mode")]); '
+                    . 'session_write_close();',
+                dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(['1', '1'], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
     public function testSessionClosePassesConfiguredLifetimeAsInteger(): void
