@@ -160,7 +160,7 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -280,7 +280,7 @@ count = 39
 file = "shared/code/tce_functions_test_stats.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 4
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

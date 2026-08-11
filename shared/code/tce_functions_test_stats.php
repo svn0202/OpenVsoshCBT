@@ -1813,7 +1813,7 @@ function f_print_user_test_stat(mixed $testuser_id): string
 			AND question_subject_id=subject_id
 			AND subject_module_id=module_id
 		ORDER BY testlog_id';
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         $ret .= '<ol class="question">' . K_NEWLINE;
         while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
             /**

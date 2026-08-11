@@ -40,6 +40,7 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["attachments"] = []; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . 'function strtotime($value) { return false; } '
