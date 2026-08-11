@@ -1042,7 +1042,7 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
  * @param mixed $isright Value (0 = false, 1 = true), if non-empty checks for answer_isright value on WHERE clause.
  * @param mixed $ordering Ordering type question (0 = false, 1 = true).
  * @param mixed $limit Maximum number of IDs to return.
- * @param mixed $startindex Array starting index (default = 0).
+ * @param int|numeric-string $startindex Array starting index (default = 0).
  * @param mixed $randorder If true use random order.
  * @param mixed $ordmode Ordering mode: 0=position; 1=alphabetical; 2=ID.
  * @return array<array-key, mixed>|false IDs of selected answers, or false on query failure
