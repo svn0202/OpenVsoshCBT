@@ -273,7 +273,7 @@ function f_get_raw_test_stat(
     }
 
     $testdata = f_get_test_data($test_id);
-    /** @var array<array-key,mixed> $testdata */
+    /** @var array{test_score_right:mixed} $testdata */
     // array to be returned
     if (!isset($data['qstats'])) {
         // total number of questions
