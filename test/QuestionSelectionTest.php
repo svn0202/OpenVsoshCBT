@@ -292,28 +292,45 @@ PHP;
                 '-r',
                 'namespace Harness; define("K_TABLE_TEST_USER", "test_users"); '
                     . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_ANSWERS", "answers"); define("K_TABLE_LOG_ANSWER", "log_answers"); '
                     . 'define("K_SECONDS_IN_MINUTE", 60); define("K_ANSWER_TEXTAREA_COLS", 40); '
                     . 'define("K_ANSWER_TEXTAREA_ROWS", 8); define("TMF_ATTACHMENT_MAX_FILES", 3); '
                     . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_NEWLINE", "\\n"); '
-                    . '$GLOBALS["db"] = "db"; $_SESSION["session_user_id"] = "11"; '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["l"] = ["w_answers" => "Answers", '
+                    . '"m_matching_position_reassigned" => "Position moved", "a_meta_charset" => "UTF-8"]; '
+                    . '$_SESSION["session_user_id"] = "11"; '
                     . '$GLOBALS["examtime"] = 0; $GLOBALS["timeout_logout"] = false; '
-                    . '$GLOBALS["results"] = ["first-empty", false, "question", true, "question-2", true]; '
+                    . '$GLOBALS["results"] = ["first-empty", false, "question", true, "question-2", true, '
+                    . '"matching-question", "matching-answers", true]; '
                     . '$row = ["question_fullscreen" => false, "testlog_answer_version" => 4, '
                     . '"testlog_testuser_id" => 55, "question_description" => "Question", '
                     . '"question_type" => 3, "testlog_answer_text" => "Saved answer", '
                     . '"question_timer" => 0, "testlog_display_time" => "2026-08-10 12:00:00"]; '
-                    . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row], "question-2" => [$row]]; '
+                    . '$matchingRow = $row; $matchingRow["question_type"] = 5; '
+                    . '$matchingRow["question_description"] = "Matching"; '
+                    . '$matchingRow["question_inline_answers"] = false; '
+                    . '$matchingRow["question_auto_next"] = false; '
+                    . '$matchingAnswer = ["logansw_order" => "1", "logansw_position" => "2", '
+                    . '"logansw_selected" => "0", "answer_description" => "Pair", '
+                    . '"answer_keyboard_key" => "0"]; '
+                    . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row], '
+                    . '"question-2" => [$row], "matching-question" => [$matchingRow], '
+                    . '"matching-answers" => [$matchingAnswer, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function f_get_test_data($testId) { return ["test_noanswer_enabled" => false, '
                     . '"test_duration_time" => 30, "test_logout_on_timeout" => true]; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function F_count_rows(...$arguments) { return 2; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
-                    . '$GLOBALS["start_times"] = [1000, false]; '
+                    . '$GLOBALS["start_times"] = [1000, false, 500]; '
                     . 'function f_get_test_start_time($testUserId) { return array_shift($GLOBALS["start_times"]); } '
-                    . 'function F_tmf_question_options($description) { return []; } '
+                    . 'function F_tmf_question_options($description) { return ["matching_positions" => 2, '
+                    . '"matching_reuse_positions" => false, "checkbox" => false, "max_selections" => 0]; } '
+                    . 'function F_tmf_matching_presentation($description, $positions) { return '
+                    . '["description" => $description, "labels" => ["One &", "Two <"]]; } '
                     . 'function F_tmf_question_editor_description($description) { return "EDITED:" . $description; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
@@ -332,7 +349,8 @@ PHP;
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$outputs = [$qualified(0, 0, "form"), $qualified(7, 0, "form"), '
-                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(7, 8, "form")]; '
+                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(7, 8, "form"), '
+                    . '$qualified(7, 8, "matching-form")]; '
                     . 'echo json_encode([$outputs, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["examtime"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -341,7 +359,14 @@ PHP;
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: array{0: null, 1: null, 2: string, 3: string, 4: string}, 1: array{string,string,string,string,string,string}, 2: int, 3: int} $decoded */
+        /**
+         * @var array{
+         *     0:array{0:null,1:null,2:string,3:string,4:string,5:string},
+         *     1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
+         *     2:int,
+         *     3:int
+         * } $decoded
+         */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$outputs, $queries, $errors, $examtime] = $decoded;
         self::assertSame([null, null, ''], array_slice($outputs, 0, 3));
@@ -356,11 +381,16 @@ PHP;
         self::assertStringContainsString('уже сохранено: 1.', $outputs[3]);
         self::assertStringContainsString('<ATTACHMENTS:8>', $outputs[3]);
         self::assertStringContainsString('<MENU:55,8,0>', $outputs[3]);
-        self::assertCount(6, $queries);
+        self::assertStringContainsString('<select class="matching-position"', $outputs[5]);
+        self::assertStringContainsString('<option value="1">One &amp;</option>', $outputs[5]);
+        self::assertStringContainsString('<option value="2" selected="selected">Two &lt;</option>', $outputs[5]);
+        self::assertStringContainsString('name="examtime" id="examtime" value="2300"', $outputs[5]);
+        self::assertStringContainsString('<MENU:55,8,0>', $outputs[5]);
+        self::assertCount(9, $queries);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[3]);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[5]);
         self::assertSame(1, $errors);
-        self::assertSame(1800, $examtime);
+        self::assertSame(2300, $examtime);
     }
 
     public function testQuestionsMenuPreservesSelectedReviewNavigationAndToolbarMarkup(): void

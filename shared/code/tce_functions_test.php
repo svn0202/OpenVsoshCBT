@@ -2689,6 +2689,8 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                         $str .= '<option value="0">&nbsp;</option>' . K_NEWLINE;
                                     }
 
+                                    /** @var string $position_charset */
+                                    $position_charset = $l['a_meta_charset'];
                                     for ($pos = 1; $pos <= $max_position; ++$pos) {
                                         $str .= '<option value="' . $pos . '"';
                                         if (f_legacy_int_equals($ma['logansw_position'], $pos)) {
@@ -2698,7 +2700,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                         $position_label = $matching_labels[$pos - 1] ?? (string) $pos;
                                         $str .=
                                             '>'
-                                            . htmlspecialchars($position_label, ENT_QUOTES, $l['a_meta_charset'])
+                                            . htmlspecialchars($position_label, ENT_QUOTES, $position_charset)
                                             . '</option>'
                                             . K_NEWLINE
                                         ;
