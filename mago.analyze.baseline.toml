@@ -608,12 +608,6 @@ count = 9
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "invalid-operand"
-message = "Invalid type `unknown-ref(SQL)` for middle operand in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `truthy-mixed`."
 count = 1
