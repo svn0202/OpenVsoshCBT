@@ -2264,10 +2264,12 @@ function f_get_test_id_reports(mixed $test_id, mixed $user_id): string
 
 /**
  * Returns a comma separated string of test IDs with test_results_to_users enabled
- * @param $test_id (int) Test ID.
+ * @param mixed $test_id Test ID.
+ * @param mixed $user_id User ID.
+ * @param mixed $filter Visibility field.
  * @return string
  */
-function f_get_test_ids($test_id, $user_id, $filter = 'test_results_to_users'): string
+function f_get_test_ids(mixed $test_id, mixed $user_id, mixed $filter = 'test_results_to_users'): string
 {
     global $l, $db;
     require_once '../config/tce_config.php';
