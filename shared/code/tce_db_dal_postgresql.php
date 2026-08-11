@@ -100,15 +100,17 @@ function f_db_error(mixed $link_identifier = null): mixed
 /**
  * Sends a query to the currently active database on the server that's associated with the specified link identifier.<br>
  * NOTE: Convert MySQL RAND() function to PostgreSQL RANDOM() on ORDER BY clause of selection queries.
- * @param $query (string) The query tosend. The query string should not end with a semicolon.
- * @param $link_identifier (resource) database link identifier.
- * @return PgSql\Result|false query result on success, false on error.
+ * @param string $query Query string without a trailing semicolon.
+ * @param \PgSql\Connection $link_identifier Database connection.
+ * @return \PgSql\Result|false Query result on success, false on error.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_query($query, $link_identifier)
+function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
+    /** @var string $query */
+    /** @var \PgSql\Connection $link_identifier */
     // convert MySQL RAND() function to PostgreSQL RANDOM()
-    $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY RANDOM()', $query);
+    $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY RANDOM()', $query) ?? $query;
     return pg_query($link_identifier, $query);
 }
 
