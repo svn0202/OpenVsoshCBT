@@ -583,6 +583,7 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
                     . 'return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_lock_user_test)\\(/", '
