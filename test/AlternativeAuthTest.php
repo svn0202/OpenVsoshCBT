@@ -6,6 +6,35 @@ use PHPUnit\Framework\TestCase;
 
 final class AlternativeAuthTest extends TestCase
 {
+    public function testLdapUnbindFailureReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; $GLOBALS["calls"] = []; '
+                    . 'function ldap_unbind($connection) {'
+                    . '$GLOBALS["calls"][] = get_class($connection); '
+                    . 'trigger_error("unbind failed", E_USER_WARNING); return false; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function f_tmf_alt_ldap_unbind_silently"); '
+                    . 'if ($start === false) { exit(42); } '
+                    . 'eval("namespace Harness; " . substr($source, $start)); '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$connection = \\ldap_connect("ldap://127.0.0.1:1"); '
+                    . '$value = f_tmf_alt_ldap_unbind_silently($connection); '
+                    . 'restore_error_handler(); echo json_encode([$value, $warnings, $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_altauth.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[],["LDAP\\\\Connection"]]', $output);
+    }
+
     public function testHttpBasicLoginPopulatesCredentialsAndProfile(): void
     {
         [$status, $output] = \F_tcecode_run_process(
