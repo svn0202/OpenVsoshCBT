@@ -138,8 +138,12 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
     // @mago-expect analysis:possibly-null-argument -- the fixed pattern is valid and the asserted input is a string
     $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
 
-    // @mago-expect lint:no-error-control-operator -- invalid SQL follows the DAL's false-return contract
-    $stid = @oci_parse($link_identifier, $query);
+    set_error_handler(static fn(): bool => true);
+    try {
+        $stid = oci_parse($link_identifier, $query);
+    } finally {
+        restore_error_handler();
+    }
     if (!$stid) {
         return false;
     }
