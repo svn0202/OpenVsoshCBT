@@ -159,6 +159,27 @@ final class FileManagerFunctionsTest extends TestCase
         self::assertSame('[false,[]]', $output);
     }
 
+    public function testDirectoryCreationHelperRejectsExistingPathWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . '$directory = sys_get_temp_dir() . "/openvsosh-existing-directory-" . uniqid(); '
+                    . 'mkdir($directory); $warnings = []; '
+                    . 'set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$created = f_filemanager_mkdir_silently($directory, 0744, true); '
+                    . 'restore_error_handler(); rmdir($directory); echo json_encode([$created, $warnings]);',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[]]', $output);
+    }
+
     public function testRejectsTraversalWhenRenamingMediaFile(): void
     {
         [$status, $output] = F_tcecode_run_process(
