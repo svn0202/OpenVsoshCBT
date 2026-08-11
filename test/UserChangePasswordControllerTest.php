@@ -44,7 +44,19 @@ final class UserChangePasswordControllerTest extends TestCase
         self::assertStringNotContainsString('Password updated', $output);
     }
 
-    private static function runUpdate(#[\SensitiveParameter] string $currentPassword): string
+    public function testMismatchedNewPasswordDoesNotUpdateUser(): void
+    {
+        $output = self::runUpdate('current-secret', 'different-secret');
+
+        self::assertStringContainsString('[[MESSAGE:WARNING:Different passwords]]', $output);
+        self::assertStringNotContainsString('SELECT user_password', $output);
+        self::assertStringNotContainsString('UPDATE users', $output);
+    }
+
+    private static function runUpdate(
+        #[\SensitiveParameter] string $currentPassword,
+        #[\SensitiveParameter] string $newPasswordRepeat = 'new-secret',
+    ): string
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -65,7 +77,7 @@ $db = 'db';
 $menu_mode = 'update';
 $_POST = [
     'currentpassword' => $argv[2], 'newpassword' => 'new-secret',
-    'newpassword_repeat' => 'new-secret',
+    'newpassword_repeat' => $argv[3],
 ];
 $_REQUEST = [];
 $_SESSION = ['session_user_id' => 42];
@@ -94,6 +106,7 @@ PHP;
                 $script,
                 dirname(__DIR__) . '/public/code/tce_user_change_password.php',
                 $currentPassword,
+                $newPasswordRepeat,
             ],
             dirname(__DIR__) . '/public/code',
         );
