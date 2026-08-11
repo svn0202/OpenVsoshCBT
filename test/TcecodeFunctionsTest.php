@@ -26,6 +26,25 @@ final class TcecodeFunctionsTest extends TestCase
         self::assertSame('[false,[]]', $output);
     }
 
+    public function testMissingTemporaryFileCleanupReturnsFalseWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_tcecode.php"; '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$removed = f_tcecode_unlink_silently(K_PATH_CACHE . "missing-renderer-temporary-file"); '
+                    . 'restore_error_handler(); echo json_encode([$removed, $warnings]);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[false,[]]', $output);
+    }
+
     public function testDecoderReturnsEmptyStringForEmptyInput(): void
     {
         [$status, $output] = \F_tcecode_run_process(
