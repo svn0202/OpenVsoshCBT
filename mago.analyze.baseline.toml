@@ -166,7 +166,7 @@ count = 8
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 226
+count = 218
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -232,7 +232,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 267
+count = 264
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -262,7 +262,7 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 16
+count = 14
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

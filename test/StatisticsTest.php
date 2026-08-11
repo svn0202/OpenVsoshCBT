@@ -16,9 +16,11 @@ final class StatisticsTest extends TestCase
                 '-r',
                 'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); '
                     . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TABLE_SUBJECTS", "subjects"); '
-                    . 'define("K_TABLE_MODULES", "modules"); define("K_NEWLINE", "\\n"); '
+                    . 'define("K_TABLE_MODULES", "modules"); define("K_TABLE_LOG_ANSWER", "log_answers"); '
+                    . 'define("K_TABLE_ANSWERS", "answers"); define("K_NEWLINE", "\\n"); '
                     . 'define("K_ENABLE_QUESTION_EXPLANATION", false); '
                     . 'define("K_ENABLE_ANSWER_EXPLANATION", false); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["l"] = ["h_answer_right" => "Right", "w_answers_right" => "Correct"]; '
                     . '$row = ["testlog_score" => "2.5", "testlog_user_ip" => "packed", '
                     . '"testlog_reaction_time" => 0, "question_description" => "Question", '
                     . '"question_explanation" => "", "question_type" => 3, '
@@ -26,9 +28,15 @@ final class StatisticsTest extends TestCase
                     . '"testlog_comment" => "Teacher note"]; '
                     . '$invalidRow = $row; $invalidRow["testlog_display_time"] = "invalid-display"; '
                     . '$invalidRow["testlog_change_time"] = "invalid-change"; '
-                    . '$GLOBALS["results"] = [false, "questions", "invalid-questions"]; '
+                    . '$choiceRow = $row; $choiceRow["question_type"] = "2"; '
+                    . '$answerRow = ["logansw_position" => "0", "answer_position" => "1", '
+                    . '"logansw_selected" => "1", "answer_isright" => "1", '
+                    . '"answer_description" => "Choice", "answer_explanation" => ""]; '
+                    . '$GLOBALS["results"] = [false, "questions", "invalid-questions", '
+                    . '"choice-questions", "answers"]; '
                     . '$GLOBALS["rows"] = ["questions" => [$row, false], '
-                    . '"invalid-questions" => [$invalidRow, false]]; '
+                    . '"invalid-questions" => [$invalidRow, false], '
+                    . '"choice-questions" => [$choiceRow, false], "answers" => [$answerRow, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["attachments"] = []; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
@@ -38,6 +46,7 @@ final class StatisticsTest extends TestCase
                     . 'function date($format, $timestamp) { return "TIME:" . (int) $timestamp; } '
                     . 'function get_ip_as_string($value) { return "IPVALUE"; } '
                     . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
+                    . 'function f_get_boolean($value) { return (bool) (int) $value; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function F_tmf_attachment_html($testlogId) { '
                     . '$GLOBALS["attachments"][] = $testlogId; return "<ATTACHMENT>"; } '
@@ -51,8 +60,8 @@ final class StatisticsTest extends TestCase
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$failed = $qualified("007"); $markup = $qualified("007"); '
-                    . '$invalid = $qualified("007"); '
-                    . 'echo json_encode([$failed, $markup, $invalid, $GLOBALS["queries"], '
+                    . '$invalid = $qualified("007"); $choices = $qualified("007"); '
+                    . 'echo json_encode([$failed, $markup, $invalid, $choices, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["attachments"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -60,9 +69,14 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:string,1:string,2:string,3:array{0:string,1:string,2:string},4:int,5:array{0:int,1:int}} $decoded */
+        /**
+         * @var array{
+         *   0:string,1:string,2:string,3:string,4:array{0:string,1:string,2:string,3:string,4:string},
+         *   5:int,6:array{0:int,1:int}
+         * } $decoded
+         */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$failed, $markup, $invalid, $queries, $errors, $attachments] = $decoded;
+        [$failed, $markup, $invalid, $choices, $queries, $errors, $attachments] = $decoded;
         self::assertSame('', $failed);
         self::assertStringContainsString('<ol class="question">', $markup);
         self::assertStringContainsString('<strong>[2.5]', $markup);
@@ -73,9 +87,12 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('[Answer]<ATTACHMENT>&nbsp;', $markup);
         self::assertStringContainsString('[Teacher note]&nbsp;', $markup);
         self::assertStringContainsString('| TIME:0', $invalid);
-        self::assertCount(3, $queries);
+        self::assertStringContainsString('class="okbox">x</abbr>', $choices);
+        self::assertStringContainsString('class="onbox">&reg;</abbr> [Choice]', $choices);
+        self::assertCount(5, $queries);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[0]);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[1]);
+        self::assertStringContainsString('logansw_testlog_id=\'77\'', $queries[4]);
         self::assertSame(1, $errors);
         self::assertSame([77, 77], $attachments);
     }
