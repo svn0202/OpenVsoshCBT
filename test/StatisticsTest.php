@@ -256,12 +256,16 @@ final class StatisticsTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; $source = file_get_contents($argv[1]); '
+                'namespace Harness; define("K_NEWLINE", "\\n"); '
+                    . 'function f_format_percentage($value, $decimals) { return "P:" . $value; } '
+                    . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_print_test_stat)\\(/", '
                     . '$source, $statMatch, PREG_OFFSET_CAPTURE); '
                     . '$statStart = $statMatch[0][1]; $statEnd = strpos($source, "\\n/**", $statStart); '
                     . '$statFunction = substr($source, $statStart, $statEnd - $statStart); '
                     . '$statFunction = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $statFunction); '
+                    . 'preg_match_all("/\\[\'([a-z][a-z0-9_]*)\'\\]/", $statFunction, $labels); '
+                    . '$l = array_fill_keys(array_unique($labels[1]), "label"); $l["a_meta_dir"] = "ltr"; '
                     . 'eval("namespace Harness; " . $statFunction); '
                     . 'preg_match("/function (f_print_test_result_stat)\\(/", '
                     . '$source, $resultMatch, PREG_OFFSET_CAPTURE); '
@@ -271,9 +275,14 @@ final class StatisticsTest extends TestCase
                     . 'eval("namespace Harness; " . $resultFunction); '
                     . '$statName = __NAMESPACE__ . "\\\\" . $statMatch[1][0]; '
                     . '$resultName = __NAMESPACE__ . "\\\\" . $resultMatch[1][0]; '
+                    . '$qstats = array_fill_keys(["recurrence", "recurrence_perc", "average_score_perc", '
+                    . '"average_time", "right", "right_perc", "wrong", "wrong_perc", "unanswered", '
+                    . '"unanswered_perc", "undisplayed", "undisplayed_perc", "unrated", "unrated_perc"], 0); '
+                    . '$qstats["recurrence"] = 1; $qstats["module"] = []; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
                     . '$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 0]], 2), '
-                    . '$resultName(["num_records" => 0], 1, "score", "")]; '
+                    . '$resultName(["num_records" => 0], 1, "score", ""), '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $qstats], "2")]; '
                     . 'echo json_encode($returns);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -281,7 +290,12 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        self::assertSame([null, null, null], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        /** @var array{0:null,1:null,2:null,3:string} $returns */
+        $returns = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame([null, null, null], array_slice($returns, 0, 3));
+        self::assertStringStartsWith('<table class="userselect">', $returns[3]);
+        self::assertStringContainsString('<td class="numeric">1 P:0</td>', $returns[3]);
+        self::assertStringEndsWith('</table>' . "\n", $returns[3]);
     }
 
 
