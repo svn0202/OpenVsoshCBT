@@ -396,6 +396,7 @@ final class StatisticsTest extends TestCase
                     . 'function f_format_percentage($value, $decimals) { return "P:" . $value; } '
                     . 'function f_format_float($value) { return "F:" . $value; } '
                     . 'function F_decode_tcecode($value) { return "D:" . $value; } '
+                    . 'function unhtmlentities($value) { return "U:" . $value; } '
                     . 'function F_select_table_header_element(...$arguments) { return "<HEADER>\\n"; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . '$source = file_get_contents($argv[1]); '
@@ -444,6 +445,19 @@ final class StatisticsTest extends TestCase
                     . '$answerStats = $qstats; $answerStats["module"] = ["m" => $answerModule]; '
                     . '$resultData = ["num_records" => 1, "testuser" => [], "passed_perc" => 0, '
                     . '"passed" => 0, "statistics" => []]; '
+                    . '$resultRow = ["num" => "1", "id" => "50", "user_id" => "60", '
+                    . '"testuser_creation_time" => "CREATED", "time_diff" => "TIME", "passmsg" => true, '
+                    . '"test" => ["test_id" => "70", "test_name" => "<b>Test</b>", '
+                    . '"test_report_to_users" => "1"], "user_name" => "login", '
+                    . '"user_lastname" => "Last", "user_firstname" => "First", '
+                    . '"total_score" => "9.5", "total_score_perc" => "95", '
+                    . '"right" => "2", "right_perc" => "20", "wrong" => "3", "wrong_perc" => "30", '
+                    . '"unanswered" => "4", "unanswered_perc" => "40", '
+                    . '"undisplayed" => "5", "undisplayed_perc" => "50", '
+                    . '"unrated" => "6", "unrated_perc" => "60", "locked" => true, '
+                    . '"remaining_time" => "-3", "user_comment" => ""]; '
+                    . '$rowResultData = ["num_records" => 1, "testuser" => [$resultRow], '
+                    . '"passed_perc" => "75", "passed" => "1", "statistics" => []]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
                     . '$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 0]], 2), '
                     . '$resultName(["num_records" => 0], 1, "score", ""), '
@@ -452,7 +466,8 @@ final class StatisticsTest extends TestCase
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $moduleStats], "2"), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $subjectStats], "3"), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $questionStats], "4"), '
-                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $answerStats], "5")]; '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $answerStats], "5"), '
+                    . '$resultName($rowResultData, "1", "score", "filter", false, "1")]; '
                     . 'echo json_encode($returns);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -460,7 +475,7 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string,7:string,8:string} $returns */
+        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string,7:string,8:string,9:string} $returns */
         $returns = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         self::assertSame([null, null, null], array_slice($returns, 0, 3));
         self::assertStringStartsWith('<table class="userselect">', $returns[3]);
@@ -491,6 +506,15 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('6 P:0', $returns[8]);
         self::assertStringContainsString('D:Answer', $returns[8]);
         self::assertStringEndsWith('</table>' . "\n", $returns[8]);
+        self::assertStringContainsString('name="testuserid1"', $returns[9]);
+        self::assertStringContainsString('testuser_id=50&amp;test_id=70&amp;user_id=60', $returns[9]);
+        self::assertStringContainsString('>U:Test</a>', $returns[9]);
+        self::assertStringContainsString('user_id=60">login</a>', $returns[9]);
+        self::assertStringContainsString('F:9.5&nbsp;P:95', $returns[9]);
+        self::assertStringContainsString('2&nbsp;P:20', $returns[9]);
+        self::assertStringContainsString('label (-3)', $returns[9]);
+        self::assertStringContainsString('label: 1 P:75', $returns[9]);
+        self::assertStringEndsWith('</table>' . "\n", $returns[9]);
     }
 
 

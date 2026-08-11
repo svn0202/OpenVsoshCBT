@@ -1485,6 +1485,26 @@ function f_print_test_result_stat(
     if (empty($data['num_records'])) {
         return null;
     }
+    /**
+     * @var array{
+     *   num_records:int|numeric-string,
+     *   testuser:array<array-key,array{
+     *     num:int|numeric-string,id:int|numeric-string,user_id:int|numeric-string,
+     *     testuser_creation_time:string,time_diff:string,passmsg:bool|null,
+     *     test:array{test_id:int|numeric-string,test_name:string,test_report_to_users:mixed},
+     *     user_name:string,user_lastname:mixed,user_firstname:mixed,
+     *     total_score:int|float|numeric-string,total_score_perc:int|float|numeric-string,
+     *     right:int|float|string,right_perc:int|float|string,
+     *     wrong:int|float|string,wrong_perc:int|float|string,
+     *     unanswered:int|float|string,unanswered_perc:int|float|string,
+     *     undisplayed:int|float|string,undisplayed_perc:int|float|string,
+     *     unrated:int|float|string,unrated_perc:int|float|string,
+     *     locked:bool,remaining_time:int|float|numeric-string,user_comment:mixed
+     *   }>,
+     *   passed:int|numeric-string,passed_perc:int|float|numeric-string,
+     *   statistics:array<array-key,mixed>
+     * } $data
+     */
 
     if (($l['a_meta_dir'] <=> 'rtl') === 0) {
         $tdalignr = 'left';
