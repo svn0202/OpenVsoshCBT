@@ -27,22 +27,27 @@
 /**
  * Open a connection to a PostgreSQL Server and select a database.
  * If a second call is made to this function with the same arguments, no new link will be established, but instead, the link identifier of the already opened link will be returned.
- * @param $host (string) database server host name.
- * @param $port (string) database connection port
- * @param $username (string) Name of the user that owns the server process.
- * @param $password (string) Password of the user that owns the server process.
- * @param $database (string) Database name.
- * @return PostgreSQL link identifier on success, or FALSE on failure.
+ * @param string $host Database server host name.
+ * @param string $port Database connection port.
+ * @param string $username Name of the user that owns the server process.
+ * @param string $password Password of the user that owns the server process.
+ * @param string $database Database name.
+ * @return \PgSql\Connection|false PostgreSQL connection on success, or false on failure.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
-    $host = 'localhost',
-    $port = '5432',
-    $username = 'postgres',
+    mixed $host = 'localhost',
+    mixed $port = '5432',
+    mixed $username = 'postgres',
     #[\SensitiveParameter]
-    $password = '',
-    $database = 'template1',
-) {
+    mixed $password = '',
+    mixed $database = 'template1',
+): mixed {
+    /** @var string $host */
+    /** @var string $port */
+    /** @var string $username */
+    /** @var string $password */
+    /** @var string $database */
     $connection_string =
         "host='"
         . $host
