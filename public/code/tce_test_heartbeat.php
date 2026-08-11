@@ -62,7 +62,8 @@ if (!$result) {
     F_tmf_heartbeat_json(500, ['status' => 'error']);
 }
 /** @var true|\mysqli_result|\PgSql\Result $result */
-if (F_db_affected_rows($db, $result) < 1) {
+$affected_rows = F_db_affected_rows($db, $result);
+if ($affected_rows === false || $affected_rows < 1) {
     F_tmf_heartbeat_json(409, ['status' => 'closed']);
 }
 
