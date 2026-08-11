@@ -1734,8 +1734,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                             . " WHERE answer_enabled='1' AND answer_isright='1'"
                             . $sql_answer_position
                             . '';
-                        if ($rt = F_db_query($sqlt, $db)) {
-                            while ($mt = F_db_fetch_array($rt)) {
+                        if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+                            while (($mt = $normalize_row(F_db_fetch_array($rt))) !== null) {
+                                /** @var array{answer_question_id:int|numeric-string} $mt */
                                 $right_answers_mcsa_questions_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
@@ -1743,61 +1744,69 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 
                     $sqlq .= ' AND question_id IN (' . $right_answers_mcsa_questions_ids . ')';
                     if ($m['tsubset_answers'] > 0) {
-                        if (!isset($wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
-                            $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                        $answer_count = (int) $m['tsubset_answers'];
+                        $answer_count_key = "'" . $answer_count . "'";
+                        if (!isset($wrong_answers_mcsa_questions_ids[$answer_count_key])) {
+                            $eligible_question_ids = '0';
                             $sqlt =
                                 'SELECT answer_question_id FROM '
                                 . K_TABLE_ANSWERS
                                 . " WHERE answer_enabled='1' AND answer_isright='0'"
                                 . $sql_answer_position
                                 . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='
-                                . ($m['tsubset_answers'] - 1)
+                                . ($answer_count - 1)
                                 . ')';
-                            if ($rt = F_db_query($sqlt, $db)) {
-                                while ($mt = F_db_fetch_array($rt)) {
-                                    $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] .=
-                                        ',' . $mt['answer_question_id'];
+                            if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+                                while (($mt = $normalize_row(F_db_fetch_array($rt))) !== null) {
+                                    /** @var array{answer_question_id:int|numeric-string} $mt */
+                                    $eligible_question_ids .= ',' . $mt['answer_question_id'];
                                 }
                             }
+                            $wrong_answers_mcsa_questions_ids[$answer_count_key] = $eligible_question_ids;
                         }
 
+                        $eligible_question_ids = $wrong_answers_mcsa_questions_ids[$answer_count_key] ?? '0';
                         $sqlq .=
                             ' AND question_id IN ('
-                            . $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"]
+                            . $eligible_question_ids
                             . ')';
                     }
                 } elseif (f_legacy_int_equals($m['tsubset_type'], 2)) {
                     // (MCMA : Multiple Choice Multiple Answers) -------
                     // get questions with the right number of answers
                     if ($m['tsubset_answers'] > 0) {
-                        if (!isset($answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
-                            $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                        $answer_count = (int) $m['tsubset_answers'];
+                        $answer_count_key = "'" . $answer_count . "'";
+                        if (!isset($answers_mcma_questions_ids[$answer_count_key])) {
+                            $eligible_question_ids = '0';
                             $sqlt =
                                 'SELECT answer_question_id FROM '
                                 . K_TABLE_ANSWERS
                                 . " WHERE answer_enabled='1'"
                                 . $sql_answer_position
                                 . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='
-                                . $m['tsubset_answers']
+                                . $answer_count
                                 . ')';
-                            if ($rt = F_db_query($sqlt, $db)) {
-                                while ($mt = F_db_fetch_array($rt)) {
-                                    $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] .=
-                                        ',' . $mt['answer_question_id'];
+                            if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+                                while (($mt = $normalize_row(F_db_fetch_array($rt))) !== null) {
+                                    /** @var array{answer_question_id:int|numeric-string} $mt */
+                                    $eligible_question_ids .= ',' . $mt['answer_question_id'];
                                 }
                             }
+                            $answers_mcma_questions_ids[$answer_count_key] = $eligible_question_ids;
                         }
 
+                        $eligible_question_ids = $answers_mcma_questions_ids[$answer_count_key] ?? '0';
                         $sqlq .=
                             ' AND question_id IN ('
-                            . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"]
+                            . $eligible_question_ids
                             . ')';
                     }
                 } elseif (in_array((int) $m['tsubset_type'], [4, 5], true)) {
                     // ORDERING / MATCHING -----------------------------
                     $position_type = (int) $m['tsubset_type'];
                     if (!isset($answers_order_questions_ids[$position_type])) {
-                        $answers_order_questions_ids[$position_type] = '0';
+                        $eligible_question_ids = '0';
                         $matching_having = $position_type === 5
                             ? ' AND ((COUNT(answer_id)=COUNT(DISTINCT answer_position))'
                                 . ' OR answer_question_id IN (SELECT question_id FROM '
@@ -1809,14 +1818,17 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                             . K_TABLE_ANSWERS
                             . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)"
                             . $matching_having;
-                        if ($rt = F_db_query($sqlt, $db)) {
-                            while ($mt = F_db_fetch_array($rt)) {
-                                $answers_order_questions_ids[$position_type] .= ',' . $mt['answer_question_id'];
+                        if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+                            while (($mt = $normalize_row(F_db_fetch_array($rt))) !== null) {
+                                /** @var array{answer_question_id:int|numeric-string} $mt */
+                                $eligible_question_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
+                        $answers_order_questions_ids[$position_type] = $eligible_question_ids;
                     }
 
-                    $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids[$position_type] . ')';
+                    $eligible_question_ids = $answers_order_questions_ids[$position_type] ?? '0';
+                    $sqlq .= ' AND question_id IN (' . $eligible_question_ids . ')';
                 }
 
                 if ($random_questions) {

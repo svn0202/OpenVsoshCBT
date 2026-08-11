@@ -622,4 +622,109 @@ PHP;
         ];
         self::assertSame([[88, '101', '2', '4', 77, $expectedTestData]], $answerCalls);
     }
+
+    public function testCreateTestFiltersEveryQuestionTypeByAvailableAnswers(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_DATABASE_TYPE", "MYSQL"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_TABLE_TEST_USER", "test_users"); '
+                    . 'define("K_TABLE_TEST_SUBJSET", "test_subject_sets"); '
+                    . 'define("K_TABLE_SUBJECT_SET", "subject_set"); define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_ANSWERS", "answers"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["results"] = [true, "sets", '
+                    . '"subjects-1", "right", "wrong", "questions-1", '
+                    . '"subjects-2", "mcma", "questions-2", '
+                    . '"subjects-4", "ordering", "questions-4", '
+                    . '"subjects-5", "matching", "questions-5", true]; '
+                    . '$set = ["tsubset_quantity" => "1", "tsubset_difficulty" => "1", '
+                    . '"tsubset_answers" => "2"]; '
+                    . '$GLOBALS["rows"] = ["sets" => ['
+                    . '["tsubset_id" => "11", "tsubset_type" => "1", "tsubset_answers" => "3"] + $set, '
+                    . '["tsubset_id" => "12", "tsubset_type" => "2", "tsubset_difficulty" => "2"] + $set, '
+                    . '["tsubset_id" => "14", "tsubset_type" => "4", "tsubset_difficulty" => "3"] + $set, '
+                    . '["tsubset_id" => "15", "tsubset_type" => "5", "tsubset_difficulty" => "4"] + $set, false], '
+                    . '"subjects-1" => [["subjset_subject_id" => "21"], false], '
+                    . '"subjects-2" => [["subjset_subject_id" => "22"], false], '
+                    . '"subjects-4" => [["subjset_subject_id" => "24"], false], '
+                    . '"subjects-5" => [["subjset_subject_id" => "25"], false], '
+                    . '"right" => [["answer_question_id" => "101"], false], '
+                    . '"wrong" => [["answer_question_id" => "101"], false], '
+                    . '"mcma" => [["answer_question_id" => "102"], false], '
+                    . '"ordering" => [["answer_question_id" => "104"], false], '
+                    . '"matching" => [["answer_question_id" => "105"], false], '
+                    . '"questions-1" => [["question_id" => "101", "question_type" => "1", '
+                    . '"question_difficulty" => "1", "question_position" => "1"], false], '
+                    . '"questions-2" => [["question_id" => "102", "question_type" => "2", '
+                    . '"question_difficulty" => "2", "question_position" => "2"], false], '
+                    . '"questions-4" => [["question_id" => "104", "question_type" => "4", '
+                    . '"question_difficulty" => "3", "question_position" => "3"], false], '
+                    . '"questions-5" => [["question_id" => "105", "question_type" => "5", '
+                    . '"question_difficulty" => "4", "question_position" => "4"], false]]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["log_calls"] = []; $GLOBALS["answer_calls"] = []; '
+                    . '$testdata = ["test_random_questions_select" => false, '
+                    . '"test_random_questions_order" => false, "test_questions_order_mode" => 0, '
+                    . '"test_random_answers_select" => false, "test_random_answers_order" => false, '
+                    . '"test_answers_order_mode" => 0, "test_score_unanswered" => "2"]; '
+                    . 'function f_is_test_over_limits() { return false; } '
+                    . 'function f_get_test_data($testId) { return $GLOBALS["testdata"]; } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function date($format) { return "2026-08-11 12:34:56"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function F_display_db_error(...$arguments) { throw new \\RuntimeException("DB error"); } '
+                    . 'function F_db_insert_id(...$arguments) { return 55; } '
+                    . 'function f_update_testuser_stat($date) {} function f_get_first_test_user($testId) { return 0; } '
+                    . 'function f_new_test_log(...$arguments) { $GLOBALS["log_calls"][] = $arguments; '
+                    . 'return 200 + count($GLOBALS["log_calls"]); } '
+                    . 'function f_add_question_answers(...$arguments) { '
+                    . '$GLOBALS["answer_calls"][] = $arguments; return true; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
+                    . '$GLOBALS["testdata"] = $testdata; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (f_create_test)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); '
+                    . '$result = f_create_test("7", "11"); echo json_encode([$result, $GLOBALS["queries"], '
+                    . '$GLOBALS["log_calls"], $GLOBALS["answer_calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertJson($output, $output);
+        /**
+         * @var array{
+         *   0:true,1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,
+         *     8:string,9:string,10:string,11:string,12:string,13:string,14:string,15:string},
+         *   2:list<list<mixed>>,3:list<list<mixed>>
+         * } $decoded
+         */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$result, $queries, $logCalls, $answerCalls] = $decoded;
+        self::assertTrue($result);
+        self::assertCount(16, $queries);
+        self::assertStringContainsString("answer_isright='1'", $queries[3]);
+        self::assertStringContainsString("answer_isright='0'", $queries[4]);
+        self::assertStringContainsString('HAVING (COUNT(answer_id)>=2)', $queries[4]);
+        self::assertStringContainsString('question_id IN (0,101)', $queries[5]);
+        self::assertStringContainsString('HAVING (COUNT(answer_id)>=2)', $queries[7]);
+        self::assertStringContainsString('question_id IN (0,102)', $queries[8]);
+        self::assertStringContainsString('HAVING (COUNT(answer_id)>1)', $queries[10]);
+        self::assertStringContainsString('question_id IN (0,104)', $queries[11]);
+        self::assertStringContainsString('TMF_MATCH_REUSE', $queries[13]);
+        self::assertStringContainsString('question_id IN (0,105)', $queries[14]);
+        self::assertSame(
+            [[55, '101', 2, 1, '3'], [55, '102', 4, 2, '2'], [55, '104', 6, 3, '2'], [55, '105', 8, 4, '2']],
+            $logCalls,
+        );
+        self::assertSame([201, 202, 203, 204], array_column($answerCalls, 0));
+    }
 }
