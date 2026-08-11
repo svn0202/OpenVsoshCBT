@@ -188,6 +188,8 @@ function f_get_raw_test_stat(
     require_once '../../shared/code/tce_functions_authorization.php';
     require_once '../../shared/code/tce_functions_test.php';
     global $db, $l;
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $test_id = (int) $test_id;
     $group_id = (int) $group_id;
     $user_id = (int) $user_id;
@@ -261,8 +263,9 @@ function f_get_raw_test_stat(
             . ' '
             . $sqlw
             . ' GROUP BY testuser_test_id ORDER BY testuser_test_id';
-        if ($rt = F_db_query($sqlt, $db)) {
-            while ($mt = F_db_fetch_assoc($rt)) {
+        if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+            while (($mt = $normalize_row(F_db_fetch_assoc($rt))) !== null) {
+                /** @var array{testuser_test_id:int|numeric-string} $mt */
                 // check user's authorization
                 if (f_is_authorized_user(K_TABLE_TESTS, 'test_id', $mt['testuser_test_id'], 'test_user_id')) {
                     $test_ids[] = $mt['testuser_test_id'];
