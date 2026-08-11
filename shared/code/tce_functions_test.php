@@ -1426,7 +1426,7 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
     $test_random_answers_order = f_get_boolean($testdata['test_random_answers_order']);
     $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
     $random_questions = $test_random_questions_select || $test_random_questions_order;
-    $matching_reuse_condition = K_DATABASE_TYPE === 'ORACLE'
+    $matching_reuse_condition = f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')
         ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
         : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
     $sql_answer_position = '';
