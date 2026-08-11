@@ -501,6 +501,31 @@ final class DatabaseDalFunctionsTest extends TestCase
         }
     }
 
+    public function testPostgresqlQueryPreservesRandomRewriteAndConnection(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; function pg_query($connection, $query) { return [$connection, $query]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_query/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . 'echo json_encode(F_db_query("SELECT * FROM tests ORDER BY RAND()", "connection"));',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_postgresql.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['connection', 'SELECT * FROM tests ORDER BY RANDOM()'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testDatabaseAffectedRowsBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [
