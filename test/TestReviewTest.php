@@ -854,7 +854,7 @@ final class TestReviewTest extends TestCase
                     . 'define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["db"] = "db"; '
                     . '$GLOBALS["rows"] = [false, '
                     . '["testuser_id" => "101", "testuser_status" => "1", '
-                    . '"testuser_creation_time" => "old", "testuser_pregenerated" => false], '
+                    . '"testuser_creation_time" => "invalid", "testuser_pregenerated" => false], '
                     . '["testuser_id" => "102", "testuser_status" => "0", '
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
                     . '["testuser_id" => "103", "testuser_status" => "1", '
@@ -870,12 +870,15 @@ final class TestReviewTest extends TestCase
                     . '["testuser_id" => "108", "testuser_status" => "2", '
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false]]; '
                     . '$GLOBALS["counts"] = [0, 0, 1, 0, 0]; $GLOBALS["queries"] = []; '
+                    . '$GLOBALS["date_timestamps"] = []; '
                     . '$GLOBALS["query_results"] = [true, true, true, true, true, true, true, true, true, '
                     . 'true, true, false, true, false, true, false]; $GLOBALS["errors"] = 0; '
                     . 'function date($format, $timestamp = null) { if ($timestamp === null) { '
-                    . 'return "2026-08-10 12:00:00"; } return $timestamp > 500 '
+                    . 'return "2026-08-10 12:00:00"; } $GLOBALS["date_timestamps"][] = $timestamp; '
+                    . 'return $timestamp > 500 '
                     . '? "2026-08-10 13:00:00" : "2026-08-10 11:00:00"; } '
-                    . 'function strtotime($value) { return $value === "future" ? 1000 : 100; } '
+                    . 'function strtotime($value) { return match ($value) { '
+                    . '"future" => 1000, "invalid" => false, default => 100 }; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); '
@@ -893,7 +896,8 @@ final class TestReviewTest extends TestCase
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
                     . 'for ($i = 0; $i < 9; ++$i) { $results[] = $qualified("11", "22", "5"); } '
-                    . 'echo json_encode([$results, $GLOBALS["queries"], $GLOBALS["errors"]]);',
+                    . 'echo json_encode([$results, $GLOBALS["queries"], $GLOBALS["errors"], '
+                    . '$GLOBALS["date_timestamps"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -937,6 +941,7 @@ final class TestReviewTest extends TestCase
                     'UPDATE test_users SET testuser_status=3 WHERE testuser_id=108',
                 ],
                 3,
+                [300, 1300, 1300, 1300, 400, 400, 1300, 1300],
             ],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
