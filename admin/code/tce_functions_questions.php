@@ -439,6 +439,9 @@ function f_tmf_questions_database_type(): string
 
 function f_tmf_questions_mysql_binary_uniquity(): bool
 {
-    /** @mago-expect analysis:redundant-logical-operation */
-    return defined('K_MYSQL_QA_BIN_UNIQUITY') && K_MYSQL_QA_BIN_UNIQUITY;
+    if (!defined('K_MYSQL_QA_BIN_UNIQUITY')) {
+        return false;
+    }
+    return is_bool(constant('K_MYSQL_QA_BIN_UNIQUITY'))
+        && constant('K_MYSQL_QA_BIN_UNIQUITY') === true;
 }
