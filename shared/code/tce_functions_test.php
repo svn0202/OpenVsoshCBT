@@ -1210,6 +1210,8 @@ function f_select_answers(
 ): array|false {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $question_id = (int) $question_id;
     $isright = F_escape_sql($db, $isright);
     $limit = (int) $limit;
@@ -1256,11 +1258,12 @@ function f_select_answers(
         }
     }
 
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
-            /** @var int|numeric-string $answer_id */
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /** @var array{answer_id:int|numeric-string,answer_position:int|numeric-string} $m */
             $answer_id = $m['answer_id'];
-            /** @var int|numeric-string $answer_position */
             $answer_position = $m['answer_position'];
             if ($randorder || !f_legacy_int_equals($ordmode, 0)) {
                 if (f_legacy_int_equals($ordmode, 2)) {
