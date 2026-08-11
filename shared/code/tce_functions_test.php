@@ -3286,6 +3286,7 @@ function f_tmf_live_score(int $test_id, int $testuser_id): ?float
         'SELECT test_live_score FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1',
         $db,
     );
+    /** @var mixed $enabled_result */
     $enabled = $enabled_result ? F_db_fetch_array($enabled_result) : false;
     /** @var mixed $enabled */
     if (!is_array($enabled) || !f_get_boolean($enabled['test_live_score'] ?? false)) {
@@ -3296,6 +3297,7 @@ function f_tmf_live_score(int $test_id, int $testuser_id): ?float
         . ' WHERE testlog_testuser_id=' . $testuser_id,
         $db,
     );
+    /** @var mixed $score_result */
     $score = $score_result ? F_db_fetch_array($score_result) : false;
     /** @var mixed $score */
     if (!is_array($score)) {
