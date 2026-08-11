@@ -46,17 +46,32 @@ final class GeneralFunctionsTest extends TestCase
         );
     }
 
-    #[RunInSeparateProcess]
     public function testRequiredFieldMarkerUsesConfiguredLabels(): void
     {
-        // @mago-expect lint:no-global -- the legacy helper reads its translations from global $l
-        $GLOBALS['l'] = ['w_required' => 'Required', 'w_not_required' => 'Optional'];
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require_once "../config/tce_config.php"; require_once "tce_functions_general.php"; '
+                    . '$GLOBALS["l"] = ["w_required" => "Required", "w_not_required" => "Optional"]; '
+                    . '$markers = []; foreach ([2, 2.0, "2", "02", "2.0", "2e0", true] as $mode) { '
+                    . '$markers[] = show_required_field($mode); } '
+                    . '$markers[] = show_required_field(1); echo json_encode($markers);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
 
         $required = ' <abbr class="requiredonbox" title="Required">+</abbr>';
-        foreach ([2, 2.0, '2', '02', '2.0', '2e0', true] as $requiredMode) {
-            self::assertSame($required, \show_required_field($requiredMode));
+        self::assertSame(0, $status, $output);
+        /** @var list<string> $markers */
+        $markers = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        $expected = [
+            $required, $required, $required, $required, $required, $required, $required,
+            ' <abbr class="requiredoffbox" title="Optional">-</abbr>',
+        ];
+        foreach ($expected as $index => $marker) {
+            self::assertSame($marker, $markers[$index] ?? null);
         }
-        self::assertSame(' <abbr class="requiredoffbox" title="Optional">-</abbr>', \show_required_field(1));
     }
 
     public function testBootstrapFileExistsShim(): void
