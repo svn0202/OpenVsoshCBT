@@ -124,7 +124,7 @@ count = 10
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('session_user_ip')` accessed on `array<non-empty-string, mixed>`."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
