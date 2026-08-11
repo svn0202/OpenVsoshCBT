@@ -1045,7 +1045,7 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
  * @param int|numeric-string $startindex Array starting index (default = 0).
  * @param mixed $randorder If true use random order.
  * @param mixed $ordmode Ordering mode: 0=position; 1=alphabetical; 2=ID.
- * @return array<array-key, mixed>|false IDs of selected answers, or false on query failure
+ * @return array<array-key, int|numeric-string>|false IDs of selected answers, or false on query failure.
  */
 function f_select_answers(
     mixed $question_id,
@@ -1133,7 +1133,7 @@ function f_select_answers(
 /**
  * Add specified answers on tce_tests_logs_answer table.
  * @param mixed $testlog_id Test-log ID.
- * @param array<array-key, mixed> $answers_ids Answer IDs to add.
+ * @param array<array-key, int|numeric-string> $answers_ids Answer IDs to add.
  * @return boolean true in case of success, false otherwise
  */
 function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
@@ -1144,7 +1144,6 @@ function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
     $i = 0;
     $answer_data = [];
     foreach ($answers_ids as $key => $answid) {
-        /** @var int|numeric-string $answid */
         ++$i;
         $answer_data[] = '(' . $testlog_id . ', ' . $answid . ', -1, ' . $i . ')';
     }
@@ -1812,7 +1811,9 @@ function f_add_question_answers(
                         $answers_ids = [];
                         if ($r = F_db_query($sql, $db)) {
                             while ($m = F_db_fetch_array($r)) {
-                                $answers_ids[] = $m['answer_id'];
+                                /** @var int|numeric-string $selected_answer_id */
+                                $selected_answer_id = $m['answer_id'];
+                                $answers_ids[] = $selected_answer_id;
                             }
                         } else {
                             F_display_db_error(false);
@@ -1872,7 +1873,9 @@ function f_add_question_answers(
         if ($r = F_db_query($sql, $db)) {
             $answers_ids = [];
             while ($m = F_db_fetch_array($r)) {
-                $answers_ids[] = $m['logansw_answer_id'];
+                /** @var int|numeric-string $copied_answer_id */
+                $copied_answer_id = $m['logansw_answer_id'];
+                $answers_ids[] = $copied_answer_id;
             }
 
             f_add_log_answers($testlog_id, $answers_ids);
