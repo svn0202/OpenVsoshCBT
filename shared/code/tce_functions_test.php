@@ -504,6 +504,7 @@ function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip): b
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array{session_user_id:int|numeric-string} $_SESSION */
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     // check user's IP
