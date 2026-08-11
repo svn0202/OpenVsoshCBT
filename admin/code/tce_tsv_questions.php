@@ -91,7 +91,6 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
     $module_id = (int) $module_id;
     $subject_id = (int) $subject_id;
     $expmode = (int) $expmode;
-    $qtype = ['S', 'M', 'T', 'O', 'C'];
     $tsv = ''; // TSV data to be returned
 
     // headers
@@ -202,10 +201,15 @@ function f_tsv_export_questions(int $module_id, int $subject_id, int $expmode): 
                             $tsv .= K_TAB . (int) f_get_boolean($m['question_enabled']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_description']);
                             $tsv .= K_TAB . f_text_to_tsv($m['question_explanation']);
-                            $qtype_index = $m['question_type'] - 1;
-                            /** @mago-expect analysis:possibly-undefined-int-array-index */
-                            /** @mago-expect analysis:possibly-null-operand */
-                            $tsv .= K_TAB . $qtype[$qtype_index];
+                            $question_type = match ((int) $m['question_type']) {
+                                1 => 'S',
+                                2 => 'M',
+                                3 => 'T',
+                                4 => 'O',
+                                5 => 'C',
+                                default => '',
+                            };
+                            $tsv .= K_TAB . $question_type;
                             $tsv .= K_TAB . $m['question_difficulty'];
                             $tsv .= K_TAB . $m['question_position'];
                             $tsv .= K_TAB . $m['question_timer'];
