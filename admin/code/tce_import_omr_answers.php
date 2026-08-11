@@ -57,12 +57,12 @@ require_once '../config/tce_config.php';
 $request = &$_REQUEST;
 $files = &$_FILES;
 $server = &$_SERVER;
-$session = &$_SESSION;
 
 /** @var int $pagelevel */
 $pagelevel = K_AUTH_ADMIN_OMR_IMPORT;
 $max_omr_sheets = 10;
 require_once '../../shared/code/tce_authorization.php';
+$session = &$_SESSION;
 
 $thispage_title = $l['t_omr_answers_importer'];
 require_once 'tce_page_header.php';

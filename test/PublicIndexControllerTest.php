@@ -6,6 +6,17 @@ use PHPUnit\Framework\TestCase;
 
 final class PublicIndexControllerTest extends TestCase
 {
+    public function testSessionReferenceIsBoundAfterAuthorizationStartsTheSession(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../public/code/index.php');
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $sessionBinding = strpos($source, '$session = &$_SESSION;');
+
+        self::assertNotFalse($authorization);
+        self::assertNotFalse($sessionBinding);
+        self::assertGreaterThan($authorization, $sessionBinding);
+    }
+
     public function testCatalogPreservesWelcomeOnboardingTranslationsAndFlashMessage(): void
     {
         $script = <<<'PHP'
