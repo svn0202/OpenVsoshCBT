@@ -54,7 +54,11 @@ function f_get_user_tests(): string
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) { // for each active test
             $expired = false;
-            $upcoming = strtotime($current_time) < strtotime($m['test_begin_time']);
+            /** @var string $test_begin_time */
+            $test_begin_time = $m['test_begin_time'];
+            /** @var string $test_end_time */
+            $test_end_time = $m['test_end_time'];
+            $upcoming = strtotime($current_time) < strtotime($test_begin_time);
             // check user's authorization
             if (f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
@@ -65,7 +69,7 @@ function f_get_user_tests(): string
                     $m['test_duration_time'],
                 );
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
-                if (strtotime($current_time) >= strtotime($m['test_end_time'])) {
+                if (strtotime($current_time) >= strtotime($test_end_time)) {
                     // the test is expired.
                     $expired = true;
                     $datestyle = ' style="color:#666666;"';
