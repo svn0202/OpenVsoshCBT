@@ -463,6 +463,8 @@ function openvsosh_bootstrap_settings_path(): string
 /**
  * @param array<array-key, mixed> $input
  * @return array{saved:bool,errors:array<int,string>}
+ * @throws JsonException When validated settings cannot be encoded.
+ * @throws Random\RandomException When a temporary filename cannot be generated securely.
  */
 function openvsosh_save_runtime_settings(array $input): array
 {
@@ -511,7 +513,6 @@ function openvsosh_save_runtime_settings(array $input): array
         }
     }
     $path = openvsosh_bootstrap_settings_path();
-    // @mago-expect analysis:unhandled-thrown-type -- entropy failure retains the existing exception contract
     $temporary = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
     $json = json_encode(
         ['language' => $language, 'timezone' => $timezone],
