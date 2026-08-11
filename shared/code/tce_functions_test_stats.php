@@ -2104,7 +2104,7 @@ function f_get_all_users_test_stat(
     $statsdata['unrated'] = [];
     $sqlr .= ' GROUP BY testuser_id, testuser_test_id, testuser_creation_time, user_id, user_lastname, user_firstname, user_name, user_email, testuser_status
 		ORDER BY ' . $full_order_field . '';
-    if ($rr = F_db_query($sqlr, $db)) {
+    if ($rr = f_legacy_db_query_result(F_db_query($sqlr, $db))) {
         $statsdata['recurrence'] = [];
         while (($mr = $normalize_row(F_db_fetch_array($rr))) !== null) {
             /**
