@@ -394,6 +394,7 @@ final class StatisticsTest extends TestCase
                 '-r',
                 'namespace Harness; define("K_NEWLINE", "\\n"); '
                     . 'function f_format_percentage($value, $decimals) { return "P:" . $value; } '
+                    . 'function f_format_float($value) { return "F:" . $value; } '
                     . 'function F_decode_tcecode($value) { return "D:" . $value; } '
                     . 'function F_select_table_header_element(...$arguments) { return "<HEADER>\\n"; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
@@ -428,6 +429,12 @@ final class StatisticsTest extends TestCase
                     . '$subject["recurrence"] = "3"; $subject["question"] = []; '
                     . '$subjectModule = $module; $subjectModule["subject"] = ["s" => $subject]; '
                     . '$subjectStats = $qstats; $subjectStats["module"] = ["m" => $subjectModule]; '
+                    . '$question = $qstats; unset($question["module"]); '
+                    . '$question["id"] = "30"; $question["description"] = "Question"; '
+                    . '$question["difficulty"] = "5"; $question["recurrence"] = "4"; $question["answer"] = []; '
+                    . '$questionSubject = $subject; $questionSubject["question"] = ["q" => $question]; '
+                    . '$questionModule = $module; $questionModule["subject"] = ["s" => $questionSubject]; '
+                    . '$questionStats = $qstats; $questionStats["module"] = ["m" => $questionModule]; '
                     . '$resultData = ["num_records" => 1, "testuser" => [], "passed_perc" => 0, '
                     . '"passed" => 0, "statistics" => []]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
@@ -436,7 +443,8 @@ final class StatisticsTest extends TestCase
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $qstats], "2"), '
                     . '$resultName($resultData, "1", "score", "filter", false, "0"), '
                     . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $moduleStats], "2"), '
-                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $subjectStats], "3")]; '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $subjectStats], "3"), '
+                    . '$statName("7", 0, 0, 0, 0, 0, ["qstats" => $questionStats], "4")]; '
                     . 'echo json_encode($returns);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -444,7 +452,7 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string} $returns */
+        /** @var array{0:null,1:null,2:null,3:string,4:string,5:string,6:string,7:string} $returns */
         $returns = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         self::assertSame([null, null, null], array_slice($returns, 0, 3));
         self::assertStringStartsWith('<table class="userselect">', $returns[3]);
@@ -463,6 +471,12 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('3 P:0', $returns[6]);
         self::assertStringContainsString('D:Subject', $returns[6]);
         self::assertStringEndsWith('</table>' . "\n", $returns[6]);
+        self::assertStringContainsString('question_id=30', $returns[7]);
+        self::assertStringContainsString('<strong>Q1</strong>', $returns[7]);
+        self::assertStringContainsString('сложность: F:5', $returns[7]);
+        self::assertStringContainsString('4 P:0', $returns[7]);
+        self::assertStringContainsString('D:Question', $returns[7]);
+        self::assertStringEndsWith('</table>' . "\n", $returns[7]);
     }
 
 
