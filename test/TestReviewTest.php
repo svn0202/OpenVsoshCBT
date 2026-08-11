@@ -141,6 +141,7 @@ final class TestReviewTest extends TestCase
                 'namespace Harness; define("K_TABLE_LOG_ANSWER", "log_answers"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return $sql; } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_db_fetch_array($sql) { preg_match("/logansw_order=([0-9]+)/", $sql, $m); '
                     . 'return ["logansw_answer_id" => 100 + (int) $m[1]]; } '
                     . '$source = file_get_contents($argv[1]); '
