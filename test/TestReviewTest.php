@@ -9,6 +9,22 @@ require_once __DIR__ . '/../shared/code/tce_functions_test.php';
 
 final class TestReviewTest extends TestCase
 {
+    public function testReviewEndpointPreservesDatabaseOutcomeResponses(): void
+    {
+        $source = file_get_contents(dirname(__DIR__) . '/public/code/tce_test_review.php');
+
+        self::assertIsString($source);
+        self::assertStringContainsString('if (!f_legacy_db_query_result(F_db_query($sql, $db))) {', $source);
+        self::assertStringContainsString(
+            "F_tmf_review_json(500, ['status' => 'error']);",
+            $source,
+        );
+        self::assertStringContainsString(
+            "F_tmf_review_json(200, ['status' => 'saved', 'reviewed' => \$reviewed === 1]);",
+            $source,
+        );
+    }
+
     public function testTwoColumnRowPreservesExactMarkup(): void
     {
         if (!defined('K_NEWLINE')) {
