@@ -55,8 +55,13 @@ function f_db_connect(
         . "' password='"
         . $password
         . "'";
-    // @mago-expect lint:no-error-control-operator -- connection failures follow the DAL's false-return contract
-    if (!($db = @pg_connect($connection_string))) {
+    set_error_handler(static fn(): bool => true);
+    try {
+        $db = pg_connect($connection_string);
+    } finally {
+        restore_error_handler();
+    }
+    if (!$db) {
         return false;
     }
 
