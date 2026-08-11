@@ -160,13 +160,7 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "invalid-array-access"
-message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 216
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -194,27 +188,15 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `stripos`: expected `string`, but found `nonnull`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtotime`: expected `string`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 600
+count = 129
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-array-assignment"
 message = "Unsafe array assignment on type `mixed`."
-count = 415
+count = 143
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -225,14 +207,8 @@ count = 13
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
-message = "Cannot reliably increment a `mixed` operand."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 264
+count = 77
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -244,7 +220,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -268,19 +244,13 @@ count = 14
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 52
+count = 12
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
-count = 39
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "no-value"
-message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 1
+count = 31
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
