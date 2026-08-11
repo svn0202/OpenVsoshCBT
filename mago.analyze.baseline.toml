@@ -99,26 +99,14 @@ count = 18
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
-message = "Invalid right operand: type `nonnull` cannot be reliably used in string concatenation."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-operand"
 message = "Left operand in `<=` comparison has `mixed` type."
 count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
-message = "Left operand in `>=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 12
+count = 11
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -148,7 +136,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Right operand in `>=` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

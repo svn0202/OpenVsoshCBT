@@ -102,6 +102,13 @@ function f_get_user_tests(): string
                 /** @var array<string,mixed> $publication_test */
                 if ($catalog_test_status >= 4 && F_tmf_results_are_published($publication_test)) {
                     $usrtestdata = f_get_user_test_stat($m['test_id'], $user_id, $testuser_id);
+                    /**
+                     * @var array{
+                     *     user_score?: int|float|numeric-string,
+                     *     test_score_threshold?: int|float|numeric-string,
+                     *     test_max_score: int|float|numeric-string
+                     * } $usrtestdata
+                     */
                     $passmsg = '';
                     if (
                         isset($usrtestdata['user_score'])
@@ -119,9 +126,7 @@ function f_get_user_tests(): string
 
                     $str .= '>';
                     if (isset($usrtestdata['user_score']) && strlen('' . $usrtestdata['user_score']) > 0) {
-                        /** @var int|float|numeric-string $user_score */
                         $user_score = $usrtestdata['user_score'];
-                        /** @var int|float|numeric-string $test_max_score */
                         $test_max_score = $usrtestdata['test_max_score'];
                         if ($test_max_score > 0) {
                             $str .=
