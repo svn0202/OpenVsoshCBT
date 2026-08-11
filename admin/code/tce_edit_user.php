@@ -1118,7 +1118,7 @@ function f_tce_edit_user_row(mixed $value): ?array
      *     user_otpkey:string|null
      * }|null $value
      */
-    return $value;
+    return is_array($value) ? $value : null;
 }
 
 /**

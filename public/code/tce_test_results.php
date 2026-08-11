@@ -660,7 +660,7 @@ function f_tce_test_results_question_row(mixed $row): ?array
      *     question_explanation:string|null,testlog_answer_text:string,testlog_id:int|string,testlog_comment:string|null
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -677,7 +677,7 @@ function f_tce_test_results_answer_row(mixed $row): ?array
      *     answer_isright:mixed,answer_description:string,answer_explanation:string|null
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 function f_tce_test_results_pdf_link(int $test_id, int $user_id): string

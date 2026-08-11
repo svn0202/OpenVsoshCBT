@@ -2244,14 +2244,14 @@ function f_tce_edit_test_module_subject_row(mixed $row): ?array
 function f_tce_edit_test_subject_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string,subject_name:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{subject_id:int|string}|null */
 function f_tce_edit_test_subject_id_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -2299,14 +2299,14 @@ function f_tce_edit_test_ssl_row(mixed $row): ?array
 function f_tce_edit_test_count_row(mixed $row): ?array
 {
     /** @var array{numquestions:int|numeric-string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{subjset_subject_id:int|string}|null */
 function f_tce_edit_test_subject_link_row(mixed $row): ?array
 {
     /** @var array{subjset_subject_id:int|string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -2321,14 +2321,14 @@ function f_tce_edit_test_question_count_row(mixed $row): ?array
      *     question_type:int|numeric-string,question_difficulty:int|numeric-string,numquestions:int|numeric-string
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{numanswers:int|numeric-string}|null */
 function f_tce_edit_test_answer_count_row(mixed $row): ?array
 {
     /** @var array{numanswers:int|numeric-string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @param list{string,string,string,string,string} $types */
@@ -2373,5 +2373,5 @@ function f_tce_edit_test_record_row(mixed $row): ?array
      *     test_password:string|null
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }

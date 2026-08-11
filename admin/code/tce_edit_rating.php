@@ -704,7 +704,7 @@ function f_tce_edit_rating_query_result(mixed $result): mixed
 function f_tce_edit_rating_score_row(mixed $row): ?array
 {
     /** @var array{test_score_right:int|float|string,question_difficulty:int|float|string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
