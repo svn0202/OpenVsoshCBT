@@ -1963,6 +1963,7 @@ function f_get_all_users_test_stat(
     $group_id = (int) $group_id;
     $user_id = (int) $user_id;
     $full_order_field = f_get_safe_users_test_stat_order_by($full_order_field);
+    $include_user_stats = $stats > 0;
     $data = [];
     $data['svgpoints'] = '';
     $data['testuser'] = [];
@@ -2038,8 +2039,8 @@ function f_get_all_users_test_stat(
             ++$itemcount;
             $usrtestdata = f_get_user_test_stat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
             /** @var array{test_max_score:mixed,test_duration_time:mixed,test_score_threshold:mixed,user_score:mixed,user_test_start_time:string,user_comment:mixed} $usrtestdata */
-            if ($stats > 0) {
-                $teststat = f_get_test_stat(
+            $teststat = $include_user_stats
+                ? f_get_test_stat(
                     $mr['testuser_test_id'],
                     $group_id,
                     $mr['user_id'],
@@ -2047,8 +2048,15 @@ function f_get_all_users_test_stat(
                     $enddate,
                     $mr['testuser_id'],
                     $pubmode,
-                );
-            }
+                )
+                : null;
+            /**
+             * @var array{qstats:array{
+             *   recurrence:mixed,right:mixed,right_perc:mixed,wrong:mixed,wrong_perc:mixed,
+             *   unanswered:mixed,unanswered_perc:mixed,undisplayed:mixed,undisplayed_perc:mixed,
+             *   unrated:mixed,unrated_perc:mixed
+             * }}|null $teststat
+             */
 
             $data['testuser']["'" . $mr['testuser_id'] . "'"] = [];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['test'] = $usrtestdata;
@@ -2095,7 +2103,7 @@ function f_get_all_users_test_stat(
             // a binary float before it reaches XML/JSON/XLSX.
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score'] = f_format_float($mr['total_score']);
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['total_score_perc'] = $total_score_perc;
-            if ($stats > 0) {
+            if ($teststat !== null) {
                 $data['testuser']["'" . $mr['testuser_id'] . "'"]['recurrence'] = $teststat['qstats']['recurrence'];
                 $data['testuser']["'" . $mr['testuser_id'] . "'"]['right'] = $teststat['qstats']['right'];
                 $data['testuser']["'" . $mr['testuser_id'] . "'"]['right_perc'] = $teststat['qstats']['right_perc'];
@@ -2142,7 +2150,7 @@ function f_get_all_users_test_stat(
             // @mago-expect analysis:invalid-array-access -- active DAL fetches test-user statistic rows as arrays
             $statsdata['score'][] = $mr['total_score'];
             $statsdata['score_perc'][] = $total_score_perc;
-            if ($stats > 0) {
+            if ($teststat !== null) {
                 $statsdata['recurrence'][] = $teststat['qstats']['recurrence'];
                 $statsdata['right'][] = $teststat['qstats']['right'];
                 $statsdata['right_perc'][] = $teststat['qstats']['right_perc'];

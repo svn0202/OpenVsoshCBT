@@ -238,7 +238,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 706
+count = 662
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -298,7 +298,7 @@ count = 1
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 22
+count = 20
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -389,12 +389,6 @@ file = "shared/code/tce_functions_test_stats.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('test_score_right')` accessed on `array<array-key, mixed>`."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-variable"
-message = "Variable `$teststat` might not have been defined on all execution paths leading to this point."
-count = 22
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"

@@ -88,7 +88,7 @@ final class StatisticsTest extends TestCase
                     . '"user_lastname" => "Last", "user_firstname" => "First", "user_name" => "login", '
                     . '"user_email" => "mail@example.test", "total_score" => "6.50", '
                     . '"testuser_end_time" => "end"]; $GLOBALS["rows"] = [$row, false]; '
-                    . '$GLOBALS["queries"] = []; $GLOBALS["statistics"] = []; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["statistics"] = []; $GLOBALS["test_stats"] = []; '
                     . 'function f_get_safe_users_test_stat_order_by($value) { return "user_name DESC"; } '
                     . 'function strtotime($value) { return ["start-filter" => 10, "end-filter" => 20, '
                     . '"creation" => 100, "end" => 200, "start" => 4000][$value]; } '
@@ -100,6 +100,10 @@ final class StatisticsTest extends TestCase
                     . 'function f_get_user_test_stat($testId, $userId, $testUserId) { return ['
                     . '"test_max_score" => 10, "test_duration_time" => 30, "test_score_threshold" => 5, '
                     . '"user_score" => 6, "user_test_start_time" => "start", "user_comment" => "comment"]; } '
+                    . 'function f_get_test_stat(...$arguments) { $GLOBALS["test_stats"][] = $arguments; return ['
+                    . '"qstats" => ["recurrence" => 3, "right" => 2, "right_perc" => 50, '
+                    . '"wrong" => 1, "wrong_perc" => 25, "unanswered" => 1, "unanswered_perc" => 25, '
+                    . '"undisplayed" => 0, "undisplayed_perc" => 0, "unrated" => 0, "unrated_perc" => 0]]; } '
                     . 'function f_format_float($value) { return "FMT:" . $value; } '
                     . 'function f_get_array_statistics($data) { $GLOBALS["statistics"] = $data; return ["done" => true]; } '
                     . '$source = file_get_contents($argv[1]); '
@@ -113,7 +117,11 @@ final class StatisticsTest extends TestCase
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$data = $qualified("07", "03", "011", "start-filter", "end-filter", '
                     . '"unsafe", false, 0); '
-                    . 'echo json_encode([$data, $GLOBALS["queries"], $GLOBALS["statistics"]]);',
+                    . '$GLOBALS["rows"] = [$row, false]; '
+                    . '$enabled = $qualified("07", "03", "011", "start-filter", "end-filter", '
+                    . '"unsafe", false, 1); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"], $GLOBALS["statistics"], '
+                    . '$enabled, $GLOBALS["test_stats"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -139,11 +147,13 @@ final class StatisticsTest extends TestCase
          *     }}
          *   },
          *   1: array{0: string},
-         *   2: array{score: array{0: string}, score_perc: array{0: int}}
+         *   2: array{score: array{0: string}, score_perc: array{0: int}},
+         *   3: array{testuser: array{"'99'": array{right: int, recurrence: int}}},
+         *   4: array{0: array{0: int, 1: int, 2: int, 3: string, 4: string, 5: int, 6: bool}}
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$data, $queries, $statistics] = $decoded;
+        [$data, $queries, $statistics, $enabled, $testStats] = $decoded;
         self::assertStringContainsString('testuser_test_id=7', $queries[0]);
         self::assertStringContainsString('usrgrp_group_id=3', $queries[0]);
         self::assertStringContainsString('user_id=11', $queries[0]);
@@ -165,6 +175,9 @@ final class StatisticsTest extends TestCase
         self::assertSame('', $user['right']);
         self::assertSame(['6.50'], $statistics['score']);
         self::assertSame([65], $statistics['score_perc']);
+        self::assertSame(2, $enabled['testuser']["'99'"]['right']);
+        self::assertSame(3, $enabled['testuser']["'99'"]['recurrence']);
+        self::assertSame([[7, 3, 11, 'DATE:10', 'DATE:20', 99, false]], $testStats);
     }
 
     public function testRawStatisticsPreserveEmptyShapeAndIndividualPublicFilters(): void
