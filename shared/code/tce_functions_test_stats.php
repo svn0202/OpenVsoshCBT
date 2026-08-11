@@ -232,14 +232,14 @@ function f_get_raw_test_stat(
 
     if (!empty($startdate)) {
         $startdate_time = strtotime($startdate);
-        $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) $startdate_time);
         $sqlw .= " AND testuser_creation_time>='" . $startdate . "'";
         $sqlansw .= " AND testuser_creation_time>='" . $startdate . "'";
     }
 
     if (!empty($enddate)) {
         $enddate_time = strtotime($enddate);
-        $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
+        $enddate = date(K_TIMESTAMP_FORMAT, (int) $enddate_time);
         $sqlw .= " AND testuser_creation_time<='" . $enddate . "'";
         $sqlansw .= " AND testuser_creation_time<='" . $enddate . "'";
     }
@@ -2031,13 +2031,13 @@ function f_get_all_users_test_stat(
 
     if (!empty($startdate)) {
         $startdate_time = strtotime($startdate);
-        $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) $startdate_time);
         $sqlr .= " AND testuser_creation_time>='" . $startdate . "'";
     }
 
     if (!empty($enddate)) {
         $enddate_time = strtotime($enddate);
-        $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
+        $enddate = date(K_TIMESTAMP_FORMAT, (int) $enddate_time);
         $sqlr .= " AND testuser_creation_time<='" . $enddate . "'";
     }
 

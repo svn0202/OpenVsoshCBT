@@ -91,8 +91,8 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["queries"] = []; $GLOBALS["statistics"] = []; $GLOBALS["test_stats"] = []; '
                     . 'function f_get_safe_users_test_stat_order_by($value) { return "user_name DESC"; } '
                     . 'function strtotime($value) { return ["start-filter" => 10, "end-filter" => 20, '
-                    . '"creation" => 100, "end" => 200, "start" => 4000][$value]; } '
-                    . 'function date($format, $timestamp) { return "DATE:" . $timestamp; } '
+                    . '"creation" => 100, "end" => 200, "start" => 4000][$value] ?? false; } '
+                    . 'function date($format, $timestamp) { return "DATE:" . (int) $timestamp; } '
                     . 'function time() { return 10000; } function gmdate($format, $seconds) { return "TIME:" . $seconds; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
@@ -120,6 +120,8 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["rows"] = [$row, false]; '
                     . '$enabled = $qualified("07", "03", "011", "start-filter", "end-filter", '
                     . '"unsafe", false, 1); '
+                    . '$GLOBALS["rows"] = [false]; '
+                    . '$qualified("07", "03", "011", "invalid-start", "invalid-end", "unsafe", false, 0); '
                     . 'echo json_encode([$data, $GLOBALS["queries"], $GLOBALS["statistics"], '
                     . '$enabled, $GLOBALS["test_stats"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
@@ -146,7 +148,7 @@ final class StatisticsTest extends TestCase
          *       right: string
          *     }}
          *   },
-         *   1: array{0: string},
+         *   1: array{0:string,1:string,2:string},
          *   2: array{score: array{0: string}, score_perc: array{0: int}},
          *   3: array{testuser: array{"'99'": array{right: int, recurrence: int}}},
          *   4: array{0: array{0: int, 1: int, 2: int, 3: string, 4: string, 5: int, 6: bool}}
@@ -160,6 +162,8 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString("testuser_creation_time>='DATE:10'", $queries[0]);
         self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
         self::assertStringContainsString('ORDER BY user_name DESC', $queries[0]);
+        self::assertStringContainsString("testuser_creation_time>='DATE:0'", $queries[2]);
+        self::assertStringContainsString("testuser_creation_time<='DATE:0'", $queries[2]);
         self::assertSame('x65v', $data['svgpoints']);
         self::assertSame(1, $data['passed']);
         self::assertSame(100, $data['passed_perc']);
@@ -194,8 +198,8 @@ final class StatisticsTest extends TestCase
                     . 'define("K_TABLE_TESTS", "tests"); define("K_TIMESTAMP_FORMAT", "format"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
                     . 'function f_get_test_id_results($testId, $userId) { return "7,8"; } '
-                    . 'function strtotime($value) { return $value === "start" ? 10 : 20; } '
-                    . 'function date($format, $timestamp) { return "DATE:" . $timestamp; } '
+                    . 'function strtotime($value) { return ["start" => 10, "end" => 20][$value] ?? false; } '
+                    . 'function date($format, $timestamp) { return "DATE:" . (int) $timestamp; } '
                     . 'function f_get_test_data($testId) { return ["test_score_right" => 2]; } '
                     . 'function F_db_datetime_diff_seconds($start, $end) { return "DIFF_SECONDS"; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
@@ -214,6 +218,7 @@ final class StatisticsTest extends TestCase
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$data = $qualified("07", "03", "011", "start", "end", "099", '
                     . '["seed" => "keep"], true); '
+                    . '$qualified("07", "03", "011", "invalid-start", "invalid-end", "099", [], true); '
                     . '$passthrough = $qualified("0", 0, 0, 0, 0, 0, 17, false); '
                     . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
@@ -225,7 +230,7 @@ final class StatisticsTest extends TestCase
         /**
          * @var array{
          *   0: array{seed: string, qstats: array<string, mixed>},
-         *   1: array{0: string, 1: string},
+         *   1: array{0:string,1:string,2:string},
          *   2: int
          * } $decoded
          */
@@ -261,6 +266,8 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('testuser_user_id=user_id AND user_id=11', $queries[0]);
         self::assertStringContainsString("testuser_creation_time>='DATE:10'", $queries[0]);
         self::assertStringContainsString("testuser_creation_time<='DATE:20'", $queries[0]);
+        self::assertStringContainsString("testuser_creation_time>='DATE:0'", $queries[1]);
+        self::assertStringContainsString("testuser_creation_time<='DATE:0'", $queries[1]);
         self::assertSame(17, $passthrough);
     }
 
