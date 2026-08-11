@@ -1973,7 +1973,14 @@ function f_update_question_log(
     $answer_id = [];
     // get test data
     $testdata = f_get_test_data($test_id);
-    /** @var array<array-key,mixed> $testdata */
+    /**
+     * @var array{
+     *     test_score_right:int|float|numeric-string,
+     *     test_score_wrong:int|float|numeric-string,
+     *     test_score_unanswered:int|float|numeric-string,
+     *     test_mcma_partial_score:mixed
+     * } $testdata
+     */
     // get question information
     $sql = 'SELECT *
 		FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
@@ -2024,13 +2031,10 @@ function f_update_question_log(
     $answer_id = f_get_answer_id_from_position($testlog_id, $answpos);
 
     // calculate question score
-    /** @var int|float|numeric-string $test_score_right */
     $test_score_right = $testdata['test_score_right'];
     $question_right_score = $test_score_right * $question_difficulty;
-    /** @var int|float|numeric-string $test_score_wrong */
     $test_score_wrong = $testdata['test_score_wrong'];
     $question_wrong_score = $test_score_wrong * $question_difficulty;
-    /** @var int|float|numeric-string $test_score_unanswered */
     $test_score_unanswered = $testdata['test_score_unanswered'];
     $question_unanswered_score = $test_score_unanswered * $question_difficulty;
     if (!f_legacy_int_equals($question_type, 3)) {
@@ -2198,7 +2202,9 @@ function f_update_question_log(
                     . ' AND logansw_answer_id='
                     . $m['logansw_answer_id']
                     . '';
-                if (!($ru = F_db_query($sqlu, $db))) {
+                $ru = F_db_query($sqlu, $db);
+                /** @var mixed $ru */
+                if (!$ru) {
                     F_display_db_error();
                     return false;
                 }
@@ -2280,7 +2286,9 @@ function f_update_question_log(
         $sqlu .= ' testlog_reaction_time=' . (int) $reaction_time . ',';
         $sqlu .= " testlog_user_ip='" . (string) get_normalized_ip($_SERVER['REMOTE_ADDR']) . "'";
         $sqlu .= ' WHERE testlog_id=' . $testlog_id . '';
-        if (!($ru = F_db_query($sqlu, $db))) {
+        $ru = F_db_query($sqlu, $db);
+        /** @var mixed $ru */
+        if (!$ru) {
             F_display_db_error();
             return false;
         }
