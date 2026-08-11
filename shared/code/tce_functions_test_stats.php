@@ -286,6 +286,7 @@ function f_get_raw_test_stat(
     /** @var array{test_score_right:int|float|numeric-string} $testdata */
     $testdata = f_get_test_data($test_id);
     // array to be returned
+    /** @var array<array-key,mixed> $data */
     if (!isset($data['qstats'])) {
         // total number of questions
         $data['qstats'] = [
@@ -871,8 +872,8 @@ function f_normalize_test_stat_averages(mixed $data): mixed
  * @param mixed $enddate End date - if greater than zero, filter stats for the specified ending date.
  * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
  * @param mixed $ts Statistics to print (leave empty to automatically generate new data).
- * @param mixed $display_mode Display mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject; 4 = question;
- *     5 = answer.
+ * @param int|numeric-string $display_mode Display mode: 0 = disabled; 1 = minimum; 2 = module; 3 = subject;
+ *     4 = question; 5 = answer.
  * @param mixed $pubmode If true filter the results for the public interface.
  * @return string|null HTML table, or null when statistics are disabled or empty.
  */
