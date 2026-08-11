@@ -19,12 +19,6 @@ message = "Cannot find class, interface, enum, or type alias `Returns`."
 count = 2
 
 [[issues]]
-file = "shared/code/tce_db_dal_oracle.php"
-code = "non-existent-class-like"
-message = "Cannot find class, interface, enum, or type alias `SQL`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "array-to-string-conversion"
 message = "Potential array in middle operand of string concatenation."
