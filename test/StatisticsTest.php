@@ -229,7 +229,7 @@ final class StatisticsTest extends TestCase
                     . 'define("K_TABLE_USERS", "users"); define("K_TABLE_USERGROUP", "user_groups"); '
                     . 'define("K_TABLE_TESTS", "tests"); define("K_TIMESTAMP_FORMAT", "format"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
-                    . '$GLOBALS["query_results"] = [true, true, true, false]; '
+                    . '$GLOBALS["query_results"] = [true, true, true, false, false]; '
                     . '$GLOBALS["test_id_rows"] = [["testuser_test_id" => "9"], false]; '
                     . '$GLOBALS["authorizations"] = []; $GLOBALS["errors"] = 0; '
                     . 'function f_get_test_id_results($testId, $userId) { return "7,8"; } '
@@ -260,7 +260,8 @@ final class StatisticsTest extends TestCase
                     . '$qualified("07", "03", "011", "invalid-start", "invalid-end", "099", [], true); '
                     . '$passthrough = $qualified("0", 0, 0, 0, 0, 0, 17, false); '
                     . '$failed = $qualified("0", 0, 0, 0, 0, 0, ["failed" => "keep"], false); '
-                    . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough, $failed, '
+                    . '$mainFailed = $qualified("7", 0, 0, 0, 0, 0, ["seed" => "main"], false); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough, $failed, $mainFailed, '
                     . '$GLOBALS["authorizations"], $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -271,12 +272,13 @@ final class StatisticsTest extends TestCase
         /**
          * @var array{
          *   0: array{seed: string, qstats: array<string, mixed>},
-         *   1: array{0:string,1:string,2:string,3:string},
-         *   2: int,3:array{failed:string},4:array{0:array{0:string,1:string,2:string,3:string}},5:int
+         *   1: array{0:string,1:string,2:string,3:string,4:string},
+         *   2:int,3:array{failed:string},4:array{seed:string,qstats:array{recurrence:int,...}},
+         *   5:array{0:array{0:string,1:string,2:string,3:string}},6:int
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$data, $queries, $passthrough, $failed, $authorizations, $errors] = $decoded;
+        [$data, $queries, $passthrough, $failed, $mainFailed, $authorizations, $errors] = $decoded;
         self::assertSame('keep', $data['seed']);
         self::assertSame(
             [
@@ -313,8 +315,10 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('GROUP BY testuser_test_id', $queries[3]);
         self::assertSame(17, $passthrough);
         self::assertSame(['failed' => 'keep'], $failed);
+        self::assertSame('main', $mainFailed['seed']);
+        self::assertSame(0, $mainFailed['qstats']['recurrence']);
         self::assertSame([['tests', 'test_id', '9', 'test_user_id']], $authorizations);
-        self::assertSame(1, $errors);
+        self::assertSame(2, $errors);
     }
 
     public function testStatisticsPrintersPreserveDisabledAndEmptyResults(): void
