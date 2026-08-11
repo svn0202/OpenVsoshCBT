@@ -3084,11 +3084,11 @@ function f_get_num_omitted_questions(mixed $test_id): int
 
 /**
  * Display a textarea for user's comment.<br>
- * @param $test_id (int) test ID
+ * @param mixed $test_id Test ID
  * @return string XHTML code
  * @since 4.0.000 (2006-10-01)
  */
-function f_test_comment($test_id): string
+function f_test_comment(mixed $test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
