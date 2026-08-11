@@ -735,7 +735,7 @@ function f_print_test_info($test_id, $showip = false)
  * @param $test_id (int) test ID.
  * @return array containing test data.
  */
-function f_get_test_data($test_id)
+function f_get_test_data(mixed $test_id): mixed
 {
     require_once '../config/tce_config.php';
     global $db, $l;
