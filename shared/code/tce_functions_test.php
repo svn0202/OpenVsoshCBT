@@ -54,18 +54,20 @@ function f_get_user_tests(): string
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) { // for each active test
             $expired = false;
+            /** @var int|numeric-string $catalog_test_id */
+            $catalog_test_id = $m['test_id'];
             /** @var string $test_begin_time */
             $test_begin_time = $m['test_begin_time'];
             /** @var string $test_end_time */
             $test_end_time = $m['test_end_time'];
             $upcoming = strtotime($current_time) < strtotime($test_begin_time);
             // check user's authorization
-            if (f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
-                $access_status = F_tmf_test_access_status((int) $m['test_id'], $user_id);
+            if (f_is_valid_test_user($catalog_test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+                $access_status = F_tmf_test_access_status((int) $catalog_test_id, $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(
                     $user_id,
-                    $m['test_id'],
+                    $catalog_test_id,
                     $m['test_duration_time'],
                 );
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
@@ -77,7 +79,7 @@ function f_get_user_tests(): string
                     $datestyle = '';
                 }
 
-                $str .= '<tr data-test-id="' . (int) $m['test_id'] . '" data-begin="'
+                $str .= '<tr data-test-id="' . (int) $catalog_test_id . '" data-begin="'
                     . htmlspecialchars((string) $m['test_begin_time'], ENT_QUOTES)
                     . '" data-end="'
                     . htmlspecialchars((string) $m['test_end_time'], ENT_QUOTES)
@@ -92,7 +94,7 @@ function f_get_user_tests(): string
 
                 /** @var string $test_name */
                 $test_name = $m['test_name'];
-                $str .= '<strong>' . f_test_info_link($m['test_id'], $test_name) . '</strong></td>' . K_NEWLINE;
+                $str .= '<strong>' . f_test_info_link($catalog_test_id, $test_name) . '</strong></td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $test_begin_time . '</td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $test_end_time . '</td>' . K_NEWLINE;
                 // status
@@ -101,7 +103,7 @@ function f_get_user_tests(): string
                 // @mago-expect analysis:docblock-type-mismatch -- DAL rows are arrays; its legacy return doc resolves as unknown-ref(Returns)
                 /** @var array<string,mixed> $publication_test */
                 if ($catalog_test_status >= 4 && F_tmf_results_are_published($publication_test)) {
-                    $usrtestdata = f_get_user_test_stat($m['test_id'], $user_id, $testuser_id);
+                    $usrtestdata = f_get_user_test_stat($catalog_test_id, $user_id, $testuser_id);
                     /**
                      * @var array{
                      *     user_score?: int|float|numeric-string,
@@ -117,10 +119,14 @@ function f_get_user_tests(): string
                     ) {
                         if ($usrtestdata['user_score'] >= $usrtestdata['test_score_threshold']) {
                             $str .= ' style="background-color:#ddffdd;"';
-                            $passmsg = ' - ' . $l['w_passed'];
+                            /** @var string $passed_label */
+                            $passed_label = $l['w_passed'];
+                            $passmsg = ' - ' . $passed_label;
                         } else {
                             $str .= ' style="background-color:#ffdddd;"';
-                            $passmsg = ' - ' . $l['w_not_passed'];
+                            /** @var string $not_passed_label */
+                            $not_passed_label = $l['w_not_passed'];
+                            $passmsg = ' - ' . $not_passed_label;
                         }
                     }
 
@@ -128,14 +134,16 @@ function f_get_user_tests(): string
                     if (isset($usrtestdata['user_score']) && strlen('' . $usrtestdata['user_score']) > 0) {
                         $user_score = $usrtestdata['user_score'];
                         $test_max_score = $usrtestdata['test_max_score'];
+                        /** @var string $result_title */
+                        $result_title = $l['h_result'];
                         if ($test_max_score > 0) {
                             $str .=
                                 '<a href="tce_show_result_user.php?testuser_id='
                                 . $testuser_id
                                 . '&amp;test_id='
-                                . $m['test_id']
+                                . $catalog_test_id
                                 . '" title="'
-                                . $l['h_result']
+                                . $result_title
                                 . '">'
                                 . $user_score
                                 . ' / '
@@ -150,9 +158,9 @@ function f_get_user_tests(): string
                                 '<a href="tce_show_result_user.php?testuser_id='
                                 . $testuser_id
                                 . '&amp;test_id='
-                                . $m['test_id']
+                                . $catalog_test_id
                                 . '" title="'
-                                . $l['h_result']
+                                . $result_title
                                 . '">'
                                 . $user_score
                                 . $passmsg
@@ -192,7 +200,7 @@ function f_get_user_tests(): string
 
                                 $str .=
                                     '?testid='
-                                    . $m['test_id']
+                                    . $catalog_test_id
                                     . '" title="'
                                     . $l['h_execute']
                                     . '" class="buttongreen">'
@@ -206,7 +214,7 @@ function f_get_user_tests(): string
                                 // continue test
                                 $str .=
                                     '<a href="tce_test_execute.php?testid='
-                                    . $m['test_id']
+                                    . $catalog_test_id
                                     . '" title="'
                                     . $l['h_continue']
                                     . '" class="xmlbutton">'
@@ -216,7 +224,7 @@ function f_get_user_tests(): string
                         default:
                             // 4 or greater = test can be repeated
                                 if (
-                                    f_count_user_test($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable']
+                                    f_count_user_test($_SESSION['session_user_id'], $catalog_test_id) < $m['test_repeatable']
                                     || f_legacy_int_equals($m['test_repeatable'], 1)
                                 ) {
                                     // print execute test link
@@ -231,7 +239,7 @@ function f_get_user_tests(): string
 
                                     $str .=
                                         '?testid='
-                                        . $m['test_id']
+                                        . $catalog_test_id
                                         . '&amp;repeat=1" title="'
                                         . $l['h_repeat_test']
                                         . '" class="buttonblue">'
