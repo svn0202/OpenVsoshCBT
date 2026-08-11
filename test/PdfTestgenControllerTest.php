@@ -2,11 +2,13 @@
 
 namespace Test;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class PdfTestgenControllerTest extends TestCase
 {
-    public function testSingleChoicePaperTestKeepsQueriesQrDataAndOmrGeometry(): void
+    #[DataProvider('questionOrderModes')]
+    public function testSingleChoicePaperTestKeepsQueriesQrDataAndOmrGeometry(string $randomQuestions): void
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -88,7 +90,7 @@ function f_legacy_literal_equals($value, $expected) { return (string) $value ===
 function F_decode_tcecode($value) { return '[[decoded:' . $value . ']]'; }
 function f_get_test_data($id) {
     return [
-        'test_random_questions_select' => '1', 'test_random_questions_order' => '0',
+        'test_random_questions_select' => $GLOBALS['argv'][2], 'test_random_questions_order' => '0',
         'test_questions_order_mode' => '0', 'test_random_answers_select' => '0',
         'test_random_answers_order' => '0', 'test_answers_order_mode' => '0',
         'test_score_threshold' => '6', 'test_duration_time' => '45', 'test_score_right' => '2',
@@ -144,7 +146,13 @@ echo json_encode([
 PHP;
 
         [$status, $output] = \F_tcecode_run_process(
-            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_pdf_testgen.php'],
+            [
+                PHP_BINARY,
+                '-r',
+                $script,
+                dirname(__DIR__) . '/admin/code/tce_pdf_testgen.php',
+                $randomQuestions,
+            ],
             dirname(__DIR__) . '/admin/code',
         );
 
@@ -192,6 +200,13 @@ PHP;
             '/^tcexam_test_7_\d{14}\.pdf$/',
             $filename,
         );
+    }
+
+    /** @return iterable<string,array{string}> */
+    public static function questionOrderModes(): iterable
+    {
+        yield 'random selection' => ['1'];
+        yield 'fixed order' => ['0'];
     }
 
     private static function stringValue(mixed $value): string
