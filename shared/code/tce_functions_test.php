@@ -1355,11 +1355,11 @@ function f_get_first_test_user(mixed $test_id): int|string
 
 /**
  * Creates a new tce_tests_logs table entry and returns inserted ID.
- * @param $testuser_id (int) ID of tce_tests_users
- * @param $question_id (int) question ID
+ * @param mixed $testuser_id ID of tce_tests_users
+ * @param mixed $question_id Question ID
  * @param int|float|numeric-string $score Score for unanswered questions.
- * @param $order (int) question display order
- * @param $num_answers (int) number of alternative answers
+ * @param mixed $order Question display order
+ * @param mixed $num_answers Number of alternative answers
  * @return int|string|null|false Test-log ID, or false when the insert fails.
  */
 function f_new_test_log(
@@ -1375,6 +1375,8 @@ function f_new_test_log(
     $testuser_id = (int) $testuser_id;
     $question_id = (int) $question_id;
     $score = (float) $score;
+    /** @var int|numeric-string $order */
+    /** @var int|numeric-string $num_answers */
     $sqll =
         'INSERT INTO '
         . K_TABLE_TESTS_LOGS
@@ -1407,7 +1409,9 @@ function f_new_test_log(
         . $num_answers
         . '
 		)';
-    if (!($rl = F_db_query($sqll, $db))) {
+    $rl = F_db_query($sqll, $db);
+    /** @var mixed $rl */
+    if (!$rl) {
         F_display_db_error(false);
         return false;
     }
