@@ -1502,7 +1502,10 @@ function f_print_test_result_stat(
      *     locked:bool,remaining_time:int|float|numeric-string,user_comment:string|null
      *   }>,
      *   passed:int|numeric-string,passed_perc:int|float|numeric-string,
-     *   statistics:array<array-key,mixed>
+     *   statistics:array<string,array{
+     *     score_perc:int|float,right_perc:int|float,wrong_perc:int|float,
+     *     unanswered_perc:int|float,undisplayed_perc:int|float,unrated_perc:int|float
+     *   }>
      * } $data
      */
 
