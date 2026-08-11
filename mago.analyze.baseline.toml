@@ -26,18 +26,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "false-operand"
-message = "Left operand in `<=` comparison is `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "false-operand"
-message = "Right operand in `>=` comparison is `false`."
-count = 3
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "impossible-condition"
 message = "Redundant ternary operator: condition is always falsy."
 count = 4
@@ -46,7 +34,7 @@ count = 4
 file = "shared/code/tce_functions_test.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 38
+count = 34
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -483,24 +471,6 @@ count = 3
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "redundant-comparison"
-message = "Avoid direct comparison with boolean literals."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-comparison"
-message = "Redundant `!==` comparison: left-hand side is never identical to (always false for !==) right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-comparison"
-message = "Redundant `<=` comparison: left-hand side is always less than or equal to right-hand side."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-comparison"
 message = "Redundant `===` comparison: left-hand side is never identical to right-hand side."
 count = 1
 
@@ -509,12 +479,6 @@ file = "shared/code/tce_functions_test.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
 count = 15
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-logical-operation"
-message = "Redundant `&&` operation: left operand is always falsy and right operand is not evaluated."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
