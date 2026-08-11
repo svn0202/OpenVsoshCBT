@@ -634,13 +634,8 @@ function f_import_tsv_users(mixed $tsvfile): bool
         return false;
     }
 
-    $nrows = count($tsvrows);
-    for ($i = 1; $i < $nrows; ++$i) {
-        // @mago-expect analysis:possibly-undefined-int-array-index -- the loop is bounded by count($tsvrows)
-        $rowdata = $tsvrows[$i];
-
+    foreach (array_slice($tsvrows, 1) as $rowdata) {
         // get user data into array
-        // @mago-expect analysis:possibly-null-argument -- the count-bounded row lookup always returns a string
         $userdata = explode("\t", $rowdata);
         /** @var array{
          *   0: string, 1: string, 2: string, 3: string, 4: string, 5: string,
