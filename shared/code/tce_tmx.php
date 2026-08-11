@@ -128,6 +128,10 @@ class TMXResourceBundle
             require_once $this->cachefile;
             $this->resource = $tmx;
         } else {
+            if (!$source_exists || !is_readable($tmxfile)) {
+                die('ERROR TMXResourceBundle :: Unable to read TMX source file.');
+            }
+
             if (!empty($this->cachefile)) {
                 // open cache file
                 file_put_contents(
@@ -159,8 +163,12 @@ class TMXResourceBundle
             // sets the character data handler function for the XML parser
             xml_set_character_data_handler($this->parser, $this->segContentHandler(...));
             // start parsing an XML document
-            // @mago-expect analysis:possibly-false-argument -- a stale/missing source retains the historical xml_parse failure
-            if (xml_parse($this->parser, file_get_contents($tmxfile)) === 0) {
+            $source = file_get_contents($tmxfile);
+            if ($source === false) {
+                die('ERROR TMXResourceBundle :: Unable to read TMX source file.');
+            }
+
+            if (xml_parse($this->parser, $source) === 0) {
                 die(sprintf(
                     'ERROR TMXResourceBundle :: XML error: %s at line %d',
                     xml_error_string(xml_get_error_code($this->parser)),

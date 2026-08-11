@@ -61,6 +61,25 @@ final class TmxResourceBundleTest extends TestCase
         $this->assertSame('Caffè & Tè', $res['special'] ?? null);
     }
 
+    public function testMissingSourceWithoutCacheReportsAReadFailure(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'function F_file_exists($file) { return file_exists($file); } '
+                    . 'require $argv[1]; error_reporting(0); '
+                    . 'new TMXResourceBundle($argv[2], "en", "");',
+                dirname(__DIR__) . '/shared/code/tce_tmx.php',
+                sys_get_temp_dir() . '/openvsosh-missing-language.tmx',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('ERROR TMXResourceBundle :: Unable to read TMX source file.', $output);
+    }
+
     /** @throws \Random\RandomException */
     public function testRebuildsStaleCacheAfterSourceUpdate(): void
     {
