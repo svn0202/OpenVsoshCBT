@@ -6,6 +6,34 @@ use PHPUnit\Framework\TestCase;
 
 final class OracleDalTest extends TestCase
 {
+    public function testOracleInsertIdPreservesNumericString(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("OCI_NUM", 8); define("OCI_NO_AUTO_COMMIT", 16); '
+                    . 'define("OCI_COMMIT_ON_SUCCESS", 32); '
+                    . 'function oci_parse($connection, $sql) { return "statement"; } '
+                    . 'function oci_execute($statement, $mode) { return true; } '
+                    . 'function oci_fetch_array($result, $mode) { return ["41"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$source = preg_replace("/^<\\?php\\s*/", "", $source); '
+                    . 'eval("namespace Harness; " . $source); '
+                    . '$id = f_db_insert_id("connection", "users"); '
+                    . 'echo json_encode([$id, gettype($id)]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_oracle.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['41', 'string'],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testOracleRowsPreserveWeakScalarConversionWithoutWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(
