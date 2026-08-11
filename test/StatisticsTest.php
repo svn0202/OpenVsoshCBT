@@ -24,13 +24,18 @@ final class StatisticsTest extends TestCase
                     . '"question_explanation" => "", "question_type" => 3, '
                     . '"testlog_answer_text" => "Answer", "testlog_id" => 77, '
                     . '"testlog_comment" => "Teacher note"]; '
-                    . '$GLOBALS["results"] = [false, "questions"]; '
-                    . '$GLOBALS["rows"] = ["questions" => [$row, false]]; '
+                    . '$invalidRow = $row; $invalidRow["testlog_display_time"] = "invalid-display"; '
+                    . '$invalidRow["testlog_change_time"] = "invalid-change"; '
+                    . '$GLOBALS["results"] = [false, "questions", "invalid-questions"]; '
+                    . '$GLOBALS["rows"] = ["questions" => [$row, false], '
+                    . '"invalid-questions" => [$invalidRow, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["attachments"] = []; '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
+                    . 'function strtotime($value) { return false; } '
+                    . 'function date($format, $timestamp) { return "TIME:" . (int) $timestamp; } '
                     . 'function get_ip_as_string($value) { return "IPVALUE"; } '
                     . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
@@ -46,7 +51,8 @@ final class StatisticsTest extends TestCase
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$failed = $qualified("007"); $markup = $qualified("007"); '
-                    . 'echo json_encode([$failed, $markup, $GLOBALS["queries"], '
+                    . '$invalid = $qualified("007"); '
+                    . 'echo json_encode([$failed, $markup, $invalid, $GLOBALS["queries"], '
                     . '$GLOBALS["errors"], $GLOBALS["attachments"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -54,9 +60,9 @@ final class StatisticsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: string, 1: string, 2: array{0: string, 1: string}, 3: int, 4: array{0: int}} $decoded */
+        /** @var array{0:string,1:string,2:string,3:array{0:string,1:string,2:string},4:int,5:array{0:int,1:int}} $decoded */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$failed, $markup, $queries, $errors, $attachments] = $decoded;
+        [$failed, $markup, $invalid, $queries, $errors, $attachments] = $decoded;
         self::assertSame('', $failed);
         self::assertStringContainsString('<ol class="question">', $markup);
         self::assertStringContainsString('<strong>[2.5]', $markup);
@@ -66,11 +72,12 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('[Question]', $markup);
         self::assertStringContainsString('[Answer]<ATTACHMENT>&nbsp;', $markup);
         self::assertStringContainsString('[Teacher note]&nbsp;', $markup);
-        self::assertCount(2, $queries);
+        self::assertStringContainsString('| TIME:0', $invalid);
+        self::assertCount(3, $queries);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[0]);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[1]);
         self::assertSame(1, $errors);
-        self::assertSame([77], $attachments);
+        self::assertSame([77, 77], $attachments);
     }
 
     public function testAllUsersStatisticsPreserveFiltersAndDisabledStatisticsShape(): void
@@ -89,6 +96,7 @@ final class StatisticsTest extends TestCase
                     . '"user_email" => "mail@example.test", "total_score" => "6.50", '
                     . '"testuser_end_time" => "end"]; $GLOBALS["rows"] = [$row, false]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["statistics"] = []; $GLOBALS["test_stats"] = []; '
+                    . '$GLOBALS["user_test_starts"] = ["start", "start", "invalid-start-time"]; '
                     . 'function f_get_safe_users_test_stat_order_by($value) { return "user_name DESC"; } '
                     . 'function strtotime($value) { return ["start-filter" => 10, "end-filter" => 20, '
                     . '"creation" => 100, "end" => 200, "start" => 4000][$value] ?? false; } '
@@ -99,7 +107,8 @@ final class StatisticsTest extends TestCase
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function f_get_user_test_stat($testId, $userId, $testUserId) { return ['
                     . '"test_max_score" => 10, "test_duration_time" => 30, "test_score_threshold" => 5, '
-                    . '"user_score" => 6, "user_test_start_time" => "start", "user_comment" => "comment"]; } '
+                    . '"user_score" => 6, "user_test_start_time" => array_shift($GLOBALS["user_test_starts"]), '
+                    . '"user_comment" => "comment"]; } '
                     . 'function f_get_test_stat(...$arguments) { $GLOBALS["test_stats"][] = $arguments; return ['
                     . '"qstats" => ["recurrence" => 3, "right" => 2, "right_perc" => 50, '
                     . '"wrong" => 1, "wrong_perc" => 25, "unanswered" => 1, "unanswered_perc" => 25, '
@@ -120,10 +129,13 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["rows"] = [$row, false]; '
                     . '$enabled = $qualified("07", "03", "011", "start-filter", "end-filter", '
                     . '"unsafe", false, 1); '
-                    . '$GLOBALS["rows"] = [false]; '
-                    . '$qualified("07", "03", "011", "invalid-start", "invalid-end", "unsafe", false, 0); '
+                    . '$invalidRow = $row; $invalidRow["testuser_creation_time"] = "invalid-creation"; '
+                    . '$invalidRow["testuser_end_time"] = "invalid-end-time"; '
+                    . '$GLOBALS["rows"] = [$invalidRow, false]; '
+                    . '$invalid = $qualified("07", "03", "011", "invalid-start", "invalid-end", '
+                    . '"unsafe", false, 0); '
                     . 'echo json_encode([$data, $GLOBALS["queries"], $GLOBALS["statistics"], '
-                    . '$enabled, $GLOBALS["test_stats"]]);',
+                    . '$enabled, $GLOBALS["test_stats"], $invalid]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -151,11 +163,12 @@ final class StatisticsTest extends TestCase
          *   1: array{0:string,1:string,2:string},
          *   2: array{score: array{0: string}, score_perc: array{0: int}},
          *   3: array{testuser: array{"'99'": array{right: int, recurrence: int}}},
-         *   4: array{0: array{0: int, 1: int, 2: int, 3: string, 4: string, 5: int, 6: bool}}
+         *   4: array{0: array{0: int, 1: int, 2: int, 3: string, 4: string, 5: int, 6: bool}},
+         *   5: array{testuser:array{"'99'":array{time_diff:string,remaining_time:int}}}
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$data, $queries, $statistics, $enabled, $testStats] = $decoded;
+        [$data, $queries, $statistics, $enabled, $testStats, $invalid] = $decoded;
         self::assertStringContainsString('testuser_test_id=7', $queries[0]);
         self::assertStringContainsString('usrgrp_group_id=3', $queries[0]);
         self::assertStringContainsString('user_id=11', $queries[0]);
@@ -182,6 +195,8 @@ final class StatisticsTest extends TestCase
         self::assertSame(2, $enabled['testuser']["'99'"]['right']);
         self::assertSame(3, $enabled['testuser']["'99'"]['recurrence']);
         self::assertSame([[7, 3, 11, 'DATE:10', 'DATE:20', 99, false]], $testStats);
+        self::assertSame('TIME:0', $invalid['testuser']["'99'"]['time_diff']);
+        self::assertSame(137, $invalid['testuser']["'99'"]['remaining_time']);
     }
 
     public function testRawStatisticsPreserveEmptyShapeAndIndividualPublicFilters(): void

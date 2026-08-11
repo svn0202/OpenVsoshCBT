@@ -1809,7 +1809,10 @@ function f_print_user_test_stat(mixed $testuser_id): string
             if (isset($m['testlog_display_time']) && isset($m['testlog_change_time'])) {
                 $ret .=
                     ' | '
-                    . date('i:s', strtotime($m['testlog_change_time']) - strtotime($m['testlog_display_time']))
+                    . date(
+                        'i:s',
+                        (int) strtotime($m['testlog_change_time']) - (int) strtotime($m['testlog_display_time']),
+                    )
                     . '';
             } else {
                 $ret .= ' | --:--' . K_NEWLINE;
@@ -2091,11 +2094,12 @@ function f_get_all_users_test_stat(
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['testuser_end_time'] = $mr['testuser_end_time'];
             if (
                 $mr['testuser_end_time'] <= 0
-                || strtotime($mr['testuser_end_time']) < strtotime($mr['testuser_creation_time'])
+                || (int) strtotime($mr['testuser_end_time']) < (int) strtotime($mr['testuser_creation_time'])
             ) {
                 $time_diff = $usrtestdata['test_duration_time'] * K_SECONDS_IN_MINUTE;
             } else {
-                $time_diff = strtotime($mr['testuser_end_time']) - strtotime($mr['testuser_creation_time']); //sec
+                $time_diff =
+                    (int) strtotime($mr['testuser_end_time']) - (int) strtotime($mr['testuser_creation_time']); //sec
             }
 
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['time_diff'] = gmdate('H:i:s', $time_diff);
@@ -2158,7 +2162,7 @@ function f_get_all_users_test_stat(
 
             // remaining user time in minutes
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['remaining_time'] =
-                round((time() - strtotime($usrtestdata['user_test_start_time'])) / K_SECONDS_IN_MINUTE)
+                round((time() - (int) strtotime($usrtestdata['user_test_start_time'])) / K_SECONDS_IN_MINUTE)
                 - $usrtestdata['test_duration_time'];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['user_comment'] = $usrtestdata['user_comment'];
             // SVG points
