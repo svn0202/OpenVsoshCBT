@@ -89,7 +89,10 @@ function f_get_user_tests(): string
                 $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
                 $str .= '<td';
-                if ($catalog_test_status >= 4 && F_tmf_results_are_published($m)) {
+                $publication_test = $m;
+                // @mago-expect analysis:docblock-type-mismatch -- DAL rows are arrays; its legacy return doc resolves as unknown-ref(Returns)
+                /** @var array<string,mixed> $publication_test */
+                if ($catalog_test_status >= 4 && F_tmf_results_are_published($publication_test)) {
                     $usrtestdata = f_get_user_test_stat($m['test_id'], $user_id, $testuser_id);
                     $passmsg = '';
                     if (
