@@ -1125,9 +1125,10 @@ function f_add_log_answers($testlog_id, $answers_ids): bool
 /**
  * Returns the ID of the tce_tests_users table corresponding to a complete test of $test_id type.
  * @param $test_id (int) test ID
- * @return int testuser ID
+ * @return int|string Test-user ID, or zero when no started attempt exists.
+ * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
-function f_get_first_test_user($test_id)
+function f_get_first_test_user(mixed $test_id): int|string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -1141,6 +1142,7 @@ function f_get_first_test_user($test_id)
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
+            /** @var array{testuser_id:int|string} $m */
             $firsttest = $m['testuser_id'];
         }
     } else {

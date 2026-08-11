@@ -330,9 +330,13 @@ final class TestReviewTest extends TestCase
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
-                    . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
-                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; return true; } '
-                    . 'function F_db_fetch_array($result) { return ["testuser_id" => 42]; } '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
+                    . '$GLOBALS["query_results"] = [true, true, false]; '
+                    . '$GLOBALS["rows"] = [["testuser_id" => "42"], false]; '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = $sql; '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
+                    . 'function F_display_db_error($terminate) { ++$GLOBALS["errors"]; } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_first_test_user)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
@@ -342,7 +346,8 @@ final class TestReviewTest extends TestCase
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
-                    . 'echo json_encode([$qualified("7"), $GLOBALS["queries"]]);',
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9")], '
+                    . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -350,7 +355,11 @@ final class TestReviewTest extends TestCase
 
         self::assertSame(0, $status, $output);
         self::assertSame(
-            [42, ["SELECT testuser_id\n\t\tFROM test_user\n\t\tWHERE testuser_test_id=7\n\t\t\tAND testuser_status>0\n\t\tLIMIT 1"]],
+            [["42", 0, 0], 1, [
+                "SELECT testuser_id\n\t\tFROM test_user\n\t\tWHERE testuser_test_id=7\n\t\t\tAND testuser_status>0\n\t\tLIMIT 1",
+                "SELECT testuser_id\n\t\tFROM test_user\n\t\tWHERE testuser_test_id=8\n\t\t\tAND testuser_status>0\n\t\tLIMIT 1",
+                "SELECT testuser_id\n\t\tFROM test_user\n\t\tWHERE testuser_test_id=9\n\t\t\tAND testuser_status>0\n\t\tLIMIT 1",
+            ]],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
     }
