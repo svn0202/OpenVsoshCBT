@@ -242,6 +242,7 @@ final class StatisticsTest extends TestCase
             $data['qstats'],
         );
         self::assertStringContainsString('testlog_score, testlog_user_ip, testlog_display_time', $queries[0]);
+        self::assertStringContainsString('AVG(DIFF_SECONDS) AS average_time', $queries[0]);
         self::assertStringContainsString('testuser_test_id=7', $queries[0]);
         self::assertStringContainsString('testuser_id=99', $queries[0]);
         self::assertStringContainsString('testuser_user_id=user_id AND user_id=11', $queries[0]);
