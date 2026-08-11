@@ -449,13 +449,13 @@ final class StatisticsTest extends TestCase
                     . '"testuser_creation_time" => "CREATED", "time_diff" => "TIME", "passmsg" => true, '
                     . '"test" => ["test_id" => "70", "test_name" => "<b>Test</b>", '
                     . '"test_report_to_users" => "1"], "user_name" => "login", '
-                    . '"user_lastname" => "Last", "user_firstname" => "First", '
+                    . '"user_lastname" => null, "user_firstname" => null, '
                     . '"total_score" => "9.5", "total_score_perc" => "95", '
                     . '"right" => "2", "right_perc" => "20", "wrong" => "3", "wrong_perc" => "30", '
                     . '"unanswered" => "4", "unanswered_perc" => "40", '
                     . '"undisplayed" => "5", "undisplayed_perc" => "50", '
                     . '"unrated" => "6", "unrated_perc" => "60", "locked" => true, '
-                    . '"remaining_time" => "-3", "user_comment" => ""]; '
+                    . '"remaining_time" => "-3", "user_comment" => null]; '
                     . '$rowResultData = ["num_records" => 1, "testuser" => [$resultRow], '
                     . '"passed_perc" => "75", "passed" => "1", "statistics" => []]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
@@ -510,6 +510,10 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('testuser_id=50&amp;test_id=70&amp;user_id=60', $returns[9]);
         self::assertStringContainsString('>U:Test</a>', $returns[9]);
         self::assertStringContainsString('user_id=60">login</a>', $returns[9]);
+        self::assertStringContainsString(
+            '<td style="text-align:left;">&nbsp;</td>' . "\n" . '<td style="text-align:left;">&nbsp;</td>',
+            $returns[9],
+        );
         self::assertStringContainsString('F:9.5&nbsp;P:95', $returns[9]);
         self::assertStringContainsString('2&nbsp;P:20', $returns[9]);
         self::assertStringContainsString('label (-3)', $returns[9]);
