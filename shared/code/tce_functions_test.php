@@ -1659,7 +1659,7 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             . $test_id
             . '
 			ORDER BY tsubset_type, tsubset_difficulty, tsubset_answers DESC';
-        if ($r = F_db_query($sql, $db)) {
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             $questions_data = [];
             $expected_questions = 0;
             while ($m = F_db_fetch_array($r)) {

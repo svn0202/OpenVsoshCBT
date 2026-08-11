@@ -464,6 +464,7 @@ PHP;
                     . 'function date($format) { return "2026-08-10 12:34:56"; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_db_fetch_array($result) { return false; } '
                     . 'function F_display_db_error(...$arguments) { $GLOBALS["errors"][] = $arguments; } '
                     . 'function F_db_insert_id(...$arguments) { $GLOBALS["insert_calls"][] = $arguments; return 55; } '
