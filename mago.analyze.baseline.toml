@@ -70,7 +70,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 96
+count = 91
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -100,7 +100,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 6
+count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -267,26 +267,8 @@ count = 4
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-variable"
-message = "Variable `$i` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-variable"
 message = "Variable `$max_position` might not have been defined on all execution paths leading to this point."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-variable"
-message = "Variable `$qprev` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-variable"
-message = "Variable `$qsel` might not have been defined on all execution paths leading to this point."
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
