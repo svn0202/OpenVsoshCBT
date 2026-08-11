@@ -149,8 +149,13 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
     }
 
     $mode = isset($transactions[$connection_id]) ? OCI_NO_AUTO_COMMIT : OCI_COMMIT_ON_SUCCESS;
-    // @mago-expect lint:no-error-control-operator -- execution failures follow the DAL's false-return contract
-    if (@oci_execute($stid, $mode)) {
+    set_error_handler(static fn(): bool => true);
+    try {
+        $executed = oci_execute($stid, $mode);
+    } finally {
+        restore_error_handler();
+    }
+    if ($executed) {
         return $stid;
     }
 
