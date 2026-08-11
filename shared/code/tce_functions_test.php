@@ -2487,6 +2487,8 @@ function f_get_answer_id_from_position(mixed $testlog_id, mixed $answpos): array
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array<array-key,array|bool|float|int|string|null> $answpos */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $answer_id = [];
     foreach ($answpos as $pos => $val) {
         $sql =
@@ -2497,8 +2499,9 @@ function f_get_answer_id_from_position(mixed $testlog_id, mixed $answpos): array
             . ' AND logansw_order='
             . (int) $pos
             . ' LIMIT 1';
-        if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
+            if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /** @var array{logansw_answer_id:int|numeric-string} $m */
                 $answer_id[(int) $m['logansw_answer_id']] = $val;
             }
         } else {
