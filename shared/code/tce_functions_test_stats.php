@@ -2214,6 +2214,7 @@ function f_get_safe_users_test_stat_order_by(mixed $full_order_field): string
             continue;
         }
 
+        $matches = [];
         if (preg_match('/^([a-z_]+)(?:\s+(DESC))?$/i', $part, $matches) !== 1) {
             continue;
         }

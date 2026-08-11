@@ -399,12 +399,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "possibly-undefined-variable"
-message = "Variable `$matches` might not have been defined on all execution paths leading to this point."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "possibly-undefined-variable"
 message = "Variable `$passed` might not have been defined on all execution paths leading to this point."
 count = 2
 
