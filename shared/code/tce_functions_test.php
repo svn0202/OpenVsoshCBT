@@ -1904,13 +1904,19 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             $sql .= ' ORDER BY testlog_order';
         }
 
-        if ($r = F_db_query($sql, $db)) {
+        if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             $question_order = 0;
-            while ($m = F_db_fetch_array($r)) {
+            while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /**
+                 * @var array{
+                 *   question_difficulty:int|float|numeric-string,testlog_question_id:int|numeric-string,
+                 *   testlog_num_answers:int|numeric-string,question_id:int|numeric-string,
+                 *   question_type:int|numeric-string
+                 * } $m
+                 */
                 ++$question_order;
                 // copy values to new user test
                 $test_score_unanswered = $testdata['test_score_unanswered'];
-                /** @var int|float|numeric-string $question_difficulty */
                 $question_difficulty = $m['question_difficulty'];
                 $question_unanswered_score = $test_score_unanswered * $question_difficulty;
                 $testlog_id = f_new_test_log(
