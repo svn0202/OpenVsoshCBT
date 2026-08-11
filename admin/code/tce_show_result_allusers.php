@@ -779,7 +779,7 @@ function f_tce_show_allusers_query_result(mixed $result): mixed
 function f_tce_show_allusers_creation_row(mixed $row): ?array
 {
     /** @var array{testuser_creation_time:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */

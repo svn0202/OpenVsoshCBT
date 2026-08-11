@@ -716,5 +716,5 @@ function f_tce_user_registration_query_result(mixed $result): mixed
 function f_tce_user_registration_group_row(mixed $row): ?array
 {
     /** @var array{group_id:int|string,group_name:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }

@@ -1524,14 +1524,14 @@ function f_tce_edit_question_query_result(mixed $result): mixed
 function f_tce_edit_question_authorization_row(mixed $row): ?array
 {
     /** @var array{subject_module_id:int|string,question_subject_id:int|string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{question_position:int|string|null}|null */
 function f_tce_edit_question_position_row(mixed $row): ?array
 {
     /** @var array{question_position:int|string|null}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{module_id:int|string}|null */
@@ -1576,7 +1576,7 @@ function f_tce_edit_question_record_row(mixed $row): ?array
      *     question_shuffle_answers:mixed
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -1600,14 +1600,14 @@ function f_tce_edit_question_options(mixed $options): array
 function f_tce_edit_question_module_row(mixed $row): ?array
 {
     /** @var array{module_id:int|string,module_enabled:mixed,module_name:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{subject_id:int|string,subject_enabled:mixed,subject_name:string}|null */
 function f_tce_edit_question_subject_row(mixed $row): ?array
 {
     /** @var array{subject_id:int|string,subject_enabled:mixed,subject_name:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -1622,7 +1622,7 @@ function f_tce_edit_question_list_row(mixed $row): ?array
      *     question_id:int|string,question_enabled:mixed,question_type:int|string,question_description:string
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @param list{string,string,string,string,string} $types */

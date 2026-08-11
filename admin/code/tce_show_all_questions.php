@@ -1006,7 +1006,7 @@ function f_tce_show_questions_question_row(mixed $row): ?array
      *     question_timer:int|string
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /**
@@ -1033,12 +1033,12 @@ function f_tce_show_questions_answer_row(mixed $row): ?array
      *     answer_explanation:string
      * }|null $row
      */
-    return $row;
+    return is_array($row) ? $row : null;
 }
 
 /** @return array{module_id:int|string,module_name:string,subject_id:int|string,subject_name:string}|null */
 function f_tce_show_questions_module_subject_row(mixed $row): ?array
 {
     /** @var array{module_id:int|string,module_name:string,subject_id:int|string,subject_name:string}|null $row */
-    return $row;
+    return is_array($row) ? $row : null;
 }
