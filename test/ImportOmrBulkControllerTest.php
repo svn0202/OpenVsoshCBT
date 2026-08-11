@@ -35,6 +35,7 @@ $GLOBALS['messages'] = [];
 $GLOBALS['imported'] = null;
 function f_get_boolean($value) { return $value === '1'; }
 function F_file_exists($path) { return file_exists($path); }
+function f_omr_open_dir_silently($path) { return opendir($path); }
 function f_decode_omr_test_data_qr_code($filename) { return [7, ['question' => 11]]; }
 function f_decode_omr_page($filename) { return [1 => 2]; }
 function f_get_uid_from_regnum($registration) { return $registration === 'REG42' ? 31 : 0; }

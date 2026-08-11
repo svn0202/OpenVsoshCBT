@@ -21,6 +21,17 @@
  * @since 2011-05-17
  */
 
+/** @return resource|false */
+function f_omr_open_dir_silently(string $directory): mixed
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return opendir($directory);
+    } finally {
+        restore_error_handler();
+    }
+}
+
 /**
  * Encode OMR test data array as a string to be printed on QR-Code.
  * @param $data (array) array to be encoded
