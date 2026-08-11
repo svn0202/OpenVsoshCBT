@@ -414,6 +414,7 @@ PHP;
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$markup, $emptyMarkup, $queries] = $decoded;
         self::assertStringContainsString('data-audio-play-limit="2"', $markup);
+        self::assertStringContainsString('data-image-preview-label="Image" data-image-preview-close="Close"', $markup);
         self::assertStringContainsString('data-audio-plays-left="Plays &lt;{count}&gt;"', $markup);
         self::assertStringContainsString('data-audio-limit-exhausted="Limit &amp; done"', $markup);
         self::assertStringContainsString('Question <span>1</span> / 1', $markup);
@@ -429,6 +430,12 @@ PHP;
         self::assertStringContainsString('id="nextquestion"', $markup);
         self::assertSame(3, substr_count($markup, 'disabled="disabled"'));
         self::assertStringContainsString('id="saveanswer"', $markup);
+        self::assertStringContainsString('title="Fullscreen" aria-label="Fullscreen"', $markup);
+        self::assertStringContainsString(
+            'data-answer-saving="Saving" data-answer-saved="Saved" data-answer-error="Error" '
+                . 'data-answer-conflict="Conflict" data-answer-unsaved="Unsaved" data-answer-retrying="Retrying">Save',
+            $markup,
+        );
         self::assertStringContainsString('<details class="tcecontentbox exam-question-list" open="open">', $markup);
         self::assertStringContainsString('testlog_testuser_id=55', $queries[0]);
     }
