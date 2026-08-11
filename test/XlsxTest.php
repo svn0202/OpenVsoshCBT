@@ -206,6 +206,18 @@ final class XlsxTest extends TestCase
         self::assertStringContainsString('SSN повторяется в файле.', implode(' ', $result['errors'][3] ?? []));
     }
 
+    public function testUserPreviewRejectsTextFieldsLongerThan255Characters(): void
+    {
+        $rows = [
+            \TMF_USERS_XLSX_HEADERS,
+            ['new-user', 'long-password', '', str_repeat('Я', 256), '', '', '', '', '', '1', 'default'],
+        ];
+
+        $result = \F_tmf_users_xlsx_validate($rows, [], ['default' => 1], 10);
+
+        self::assertStringContainsString('Поле first_name длиннее 255 символов.', implode(' ', $result['errors'][2] ?? []));
+    }
+
     public function testUserImportKeepsItsTransactionAndSqlContract(): void
     {
         $script = <<<'PHP'
