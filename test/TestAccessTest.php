@@ -449,15 +449,22 @@ PHP;
                 '-r',
                 'namespace Harness; define("K_DATABASE_TYPE", "MYSQL"); '
                     . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_TABLE_TEST_USER", "test_users"); '
-                    . 'define("K_TABLE_TEST_SUBJSET", "test_subject_sets"); $GLOBALS["db"] = "db"; '
-                    . '$GLOBALS["limits"] = [true, false, false]; '
-                    . '$GLOBALS["results"] = [false, true, "sets", true]; '
+                    . 'define("K_TABLE_TEST_SUBJSET", "test_subject_sets"); '
+                    . 'define("K_TABLE_SUBJECT_SET", "subject_set"); define("K_TABLE_QUESTIONS", "questions"); '
+                    . 'define("K_TABLE_ANSWERS", "answers"); $GLOBALS["db"] = "db"; '
+                    . '$GLOBALS["limits"] = [true, false, false, false]; '
+                    . '$GLOBALS["results"] = [false, true, "empty-sets", true, true, "sets", '
+                    . '"subjects", "questions", true]; '
+                    . '$GLOBALS["rows"] = ["empty-sets" => [false], "sets" => [['
+                    . '"tsubset_id" => "44", "tsubset_quantity" => "0", "tsubset_difficulty" => "3", '
+                    . '"tsubset_type" => "0", "tsubset_answers" => "0"], false], '
+                    . '"subjects" => [false], "questions" => [false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = []; '
                     . '$GLOBALS["insert_calls"] = []; $GLOBALS["stat_dates"] = []; '
                     . '$testdata = ["test_random_questions_select" => false, '
                     . '"test_random_questions_order" => false, "test_questions_order_mode" => 0, '
                     . '"test_random_answers_select" => false, "test_random_answers_order" => false, '
-                    . '"test_answers_order_mode" => 0]; '
+                    . '"test_answers_order_mode" => 0, "test_score_unanswered" => 0]; '
                     . 'function f_is_test_over_limits() { return array_shift($GLOBALS["limits"]); } '
                     . 'function f_get_test_data($testId) { return $GLOBALS["testdata"]; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
@@ -465,7 +472,7 @@ PHP;
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function f_legacy_db_query_result($result) { return $result; } '
-                    . 'function F_db_fetch_array($result) { return false; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error(...$arguments) { $GLOBALS["errors"][] = $arguments; } '
                     . 'function F_db_insert_id(...$arguments) { $GLOBALS["insert_calls"][] = $arguments; return 55; } '
                     . 'function f_update_testuser_stat($date) { $GLOBALS["stat_dates"][] = $date; } '
@@ -483,7 +490,7 @@ PHP;
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$returns = [$qualified("007", "011"), $qualified("007", "011"), '
-                    . '$qualified("007", "011")]; '
+                    . '$qualified("007", "011"), $qualified("007", "011")]; '
                     . 'echo json_encode([$returns, $GLOBALS["queries"], $GLOBALS["errors"], '
                     . '$GLOBALS["insert_calls"], $GLOBALS["stat_dates"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -492,20 +499,29 @@ PHP;
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: array{false, false, true}, 1: array{0: string, 1: string, 2: string, 3: string}, 2: list<list<mixed>>, 3: array{0: list<mixed>}, 4: array{0: string}} $decoded */
+        /**
+         * @var array{
+         *   0:array{false,false,true,true},
+         *   1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
+         *   2:list<list<mixed>>,3:list<list<mixed>>,4:list<string>
+         * } $decoded
+         */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$returns, $queries, $errors, $insertCalls, $statDates] = $decoded;
-        self::assertSame([false, false, true], $returns);
+        self::assertSame([false, false, true, true], $returns);
         self::assertStringContainsString('VALUES ( 7, 11, 0,', $queries[0]);
         self::assertStringContainsString('VALUES ( 7, 11, 0,', $queries[1]);
         self::assertStringContainsString('FROM test_subject_sets WHERE tsubset_test_id=7', $queries[2]);
+        self::assertStringContainsString('WHERE subjset_tsubset_id=44', $queries[6]);
+        self::assertStringContainsString('question_difficulty=3', $queries[7]);
+        self::assertStringContainsString('LIMIT 0', $queries[7]);
         self::assertSame(
             "UPDATE test_users SET testuser_status=1, testuser_creation_time='2026-08-10 12:34:56' "
                 . 'WHERE testuser_id=55',
             $queries[3],
         );
         self::assertSame([[false]], $errors);
-        self::assertSame([['db', 'test_users', 'testuser_id']], $insertCalls);
-        self::assertSame(['2026-08-10 12:34:56'], $statDates);
+        self::assertSame([['db', 'test_users', 'testuser_id'], ['db', 'test_users', 'testuser_id']], $insertCalls);
+        self::assertSame(['2026-08-10 12:34:56', '2026-08-10 12:34:56'], $statDates);
     }
 }
