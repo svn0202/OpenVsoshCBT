@@ -56,18 +56,6 @@ count = 38
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "impossible-null-type-comparison"
-message = "Impossible condition: variable `$test_id` (type `int`) will always be `null`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "impossible-null-type-comparison"
-message = "Impossible condition: variable `$testlog_id` (type `int`) will always be `null`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "impossible-type-comparison"
 message = "Impossible type assertion: `$enabled` of type `false` can never be `array<array-key, mixed>`."
 count = 1
@@ -551,12 +539,6 @@ file = "shared/code/tce_functions_test.php"
 code = "redundant-logical-operation"
 message = "Redundant `&&` operation: left operand is always falsy and right operand is not evaluated."
 count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-logical-operation"
-message = "Redundant `||` operation: left operand is always false and right operand is evaluated."
-count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
