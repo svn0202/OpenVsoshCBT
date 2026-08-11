@@ -2897,6 +2897,37 @@ function f_questions_menu(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /**
+     * @var array{
+     *     a_meta_charset:string,
+     *     a_meta_language?:string,
+     *     h_question_answered:string,
+     *     h_question_displayed:string,
+     *     h_question_not_answered:string,
+     *     h_question_not_displayed:string,
+     *     ov_answer_not_saved:string,
+     *     ov_answer_retrying:string,
+     *     ov_answer_save_conflict:string,
+     *     ov_answer_saved:string,
+     *     ov_answer_saving:string,
+     *     ov_answer_unsaved:string,
+     *     ov_audio_limit_exhausted?:string,
+     *     ov_audio_plays_left?:string,
+     *     ov_decrease_text:string,
+     *     ov_increase_text:string,
+     *     ov_mark_for_review:string,
+     *     ov_save:string,
+     *     ov_switch_theme:string,
+     *     w_close:string,
+     *     w_fullscreen:string,
+     *     w_image:string,
+     *     w_max_score:string,
+     *     w_next:string,
+     *     w_previous:string,
+     *     w_question:string,
+     *     w_questions:string
+     * } $l
+     */
     /** @return non-empty-array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     /**
@@ -3045,7 +3076,6 @@ function f_questions_menu(
     }
 
     // build quick navigator links (previous - next)
-    /** @var array{question:string,zoom_in:string,zoom_out:string,theme:string,review:string} $mobile_labels */
     $mobile_labels = [
         'question' => $l['w_question'],
         'zoom_in' => $l['ov_increase_text'],
@@ -3053,12 +3083,6 @@ function f_questions_menu(
         'theme' => $l['ov_switch_theme'],
         'review' => $l['ov_mark_for_review'],
     ];
-    /**
-     * @var array{
-     *     image:string,close:string,fullscreen:string,saving:string,saved:string,error:string,conflict:string,
-     *     unsaved:string,retrying:string,save:string
-     * } $menu_labels
-     */
     $menu_labels = [
         'image' => $l['w_image'],
         'close' => $l['w_close'],
@@ -3071,7 +3095,7 @@ function f_questions_menu(
         'retrying' => $l['ov_answer_retrying'],
         'save' => $l['ov_save'],
     ];
-    $audio_labels = match (strtolower((string) ($l['a_meta_language'] ?? 'en'))) {
+    $audio_labels = match (strtolower($l['a_meta_language'] ?? 'en')) {
         'ar' => [
             'plays_left' => 'مرات التشغيل المتبقية: {count}',
             'limit_exhausted' => 'تم استنفاد حد تشغيل الصوت',
@@ -3085,11 +3109,8 @@ function f_questions_menu(
             'limit_exhausted' => 'Audio play limit reached',
         ],
     };
-    /** @var string $charset */
     $charset = $l['a_meta_charset'];
-    /** @var string $audio_plays_left */
     $audio_plays_left = $l['ov_audio_plays_left'] ?? $audio_labels['plays_left'];
-    /** @var string $audio_limit_exhausted */
     $audio_limit_exhausted = $l['ov_audio_limit_exhausted'] ?? $audio_labels['limit_exhausted'];
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
