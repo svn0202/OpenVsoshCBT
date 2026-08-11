@@ -58,7 +58,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "invalid-type-cast"
 message = "Casting `mixed` to `float`."
-count = 4
+count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -70,7 +70,7 @@ count = 73
 file = "shared/code/tce_functions_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 32
+count = 31
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -112,7 +112,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
-count = 22
+count = 20
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -148,7 +148,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Right operand in binary operation has type `mixed`."
-count = 16
+count = 14
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

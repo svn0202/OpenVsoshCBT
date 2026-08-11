@@ -1238,7 +1238,7 @@ function f_get_first_test_user(mixed $test_id): int|string
  * Creates a new tce_tests_logs table entry and returns inserted ID.
  * @param $testuser_id (int) ID of tce_tests_users
  * @param $question_id (int) question ID
- * @param $score (int) score for unanswered questions
+ * @param int|float|numeric-string $score Score for unanswered questions.
  * @param $order (int) question display order
  * @param $num_answers (int) number of alternative answers
  * @return int|string|null|false Test-log ID, or false when the insert fails.
@@ -1672,12 +1672,16 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 
                 if ($rq = F_db_query($sqlq, $db)) {
                     while ($mq = F_db_fetch_array($rq)) {
+                        /** @var int|float|numeric-string $test_score_unanswered */
+                        $test_score_unanswered = $testdata['test_score_unanswered'];
+                        /** @var int|float|numeric-string $question_difficulty */
+                        $question_difficulty = $mq['question_difficulty'];
                         // store questions data
                         $tmp_data = [
                             'id' => $mq['question_id'],
                             'type' => $mq['question_type'],
                             'answers' => $m['tsubset_answers'],
-                            'score' => $testdata['test_score_unanswered'] * $mq['question_difficulty'],
+                            'score' => $test_score_unanswered * $question_difficulty,
                         ];
                         if ($random_questions || $test_questions_order_mode !== 0) {
                             $questions_data[] = $tmp_data;
@@ -1740,7 +1744,11 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             while ($m = F_db_fetch_array($r)) {
                 ++$question_order;
                 // copy values to new user test
-                $question_unanswered_score = $testdata['test_score_unanswered'] * $m['question_difficulty'];
+                /** @var int|float|numeric-string $test_score_unanswered */
+                $test_score_unanswered = $testdata['test_score_unanswered'];
+                /** @var int|float|numeric-string $question_difficulty */
+                $question_difficulty = $m['question_difficulty'];
+                $question_unanswered_score = $test_score_unanswered * $question_difficulty;
                 $testlog_id = f_new_test_log(
                     $testuser_id,
                     $m['testlog_question_id'],
