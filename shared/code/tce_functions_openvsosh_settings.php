@@ -34,7 +34,8 @@ function openvsosh_access_setting_defaults(): array
  * @param array<array-key, string> $translations
  * @return array{access_control: string, disable_registration: string,
  *     disable_registration_hint: string, disable_password_reset: string,
- *     disable_password_reset_hint: string, access_help: string, access_help_hint: string}
+ *     disable_password_reset_hint: string, access_help: string, access_help_hint: string,
+ *     settings_saved: string, settings_save_failed: string}
  */
 function openvsosh_access_labels(array $translations): array
 {
@@ -49,12 +50,18 @@ function openvsosh_access_labels(array $translations): array
         'access_help' => 'Помощь и инструкция по получению доступа',
         'access_help_hint' =>
             'Текст будет показан под формой входа. Можно указать контакты и порядок получения учётных данных.',
+        'settings_saved' => 'Настройки доступа сохранены.',
+        'settings_save_failed' => 'Не удалось сохранить настройки. Проверьте права доступа к базе данных.',
     ];
     foreach ($fallbacks as $key => $fallback) {
         $translated = $translations['ov_' . $key] ?? '';
         if ($translated !== '') {
             $fallbacks[$key] = $translated;
         }
+    }
+    $settings_saved = $translations['ov_access_settings_saved'] ?? '';
+    if ($settings_saved !== '') {
+        $fallbacks['settings_saved'] = $settings_saved;
     }
     return $fallbacks;
 }
