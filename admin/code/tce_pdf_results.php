@@ -274,12 +274,12 @@ if ($mode > 2) {
             $pdf->printTestUserInfo($tstusr, $onlytext);
         }
     } else {
-        $pdf->addReportPage();
         $testuser_key = "'" . $testuser_id . "'";
-        /** @mago-expect analysis:possibly-undefined-string-array-index */
-        /** @var array<array-key,mixed> $testuser */
-        $testuser = $ts['testuser'][$testuser_key];
-        $pdf->printTestUserInfo($testuser, $onlytext);
+        $testuser = $ts['testuser'][$testuser_key] ?? null;
+        if (is_array($testuser)) {
+            $pdf->addReportPage();
+            $pdf->printTestUserInfo($testuser, $onlytext);
+        }
     }
 }
 
