@@ -6,6 +6,17 @@ use PHPUnit\Framework\TestCase;
 
 final class TestExecuteControllerTest extends TestCase
 {
+    public function testSessionReferenceIsBoundAfterAuthorizationStartsTheSession(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../public/code/tce_test_execute.php');
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $sessionBinding = strpos($source, '$session = &$_SESSION;');
+
+        self::assertNotFalse($authorization);
+        self::assertNotFalse($sessionBinding);
+        self::assertGreaterThan($authorization, $sessionBinding);
+    }
+
     public function testNullableTestNamePreservesEmptyTitleSuffix(): void
     {
         [$status, $output] = \F_tcecode_run_process(

@@ -89,7 +89,7 @@ if(adaForm===1){
 var qNum = document.getElementById("confirmanswer");
 var fTestForm = document.getElementById("testform");
 
-if(fTestForm){
+if(fTestForm && qNum){
 	var qNum = qNum.value;
 	var qNumber = qNum.replace(/\D/g,'');
 	fTestForm.insertAdjacentHTML("beforebegin", "<div id='qTopBar'><span id='qNum'>"+qNumber+"</span><span id='fontResizer'><span id='fontplus' onclick='zoomintext(\".tcecontentbox\")'>&plus;</span><span id='fontminus' onclick='zoomouttext(\".tcecontentbox\")'>&minus;</span><span id='unsure' onclick='addUnsure()' class='icon-flag'></span></span></div>");
