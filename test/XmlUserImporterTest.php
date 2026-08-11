@@ -184,6 +184,28 @@ final class XmlUserImporterTest extends TestCase
         self::assertSame('destroyed', $output);
     }
 
+    public function testMissingXmlFileReportsAReadFailure(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "\nclass XMLUserImporter\n") + 1; '
+                    . '$marker = "} // END OF CLASS"; $end = strpos($source, $marker, $start); '
+                    . 'eval(substr($source, $start, $end - $start + strlen($marker))); '
+                    . '$file = tempnam(sys_get_temp_dir(), "openvsosh-users-xml-"); unlink($file); '
+                    . 'error_reporting(0); try { new XMLUserImporter($file); } catch (Throwable $error) { '
+                    . 'echo get_class($error) . ": " . $error->getMessage(); }',
+                dirname(__DIR__) . '/admin/code/XMLUserImporter.php',
+            ],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('RuntimeException: Unable to read XML user import file.', $output);
+    }
+
     public function testEmptyDocumentParsesAndTemporaryFileIsDeletedOnDestruction(): void
     {
         [$status, $output] = \F_tcecode_run_process(

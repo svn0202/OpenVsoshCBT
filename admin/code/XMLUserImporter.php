@@ -168,6 +168,7 @@ class XMLUserImporter
     /**
      * Class constructor.
      * @param $xmlfile (string) XML file name
+     * @throws RuntimeException when the XML file cannot be read
      */
     public function __construct(
         /**
@@ -185,8 +186,15 @@ class XMLUserImporter
         // sets the character data handler function for the XML parser
         xml_set_character_data_handler($this->parser, $this->segContentHandler(...));
         // start parsing an XML document
+        if (!is_file($xmlfile) || !is_readable($xmlfile)) {
+            throw new RuntimeException('Unable to read XML user import file.');
+        }
+
         $xml = file_get_contents($xmlfile);
-        // @mago-expect analysis:possibly-false-argument -- xml_parse preserves the constructor's legacy failure mode
+        if ($xml === false) {
+            throw new RuntimeException('Unable to read XML user import file.');
+        }
+
         if (xml_parse($this->parser, $xml) === 0) {
             die(sprintf(
                 'ERROR xmlResourceBundle :: XML error: %s at line %d',
