@@ -155,7 +155,8 @@ final class StatisticsTest extends TestCase
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$data = $qualified("07", "03", "011", "start-filter", "end-filter", '
                     . '"unsafe", false, 0); '
-                    . '$GLOBALS["rows"] = [$row, false]; '
+                    . '$nullEndRow = $row; $nullEndRow["testuser_end_time"] = null; '
+                    . '$GLOBALS["rows"] = [$nullEndRow, false]; '
                     . '$enabled = $qualified("07", "03", "011", "start-filter", "end-filter", '
                     . '"unsafe", false, 1); '
                     . '$invalidRow = $row; $invalidRow["testuser_creation_time"] = "invalid-creation"; '
@@ -192,7 +193,7 @@ final class StatisticsTest extends TestCase
          *   },
          *   1: array{0:string,1:string,2:string},
          *   2: array{score: array{0: string}, score_perc: array{0: int}},
-         *   3: array{testuser: array{"'99'": array{right: int, recurrence: int}}},
+         *   3: array{testuser: array{"'99'": array{right: int, recurrence: int, time_diff:string}}},
          *   4: array{0: array{0: int, 1: int, 2: int, 3: string, 4: string, 5: int, 6: bool}},
          *   5: array{testuser:array{"'99'":array{time_diff:string,remaining_time:int}}},
          *   6:array{num_records:int,testuser:array<array-key,mixed>,...},7:int
@@ -225,6 +226,7 @@ final class StatisticsTest extends TestCase
         self::assertSame([65], $statistics['score_perc']);
         self::assertSame(2, $enabled['testuser']["'99'"]['right']);
         self::assertSame(3, $enabled['testuser']["'99'"]['recurrence']);
+        self::assertSame('TIME:1800', $enabled['testuser']["'99'"]['time_diff']);
         self::assertSame([[7, 3, 11, 'DATE:10', 'DATE:20', 99, false]], $testStats);
         self::assertSame('TIME:0', $invalid['testuser']["'99'"]['time_diff']);
         self::assertSame(137, $invalid['testuser']["'99'"]['remaining_time']);

@@ -2202,7 +2202,7 @@ function f_get_all_users_test_stat(
             /**
              * @var array{
              *   testuser_id:int|numeric-string,testuser_test_id:int|numeric-string,
-             *   testuser_creation_time:string,testuser_end_time:mixed,testuser_status:int|numeric-string,
+             *   testuser_creation_time:string,testuser_end_time:string|null,testuser_status:int|numeric-string,
              *   user_id:int|numeric-string,user_lastname:mixed,user_firstname:mixed,user_name:mixed,user_email:mixed,
              *   total_score:int|float|numeric-string
              * } $mr
@@ -2243,15 +2243,15 @@ function f_get_all_users_test_stat(
             $halfscore = $usrtestdata['test_max_score'] / 2;
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['testuser_creation_time'] = $mr['testuser_creation_time'];
             $data['testuser']["'" . $mr['testuser_id'] . "'"]['testuser_end_time'] = $mr['testuser_end_time'];
+            $testuser_end_time = $mr['testuser_end_time'] ?? 0;
             if (
-                $mr['testuser_end_time'] <= 0
-                || (int) strtotime((string) $mr['testuser_end_time'])
-                    < (int) strtotime($mr['testuser_creation_time'])
+                $testuser_end_time <= 0
+                || (int) strtotime($testuser_end_time) < (int) strtotime($mr['testuser_creation_time'])
             ) {
                 $time_diff = $usrtestdata['test_duration_time'] * K_SECONDS_IN_MINUTE;
             } else {
                 $time_diff =
-                    (int) strtotime((string) $mr['testuser_end_time'])
+                    (int) strtotime($testuser_end_time)
                     - (int) strtotime($mr['testuser_creation_time']); //sec
             }
 
