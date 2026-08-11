@@ -22,13 +22,18 @@
 
 /**
  * Returns statistic array for the test-user
- * @param $test_id (int) test ID.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $testuser_id (int) test-user ID - if greater than zero, filter stats for the specified test-user.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * return $data array containing test-user statistics.
+ * @param mixed $test_id Test ID.
+ * @param mixed $user_id User ID - if greater than zero, filter stats for the specified user.
+ * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @return array<array-key, mixed> Test-user statistics.
  */
-function f_get_user_test_stat($test_id, $user_id = 0, $testuser_id = 0, $pubmode = false)
+function f_get_user_test_stat(
+    mixed $test_id,
+    mixed $user_id = 0,
+    mixed $testuser_id = 0,
+    mixed $pubmode = false,
+): array
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';
@@ -2020,6 +2025,7 @@ function f_get_all_users_test_stat(
         while ($mr = F_db_fetch_array($rr)) {
             ++$itemcount;
             $usrtestdata = f_get_user_test_stat($mr['testuser_test_id'], $mr['user_id'], $mr['testuser_id']);
+            /** @var array{test_max_score:mixed,test_duration_time:mixed,test_score_threshold:mixed,user_score:mixed,user_test_start_time:string,user_comment:mixed} $usrtestdata */
             if ($stats > 0) {
                 $teststat = f_get_test_stat(
                     $mr['testuser_test_id'],
