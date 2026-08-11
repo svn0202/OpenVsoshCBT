@@ -267,10 +267,9 @@ if ($mode > 2) {
         }
     } else {
         $testuser_key = "'" . $testuser_id . "'";
-        /** @mago-expect analysis:possibly-undefined-string-array-index */
-        /** @var array{test: array{test_report_to_users: mixed}} $testuser */
-        $testuser = $ts['testuser'][$testuser_key];
-        if (f_get_boolean($testuser['test']['test_report_to_users'])) {
+        $testuser = $ts['testuser'][$testuser_key] ?? null;
+        /** @var array{test?:array{test_report_to_users?:mixed}}|null $testuser */
+        if (is_array($testuser) && f_get_boolean($testuser['test']['test_report_to_users'] ?? false)) {
             $pdf->addReportPage();
             $pdf->printTestUserInfo($testuser, $onlytext);
         }
