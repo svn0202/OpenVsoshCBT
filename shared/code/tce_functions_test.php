@@ -78,7 +78,9 @@ function f_get_user_tests(): string
                     . '" data-end="'
                     . htmlspecialchars((string) $m['test_end_time'], ENT_QUOTES)
                     . '">' . K_NEWLINE;
-                if ($m['test_password'] !== null && strlen($m['test_password']) > 0) {
+                /** @var string|null $test_password */
+                $test_password = $m['test_password'];
+                if ($test_password !== null && strlen($test_password) > 0) {
                     $str .= '<td style="background-color:#ffffcc;">';
                 } else {
                     $str .= '<td>';
