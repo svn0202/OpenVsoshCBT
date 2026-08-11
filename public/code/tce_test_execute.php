@@ -118,7 +118,7 @@ if (isset($request['testid']) && $request['testid'] > 0) {
     ) {
         // display login page
         require_once '../code/tce_page_header.php';
-        echo (string) f_test_login_form($server['SCRIPT_NAME'], 'form_test_login', 'post', 'multipart/form-data', $test_id);
+        echo f_test_login_form($server['SCRIPT_NAME'], 'form_test_login', 'post', 'multipart/form-data', $test_id);
         require_once '../code/tce_page_footer.php';
         exit(); //break page here
     }

@@ -3176,14 +3176,20 @@ function f_update_test_comment(mixed $test_id, mixed $testcomment): void
  * <li>div.login_form div.login_row span.label : container for input label</li>
  * <li>div.login_form div.login_row span.formw : container for input form</li>
  * </ul>
- * @param faction String action attribute
- * @param fid String form ID attribute
- * @param fmethod String method attribute (get/post)
- * @param fenctype String enctype attribute
- * @param test_id int ID of the test
- * @return XHTML string for login form
+ * @param mixed $faction String action attribute
+ * @param mixed $fid String form ID attribute
+ * @param mixed $fmethod String method attribute (get/post)
+ * @param mixed $fenctype String enctype attribute
+ * @param mixed $test_id ID of the test
+ * @return string XHTML string for login form
  */
-function f_test_login_form($faction, $fid, $fmethod, $fenctype, $test_id)
+function f_test_login_form(
+    mixed $faction,
+    mixed $fid,
+    mixed $fmethod,
+    mixed $fenctype,
+    mixed $test_id,
+): string
 {
     global $l;
     require_once '../config/tce_config.php';
