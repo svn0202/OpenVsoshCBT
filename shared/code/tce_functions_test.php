@@ -1741,6 +1741,7 @@ function f_add_question_answers(
         $db,
     );
     $question_options = $question_options_result ? F_db_fetch_array($question_options_result) : false;
+    /** @var array{question_shuffle_answers?:mixed}|false $question_options */
     $randorder = f_get_boolean($testdata['test_random_answers_order'])
         || f_get_boolean($question_options['question_shuffle_answers'] ?? false);
     $ordmode = (int) $testdata['test_answers_order_mode'];

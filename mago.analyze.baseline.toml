@@ -529,12 +529,6 @@ message = "Redundant `||` operation: left operand is always true and right opera
 count = 2
 
 [[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "redundant-null-coalesce"
-message = "Redundant null coalesce: left-hand side is always `null`."
-count = 1
-
-[[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
