@@ -322,6 +322,7 @@ function f_is_valid_ip(mixed $user_ip, mixed $test_ips): bool
     if (trim((string) $test_ips) === '*') {
         return true;
     }
+    /** @var string $test_ips */
 
     // Convert the user IP to its packed 16-byte binary form so addresses can be compared
     // losslessly and case-insensitively as fixed-width byte strings. A 64-bit int form would
