@@ -297,11 +297,11 @@ function f_tmf_backup_resolve_file(string $backup_directory, string $filename): 
 /**
  * @param array{type:string,host:string,port:string,user:string,name:string,password:string,
  *     pg_restore_binary?:string,mysql_binary?:string,...<string,string>} $config
+ * @throws TmfBackupException When the archive cannot be read, unpacked, or restored.
  */
 function f_tmf_backup_restore(array $config, string $archive_path): void
 {
     if (!is_file($archive_path) || !is_readable($archive_path)) {
-        // @mago-expect analysis:unhandled-thrown-type -- restore failures use the established exception API
         throw new TmfBackupException('Резервная копия недоступна для чтения.');
     }
     $temporary = tempnam(sys_get_temp_dir(), 'openvsosh-db-restore-');
