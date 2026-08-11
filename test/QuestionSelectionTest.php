@@ -334,6 +334,7 @@ PHP;
                     . 'function F_count_rows(...$arguments) { return 2; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$GLOBALS["start_times"] = [1000, false, 500]; '
