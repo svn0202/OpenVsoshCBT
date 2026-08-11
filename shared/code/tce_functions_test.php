@@ -256,7 +256,7 @@ function f_get_user_tests()
  * Mark previous test attempts as repeated.
  * @param $test_id (int) Test ID
  */
-function f_repeat_test($test_id)
+function f_repeat_test(mixed $test_id): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
