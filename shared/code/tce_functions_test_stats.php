@@ -1894,7 +1894,14 @@ function f_print_user_test_stat(mixed $testuser_id): string
                     . '\'
 					ORDER BY logansw_order';
                 if ($ra = F_db_query($sqla, $db)) {
-                    while ($ma = F_db_fetch_array($ra)) {
+                    while (($ma = $normalize_row(F_db_fetch_array($ra))) !== null) {
+                        /**
+                         * @var array{
+                         *   answer_description:mixed,answer_explanation:mixed,answer_isright:mixed,
+                         *   answer_position:int|numeric-string,logansw_position:int|numeric-string,
+                         *   logansw_selected:int|numeric-string
+                         * } $ma
+                         */
                         $ret .= '<li>';
                         if (in_array((int) $m['question_type'], [4, 5], true)) {
                             // ORDER / MATCHING
