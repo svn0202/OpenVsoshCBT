@@ -676,7 +676,11 @@ function f_tce_admin_result_user_query_result(mixed $result): mixed
 /** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */
 function f_tce_admin_result_user_executed_test_row(mixed $row): ?array
 {
-    /** @var array{test_id:int|string,test_begin_time:string,test_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{test_id:int|string,test_begin_time:string,test_name:string} $row */
     return $row;
 }
 
@@ -692,6 +696,10 @@ function f_tce_admin_result_user_executed_test_row(mixed $row): ?array
  */
 function f_tce_admin_result_user_attempt_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     testuser_id:int|string,
@@ -700,7 +708,7 @@ function f_tce_admin_result_user_attempt_row(mixed $row): ?array
      *     testuser_creation_time:string,
      *     testuser_status:int|string,
      *     test_end_time:string|null
-     * }|null $row
+     * } $row
      */
     return $row;
 }
@@ -708,7 +716,11 @@ function f_tce_admin_result_user_attempt_row(mixed $row): ?array
 /** @return array{test_score_right:int|float|string,test_duration_time:int|string}|null */
 function f_tce_admin_result_user_basic_test_row(mixed $row): ?array
 {
-    /** @var array{test_score_right:int|float|string,test_duration_time:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{test_score_right:int|float|string,test_duration_time:int|string} $row */
     return $row;
 }
 

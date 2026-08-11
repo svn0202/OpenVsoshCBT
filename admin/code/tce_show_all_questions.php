@@ -944,21 +944,33 @@ function f_tce_show_questions_query_result(mixed $result): mixed
 /** @return array{module_id:int|string,module_name:string,module_enabled:int|string|bool}|null */
 function f_tce_show_questions_module_row(mixed $row): ?array
 {
-    /** @var array{module_id:int|string,module_name:string,module_enabled:int|string|bool}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{module_id:int|string,module_name:string,module_enabled:int|string|bool} $row */
     return $row;
 }
 
 /** @return array{subject_id:int|string,subject_name:string,subject_enabled:int|string|bool}|null */
 function f_tce_show_questions_subject_row(mixed $row): ?array
 {
-    /** @var array{subject_id:int|string,subject_name:string,subject_enabled:int|string|bool}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{subject_id:int|string,subject_name:string,subject_enabled:int|string|bool} $row */
     return $row;
 }
 
 /** @return array{question_type:int|string,numquestions:int|string}|null */
 function f_tce_show_questions_stat_row(mixed $row): ?array
 {
-    /** @var array{question_type:int|string,numquestions:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{question_type:int|string,numquestions:int|string} $row */
     return $row;
 }
 

@@ -1408,6 +1408,10 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      */
     private static function questionLogRow(mixed $value): ?array
     {
+        if (!is_array($value)) {
+            return null;
+        }
+
         /**
          * @var array{
          *     question_type:int|string,
@@ -1421,7 +1425,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
          *     testlog_answer_text:string,
          *     testlog_id:int|string,
          *     testlog_comment:string|null
-         * }|null $value
+         * } $value
          */
         return $value;
     }
@@ -1457,6 +1461,10 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
      */
     private static function answerLogRow(mixed $value): ?array
     {
+        if (!is_array($value)) {
+            return null;
+        }
+
         /**
          * @var array{
          *     answer_isright:int|string|bool,
@@ -1465,7 +1473,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
          *     logansw_selected:int|string|bool,
          *     answer_description:string,
          *     answer_explanation:string
-         * }|null $value
+         * } $value
          */
         return $value;
     }

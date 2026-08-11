@@ -2253,10 +2253,14 @@ function f_tce_edit_test_subject_id_row(mixed $row): ?array
  */
 function f_tce_edit_test_list_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     test_id:int|numeric-string,test_begin_time:string,test_end_time:string,test_name:string
-     * }|null $row
+     * } $row
      */
     return $row;
 }
@@ -2264,14 +2268,22 @@ function f_tce_edit_test_list_row(mixed $row): ?array
 /** @return array{group_id:int|string,group_name:string}|null */
 function f_tce_edit_test_group_row(mixed $row): ?array
 {
-    /** @var array{group_id:int|string,group_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{group_id:int|string,group_name:string} $row */
     return $row;
 }
 
 /** @return array{ssl_id:int|string,ssl_name:string,ssl_end_date:string}|null */
 function f_tce_edit_test_ssl_row(mixed $row): ?array
 {
-    /** @var array{ssl_id:int|string,ssl_name:string,ssl_end_date:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{ssl_id:int|string,ssl_name:string,ssl_end_date:string} $row */
     return $row;
 }
 

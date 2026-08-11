@@ -1537,14 +1537,22 @@ function f_tce_edit_question_position_row(mixed $row): ?array
 /** @return array{module_id:int|string}|null */
 function f_tce_edit_question_module_id_row(mixed $row): ?array
 {
-    /** @var array{module_id:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{module_id:int|string} $row */
     return $row;
 }
 
 /** @return array{subject_id:int|string}|null */
 function f_tce_edit_question_subject_id_row(mixed $row): ?array
 {
-    /** @var array{subject_id:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{subject_id:int|string} $row */
     return $row;
 }
 
