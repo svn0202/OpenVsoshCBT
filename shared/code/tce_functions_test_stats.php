@@ -1312,16 +1312,22 @@ function f_print_test_stat(
 
 /**
  * Returns test stats as HTML table
- * @param $data (array) Array containing test statistics.
- * @param $nextorderdir (int) next order direction.
- * @param $order_field (string) order fields.
- * @param $filter (string) filter string for URLs.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
- * return HTML table string.
+ * @param mixed $data Test statistics.
+ * @param mixed $nextorderdir Next order direction.
+ * @param mixed $order_field Order fields.
+ * @param mixed $filter Filter string for URLs.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @param mixed $stats 2 = full stats; 1 = user stats; 0 = disabled stats.
+ * @return string|null HTML table, or null when there are no records.
  */
-function f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, $pubmode = false, $stats = 1)
-{
+function f_print_test_result_stat(
+    mixed $data,
+    mixed $nextorderdir,
+    mixed $order_field,
+    mixed $filter,
+    mixed $pubmode = false,
+    mixed $stats = 1,
+): ?string {
     require_once '../config/tce_config.php';
     global $db, $l;
     /**
@@ -1369,7 +1375,7 @@ function f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, $
      * } $l
      */
     if (empty($data['num_records'])) {
-        return;
+        return null;
     }
 
     if (($l['a_meta_dir'] <=> 'rtl') === 0) {
