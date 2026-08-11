@@ -39,9 +39,8 @@ function f_tmf_users_xlsx_validate(
     if ($rows === []) {
         return ['records' => [], 'errors' => [1 => ['Файл пуст.']]];
     }
-    /** @mago-expect analysis:possibly-undefined-int-array-index */
-    /** @var array<int,string> $header_row */
-    $header_row = $rows[0];
+    $header_key = array_key_first($rows);
+    $header_row = $rows[$header_key];
     $headers = array_map(
         static fn (string $value): string => strtolower(trim($value)),
         $header_row,
