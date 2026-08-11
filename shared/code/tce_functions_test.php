@@ -2897,6 +2897,8 @@ function f_questions_menu(
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $testuser_id = (int) $testuser_id;
     $testlog_id = (int) $testlog_id;
     $str = '';
@@ -2921,8 +2923,22 @@ function f_questions_menu(
         . $testuser_id
         . '
 		ORDER BY testlog_id';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *     question_description:string|null,
+             *     question_difficulty:int|float|numeric-string,
+             *     question_timer:mixed,
+             *     testlog_id:int|numeric-string,
+             *     testlog_answer_text:string|null,
+             *     testlog_display_time:string|null,
+             *     testlog_change_time:string|null,
+             *     testlog_reviewed:mixed
+             * } $m
+             */
             ++$i;
             $item_classes = [];
             if (f_get_boolean($m['testlog_reviewed'] ?? false)) {
@@ -2953,19 +2969,15 @@ function f_questions_menu(
                     . '" data-testlog-id="' . $m['testlog_id'] . '">';
                 $str .=
                     '<input type="button" name="jumpquestion_'
-                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . $m['testlog_id']
                     . '" id="jumpquestion_'
-                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . $m['testlog_id']
                     . '" value="'
                     . $i
                     . '" title="'
-                    // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                     . f_tcecode_to_title($m['question_description'])
                     . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 $question_timer = f_get_boolean($m['question_timer']);
                 $qsel = $i;
                 if ($qsel > 1) {
@@ -3000,23 +3012,20 @@ function f_questions_menu(
             $str .= '</abbr>';
             $str .= '&nbsp;';
             // show question score
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
-            /** @var int|float $n_question_score */
-            $n_question_score = $testdata['test_score_right'] * $m['question_difficulty'];
+            /** @var int|float|numeric-string $test_score_right */
+            $test_score_right = $testdata['test_score_right'];
+            $n_question_score = $test_score_right * $m['question_difficulty'];
             $str .= '<abbr class="offbox" title="' . $l['w_max_score'] . ': ' . $n_question_score . '">';
             $str .= sprintf('% 5.1f', $n_question_score);
             $str .= '</abbr>';
             $str .= '&nbsp;';
             if ($testlog_id === 0) {
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 $testlog_id = $m['testlog_id'];
                 $testlog_id_last = $testlog_id;
             }
 
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
             $testlog_id_last = $m['testlog_id'];
             $str .= '<span class="exam-question-menu-description">'
-                // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
                 . f_tcecode_to_line($m['question_description'])
                 . '</span>';
             $str .= '</li>' . K_NEWLINE;
