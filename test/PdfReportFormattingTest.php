@@ -39,6 +39,52 @@ final class PdfReportFormattingTest extends TestCase
         $this->report = new FormattingReport();
     }
 
+    public function testDigitalSignatureKeepsConfiguredValuesAndEngineDefaults(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("PDF_MARGIN_LEFT", 15.0); define("PDF_MARGIN_TOP", 27.0); '
+                    . 'define("K_DIGSIG_ENABLE", true); define("K_DIGSIG_CERTIFICATE", "certificate.pem"); '
+                    . 'define("K_DIGSIG_PRIVATE_KEY", "private-key.pem"); '
+                    . 'define("K_DIGSIG_PASSWORD", "secret"); define("K_DIGSIG_CERT_TYPE", 3); '
+                    . 'define("K_DIGSIG_NAME", "Exam authority"); define("K_DIGSIG_LOCATION", "Perm"); '
+                    . 'define("K_DIGSIG_REASON", "Results"); define("K_DIGSIG_CONTACT", "admin@example.test"); '
+                    . 'require $argv[1]; class InspectablePdfSignatureReport extends TcePdfReport {'
+                    . 'public function __construct() {} public function applySignature() { parent::applyDigitalSignature(); } '
+                    . 'public function signatureData() { return $this->signature; }} '
+                    . '$report = new InspectablePdfSignatureReport(); $report->applySignature(); '
+                    . '$signature = $report->signatureData(); unset($signature["ltv"]); '
+                    . 'echo json_encode($signature);',
+                dirname(__DIR__) . '/shared/code/tce_pdf_report.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                'appearance' => [
+                    'ap' => [], 'as' => '', 'empty' => [], 'name' => '', 'page' => 0, 'rect' => '', 'xobj' => '',
+                ],
+                'approval' => '',
+                'cert_type' => 3,
+                'extracerts' => null,
+                'info' => [
+                    'Name' => 'Exam authority',
+                    'Location' => 'Perm',
+                    'Reason' => 'Results',
+                    'ContactInfo' => 'admin@example.test',
+                ],
+                'password' => 'secret',
+                'privkey' => 'private-key.pem',
+                'signcert' => 'certificate.pem',
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testMalformedOptionalFileOptionsFallBackWithoutLeakingWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(
