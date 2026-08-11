@@ -1125,8 +1125,8 @@ function f_select_answers(
 
 /**
  * Add specified answers on tce_tests_logs_answer table.
- * @param $testlog_id (int) testlog ID
- * @param $answers_ids (array) array of answer IDs to add
+ * @param mixed $testlog_id Test-log ID.
+ * @param array<array-key, mixed> $answers_ids Answer IDs to add.
  * @return boolean true in case of success, false otherwise
  */
 function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
