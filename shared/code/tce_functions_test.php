@@ -2573,7 +2573,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                 . K_NEWLINE;
             // get test data
             $test_data = f_get_test_data($test_id);
-            /** @var array<array-key,mixed> $test_data */
+            /** @var array{test_duration_time:int|numeric-string,test_logout_on_timeout:mixed} $test_data */
             // store time information for interactive timer
             $examtime =
                 (int) f_get_test_start_time($m['testlog_testuser_id'])
