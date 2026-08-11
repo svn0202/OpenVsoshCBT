@@ -162,6 +162,33 @@ final class DatabaseDalFunctionsTest extends TestCase
         }
     }
 
+    public function testPostgresqlMissingSequenceReturnsZeroWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; function pg_query($connection, $query) {'
+                    . 'trigger_error("missing sequence", E_USER_WARNING); return false; } '
+                    . 'function pg_fetch_row($result, $row) { return false; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_insert_id/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$value = F_db_insert_id("connection", "missing", "id"); restore_error_handler(); '
+                    . 'echo json_encode([$value, $warnings]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_postgresql.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[0,[]]', $output);
+    }
+
     public function testDatabaseQueryBehaviorRemainsDriverSpecific(): void
     {
         $expectations = [

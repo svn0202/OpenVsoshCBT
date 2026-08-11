@@ -156,13 +156,16 @@ function f_db_num_rows($result)
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
-    if (
-        // @mago-expect lint:no-error-control-operator -- a missing sequence value follows the DAL's zero-return fallback
-        ($r = @pg_query(
+    set_error_handler(static fn(): bool => true);
+    try {
+        $r = pg_query(
             $link_identifier,
             "SELECT CURRVAL('" . $tablename . '_' . $fieldname . "_seq')",
-        )) && ($m = pg_fetch_row($r, 0))
-    ) {
+        );
+    } finally {
+        restore_error_handler();
+    }
+    if ($r && ($m = pg_fetch_row($r, 0))) {
         return $m[0];
     }
 
