@@ -690,7 +690,10 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
     $str = ''; //string to return
-    $boolval = [$l['w_no'], $l['w_yes']];
+    /** @var string $no_label */
+    $no_label = $l['w_no'];
+    /** @var string $yes_label */
+    $yes_label = $l['w_yes'];
     //$ordmode = Array($l['w_position'], $l['w_alphabetic'], $l['w_id']);
     $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
@@ -722,14 +725,14 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
             $str .= f_two_col_row(
                 $l['w_results_to_users'],
                 $l['h_results_to_users'],
-                $boolval[(int) f_get_boolean($m['test_results_to_users'])],
+                f_get_boolean($m['test_results_to_users']) ? $yes_label : $no_label,
             );
             $str .= f_two_col_row(
                 $l['w_report_to_users'],
                 $l['h_report_to_users'],
-                $boolval[(int) f_get_boolean($m['test_report_to_users'])],
+                f_get_boolean($m['test_report_to_users']) ? $yes_label : $no_label,
             );
-            $is_test_repeatable = $boolval[(int) !f_legacy_int_equals($m['test_repeatable'], 0)];
+            $is_test_repeatable = f_legacy_int_equals($m['test_repeatable'], 0) ? $no_label : $yes_label;
             $repeat_times = '';
             if (f_legacy_int_equals($m['test_repeatable'], 1)) {
                 $repeat_times = ' ( unlimited )';
