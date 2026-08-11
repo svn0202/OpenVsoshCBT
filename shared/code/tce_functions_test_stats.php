@@ -704,140 +704,147 @@ function f_get_raw_test_stat(
  */
 function f_normalize_test_stat_averages(mixed $data): mixed
 {
-    if (!isset($data['qstats']['recurrence']) || $data['qstats']['recurrence'] <= 0) {
+    if (!is_array($data) || !isset($data['qstats']) || !is_array($data['qstats'])) {
         return $data;
     }
+    /**
+     * @var array{
+     *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+     *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+     *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+     *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+     *   unrated:int|float|numeric-string,module:array<array-key,mixed>,...
+     * } $qstats
+     */
+    $qstats = $data['qstats'];
+    if ($qstats['recurrence'] <= 0) {
+        return $data;
+    }
+    /**
+     * @param array{
+     *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+     *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+     *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+     *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+     *   unrated:int|float|numeric-string,...
+     * } $level
+     * @return array<array-key,mixed>
+     */
+    $normalize_level = static function (array $level, int|float $total_recurrence): array {
+        /**
+         * @var array{
+         *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+         *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+         *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+         *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+         *   unrated:int|float|numeric-string,...
+         * } $level
+         */
+        $level['recurrence_perc'] = round((100 * $level['recurrence']) / $total_recurrence);
+        $level['average_score'] /= $level['qnum'];
+        $level['average_score_perc'] = round((100 * $level['average_score_perc']) / $level['recurrence']);
+        $level['average_time'] /= $level['qnum'];
+        $level['right_perc'] = round((100 * $level['right']) / $level['recurrence']);
+        $level['wrong_perc'] = round((100 * $level['wrong']) / $level['recurrence']);
+        $level['unanswered_perc'] = round((100 * $level['unanswered']) / $level['recurrence']);
+        $level['undisplayed_perc'] = round((100 * $level['undisplayed']) / $level['recurrence']);
+        $level['unrated_perc'] = round((100 * $level['unrated']) / $level['recurrence']);
 
-    // calculate totals and average values
-    $data['qstats']['recurrence_perc'] = 100;
-    $data['qstats']['average_score'] /= $data['qstats']['qnum'];
-    $data['qstats']['average_score_perc'] = round(
-        (100 * $data['qstats']['average_score_perc']) / $data['qstats']['recurrence'],
-    );
-    $data['qstats']['average_time'] /= $data['qstats']['qnum'];
-    $data['qstats']['right_perc'] = round((100 * $data['qstats']['right']) / $data['qstats']['recurrence']);
-    $data['qstats']['wrong_perc'] = round((100 * $data['qstats']['wrong']) / $data['qstats']['recurrence']);
-    $data['qstats']['unanswered_perc'] = round((100 * $data['qstats']['unanswered']) / $data['qstats']['recurrence']);
-    $data['qstats']['undisplayed_perc'] = round((100 * $data['qstats']['undisplayed']) / $data['qstats']['recurrence']);
-    $data['qstats']['unrated_perc'] = round((100 * $data['qstats']['unrated']) / $data['qstats']['recurrence']);
+        return $level;
+    };
+
+    $total_recurrence = (float) $qstats['recurrence'];
+    $qstats = $normalize_level($qstats, $total_recurrence);
     /**
      * @var array<array-key,array{
      *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
      *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
      *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
      *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
-     *   unrated:int|float|numeric-string,subject:mixed
+     *   unrated:int|float|numeric-string,subject:array<array-key,mixed>,...
      * }> $modules
      */
-    $modules = $data['qstats']['module'];
-    foreach ($modules as $mk => $mv) {
-        $data['qstats']['module'][$mk]['recurrence_perc'] = round(
-            (100 * $mv['recurrence']) / $data['qstats']['recurrence'],
-        );
-        $data['qstats']['module'][$mk]['average_score'] = $mv['average_score'] / $mv['qnum'];
-        $data['qstats']['module'][$mk]['average_score_perc'] = round(
-            (100 * $mv['average_score_perc']) / $mv['recurrence'],
-        );
-        $data['qstats']['module'][$mk]['average_time'] = $mv['average_time'] / $mv['qnum'];
-        $data['qstats']['module'][$mk]['right_perc'] = round((100 * $mv['right']) / $mv['recurrence']);
-        $data['qstats']['module'][$mk]['wrong_perc'] = round((100 * $mv['wrong']) / $mv['recurrence']);
-        $data['qstats']['module'][$mk]['unanswered_perc'] = round((100 * $mv['unanswered']) / $mv['recurrence']);
-        $data['qstats']['module'][$mk]['undisplayed_perc'] = round((100 * $mv['undisplayed']) / $mv['recurrence']);
-        $data['qstats']['module'][$mk]['unrated_perc'] = round((100 * $mv['unrated']) / $mv['recurrence']);
+    $modules = $qstats['module'];
+    foreach ($modules as $mk => $module) {
+        $module = $normalize_level($module, $total_recurrence);
+        /**
+         * @var array{
+         *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+         *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+         *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+         *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+         *   unrated:int|float|numeric-string,subject:array<array-key,mixed>,...
+         * } $module
+         */
         /**
          * @var array<array-key,array{
          *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
          *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
          *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
          *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
-         *   unrated:int|float|numeric-string,question:mixed
+         *   unrated:int|float|numeric-string,question:array<array-key,mixed>,...
          * }> $subjects
          */
-        $subjects = $mv['subject'];
-        foreach ($subjects as $sk => $sv) {
-            $data['qstats']['module'][$mk]['subject'][$sk]['recurrence_perc'] = round(
-                (100 * $sv['recurrence']) / $data['qstats']['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['average_score'] = $sv['average_score'] / $sv['qnum'];
-            $data['qstats']['module'][$mk]['subject'][$sk]['average_score_perc'] = round(
-                (100 * $sv['average_score_perc']) / $sv['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['average_time'] = $sv['average_time'] / $sv['qnum'];
-            $data['qstats']['module'][$mk]['subject'][$sk]['right_perc'] = round(
-                (100 * $sv['right']) / $sv['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['wrong_perc'] = round(
-                (100 * $sv['wrong']) / $sv['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['unanswered_perc'] = round(
-                (100 * $sv['unanswered']) / $sv['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['undisplayed_perc'] = round(
-                (100 * $sv['undisplayed']) / $sv['recurrence'],
-            );
-            $data['qstats']['module'][$mk]['subject'][$sk]['unrated_perc'] = round(
-                (100 * $sv['unrated']) / $sv['recurrence'],
-            );
+        $subjects = $module['subject'];
+        foreach ($subjects as $sk => $subject) {
+            $subject = $normalize_level($subject, $total_recurrence);
             /**
-             * @var array<array-key,array{
+             * @var array{
              *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
              *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
              *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
              *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
-             *   unrated:int|float|numeric-string,anum:int|float|numeric-string,answer:mixed
+             *   unrated:int|float|numeric-string,question:array<array-key,mixed>,...
+             * } $subject
+             */
+            /**
+             * @var array<array-key,array{
+             *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+             *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+             *   average_time:int|float|numeric-string,right:int|float|numeric-string,
+             *   wrong:int|float|numeric-string,unanswered:int|float|numeric-string,
+             *   undisplayed:int|float|numeric-string,unrated:int|float|numeric-string,
+             *   anum:int|float|numeric-string,answer:array<array-key,mixed>,...
              * }> $questions
              */
-            $questions = $sv['question'];
-            foreach ($questions as $qk => $qv) {
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['recurrence_perc'] = round(
-                    (100 * $qv['recurrence']) / $data['qstats']['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['average_score'] =
-                    $qv['average_score'] / $qv['qnum'];
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['average_score_perc'] = round(
-                    (100 * $qv['average_score_perc']) / $qv['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['average_time'] =
-                    $qv['average_time'] / $qv['qnum'];
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['right_perc'] = round(
-                    (100 * $qv['right']) / $qv['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['wrong_perc'] = round(
-                    (100 * $qv['wrong']) / $qv['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['unanswered_perc'] = round(
-                    (100 * $qv['unanswered']) / $qv['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['undisplayed_perc'] = round(
-                    (100 * $qv['undisplayed']) / $qv['recurrence'],
-                );
-                $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['unrated_perc'] = round(
-                    (100 * $qv['unrated']) / $qv['recurrence'],
-                );
+            $questions = $subject['question'];
+            foreach ($questions as $qk => $question) {
+                $question = $normalize_level($question, $total_recurrence);
+                /**
+                 * @var array{
+                 *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+                 *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+                 *   average_time:int|float|numeric-string,right:int|float|numeric-string,
+                 *   wrong:int|float|numeric-string,unanswered:int|float|numeric-string,
+                 *   undisplayed:int|float|numeric-string,unrated:int|float|numeric-string,
+                 *   anum:int|float|numeric-string,answer:array<array-key,mixed>,...
+                 * } $question
+                 */
                 /**
                  * @var array<array-key,array{
                  *   recurrence:int|float|numeric-string,right:int|float|numeric-string,
-                 *   wrong:int|float|numeric-string,unanswered:int|float|numeric-string
+                 *   wrong:int|float|numeric-string,unanswered:int|float|numeric-string,...
                  * }> $answers
-                 */
-                $answers = $qv['answer'];
-                foreach ($answers as $ak => $av) {
-                    $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['recurrence_perc'] = round(
-                        (100 * $av['recurrence']) / $qv['anum'],
-                    );
-                    $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['right_perc'] = round(
-                        (100 * $av['right']) / $av['recurrence'],
-                    );
-                    $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['wrong_perc'] = round(
-                        (100 * $av['wrong']) / $av['recurrence'],
-                    );
-                    $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['unanswered_perc'] = round(
-                        (100 * $av['unanswered']) / $av['recurrence'],
-                    );
+                */
+                $answers = $question['answer'];
+                foreach ($answers as $ak => $answer) {
+                    $answer['recurrence_perc'] = round((100 * $answer['recurrence']) / $question['anum']);
+                    $answer['right_perc'] = round((100 * $answer['right']) / $answer['recurrence']);
+                    $answer['wrong_perc'] = round((100 * $answer['wrong']) / $answer['recurrence']);
+                    $answer['unanswered_perc'] = round((100 * $answer['unanswered']) / $answer['recurrence']);
+                    $answers[$ak] = $answer;
                 }
+                $question['answer'] = $answers;
+                $questions[$qk] = $question;
             }
+            $subject['question'] = $questions;
+            $subjects[$sk] = $subject;
         }
+        $module['subject'] = $subjects;
+        $modules[$mk] = $module;
     }
+    $qstats['module'] = $modules;
+    $data['qstats'] = $qstats;
 
     return $data;
 }
