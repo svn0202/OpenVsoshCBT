@@ -368,8 +368,12 @@ function f_get_dir_files(mixed $dir, mixed $rootdir = K_PATH_CACHE, mixed $authd
     $authdirs = (string) $authdirs;
     $data = ['dirs' => [], 'files' => []];
     // open dir
-    // @mago-expect lint:no-error-control-operator -- an unreadable directory is represented by an empty listing
-    $dirhdl = @opendir($dir);
+    set_error_handler(static fn(): bool => true);
+    try {
+        $dirhdl = opendir($dir);
+    } finally {
+        restore_error_handler();
+    }
     if ($dirhdl === false) {
         return $data;
     }
