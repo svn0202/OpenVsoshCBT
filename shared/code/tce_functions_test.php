@@ -893,23 +893,25 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
 
 /**
  * Returns the test data.
- * @param $test_id (int) test ID.
+ * @param mixed $test_id Test ID.
  * @return array<array-key,mixed>|false Test data, or false when no row is available.
- * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
 function f_get_test_data(mixed $test_id): array|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return array<array-key,mixed>|false */
+    $normalize_row = static fn(mixed $row): array|false => is_array($row) ? $row : false;
     $test_id = (int) $test_id;
     $td = [];
     $sql = 'SELECT *
 		FROM ' . K_TABLE_TESTS . '
 		WHERE test_id=' . $test_id . '
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        /** @var array<array-key,mixed>|false $td */
-        $td = F_db_fetch_assoc($r);
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        $td = $normalize_row(F_db_fetch_assoc($r));
     } else {
         F_display_db_error();
     }
