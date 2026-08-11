@@ -34,7 +34,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 30
+count = 29
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -52,13 +52,13 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 45
+count = 43
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -70,7 +70,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 72
+count = 69
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -112,7 +112,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 27
+count = 26
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -166,12 +166,6 @@ count = 3
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('test_answers_order_mode')` accessed on `array<array-key, mixed>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-string-array-index"
-message = "Possibly undefined array key `string('test_comment_enabled')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]

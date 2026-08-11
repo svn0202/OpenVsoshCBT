@@ -15,9 +15,10 @@ final class TestCommentFunctionsTest extends TestCase
                 'namespace Harness; define("K_TABLE_TEST_USER", "test_user"); '
                     . 'define("K_ANSWER_TEXTAREA_COLS", 40); define("K_NEWLINE", "\\n"); '
                     . '$_SESSION["session_user_id"] = "11"; $GLOBALS["db"] = "db"; '
-                    . '$GLOBALS["enabled"] = [false, true, true, true]; '
-                    . '$GLOBALS["query_results"] = [true, true, false]; '
-                    . '$GLOBALS["rows"] = [["testuser_comment" => "<unsafe>"], false]; '
+                    . '$GLOBALS["enabled"] = [false, true, true, true, true]; '
+                    . '$GLOBALS["query_results"] = [true, true, true, false]; '
+                    . '$GLOBALS["rows"] = [["testuser_comment" => "<unsafe>"], false, '
+                    . '["testuser_comment" => null]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . '$GLOBALS["l"] = ["w_comment" => "Comment", "h_testcomment" => "Test comment"]; '
                     . 'function f_get_test_data($testId) { return ["test_comment_enabled" => '
@@ -36,7 +37,8 @@ final class TestCommentFunctionsTest extends TestCase
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
-                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9"), $qualified("10")], '
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9"), $qualified("10"), '
+                    . '$qualified("11")], '
                     . '$GLOBALS["errors"], $GLOBALS["queries"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -46,12 +48,19 @@ final class TestCommentFunctionsTest extends TestCase
         self::assertSame(0, $status, $output);
         self::assertSame(
             [
-                ['', $this->commentMarkup('<unsafe>'), $this->commentMarkup(''), $this->commentMarkup('')],
+                [
+                    '',
+                    $this->commentMarkup('<unsafe>'),
+                    $this->commentMarkup(''),
+                    $this->commentMarkup(''),
+                    $this->commentMarkup(''),
+                ],
                 1,
                 [
                     $this->commentQuery(8),
                     $this->commentQuery(9),
                     $this->commentQuery(10),
+                    $this->commentQuery(11),
                 ],
             ],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
