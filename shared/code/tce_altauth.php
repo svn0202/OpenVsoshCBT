@@ -278,8 +278,7 @@ function f_alt_login(): array|false
                     // @mago-expect lint:no-error-control-operator -- invalid LDAP credentials are an expected authentication result
                     && @ldap_bind($ldapconn, $ldap_dn, $ldappassword)
                 ) {
-                    // @mago-expect lint:no-error-control-operator -- disconnect cleanup must not turn a successful login into an error
-                    @ldap_unbind($ldapconn);
+                    f_tmf_alt_ldap_unbind_silently($ldapconn);
                     $usr = [];
                     foreach ($ldap_attr as $k => $v) {
                         if (!empty($v) && isset($ldap_entry[$v])) {
@@ -297,8 +296,7 @@ function f_alt_login(): array|false
                 }
             }
 
-            // @mago-expect lint:no-error-control-operator -- disconnect cleanup is best effort after an authentication miss
-            @ldap_unbind($ldapconn);
+            f_tmf_alt_ldap_unbind_silently($ldapconn);
         }
 
         // -------------------------------------------------------------
@@ -349,4 +347,14 @@ function f_tmf_alt_ldap_search(mixed $search): ?\LDAP\Result
 function f_tmf_alt_ldap_entries(mixed $entries): array|false
 {
     return is_array($entries) ? $entries : false;
+}
+
+function f_tmf_alt_ldap_unbind_silently(\LDAP\Connection $connection): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return ldap_unbind($connection);
+    } finally {
+        restore_error_handler();
+    }
 }
