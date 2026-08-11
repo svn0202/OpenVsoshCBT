@@ -438,7 +438,7 @@ function f_is_valid_ip(mixed $user_ip, mixed $test_ips): bool
         if (strrpos($ipmask, '-') !== false) {
             // address range
             $ip_range = explode('-', $ipmask);
-            if (count($ip_range) !== 2) {
+            if (count($ip_range) !== 2 || !isset($ip_range[1])) {
                 return false;
             }
 

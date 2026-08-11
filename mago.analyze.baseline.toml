@@ -141,12 +141,6 @@ count = 8
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-int-array-index"
-message = "Possibly undefined array index accessed on `non-empty-list<string>`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key `int` accessed on `array<int, non-empty-string>`."
 count = 1
 
