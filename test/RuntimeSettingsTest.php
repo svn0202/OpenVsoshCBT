@@ -84,6 +84,30 @@ PHP;
         );
     }
 
+    public function testAccessLabelsFallBackWhenLocalTranslationsAreOutdated(): void
+    {
+        self::assertSame(
+            [
+                'access_control' => 'Доступ к платформе',
+                'disable_registration' => 'Отключить форму регистрации',
+                'disable_registration_hint' =>
+                    'Скрывает ссылку и запрещает прямой доступ к самостоятельной регистрации.',
+                'disable_password_reset' => 'Отключить форму сброса пароля',
+                'disable_password_reset_hint' =>
+                    'Скрывает ссылку и запрещает прямой доступ к странице сброса пароля.',
+                'access_help' => 'Помощь и инструкция по получению доступа',
+                'access_help_hint' =>
+                    'Текст будет показан под формой входа. Можно указать контакты и порядок получения учётных данных.',
+            ],
+            \openvsosh_access_labels(['a_meta_charset' => 'UTF-8']),
+        );
+
+        self::assertSame(
+            'Custom access title',
+            \openvsosh_access_labels(['ov_access_control' => 'Custom access title'])['access_control'],
+        );
+    }
+
     public function testSavingAccessHelpTrimsAndEscapesItsValue(): void
     {
         [$status, $output] = \F_tcecode_run_process(

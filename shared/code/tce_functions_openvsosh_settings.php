@@ -28,6 +28,38 @@ function openvsosh_access_setting_defaults(): array
 }
 
 /**
+ * Return access-page labels even when an upgraded installation still uses an
+ * older instance-local translation file.
+ *
+ * @param array<array-key, string> $translations
+ * @return array{access_control: string, disable_registration: string,
+ *     disable_registration_hint: string, disable_password_reset: string,
+ *     disable_password_reset_hint: string, access_help: string, access_help_hint: string}
+ */
+function openvsosh_access_labels(array $translations): array
+{
+    $fallbacks = [
+        'access_control' => 'Доступ к платформе',
+        'disable_registration' => 'Отключить форму регистрации',
+        'disable_registration_hint' =>
+            'Скрывает ссылку и запрещает прямой доступ к самостоятельной регистрации.',
+        'disable_password_reset' => 'Отключить форму сброса пароля',
+        'disable_password_reset_hint' =>
+            'Скрывает ссылку и запрещает прямой доступ к странице сброса пароля.',
+        'access_help' => 'Помощь и инструкция по получению доступа',
+        'access_help_hint' =>
+            'Текст будет показан под формой входа. Можно указать контакты и порядок получения учётных данных.',
+    ];
+    foreach ($fallbacks as $key => $fallback) {
+        $translated = $translations['ov_' . $key] ?? '';
+        if ($translated !== '') {
+            $fallbacks[$key] = $translated;
+        }
+    }
+    return $fallbacks;
+}
+
+/**
  * Run a database query without exposing an expected migration-time warning.
  *
  * @param string $sql database statement

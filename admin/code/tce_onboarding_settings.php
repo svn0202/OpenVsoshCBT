@@ -70,6 +70,7 @@ $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
 $appearance_config = openvsosh_get_appearance_settings();
+$access_labels = openvsosh_access_labels($l);
 if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_onboarding'])) {
     if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
         exit();
@@ -305,28 +306,28 @@ echo '</fieldset><div class="onboarding-admin-actions">'
     . f_get_csrf_token_field() . K_NEWLINE . '</form>' . K_NEWLINE;
 echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
 echo '<fieldset class="settings-card"><legend><span aria-hidden="true">03</span> '
-    . htmlspecialchars($l['ov_access_control'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['access_control'], ENT_QUOTES, $l['a_meta_charset'])
     . '</legend>' . K_NEWLINE;
 echo '<div class="row check-row"><input type="checkbox" name="disable_registration" id="disable_registration" value="1"'
     . (!$access_config['registration_enabled'] ? ' checked="checked"' : '') . ' />' . K_NEWLINE;
 echo '<div><label for="disable_registration">'
-    . htmlspecialchars($l['ov_disable_registration'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['disable_registration'], ENT_QUOTES, $l['a_meta_charset'])
     . '</label><span class="form-help">'
-    . htmlspecialchars($l['ov_disable_registration_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['disable_registration_hint'], ENT_QUOTES, $l['a_meta_charset'])
     . '</span></div></div>' . K_NEWLINE;
 echo '<div class="row check-row"><input type="checkbox" name="disable_password_reset" id="disable_password_reset" value="1"'
     . (!$access_config['password_reset_enabled'] ? ' checked="checked"' : '') . ' />' . K_NEWLINE;
 echo '<div><label for="disable_password_reset">'
-    . htmlspecialchars($l['ov_disable_password_reset'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['disable_password_reset'], ENT_QUOTES, $l['a_meta_charset'])
     . '</label><span class="form-help">'
-    . htmlspecialchars($l['ov_disable_password_reset_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['disable_password_reset_hint'], ENT_QUOTES, $l['a_meta_charset'])
     . '</span></div></div>' . K_NEWLINE;
 echo '<div class="row"><label for="access_help">'
-    . htmlspecialchars($l['ov_access_help'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['access_help'], ENT_QUOTES, $l['a_meta_charset'])
     . '</label><textarea name="access_help" id="access_help" maxlength="5000">'
     . htmlspecialchars($access_config['access_help'], ENT_QUOTES, $l['a_meta_charset'])
     . '</textarea><span class="form-help">'
-    . htmlspecialchars($l['ov_access_help_hint'], ENT_QUOTES, $l['a_meta_charset'])
+    . htmlspecialchars($access_labels['access_help_hint'], ENT_QUOTES, $l['a_meta_charset'])
     . '</span></div>' . K_NEWLINE;
 echo '</fieldset>' . K_NEWLINE;
 echo '<div class="onboarding-admin-actions"><button type="submit" name="save_access" value="1" class="button">'
