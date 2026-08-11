@@ -40,7 +40,7 @@ count = 34
 file = "shared/code/tce_functions_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 152
+count = 149
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -130,7 +130,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Right operand in `<` comparison has `mixed` type."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

@@ -56,19 +56,25 @@ function f_get_user_tests(): string
             $expired = false;
             /** @var int|numeric-string $catalog_test_id */
             $catalog_test_id = $m['test_id'];
+            /** @var string $test_ip_range */
+            $test_ip_range = $m['test_ip_range'];
+            /** @var int|numeric-string $test_duration_time */
+            $test_duration_time = $m['test_duration_time'];
+            /** @var int|numeric-string $test_repeatable */
+            $test_repeatable = $m['test_repeatable'];
             /** @var string $test_begin_time */
             $test_begin_time = $m['test_begin_time'];
             /** @var string $test_end_time */
             $test_end_time = $m['test_end_time'];
             $upcoming = strtotime($current_time) < strtotime($test_begin_time);
             // check user's authorization
-            if (f_is_valid_test_user($catalog_test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+            if (f_is_valid_test_user($catalog_test_id, $_SESSION['session_user_ip'], $test_ip_range)) {
                 $access_status = F_tmf_test_access_status((int) $catalog_test_id, $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(
                     $user_id,
                     $catalog_test_id,
-                    $m['test_duration_time'],
+                    $test_duration_time,
                 );
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
                 if (strtotime($current_time) >= strtotime($test_end_time)) {
@@ -80,9 +86,9 @@ function f_get_user_tests(): string
                 }
 
                 $str .= '<tr data-test-id="' . (int) $catalog_test_id . '" data-begin="'
-                    . htmlspecialchars((string) $m['test_begin_time'], ENT_QUOTES)
+                    . htmlspecialchars($test_begin_time, ENT_QUOTES)
                     . '" data-end="'
-                    . htmlspecialchars((string) $m['test_end_time'], ENT_QUOTES)
+                    . htmlspecialchars($test_end_time, ENT_QUOTES)
                     . '">' . K_NEWLINE;
                 /** @var string|null $test_password */
                 $test_password = $m['test_password'];
@@ -224,8 +230,8 @@ function f_get_user_tests(): string
                         default:
                             // 4 or greater = test can be repeated
                                 if (
-                                    f_count_user_test($_SESSION['session_user_id'], $catalog_test_id) < $m['test_repeatable']
-                                    || f_legacy_int_equals($m['test_repeatable'], 1)
+                                    f_count_user_test($_SESSION['session_user_id'], $catalog_test_id) < $test_repeatable
+                                    || f_legacy_int_equals($test_repeatable, 1)
                                 ) {
                                     // print execute test link
                                     $str .= '<a href="';
