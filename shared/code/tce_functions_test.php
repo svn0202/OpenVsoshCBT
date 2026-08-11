@@ -1702,15 +1702,22 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
 
 /**
  * Add answers to selected question.
- * @param $testlog_id (int) testlog ID.
- * @param $question_id (int) question ID.
- * @param $question_type (int) type of question.
- * @param $num_answers (int) number of alternative answers to display.
- * @param $firsttest (int) ID of first test testuser_id.
- * @param $testdata (array) array of test data.
- * @return boolean TRUE in case of success, FALSE otherwise.
+ * @param mixed $testlog_id Testlog ID.
+ * @param mixed $question_id Question ID.
+ * @param mixed $question_type Type of question.
+ * @param mixed $num_answers Number of alternative answers to display.
+ * @param mixed $firsttest ID of first test testuser_id.
+ * @param mixed $testdata Array of test data.
+ * @return bool TRUE in case of success, FALSE otherwise.
  */
-function f_add_question_answers($testlog_id, $question_id, $question_type, $num_answers, $firsttest, $testdata)
+function f_add_question_answers(
+    mixed $testlog_id,
+    mixed $question_id,
+    mixed $question_type,
+    mixed $num_answers,
+    mixed $firsttest,
+    mixed $testdata,
+): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
