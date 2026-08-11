@@ -1873,6 +1873,12 @@ function f_print_user_test_stat(mixed $testuser_id): string
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /**
+     * @var array{
+     *   h_answer_right:string,h_answer_wrong:string,m_unanswered:string,w_answers_right:string,
+     *   w_answers_wrong:string,w_explanation:string,w_position:string
+     * } $l
+     */
     /** @return array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $testuser_id = (int) $testuser_id;
