@@ -113,7 +113,11 @@ function f_get_user_tests(): string
 
                     $str .= '>';
                     if (isset($usrtestdata['user_score']) && strlen('' . $usrtestdata['user_score']) > 0) {
-                        if ($usrtestdata['test_max_score'] > 0) {
+                        /** @var int|float|numeric-string $user_score */
+                        $user_score = $usrtestdata['user_score'];
+                        /** @var int|float|numeric-string $test_max_score */
+                        $test_max_score = $usrtestdata['test_max_score'];
+                        if ($test_max_score > 0) {
                             $str .=
                                 '<a href="tce_show_result_user.php?testuser_id='
                                 . $testuser_id
@@ -122,11 +126,11 @@ function f_get_user_tests(): string
                                 . '" title="'
                                 . $l['h_result']
                                 . '">'
-                                . $usrtestdata['user_score']
+                                . $user_score
                                 . ' / '
-                                . $usrtestdata['test_max_score']
+                                . $test_max_score
                                 . ' ('
-                                . round((100 * $usrtestdata['user_score']) / $usrtestdata['test_max_score'])
+                                . round((100 * $user_score) / $test_max_score)
                                 . '%)'
                                 . $passmsg
                                 . '</a>';
@@ -139,7 +143,7 @@ function f_get_user_tests(): string
                                 . '" title="'
                                 . $l['h_result']
                                 . '">'
-                                . $usrtestdata['user_score']
+                                . $user_score
                                 . $passmsg
                                 . '</a>';
                         }
