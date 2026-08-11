@@ -1020,6 +1020,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsStringIgnoringCase('Uncaught', $body, $path . ' should have no uncaught exception');
         // Authenticated: the page must not have bounced us back to the login form.
         $this->assertStringNotContainsString('form_login', $body, $path . ' should be reachable while authenticated');
+        if (in_array($path, ['/admin/code/tce_edit_test.php', '/admin/code/tce_show_result_user.php'], true)) {
+            $this->assertStringContainsString('</html>', $body, $path . ' should render a complete page');
+        }
     }
 
     /**
@@ -1254,7 +1257,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertNotNull($token);
 
         // Satisfy ff_required = test_name,test_description,test_ip_range,test_duration_time,test_score_right.
-        [$status] = $this->http('POST', '/admin/code/tce_edit_test.php', $cookies, [
+        [$status, $body] = $this->http('POST', '/admin/code/tce_edit_test.php', $cookies, [
             'add' => '1',
             'test_name' => $name,
             'test_description' => 'itest description',
@@ -1264,6 +1267,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             'csrf_token' => $token,
         ]);
         $this->assertSame(200, $status, 'the add-test submission should be accepted');
+        $this->assertStringContainsString('</html>', $body, 'the add-test response should render a complete page');
 
         $id = (int) ($this->dbScalar("SELECT test_id FROM tce_tests WHERE test_name='" . $name . "'") ?? '0');
         $this->assertGreaterThan(0, $id, 'edit_test add must create the test (converted form fields read from $_REQUEST)');

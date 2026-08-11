@@ -34,6 +34,15 @@ final class EditGroupControllerTest extends TestCase
         self::assertStringContainsString('<SUBMIT:search:Search:Search>', $result['html']);
     }
 
+    public function testDeleteDoesNotSelectAnEmptyGroupIdAfterSuccess(): void
+    {
+        $result = self::runController('forcedelete');
+
+        self::assertSame(['DELETE FROM groups WHERE group_id=3'], $result['queries']);
+        self::assertStringNotContainsString('group_id=', implode("\n", array_slice($result['queries'], 1)));
+        self::assertStringContainsString('<MESSAGE:[Old Group] Deleted>', $result['html']);
+    }
+
     /** @return array{html: string, queries: list<string>} */
     private static function runController(string $mode): array
     {
@@ -59,14 +68,16 @@ $l = [
     'hp_edit_group' => 'Help',
 ];
 $db = 'db';
-$menu_mode = $argv[2] === 'add' ? 'add' : '';
+$menu_mode = in_array($argv[2], ['add', 'forcedelete'], true) ? $argv[2] : '';
 $formstatus = true;
 $_SERVER['SCRIPT_NAME'] = '/admin/code/tce_edit_group.php';
 $_SESSION = ['session_user_id' => 7, 'session_user_ip' => '192.0.2.7', 'session_user_level' => 10];
-$_POST = [];
-$_REQUEST = $argv[2] === 'add'
-    ? ['group_name' => 'New Group']
-    : ['group_searchterms' => 'Alpha'];
+$_POST = $argv[2] === 'forcedelete' ? ['forcedelete' => 'Delete'] : [];
+$_REQUEST = match ($argv[2]) {
+    'add' => ['group_name' => 'New Group'],
+    'forcedelete' => ['group_id' => '3', 'group_name' => 'Old Group'],
+    default => ['group_searchterms' => 'Alpha'],
+};
 $GLOBALS['queries'] = [];
 $GLOBALS['rows'] = $argv[2] === 'add'
     ? [['group_id' => '9', 'group_name' => 'New Group'], false]

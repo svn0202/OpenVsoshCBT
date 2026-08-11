@@ -122,7 +122,8 @@ function F_db_query($sql, $db) {
     return $result;
 }
 function F_db_fetch_array($result) {
-    return array_shift($GLOBALS['rows'][get_resource_id($result)]);
+    $rows = &$GLOBALS['rows'][get_resource_id($result)];
+    return $rows === [] ? false : array_shift($rows);
 }
 function F_display_db_error(...$arguments) { echo '<DB-ERROR>'; }
 function F_print_error(...$arguments) { echo '<FORM-ERROR>'; }

@@ -735,6 +735,10 @@ function f_tce_admin_result_user_basic_test_row(mixed $row): ?array
  */
 function f_tce_admin_result_user_selection_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     testuser_id:int|string,
@@ -742,7 +746,7 @@ function f_tce_admin_result_user_selection_row(mixed $row): ?array
      *     user_firstname:string,
      *     user_name:string,
      *     testuser_creation_time:string
-     * }|null $row
+     * } $row
      */
     return $row;
 }

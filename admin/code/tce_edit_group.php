@@ -145,7 +145,7 @@ switch ($menu_mode) { // process submitted data
                 if (!$r) {
                     F_display_db_error(false);
                 } else {
-                    $group_id = false;
+                    $group_id = 0;
                     F_print_error('MESSAGE', '[' . $group_name_sl . '] ' . $l['m_group_deleted']);
                 }
             }
