@@ -184,9 +184,10 @@ PHP;
                     . '"test_begin_time" => "2026-08-09 00:00:00", "test_end_time" => "2026-08-11 00:00:00", '
                     . '"test_password" => null, "test_name" => "Exam", "test_repeatable" => "0", '
                     . '"test_results_to_users" => "1"]; '
+                    . '$protectedRow = $row; $protectedRow["test_password"] = "secret"; '
                     . '$GLOBALS["results"] = [false, "empty", "unauthorized", "blocked", "published"]; '
                     . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row, false], '
-                    . '"blocked" => [$row, false], "published" => [$row, false]]; '
+                    . '"blocked" => [$protectedRow, false], "published" => [$row, false]]; '
                     . '$GLOBALS["ip"] = [false, true, true]; $GLOBALS["test_statuses"] = [0, 4]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["published"] = []; '
                     . 'function date($format) { return "2026-08-10 12:00:00"; } '
@@ -236,8 +237,10 @@ PHP;
         self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
         self::assertStringContainsString('<table class="testlist">', $results[3]);
         self::assertStringContainsString('data-test-id="22"', $results[3]);
+        self::assertStringContainsString('<td style="background-color:#ffffcc;"><strong>INFO:Exam</strong>', $results[3]);
         self::assertStringContainsString('Сначала пройдите обязательный тест', $results[3]);
         self::assertStringNotContainsString('tce_test_execute.php', $results[3]);
+        self::assertStringContainsString('<td><strong>INFO:Exam</strong>', $results[4]);
         self::assertStringContainsString('testuser_id=99&amp;test_id=22', $results[4]);
         self::assertStringContainsString('8 / 10 (80%) - Passed', $results[4]);
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
