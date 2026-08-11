@@ -2212,10 +2212,10 @@ function f_get_safe_users_test_stat_order_by(mixed $full_order_field): string
 
 /**
  * Lock the user's test.<br>
- * @param $test_id (int) test ID
- * @param $user_id (int) user ID
+ * @param mixed $test_id Test ID
+ * @param mixed $user_id User ID
  */
-function f_lock_user_test($test_id, $user_id): void
+function f_lock_user_test(mixed $test_id, mixed $user_id): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
