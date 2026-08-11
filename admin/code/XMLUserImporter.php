@@ -215,13 +215,12 @@ class XMLUserImporter
 
     /**
      * Sets the start element handler function for the XML parser parser.start_element_handler.
-     * @param $parser (resource) The first parameter, parser, is a reference to the XML parser calling the handler.
+     * @param mixed $_parser The XML parser calling the handler.
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
-     * @param array<string, string> $attribs The element attributes supplied by ext-xml.
+     * @param array<string, string> $_attribs The element attributes supplied by ext-xml.
      * @private
      */
-    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
-    private function startElementHandler(mixed $parser, string $name, array $attribs): void
+    private function startElementHandler(mixed $_parser, string $name, array $_attribs): void
     {
         $name = strtolower($name);
         switch ($name) {
