@@ -1785,6 +1785,8 @@ function f_print_user_test_stat(mixed $testuser_id): string
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $testuser_id = (int) $testuser_id;
 
     $ret = '';
@@ -1810,7 +1812,16 @@ function f_print_user_test_stat(mixed $testuser_id): string
 		ORDER BY testlog_id';
     if ($r = F_db_query($sql, $db)) {
         $ret .= '<ol class="question">' . K_NEWLINE;
-        while ($m = F_db_fetch_array($r)) {
+        while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *   question_description:mixed,question_explanation:mixed,question_type:int|numeric-string,
+             *   testlog_answer_text:mixed,testlog_change_time:string|null,testlog_comment:mixed,
+             *   testlog_display_time:string|null,testlog_id:int|numeric-string,
+             *   testlog_reaction_time:int|float|numeric-string|null,
+             *   testlog_score:mixed,testlog_user_ip:mixed
+             * } $m
+             */
             $ret .= '<li>' . K_NEWLINE;
             // display question stats
             $ret .= '<strong>[' . $m['testlog_score'] . ']' . K_NEWLINE;
