@@ -56,7 +56,7 @@ require_once '../../shared/config/tce_user_registration.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../code/tce_page_header.php';
 
-/** @mago-expect analysis:possibly-undefined-string-array-index */
+/** @var array{session_user_id:int} $_SESSION */
 $user_id = (int) $_SESSION['session_user_id'];
 
 // comma separated list of required fields
