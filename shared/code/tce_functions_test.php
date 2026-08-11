@@ -621,11 +621,11 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
 
 /**
  * Returns XHTML link to open test info popup.
- * @param $test_id (int) test ID
- * @param $link_name (string) link caption
- * return XHTML code
+ * @param mixed $test_id Test ID
+ * @param mixed $link_name Link caption
+ * @return string XHTML code
  */
-function f_test_info_link($test_id, $link_name = ''): string
+function f_test_info_link(mixed $test_id, mixed $link_name = ''): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
