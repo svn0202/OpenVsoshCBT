@@ -108,6 +108,7 @@ final class BackupTest extends TestCase
         ));
     }
 
+    /** @throws \Throwable */
     public function testCheckedBackupStreamsOutputAndRemovesFailedArchive(): void
     {
         $config = [
@@ -137,6 +138,7 @@ final class BackupTest extends TestCase
         }
     }
 
+    /** @throws \Throwable */
     public function testBackupNeverOverwritesArchiveWithTheSameTimestamp(): void
     {
         $config = [

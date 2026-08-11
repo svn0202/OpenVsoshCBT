@@ -518,6 +518,7 @@ final class DatabaseDalIntegrationTest extends TestCase
     /**
      * @throws \Random\RandomException
      */
+    /** @throws \Throwable */
     public function testDatabaseBackupCanActuallyRestoreDisposableDatabase(): void
     {
         require_once __DIR__ . '/../../shared/code/tce_functions_backup.php';
