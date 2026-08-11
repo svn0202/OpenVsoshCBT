@@ -283,11 +283,10 @@ function f_format_file_size(mixed $size): string
     } else {
         /** @var int|float|numeric-string $size */
         $numeric_size = (float) $size;
-        $i = (int) floor(log($numeric_size, 1024));
+        $i = min(8, max(0, (int) floor(log($numeric_size, 1024))));
         $out .= round($numeric_size / (1024 ** $i), $i > 1 ? 2 : 0);
-        // @mago-expect analysis:possibly-undefined-int-array-index -- the legacy units cover supported file sizes
-        // @mago-expect analysis:possibly-null-operand -- the legacy units cover supported file sizes
-        $out .= ' ' . $mult[$i];
+        $unit = $mult[$i] ?? 'YB';
+        $out .= ' ' . $unit;
     }
 
     return $out;
