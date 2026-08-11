@@ -368,7 +368,7 @@ function f_get_raw_test_stat(
         $sql .= ' ORDER BY module_name, subject_name, question_description';
     }
 
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         while ($m = F_db_fetch_array($r)) {
             if (!isset($data['qstats']['module']["'" . $m['module_id'] . "'"])) {
                 $data['qstats']['module']["'" . $m['module_id'] . "'"] = [
