@@ -63,7 +63,8 @@ function f_get_user_tests(): string
     /** @var array{session_user_id:int|numeric-string,session_user_ip:string} $_SESSION */
     /** @return non-empty-array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
-    $user_id = (int) $_SESSION['session_user_id'];
+    $session_user_id = $_SESSION['session_user_id'];
+    $user_id = (int) $session_user_id;
     $str = ''; // temp string
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
@@ -230,7 +231,7 @@ function f_get_user_tests(): string
                             // 0 = the test generation process is started but not completed
                                 // print execute test link
                                 $str .= '<a href="';
-                                if (K_DISPLAY_TEST_DESCRIPTION || !empty($test_password)) {
+                                if (f_get_boolean(K_DISPLAY_TEST_DESCRIPTION) || !empty($test_password)) {
                                     // display test description before starting
                                     $str .= 'tce_test_start.php';
                                 } else {
@@ -264,12 +265,12 @@ function f_get_user_tests(): string
                         default:
                             // 4 or greater = test can be repeated
                                 if (
-                                    f_count_user_test($_SESSION['session_user_id'], $catalog_test_id) < $test_repeatable
+                                    f_count_user_test($session_user_id, $catalog_test_id) < $test_repeatable
                                     || f_legacy_int_equals($test_repeatable, 1)
                                 ) {
                                     // print execute test link
                                     $str .= '<a href="';
-                                    if (K_DISPLAY_TEST_DESCRIPTION || !empty($test_password)) {
+                                    if (f_get_boolean(K_DISPLAY_TEST_DESCRIPTION) || !empty($test_password)) {
                                         // display test description before starting
                                         $str .= 'tce_test_start.php';
                                     } else {
