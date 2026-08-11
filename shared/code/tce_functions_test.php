@@ -450,10 +450,11 @@ function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip): b
 
 /**
  * Terminate user's test<br>
- * @param $test_id (int) test ID
+ * @param mixed $test_id Test ID
+ * @param mixed $reason Completion reason
  * @since 4.0.000 (2006-09-27)
  */
-function f_terminate_user_test($test_id, $reason = 'completed'): void
+function f_terminate_user_test(mixed $test_id, mixed $reason = 'completed'): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
