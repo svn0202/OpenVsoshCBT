@@ -671,7 +671,7 @@ final class TestReviewTest extends TestCase
                     . 'function date($format, $timestamp = null) { '
                     . '$GLOBALS["calls"][] = ["date", $format, $timestamp]; '
                     . 'if ($format === "Y") { return "2026"; } '
-                    . 'return $timestamp === false ? "epoch" : "normalized"; } '
+                    . 'return ($timestamp === false || $timestamp === 0) ? "epoch" : "normalized"; } '
                     . 'function F_count_rows($table, $where) { $GLOBALS["calls"][] = ["count", $table, $where]; '
                     . 'return array_shift($GLOBALS["counts"]); } '
                     . '$source = file_get_contents($argv[1]); '
@@ -702,9 +702,9 @@ final class TestReviewTest extends TestCase
                 ['date', 'Y', null],
                 ['count', 'test_stats', "WHERE tus_date>='2026-01-01 00:00:00' AND tus_date<='2026-12-31 23:59:59'"],
                 ['strtotime', 'invalid'],
-                ['date', 'timestamp', false],
+                ['date', 'timestamp', 0],
                 ['strtotime', 'invalid'],
-                ['date', 'timestamp', false],
+                ['date', 'timestamp', 0],
                 ['count', 'test_stats', "WHERE tus_date>='epoch' AND tus_date<='epoch'"],
             ]],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),

@@ -1369,14 +1369,14 @@ function f_count_executed_tests(mixed $startdate, mixed $enddate): int
     require_once '../config/tce_config.php';
     if (!empty($startdate)) {
         $startdate_time = strtotime($startdate);
-        $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
+        $startdate = date(K_TIMESTAMP_FORMAT, (int) $startdate_time);
     } else {
         $startdate = date('Y') . '-01-01 00:00:00';
     }
 
     if (!empty($enddate)) {
         $enddate_time = strtotime($enddate);
-        $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
+        $enddate = date(K_TIMESTAMP_FORMAT, (int) $enddate_time);
     } else {
         $enddate = date('Y') . '-12-31 23:59:59';
     }
