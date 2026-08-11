@@ -33,7 +33,7 @@ require_once __DIR__ . '/tce_functions_test_access.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
 require_once __DIR__ . '/tce_functions_result_publication.php';
 
-function f_get_user_tests()
+function f_get_user_tests(): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
@@ -249,6 +249,7 @@ function f_get_user_tests()
         $out = $l['m_no_test_available'];
     }
 
+    /** @var string $out */
     return $out;
 }
 

@@ -126,7 +126,6 @@ echo '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
 echo '<div class="tcecontentbox">' . K_NEWLINE;
-/** @var string $user_tests */
 $user_tests = f_get_user_tests();
 echo $user_tests;
 echo '</div>' . K_NEWLINE;
