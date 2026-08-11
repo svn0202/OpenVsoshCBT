@@ -1423,7 +1423,7 @@ function f_print_test_stat(
  * @param mixed $order_field Order fields.
  * @param mixed $filter Filter string for URLs.
  * @param mixed $pubmode If true filter the results for the public interface.
- * @param mixed $stats 2 = full stats; 1 = user stats; 0 = disabled stats.
+ * @param int|numeric-string $stats 2 = full stats; 1 = user stats; 0 = disabled stats.
  * @return string|null HTML table, or null when there are no records.
  */
 function f_print_test_result_stat(
