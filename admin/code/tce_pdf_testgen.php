@@ -142,7 +142,13 @@ $pdf->setLanguageArray($l);
 $pdf->setReportHeader(PDF_HEADER_TITLE, PDF_HEADER_STRING, PDF_HEADER_LOGO, (float) PDF_HEADER_LOGO_WIDTH);
 
 // Draw a text cell at an absolute position (used for the coordinate-exact OMR pages).
-$omrText = static function (
+$omrText =
+    /**
+     * @throws \Com\Tecnick\Pdf\Font\Exception When the configured PDF font cannot be loaded.
+     * @throws \Com\Tecnick\Pdf\Page\Exception When the text cell cannot be rendered.
+     * @throws \Com\Tecnick\Unicode\Exception When the text cannot be encoded for the PDF.
+     */
+    static function (
     string $txt,
     float $px,
     float $py,
@@ -154,10 +160,7 @@ $omrText = static function (
     int $fsize,
     string $colorhex,
 ) use ($pdf): string {
-    // @mago-expect analysis:unhandled-thrown-type -- configured PDF fonts are required for this export
     $fnt = $pdf->font->insert($pdf->pon, $fname, $fstyle, $fsize);
-    // @mago-expect analysis:unhandled-thrown-type -- PDF rendering failures retain the legacy fail-fast behavior
-    // @mago-expect analysis:unhandled-thrown-type -- Unicode rendering failures retain the legacy fail-fast behavior
     return (
         $fnt['out']
         . $pdf->color->getPdfColor($colorhex)
