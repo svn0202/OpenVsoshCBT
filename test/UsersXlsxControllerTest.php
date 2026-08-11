@@ -90,6 +90,44 @@ PHP;
         self::assertSame(['value' => 42, 'type' => 'number'], $rows[1][0] ?? null);
     }
 
+    public function testPreviewRejectsNonStringUploadPath(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_AUTH_IMPORT_USERS', 5);
+define('K_AUTH_ADMINISTRATOR', 10);
+$l = ['a_meta_charset' => 'UTF-8'];
+$db = 'db';
+$_GET = [];
+$_POST = ['xlsx_action' => 'preview', 'csrf_token' => 'valid'];
+$_FILES = ['xlsx_file' => ['error' => UPLOAD_ERR_OK, 'tmp_name' => ['nested']]];
+$_SESSION = ['session_user_level' => 5];
+$_SERVER['SCRIPT_NAME'] = '/admin/code/tce_users_xlsx.php';
+function check_csrf_token($token) { return $token === 'valid'; }
+function is_uploaded_file($path) { return false; }
+function f_get_csrf_token_field() { return '<CSRF>'; }
+$source = file_get_contents($argv[1]);
+$source = preg_replace('/^<\?php\s*/', '', $source);
+$source = preg_replace('/^\s*require_once [^;]+;\s*$/m', '', $source);
+$source = str_replace('new RuntimeException(', 'new \\RuntimeException(', $source);
+$source = str_replace('catch (Throwable ', 'catch (\\Throwable ', $source);
+ob_start();
+eval('namespace Harness; ' . $source);
+$html = ob_get_clean();
+echo json_encode($html, JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_users_xlsx.php'],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var string $html */
+        $html = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertStringContainsString('Выберите XLSX-файл без ошибок загрузки.', $html);
+    }
+
     public function testImportConsumesApprovedPreviewAndRendersResult(): void
     {
         $script = <<<'PHP'
