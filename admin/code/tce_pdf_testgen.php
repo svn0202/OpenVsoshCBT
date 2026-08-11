@@ -841,10 +841,10 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     ?? throw new UnexpectedValueException('Missing generated question data');
                 $question_type = $omr_question['type'];
                 if ($question_type < 3) { // MCSA or MCMA
-                    /** @var array{0:int|string,1:array<positive-int,int|string>} $barcode_question */
-                    // @mago-expect analysis:possibly-undefined-int-array-index -- populated with every generated question
-                    // @mago-expect analysis:possibly-undefined-int-array-index -- entry zero is the test identifier, questions start at one
-                    $barcode_question = $barcode_test_data[$current_question];
+                    $barcode_question = $barcode_test_data[$current_question] ?? null;
+                    if (!is_array($barcode_question)) {
+                        throw new UnexpectedValueException('Missing generated barcode question data');
+                    }
                     $num_answers = count($barcode_question[1]);
                     for ($i = 1; $i <= 12; ++$i) {
                         if ($i <= $num_answers) {
