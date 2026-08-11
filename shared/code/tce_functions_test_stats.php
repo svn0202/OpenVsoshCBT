@@ -2491,6 +2491,7 @@ function f_get_test_ids(mixed $test_id, mixed $user_id, mixed $filter = 'test_re
     $str = '0'; // string to return
     $test_id = (int) $test_id;
     $user_id = (int) $user_id;
+    /** @var string $filter */
     $sql =
         'SELECT test_id FROM '
         . K_TABLE_TESTS
@@ -2501,7 +2502,7 @@ function f_get_test_ids(mixed $test_id, mixed $user_id, mixed $filter = 'test_re
         . ' AND testuser_status>3) AND '
         . $filter
         . '=1';
-    if ($r = F_db_query($sql, $db)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
         while (($m = $normalize_row(F_db_fetch_assoc($r))) !== null) {
             /** @var array{test_id:int|numeric-string} $m */
             $str .= ',' . $m['test_id'];
