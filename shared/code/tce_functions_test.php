@@ -733,9 +733,10 @@ function f_print_test_info($test_id, $showip = false)
 /**
  * Returns the test data.
  * @param $test_id (int) test ID.
- * @return array containing test data.
+ * @return array<array-key,mixed>|false Test data, or false when no row is available.
+ * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
-function f_get_test_data(mixed $test_id): mixed
+function f_get_test_data(mixed $test_id): array|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -746,6 +747,7 @@ function f_get_test_data(mixed $test_id): mixed
 		WHERE test_id=' . $test_id . '
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
+        /** @var array<array-key,mixed>|false $td */
         $td = F_db_fetch_assoc($r);
     } else {
         F_display_db_error();
@@ -1317,6 +1319,7 @@ function f_create_test($test_id, $user_id)
     $firsttest = 0; // id of the firts test of this type
     // get test data
     $testdata = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $testdata */
     $test_random_questions_select = f_get_boolean($testdata['test_random_questions_select']);
     $test_random_questions_order = f_get_boolean($testdata['test_random_questions_order']);
     $test_questions_order_mode = (int) $testdata['test_questions_order_mode'];
@@ -1836,6 +1839,7 @@ function f_update_question_log($test_id, $testlog_id, $answpos = [], $answer_tex
     $answer_id = [];
     // get test data
     $testdata = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $testdata */
     // get question information
     $sql = 'SELECT *
 		FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
@@ -2180,6 +2184,7 @@ function f_question_form($test_id, $testlog_id, $formname)
     }
 
     $testdata = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $testdata */
     $noanswer_hidden = '';
     $noanswer_disabled = '';
     if (!f_get_boolean($testdata['test_noanswer_enabled'])) {
@@ -2255,6 +2260,7 @@ function f_question_form($test_id, $testlog_id, $formname)
                 . K_NEWLINE;
             // get test data
             $test_data = f_get_test_data($test_id);
+            /** @var array<array-key,mixed> $test_data */
             // store time information for interactive timer
             $examtime =
                 (int) f_get_test_start_time($m['testlog_testuser_id'])
@@ -3077,6 +3083,7 @@ function f_test_comment($test_id): string
     global $db, $l;
     $test_id = (int) $test_id;
     $td = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $td */
     $user_id = (int) $_SESSION['session_user_id'];
     $str = '';
     // user's comment

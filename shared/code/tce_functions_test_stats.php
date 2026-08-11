@@ -38,6 +38,7 @@ function f_get_user_test_stat($test_id, $user_id = 0, $testuser_id = 0, $pubmode
     $testuser_id = (int) $testuser_id;
     // get test data array
     $data = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $data */
     return $data + f_get_user_test_totals($test_id, $user_id, $testuser_id, $pubmode);
 }
 
@@ -259,6 +260,7 @@ function f_get_raw_test_stat(
     }
 
     $testdata = f_get_test_data($test_id);
+    /** @var array<array-key,mixed> $testdata */
     // array to be returned
     if (!isset($data['qstats'])) {
         // total number of questions
