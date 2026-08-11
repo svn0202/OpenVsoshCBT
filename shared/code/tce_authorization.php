@@ -566,6 +566,7 @@ if ($pagelevel > 0 && $session_user_level < $pagelevel) {
 
 if (
     $logged
+    && defined('K_AUTH_ADMINISTRATOR')
     && $session_user_level >= openvsosh_authorization_int(K_AUTH_ADMINISTRATOR)
 ) {
     require_once __DIR__ . '/tce_functions_roles.php';

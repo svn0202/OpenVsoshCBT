@@ -785,21 +785,33 @@ function f_tce_show_allusers_creation_row(mixed $row): ?array
 /** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */
 function f_tce_show_allusers_test_row(mixed $row): ?array
 {
-    /** @var array{test_id:int|string,test_begin_time:string,test_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{test_id:int|string,test_begin_time:string,test_name:string} $row */
     return $row;
 }
 
 /** @return array{group_id:int|string,group_name:string}|null */
 function f_tce_show_allusers_group_row(mixed $row): ?array
 {
-    /** @var array{group_id:int|string,group_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{group_id:int|string,group_name:string} $row */
     return $row;
 }
 
 /** @return array{user_id:int|string,user_lastname:string,user_firstname:string,user_name:string}|null */
 function f_tce_show_allusers_user_row(mixed $row): ?array
 {
-    /** @var array{user_id:int|string,user_lastname:string,user_firstname:string,user_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{user_id:int|string,user_lastname:string,user_firstname:string,user_name:string} $row */
     return $row;
 }
 

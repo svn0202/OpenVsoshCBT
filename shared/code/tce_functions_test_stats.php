@@ -386,7 +386,7 @@ function f_get_raw_test_stat(
         while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
             /**
              * @var array{
-             *   average_score:int|float|numeric-string,average_time:string,module_id:int|numeric-string,
+             *   average_score:int|float|numeric-string,average_time:string|null,module_id:int|numeric-string,
              *   module_name:mixed,question_description:mixed,question_difficulty:int|float|numeric-string,
              *   question_id:int|numeric-string,question_type:int|numeric-string,recurrence:int|numeric-string,
              *   subject_description:mixed,subject_id:int|numeric-string,subject_name:mixed
@@ -499,11 +499,12 @@ function f_get_raw_test_stat(
                 $sqltot,
                 $sqlw . ' AND testlog_question_id=' . $m['question_id'] . ' AND testlog_score IS NULL',
             );
-            if (stripos($m['average_time'], ':') !== false) {
+            $average_time_value = $m['average_time'] ?? '';
+            if (stripos($average_time_value, ':') !== false) {
                 // PostgreSQL returns formatted time, while MySQL returns the number of seconds
-                $m['average_time'] = (int) strtotime($m['average_time']);
+                $average_time_value = (string) (int) strtotime($average_time_value);
             }
-            $average_time = (float) $m['average_time'];
+            $average_time = is_numeric($average_time_value) ? (float) $average_time_value : 0.0;
 
             /** @var int|numeric-string $num_all_answers */
             $num_all_answers = F_count_rows($sqltb, $sqlansw . ' AND testlog_question_id=' . $m['question_id']);

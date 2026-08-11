@@ -1133,6 +1133,10 @@ function f_tce_edit_user_row(mixed $value): ?array
  */
 function f_tce_edit_user_search_row(mixed $value): ?array
 {
+    if (!is_array($value)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     user_id:int|string,
@@ -1141,7 +1145,7 @@ function f_tce_edit_user_search_row(mixed $value): ?array
      *     user_firstname:string|null,
      *     user_lastname:string|null,
      *     user_level:int|string|null
-     * }|null $value
+     * } $value
      */
     return $value;
 }
@@ -1149,7 +1153,11 @@ function f_tce_edit_user_search_row(mixed $value): ?array
 /** @return array{group_id:int|string,group_name:string}|null */
 function f_tce_edit_user_group_row(mixed $value): ?array
 {
-    /** @var array{group_id:int|string,group_name:string}|null $value */
+    if (!is_array($value)) {
+        return null;
+    }
+
+    /** @var array{group_id:int|string,group_name:string} $value */
     return $value;
 }
 

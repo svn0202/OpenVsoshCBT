@@ -1401,14 +1401,22 @@ function f_tce_edit_answer_module_id_row(mixed $row): ?array
 /** @return array{subject_id:int|string}|null */
 function f_tce_edit_answer_subject_id_row(mixed $row): ?array
 {
-    /** @var array{subject_id:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{subject_id:int|string} $row */
     return $row;
 }
 
 /** @return array{question_id:int|string}|null */
 function f_tce_edit_answer_question_id_row(mixed $row): ?array
 {
-    /** @var array{question_id:int|string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{question_id:int|string} $row */
     return $row;
 }
 

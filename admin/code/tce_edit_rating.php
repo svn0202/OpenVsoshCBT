@@ -717,13 +717,17 @@ function f_tce_edit_rating_score_row(mixed $row): ?array
  */
 function f_tce_edit_rating_detail_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     test_id:int|string,test_score_right:int|float|string,test_score_wrong:int|float|string,
      *     test_score_unanswered:int|float|string,testlog_id:int|string,testlog_score:int|float|string|null,
      *     testlog_answer_text:string,testlog_comment:string|null,question_description:string,
      *     question_difficulty:int|float|string,question_explanation:string
-     * }|null $row
+     * } $row
      */
     return $row;
 }
@@ -731,7 +735,11 @@ function f_tce_edit_rating_detail_row(mixed $row): ?array
 /** @return array{test_id:int|string,test_begin_time:string,test_name:string}|null */
 function f_tce_edit_rating_executed_test_row(mixed $row): ?array
 {
-    /** @var array{test_id:int|string,test_begin_time:string,test_name:string}|null $row */
+    if (!is_array($row)) {
+        return null;
+    }
+
+    /** @var array{test_id:int|string,test_begin_time:string,test_name:string} $row */
     return $row;
 }
 
@@ -743,11 +751,15 @@ function f_tce_edit_rating_executed_test_row(mixed $row): ?array
  */
 function f_tce_edit_rating_answer_row(mixed $row): ?array
 {
+    if (!is_array($row)) {
+        return null;
+    }
+
     /**
      * @var array{
      *     testlog_id:int|string,testlog_score:int|float|string|null,user_lastname:string,user_firstname:string,
      *     user_name:string,question_description:string
-     * }|null $row
+     * } $row
      */
     return $row;
 }

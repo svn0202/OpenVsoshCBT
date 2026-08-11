@@ -500,11 +500,10 @@ function f_tce_select_media_realpath(string|false $path): string
     return $path === false ? '' : $path;
 }
 
-/** @return list<string> */
-function f_tce_select_media_authorized_dirs(mixed $directories): array
+/** @return array<array-key,mixed>|string */
+function f_tce_select_media_authorized_dirs(mixed $directories): array|string
 {
-    /** @var list<string> $directories */
-    return $directories;
+    return is_array($directories) || is_string($directories) ? $directories : '';
 }
 
 /**
