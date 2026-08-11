@@ -160,13 +160,13 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 7
+count = 6
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 218
+count = 216
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -220,7 +220,7 @@ count = 415
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 14
+count = 13
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -286,7 +286,7 @@ count = 5
 file = "shared/code/tce_functions_test_stats.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_assoc` has type `never`, meaning it cannot produce a value."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
