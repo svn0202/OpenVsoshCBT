@@ -244,7 +244,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$test_id` is missing a type hint."
-count = 6
+count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -256,7 +256,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$testlog_id` is missing a type hint."
-count = 6
+count = 5
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

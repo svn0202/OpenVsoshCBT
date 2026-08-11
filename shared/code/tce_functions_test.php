@@ -969,11 +969,11 @@ function f_execute_test($test_id)
 /**
  * Checks if the current user is the right testlog_id owner.<br>
  * This function is used for security reasons.
- * @param $test_id (int) test ID
- * @param $testlog_id (int) test log ID
- * @return boolean TRUE in case of success, FALSE otherwise
+ * @param mixed $test_id Test ID
+ * @param mixed $testlog_id Test log ID
+ * @return bool TRUE in case of success, FALSE otherwise
  */
-function f_is_right_testlog_user($test_id, $testlog_id): bool
+function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
