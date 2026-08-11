@@ -151,11 +151,13 @@ function f_tmf_users_xlsx_validate(
         }
         unset($identifier);
         foreach ([
-            'email', 'first_name', 'last_name', 'birth_place', 'registration_number', 'ssn',
-        ] as $field) {
-            /** @mago-expect analysis:possibly-undefined-string-array-index */
-            /** @var string $field_value */
-            $field_value = $values[$field];
+            'email' => $values['email'],
+            'first_name' => $values['first_name'],
+            'last_name' => $values['last_name'],
+            'birth_place' => $values['birth_place'],
+            'registration_number' => $values['registration_number'],
+            'ssn' => $values['ssn'],
+        ] as $field => $field_value) {
             if (mb_strlen($field_value) > 255) {
                 $row_errors[] = 'Поле ' . $field . ' длиннее 255 символов.';
             }
