@@ -2487,6 +2487,8 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l, $examtime, $timeout_logout;
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $test_id = (int) $test_id;
     $testlog_id = (int) $testlog_id;
     $user_id = (int) $_SESSION['session_user_id'];
@@ -2526,7 +2528,8 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 			ORDER BY testlog_id
 			LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
-            if ($m = F_db_fetch_array($r)) {
+            if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /** @var array{testlog_id:int|numeric-string} $m */
                 $testlog_id = $m['testlog_id'];
             } else {
                 return null;
