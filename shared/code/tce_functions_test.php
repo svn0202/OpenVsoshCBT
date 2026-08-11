@@ -1300,8 +1300,8 @@ function f_is_test_over_limits(): bool
 
 /**
  * Returns the number of executed tests on the specified time interval.
- * @param $startdate (string) Star date-time interval.
- * @param $enddate (string) End  date-time interval.
+ * @param string $startdate Start date-time interval.
+ * @param string $enddate End date-time interval.
  * @return int number of executed tests.
  */
 function f_count_executed_tests(mixed $startdate, mixed $enddate): int
