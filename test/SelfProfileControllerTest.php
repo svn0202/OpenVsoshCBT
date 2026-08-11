@@ -50,6 +50,18 @@ final class SelfProfileControllerTest extends TestCase
         self::assertStringNotContainsString('[[DB-ERROR]]', $result['html']);
     }
 
+    public function testProfileUpdateTreatsNonStringNamesAsEmptyInput(): void
+    {
+        $result = self::runController(true, true);
+
+        self::assertSame(
+            "UPDATE users SET user_firstname='', user_lastname='' WHERE user_id=42",
+            $result['queries'][1] ?? null,
+        );
+        self::assertSame('', $result['session']['session_user_firstname'] ?? null);
+        self::assertSame('', $result['session']['session_user_lastname'] ?? null);
+    }
+
     /**
      * @return array{
      *     html:string,
@@ -59,7 +71,7 @@ final class SelfProfileControllerTest extends TestCase
      *     session:array<string,mixed>
      * }
      */
-    private static function runController(bool $post): array
+    private static function runController(bool $post, bool $malformedNames = false): array
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -80,6 +92,10 @@ $_POST = $argv[2] === 'post' ? [
     'save_profile' => '1', 'csrf_token' => 'valid', 'user_firstname' => ' Grace ',
     'user_lastname' => ' Hopper ', 'currentpassword' => 'current-secret',
 ] : [];
+if (($argv[3] ?? '') === 'malformed-names') {
+    $_POST['user_firstname'] = ['Grace'];
+    $_POST['user_lastname'] = ['Hopper'];
+}
 $_SESSION = ['session_user_id' => 42];
 $GLOBALS['queries'] = [];
 $GLOBALS['messages'] = [];
@@ -122,7 +138,7 @@ PHP;
         [$status, $output] = \F_tcecode_run_process(
             [
                 PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_self_profile.php',
-                $post ? 'post' : 'get',
+                $post ? 'post' : 'get', $malformedNames ? 'malformed-names' : 'normal-names',
             ],
             dirname(__DIR__) . '/admin/code',
         );

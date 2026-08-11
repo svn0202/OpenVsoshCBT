@@ -31,14 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
         http_response_code(403);
         exit();
     }
-    /** @var string $firstname_input */
-    $firstname_input = $_POST['user_firstname'] ?? '';
-    /** @mago-expect analysis:redundant-cast */
-    $firstname = trim((string) $firstname_input);
-    /** @var string $lastname_input */
-    $lastname_input = $_POST['user_lastname'] ?? '';
-    /** @mago-expect analysis:redundant-cast */
-    $lastname = trim((string) $lastname_input);
+    $firstname = isset($_POST['user_firstname']) && is_string($_POST['user_firstname'])
+        ? trim($_POST['user_firstname'])
+        : '';
+    $lastname = isset($_POST['user_lastname']) && is_string($_POST['user_lastname'])
+        ? trim($_POST['user_lastname'])
+        : '';
     /** @var string $password */
     $password = $_POST['currentpassword'] ?? '';
     if (mb_strlen($firstname) > 255 || mb_strlen($lastname) > 255) {
