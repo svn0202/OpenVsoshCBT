@@ -207,6 +207,26 @@ final class FileManagerFunctionsTest extends TestCase
         self::assertSame('[true,false,true]', $output);
     }
 
+    public function testMissingDirectoryProducesAnEmptyListingWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'require "../config/tce_config.php"; require "tce_functions_filemanager.php"; '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$data = f_get_dir_files($argv[1], $argv[1], "[^/]*"); restore_error_handler(); '
+                    . 'echo json_encode([$data, $warnings]);',
+                sys_get_temp_dir() . '/openvsosh-missing-filemanager-directory/',
+            ],
+            __DIR__ . '/../admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('[{"dirs":[],"files":[]},[]]', $output);
+    }
+
     /** @throws Random\RandomException */
     public function testListsDirectoriesAndFilesInNaturalCaseInsensitiveOrder(): void
     {
