@@ -2899,6 +2899,17 @@ function f_questions_menu(
     global $db, $l;
     /** @return non-empty-array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
+    /**
+     * @var array{
+     *     test_score_right:int|float|numeric-string,
+     *     test_id?:mixed,
+     *     test_auto_fullscreen?:mixed,
+     *     test_hide_exam_info?:mixed,
+     *     test_disable_previous?:mixed,
+     *     test_disable_next?:mixed,
+     *     test_menu_enabled:mixed
+     * } $testdata
+     */
     $testuser_id = (int) $testuser_id;
     $testlog_id = (int) $testlog_id;
     $str = '';
@@ -3012,7 +3023,6 @@ function f_questions_menu(
             $str .= '</abbr>';
             $str .= '&nbsp;';
             // show question score
-            /** @var int|float|numeric-string $test_score_right */
             $test_score_right = $testdata['test_score_right'];
             $n_question_score = $test_score_right * $m['question_difficulty'];
             $str .= '<abbr class="offbox" title="' . $l['w_max_score'] . ': ' . $n_question_score . '">';
