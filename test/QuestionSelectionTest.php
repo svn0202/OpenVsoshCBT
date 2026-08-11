@@ -195,8 +195,11 @@ PHP;
                     . 'try { $qualified(37, 47, 1, 2, 0, $testdata); $mcsaRemainderFailure = null; '
                     . '} catch (\TypeError $error) { '
                     . '$mcsaRemainderFailure = [get_class($error), $error->getMessage()]; } '
+                    . '$GLOBALS["selection_fails"] = true; $GLOBALS["selection_fail_after"] = null; '
+                    . 'try { $qualified(38, 48, 4, 2, 0, $testdata); $orderingFailure = null; '
+                    . '} catch (\TypeError $error) { $orderingFailure = [get_class($error), $error->getMessage()]; } '
                     . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $mcsaFailure, '
-                    . '$mcsaRemainderFailure, $GLOBALS["queries"], '
+                    . '$mcsaRemainderFailure, $orderingFailure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -213,6 +216,7 @@ PHP;
                 ['TypeError', 'Unsupported operand types: array + bool'],
                 ['TypeError', 'Unsupported operand types: array + bool'],
                 ['TypeError', 'Unsupported operand types: array + bool'],
+                ['TypeError', 'Unsupported operand types: array + bool'],
                 [
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=44 LIMIT 1',
@@ -225,6 +229,7 @@ PHP;
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=43 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=46 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=47 LIMIT 1',
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=48 LIMIT 1',
                 ],
                 [
                     [42, '', false, 2, 0, false, 0],
@@ -234,6 +239,7 @@ PHP;
                     [46, 1, false, 1, 0, false, 0],
                     [47, 1, false, 1, 0, false, 0],
                     [47, 0, false, 1, 1, false, 0],
+                    [48, '', true, 0, 0, true, 0],
                 ],
                 [[32, [0 => 13, 2 => 17]], [34, ['13', '17']], [35, ['23', '29']]],
             ],

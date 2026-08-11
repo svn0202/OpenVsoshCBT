@@ -2099,8 +2099,11 @@ function f_add_question_answers(
                 // ORDERING
                     // select answers
                     $randorder = true;
-                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
-                    $answers_ids += f_select_answers($question_id, '', true, 0, 0, $randorder, $ordmode);
+                    $ordered_answers = f_select_answers($question_id, '', true, 0, 0, $randorder, $ordmode);
+                    if (!is_array($ordered_answers)) {
+                        throw new \TypeError('Unsupported operand types: array + ' . get_debug_type($ordered_answers));
+                    }
+                    $answers_ids += $ordered_answers;
                     break;
         }
 
