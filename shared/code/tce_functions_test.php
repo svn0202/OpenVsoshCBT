@@ -727,6 +727,8 @@ function f_test_info_link(mixed $test_id, mixed $link_name = ''): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var int|numeric-string $test_id */
+    /** @var array{m_new_window_link:string,w_info:string} $l */
     $str = '';
     $onclickinfo = "infoTestWindow=window.open('tce_popup_test_info.php?testid=" . $test_id . "'";
     $onclickinfo .= ",'infoTestWindow','dependent";
