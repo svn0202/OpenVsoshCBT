@@ -146,6 +146,17 @@ final class XlsxTest extends TestCase
         self::assertStringNotContainsString('<v>0.1</v>', $xml);
     }
 
+    public function testWorksheetColumnCountUsesWidestRow(): void
+    {
+        $xml = \F_tmf_xlsx_sheet_xml([
+            ['first'],
+            ['second', 'third', 'fourth'],
+        ], []);
+
+        self::assertStringContainsString('<col min="3" max="3"', $xml);
+        self::assertStringNotContainsString('<col min="4" max="4"', $xml);
+    }
+
     public function testUserPreviewReadsFirstKeyedRowAsHeader(): void
     {
         $result = \F_tmf_users_xlsx_validate(

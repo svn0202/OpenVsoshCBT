@@ -151,9 +151,7 @@ function f_tmf_xlsx_sheet_xml(array $rows, array $widths): string
     /** @var array<int,int|float|string> $widths */
     $max_columns = 1;
     foreach ($rows as $row) {
-        /** @mago-expect analysis:redundant-type-comparison */
-        /** @mago-expect analysis:redundant-condition */
-        $max_columns = max($max_columns, is_array($row) ? count($row) : 0);
+        $max_columns = max($max_columns, count($row));
     }
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         . '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
