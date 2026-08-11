@@ -553,7 +553,9 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
 						testuser_close_reason='timeout',
 						testuser_last_activity='" . $current_time . "'
 					WHERE testuser_id=" . $testuser_id;
-                if (!($ru = F_db_query($sqlu, $db))) {
+                $ru = F_db_query($sqlu, $db);
+                /** @var mixed $ru */
+                if (!$ru) {
                     F_display_db_error();
                 } else {
                     // test locked
@@ -584,7 +586,9 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
                                 $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 								SET testuser_status=2
 								WHERE testuser_id=' . $testuser_id . '';
-                                if (!($ru = F_db_query($sqlu, $db))) {
+                                $ru = F_db_query($sqlu, $db);
+                                /** @var mixed $ru */
+                                if (!$ru) {
                                     F_display_db_error();
                                 } else {
                                     $test_status = 2;
@@ -605,7 +609,9 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
                                 $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 								SET testuser_status=3
 								WHERE testuser_id=' . $testuser_id . '';
-                                if (!($ru = F_db_query($sqlu, $db))) {
+                                $ru = F_db_query($sqlu, $db);
+                                /** @var mixed $ru */
+                                if (!$ru) {
                                     F_display_db_error();
                                 } else {
                                     $test_status = 3;
