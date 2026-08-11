@@ -54,6 +54,19 @@ function f_tcecode_get_image_size(string $filename): array|false
 }
 
 /**
+ * Remove a best-effort renderer artifact without exposing cleanup races.
+ */
+function f_tcecode_unlink_silently(string $filename): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return unlink($filename);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
  * Returns XHTML code from text marked-up with TCExam Code Tags
  * @param $text_to_decode (string) text to convert
  * @return string XHTML code
@@ -639,8 +652,7 @@ function f_latex_callback(mixed $matches): mixed
         $tmpext = ['tex', 'aux', 'log', 'pdf'];
         foreach ($tmpext as $ext) {
             if (F_file_exists($imgpath . '.' . $ext)) {
-                // @mago-expect lint:no-error-control-operator -- renderer temporary-file cleanup is best effort
-                @unlink($imgpath . '.' . $ext);
+                f_tcecode_unlink_silently($imgpath . '.' . $ext);
             }
         }
     }
