@@ -1267,7 +1267,7 @@ function f_is_test_over_limits(): bool
  * @param $enddate (string) End  date-time interval.
  * @return int number of executed tests.
  */
-function f_count_executed_tests($startdate, $enddate)
+function f_count_executed_tests(mixed $startdate, mixed $enddate): int
 {
     require_once '../config/tce_config.php';
     if (!empty($startdate)) {
