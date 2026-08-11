@@ -80,12 +80,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "invalid-argument"
-message = "Invalid argument type for argument #1 of `f_tmf_results_are_published`: expected `array<string, mixed>`, but found `unknown-ref(Returns)`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
 count = 168
