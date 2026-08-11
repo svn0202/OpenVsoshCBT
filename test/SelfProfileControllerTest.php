@@ -6,6 +6,19 @@ use PHPUnit\Framework\TestCase;
 
 final class SelfProfileControllerTest extends TestCase
 {
+    public function testSessionUserIsReadOnlyAfterAuthorization(): void
+    {
+        $source = file_get_contents(dirname(__DIR__) . '/admin/code/tce_self_profile.php');
+
+        self::assertIsString($source);
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $userId = strpos($source, "\$_SESSION['session_user_id']");
+
+        self::assertIsInt($authorization);
+        self::assertIsInt($userId);
+        self::assertLessThan($userId, $authorization);
+    }
+
     public function testProfilePageKeepsDisplayedDataAndFormContract(): void
     {
         $result = self::runController(false);

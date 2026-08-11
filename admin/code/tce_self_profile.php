@@ -22,7 +22,7 @@ require_once '../../shared/code/tce_functions_form.php';
 $thispage_title = 'Мой профиль';
 require_once 'tce_page_header.php';
 
-/** @mago-expect analysis:possibly-undefined-string-array-index */
+/** @var array{session_user_id:int} $_SESSION */
 $user_id = (int) $_SESSION['session_user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
     /** @var string $csrf_token */
