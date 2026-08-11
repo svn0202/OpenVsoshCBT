@@ -506,6 +506,7 @@ for ($item = 1; $item <= $test_num; ++$item) {
         } else {
             ksort($questions_data);
         }
+        $questions_data = array_values($questions_data);
 
         // 4. PRINT QUESTIONS (build HTML; page-break-inside:avoid replaces the legacy transaction logic)
         $question_order = 0;
@@ -836,15 +837,8 @@ for ($item = 1; $item <= $test_num; ++$item) {
                     $grid_hex,
                 );
                 $x += 9;
-                /**
-                 * @var array{
-                 *     id:int|string,type:int<1,5>,difficulty:int|float|numeric-string,description:string,
-                 *     answers:int|numeric-string,score:int|float
-                 * } $omr_question
-                */
-                // @mago-expect analysis:possibly-undefined-int-array-index -- bounded by the generated question count
-                // @mago-expect analysis:possibly-undefined-int-array-index -- the list and keyed-array views share this bound
-                $omr_question = $questions_data[$current_question - 1];
+                $omr_question = $questions_data[$current_question - 1]
+                    ?? throw new UnexpectedValueException('Missing generated question data');
                 $question_type = $omr_question['type'];
                 if ($question_type < 3) { // MCSA or MCMA
                     /** @var array{0:int|string,1:array<positive-int,int|string>} $barcode_question */
