@@ -50,6 +50,20 @@ final class PdfResultsControllerTest extends TestCase
         self::assertSame('tcexam_report_3_1_7_0_9_23.pdf', $calls[10][1][0] ?? null);
     }
 
+    public function testDetailedReportSkipsMissingRequestedAttempt(): void
+    {
+        $calls = self::runController([
+            'mode' => '3', 'test_id' => '7', 'user_id' => '9', 'testuser_id' => '99',
+        ]);
+
+        self::assertNotContains('addReportPage', array_column($calls, 0));
+        self::assertNotContains('printTestUserInfo', array_column($calls, 0));
+        $lastCall = end($calls);
+        self::assertIsArray($lastCall);
+        self::assertSame('outputReport', $lastCall[0]);
+        self::assertSame('tcexam_report_3_1_7_0_9_99.pdf', $lastCall[1][0] ?? null);
+    }
+
     /**
      * @param array<string,string> $request
      * @return list<array{string,list<mixed>}>
