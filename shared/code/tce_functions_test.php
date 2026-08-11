@@ -84,7 +84,9 @@ function f_get_user_tests(): string
                     $str .= '<td>';
                 }
 
-                $str .= '<strong>' . f_test_info_link($m['test_id'], $m['test_name']) . '</strong></td>' . K_NEWLINE;
+                /** @var string $test_name */
+                $test_name = $m['test_name'];
+                $str .= '<strong>' . f_test_info_link($m['test_id'], $test_name) . '</strong></td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $m['test_begin_time'] . '</td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
@@ -632,7 +634,7 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
 /**
  * Returns XHTML link to open test info popup.
  * @param mixed $test_id Test ID
- * @param mixed $link_name Link caption
+ * @param string $link_name Link caption
  * @return string XHTML code
  */
 function f_test_info_link(mixed $test_id, mixed $link_name = ''): string
