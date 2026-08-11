@@ -1313,11 +1313,11 @@ function f_update_testuser_stat(mixed $date): void
 
 /**
  * Create user's test and returns TRUE on success.
- * @param $test_id (int) test ID.
- * @param $user_id (int) user ID.
- * @return boolean TRUE in case of success, FALSE otherwise.
+ * @param mixed $test_id Test ID.
+ * @param mixed $user_id User ID.
+ * @return bool TRUE in case of success, FALSE otherwise.
  */
-function f_create_test($test_id, $user_id)
+function f_create_test(mixed $test_id, mixed $user_id): bool
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
