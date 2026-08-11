@@ -263,10 +263,10 @@ function f_get_user_tests(): string
         $out .= '</tbody>' . K_NEWLINE;
         $out .= '</table>' . K_NEWLINE;
     } else {
+        /** @var string $out */
         $out = $l['m_no_test_available'];
     }
 
-    /** @var string $out */
     return $out;
 }
 
