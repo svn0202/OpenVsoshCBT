@@ -105,12 +105,6 @@ count = 5
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
-message = "Right operand in `<=` comparison has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-operand"
 message = "Right operand in `<` comparison has `mixed` type."
 count = 1
 
@@ -263,12 +257,6 @@ file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `truthy-string` accessed on `array<truthy-string, non-empty-string>`."
 count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-undefined-variable"
-message = "Variable `$max_position` might not have been defined on all execution paths leading to this point."
-count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
