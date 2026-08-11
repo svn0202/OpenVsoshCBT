@@ -1144,6 +1144,7 @@ function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
     $i = 0;
     $answer_data = [];
     foreach ($answers_ids as $key => $answid) {
+        /** @var int|numeric-string $answid */
         ++$i;
         $answer_data[] = '(' . $testlog_id . ', ' . $answid . ', -1, ' . $i . ')';
     }
