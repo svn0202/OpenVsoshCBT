@@ -532,7 +532,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "redundant-condition"
 message = "This condition (type `true`) will always evaluate to true."
-count = 19
+count = 16
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -557,12 +557,6 @@ file = "shared/code/tce_functions_test.php"
 code = "undefined-variable"
 message = "Undefined variable: `$question_timer`."
 count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "unreachable-else-clause"
-message = "Unreachable else clause"
-count = 3
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
