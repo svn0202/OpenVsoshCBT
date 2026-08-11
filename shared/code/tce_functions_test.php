@@ -2138,11 +2138,11 @@ function f_update_question_log($test_id, $testlog_id, $answpos = [], $answer_tex
 
 /**
  * Returns the answer ID from position
- * @param $testlog_id (int) Test Log ID
- * @param $answpos (array) Answer positions (order in wich they are displayed)
+ * @param mixed $testlog_id Test Log ID
+ * @param mixed $answpos Answer positions (order in wich they are displayed)
  * @return array<int, mixed> Answer values keyed by answer ID.
  */
-function f_get_answer_id_from_position($testlog_id, $answpos): array
+function f_get_answer_id_from_position(mixed $testlog_id, mixed $answpos): array
 {
     require_once '../config/tce_config.php';
     global $db, $l;
