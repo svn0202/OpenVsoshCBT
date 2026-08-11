@@ -827,7 +827,9 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
              *     test_score_wrong:mixed
              * } $m
              */
-            if (!f_is_valid_test_user($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+            /** @var string|null $session_user_ip */
+            $session_user_ip = $_SESSION['session_user_ip'] ?? null;
+            if (!f_is_valid_test_user($test_id, $session_user_ip, $m['test_ip_range'])) {
                 return '';
             }
 
