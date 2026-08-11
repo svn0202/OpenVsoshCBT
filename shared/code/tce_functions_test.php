@@ -1159,9 +1159,15 @@ function f_get_first_test_user(mixed $test_id): int|string
  * @param $score (int) score for unanswered questions
  * @param $order (int) question display order
  * @param $num_answers (int) number of alternative answers
- * @return int testlog ID
+ * @return int|string|null|false Test-log ID, or false when the insert fails.
  */
-function f_new_test_log($testuser_id, $question_id, $score, $order, $num_answers = 0)
+function f_new_test_log(
+    mixed $testuser_id,
+    mixed $question_id,
+    mixed $score,
+    mixed $order,
+    mixed $num_answers = 0,
+): int|string|null|false
 {
     require_once '../config/tce_config.php';
     global $db, $l;

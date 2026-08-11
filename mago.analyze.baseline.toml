@@ -111,12 +111,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-return-statement"
-message = "Invalid return type for function `f_new_test_log`: expected `int`, but found `false`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "invalid-return-statement"
 message = "Invalid return type for function `f_select_answers`: expected `array<array-key, mixed>`, but found `false`."
 count = 1
 
@@ -238,12 +232,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$num_answers` is missing a type hint."
-count = 2
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$order` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -262,7 +250,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$question_id` is missing a type hint."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -286,12 +274,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$reason` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$score` is missing a type hint."
 count = 1
 
 [[issues]]
@@ -340,7 +322,7 @@ count = 6
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$testuser_id` is missing a type hint."
-count = 2
+count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -388,12 +370,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `f_get_user_tests` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `f_new_test_log` is missing a return type hint."
 count = 1
 
 [[issues]]
