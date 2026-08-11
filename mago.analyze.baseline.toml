@@ -81,12 +81,6 @@ count = 6
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
-message = "Left operand in `||` operation has `mixed` type."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-operand"
 message = "Left operand in binary operation has type `mixed`."
 count = 4
 
