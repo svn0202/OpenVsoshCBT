@@ -6,6 +6,29 @@ use PHPUnit\Framework\TestCase;
 
 final class TestExecuteControllerTest extends TestCase
 {
+    public function testNullableTestNamePreservesEmptyTitleSuffix(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $GLOBALS["thispage_title"] = "Execute test"; '
+                    . 'function f_get_test_name($id) { return null; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "\\$thispage_title .="); '
+                    . '$end = strpos($source, ";", $start) + 1; '
+                    . '$statement = substr($source, $start, $end - $start); '
+                    . '$test_id = 7; eval("namespace Harness; " . $statement); '
+                    . 'echo json_encode($GLOBALS["thispage_title"]);',
+                dirname(__DIR__) . '/public/code/tce_test_execute.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('Execute test: ', json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
+
     public function testPageWithoutSelectedTestKeepsCurrentOutputAndContext(): void
     {
         $configSource = <<<'PHP'
