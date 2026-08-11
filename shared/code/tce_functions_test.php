@@ -64,6 +64,8 @@ function f_get_user_tests(): string
     $str = ''; // temp string
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
+    /** @var int $current_timestamp */
+    $current_timestamp = strtotime($current_time);
     // Return the complete catalogue. The public page separates current,
     // future and completed tests and applies a useful date order to each.
     $sql =
@@ -87,7 +89,11 @@ function f_get_user_tests(): string
             $test_begin_time = $m['test_begin_time'];
             /** @var string $test_end_time */
             $test_end_time = $m['test_end_time'];
-            $upcoming = strtotime($current_time) < strtotime($test_begin_time);
+            /** @var int $test_begin_timestamp */
+            $test_begin_timestamp = strtotime($test_begin_time);
+            /** @var int $test_end_timestamp */
+            $test_end_timestamp = strtotime($test_end_time);
+            $upcoming = $current_timestamp < $test_begin_timestamp;
             // check user's authorization
             if (f_is_valid_test_user($catalog_test_id, $_SESSION['session_user_ip'], $test_ip_range)) {
                 $access_status = F_tmf_test_access_status((int) $catalog_test_id, $user_id);
@@ -98,7 +104,7 @@ function f_get_user_tests(): string
                     $test_duration_time,
                 );
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
-                if (strtotime($current_time) >= strtotime($test_end_time)) {
+                if ($current_timestamp >= $test_end_timestamp) {
                     // the test is expired.
                     $expired = true;
                     $datestyle = ' style="color:#666666;"';
@@ -213,7 +219,7 @@ function f_get_user_tests(): string
                             // 0 = the test generation process is started but not completed
                                 // print execute test link
                                 $str .= '<a href="';
-                                if (K_DISPLAY_TEST_DESCRIPTION || !empty($m['test_password'])) {
+                                if (K_DISPLAY_TEST_DESCRIPTION || !empty($test_password)) {
                                     // display test description before starting
                                     $str .= 'tce_test_start.php';
                                 } else {
@@ -252,7 +258,7 @@ function f_get_user_tests(): string
                                 ) {
                                     // print execute test link
                                     $str .= '<a href="';
-                                    if (K_DISPLAY_TEST_DESCRIPTION || !empty($m['test_password'])) {
+                                    if (K_DISPLAY_TEST_DESCRIPTION || !empty($test_password)) {
                                         // display test description before starting
                                         $str .= 'tce_test_start.php';
                                     } else {

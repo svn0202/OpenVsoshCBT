@@ -179,17 +179,25 @@ PHP;
                     . '"w_test" => "Test", "w_from" => "From", "w_to" => "To", '
                     . '"w_status" => "Status", "w_action" => "Action", "a_meta_charset" => "UTF-8"]; '
                     . '$GLOBALS["l"] += ["w_passed" => "Passed", "w_not_passed" => "Failed", '
-                    . '"h_result" => "Result"]; '
+                    . '"h_result" => "Result", "h_execute" => "label", "w_execute" => "label", '
+                    . '"h_continue" => "label", "w_continue" => "label", '
+                    . '"h_repeat_test" => "label", "w_repeat" => "label"]; '
                     . '$row = ["test_id" => "22", "test_ip_range" => "*", "test_duration_time" => "30", '
                     . '"test_begin_time" => "2026-08-09 00:00:00", "test_end_time" => "2026-08-11 00:00:00", '
                     . '"test_password" => null, "test_name" => "Exam", "test_repeatable" => "0", '
                     . '"test_results_to_users" => "1"]; '
                     . '$protectedRow = $row; $protectedRow["test_password"] = "secret"; '
-                    . '$GLOBALS["results"] = [false, "empty", "unauthorized", "blocked", "published"]; '
+                    . '$repeatRow = $row; $repeatRow["test_repeatable"] = "2"; '
+                    . '$GLOBALS["results"] = [false, "empty", "unauthorized", "blocked", "published", '
+                    . '"start", "continue", "repeat"]; '
                     . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row, false], '
-                    . '"blocked" => [$protectedRow, false], "published" => [$row, false]]; '
-                    . '$GLOBALS["ip"] = [false, true, true]; $GLOBALS["test_statuses"] = [0, 4]; '
-                    . '$GLOBALS["access_allowed"] = [false, true]; $GLOBALS["count_args"] = []; '
+                    . '"blocked" => [$protectedRow, false], "published" => [$row, false], '
+                    . '"start" => [$protectedRow, false], "continue" => [$row, false], '
+                    . '"repeat" => [$repeatRow, false]]; '
+                    . '$GLOBALS["ip"] = [false, true, true, true, true, true]; '
+                    . '$GLOBALS["test_statuses"] = [0, 4, 0, 1, 4]; '
+                    . '$GLOBALS["access_allowed"] = [false, true, true, true, true]; '
+                    . '$GLOBALS["count_args"] = []; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["published"] = []; '
                     . '$GLOBALS["test_ids"] = []; $GLOBALS["validity_args"] = []; '
                     . '$GLOBALS["status_args"] = []; '
@@ -225,7 +233,7 @@ PHP;
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $catalogues = []; '
-                    . 'for ($i = 0; $i < 5; ++$i) { $catalogues[] = $qualified(); } '
+                    . 'for ($i = 0; $i < 8; ++$i) { $catalogues[] = $qualified(); } '
                     . 'echo json_encode([$catalogues, count($GLOBALS["queries"]), '
                     . '$GLOBALS["errors"], $GLOBALS["published"], $GLOBALS["test_ids"], '
                     . '$GLOBALS["validity_args"], $GLOBALS["status_args"], $GLOBALS["count_args"]]);',
@@ -235,9 +243,10 @@ PHP;
         );
 
         self::assertSame(0, $status, $output);
+        self::assertJson($output);
         /**
          * @var array{
-         *   0: array{0:string,1:string,2:string,3:string,4:string},
+         *   0: array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string},
          *   1: int,
          *   2: int,
          *   3: array{0:array<string,mixed>},
@@ -270,9 +279,24 @@ PHP;
         self::assertStringContainsString('testuser_id=99&amp;test_id=22', $results[4]);
         self::assertStringContainsString('8 / 10 (80%) - Passed', $results[4]);
         self::assertStringNotContainsString('repeat=1', $results[4]);
+        self::assertStringContainsString(
+            '<a href="tce_test_start.php?testid=22" title="label" class="buttongreen">label</a>',
+            $results[5],
+        );
+        self::assertStringContainsString(
+            '<a href="tce_test_execute.php?testid=22" title="label" class="xmlbutton">label</a>',
+            $results[6],
+        );
+        self::assertStringContainsString(
+            '<a href="tce_test_execute.php?testid=22&amp;repeat=1" title="label" class="buttonblue">label</a>',
+            $results[7],
+        );
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
-        self::assertSame(['22', '22', '22'], $testIds);
+        self::assertSame(['22', '22', '22', '22', '22', '22'], $testIds);
         self::assertSame([
+            ['22', '127.0.0.1', '*'],
+            ['22', '127.0.0.1', '*'],
+            ['22', '127.0.0.1', '*'],
             ['22', '127.0.0.1', '*'],
             ['22', '127.0.0.1', '*'],
             ['22', '127.0.0.1', '*'],
@@ -280,9 +304,12 @@ PHP;
         self::assertSame([
             [11, '22', '30'],
             [11, '22', '30'],
+            [11, '22', '30'],
+            [11, '22', '30'],
+            [11, '22', '30'],
         ], $statusArgs);
-        self::assertSame([['11', '22']], $countArgs);
-        self::assertSame(5, $queryCount);
+        self::assertSame([['11', '22'], ['11', '22']], $countArgs);
+        self::assertSame(8, $queryCount);
         self::assertSame(1, $errors);
     }
 

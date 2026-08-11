@@ -177,18 +177,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "possibly-false-operand"
-message = "Left operand in `<` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-false-operand"
-message = "Left operand in `>=` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-false-operand"
 message = "Left operand in arithmetic operation might be `false` (type `false|int`)."
 count = 1
 
@@ -196,18 +184,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "possibly-false-operand"
 message = "Possibly false middle operand used in string concatenation (type `false|string`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-false-operand"
-message = "Right operand in `<` comparison might be `false` (type `false|int`)."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "possibly-false-operand"
-message = "Right operand in `>=` comparison might be `false` (type `false|int`)."
 count = 1
 
 [[issues]]
