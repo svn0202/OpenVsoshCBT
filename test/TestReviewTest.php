@@ -853,15 +853,15 @@ final class TestReviewTest extends TestCase
                     . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TIMESTAMP_FORMAT", "format"); '
                     . 'define("K_SECONDS_IN_MINUTE", 60); $GLOBALS["db"] = "db"; '
                     . '$GLOBALS["rows"] = [false, '
-                    . '["testuser_id" => 101, "testuser_status" => 1, '
+                    . '["testuser_id" => "101", "testuser_status" => "1", '
                     . '"testuser_creation_time" => "old", "testuser_pregenerated" => false], '
-                    . '["testuser_id" => 102, "testuser_status" => 0, '
+                    . '["testuser_id" => "102", "testuser_status" => "0", '
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
-                    . '["testuser_id" => 103, "testuser_status" => 1, '
+                    . '["testuser_id" => "103", "testuser_status" => "1", '
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
-                    . '["testuser_id" => 104, "testuser_status" => 2, '
+                    . '["testuser_id" => "104", "testuser_status" => "2", '
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false], '
-                    . '["testuser_id" => 105, "testuser_status" => 1, '
+                    . '["testuser_id" => "105", "testuser_status" => "1", '
                     . '"testuser_creation_time" => "old", "testuser_pregenerated" => true]]; '
                     . '$GLOBALS["counts"] = [0, 0, 1]; $GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function date($format, $timestamp = null) { if ($timestamp === null) { '
@@ -898,11 +898,11 @@ final class TestReviewTest extends TestCase
             [
                 [
                     [0, 0, false],
-                    [4, 101, false],
-                    [0, 102, false],
-                    [2, 103, false],
-                    [3, 104, false],
-                    [1, 105, true],
+                    [4, '101', false],
+                    ['0', '102', false],
+                    [2, '103', false],
+                    [3, '104', false],
+                    ['1', '105', true],
                 ],
                 [
                     $select,

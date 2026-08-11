@@ -64,7 +64,7 @@ function f_get_user_tests()
                     $m['test_id'],
                     $m['test_duration_time'],
                 );
-                $catalog_test_status = F_tmf_catalog_test_status($test_status, $test_pregenerated);
+                $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
                 if (strtotime($current_time) >= strtotime($m['test_end_time'])) {
                     // the test is expired.
                     $expired = true;
@@ -500,12 +500,13 @@ function f_count_user_test(mixed $user_id, mixed $test_id): int
 
 /**
  * Check and returns specific test status for the specified user.<br>
- * @param $user_id (int) user ID
- * @param $test_id (int) test ID
- * @param $duration (int) test duration in seconds
- * @return array of (test_status_code, testuser_id, testuser_pregenerated). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
+ * @param mixed $user_id User ID
+ * @param mixed $test_id Test ID
+ * @param mixed $duration Test duration in seconds
+ * @return array{int|string, int|string, bool} (test_status_code, testuser_id, testuser_pregenerated). test_status_code: <ul><li>0 = the test generation process is started but not completed;</li><li>1 = the test has been successfully created;</li><li>2 = all questions have been displayed to the user;</li><li>3 = all questions have been answered;</li><li>4 = test locked (for timeout);</li><li>5 or more = old version of repeated test;</li></ul>
+ * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
-function f_check_test_status($user_id, $test_id, $duration)
+function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): array
 {
     require_once '../config/tce_config.php';
     global $db, $l;
@@ -533,6 +534,7 @@ function f_check_test_status($user_id, $test_id, $duration)
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
+            /** @var array{testuser_id:int|string,testuser_status:int|string,testuser_creation_time:string,testuser_pregenerated?:mixed} $m */
             $testuser_id = $m['testuser_id'];
             $test_status = $m['testuser_status'];
             $test_pregenerated = f_get_boolean($m['testuser_pregenerated'] ?? false);
