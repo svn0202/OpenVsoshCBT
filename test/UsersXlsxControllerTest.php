@@ -173,4 +173,50 @@ PHP;
         self::assertArrayNotHasKey('tmf_users_xlsx_preview', $session);
         self::assertSame([2 => ['login' => 'student']], $imported);
     }
+
+    public function testImportRejectsNonStringPreviewTokens(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_AUTH_IMPORT_USERS', 5);
+define('K_AUTH_ADMINISTRATOR', 10);
+$l = ['a_meta_charset' => 'UTF-8'];
+$db = 'db';
+$_GET = [];
+$_POST = ['xlsx_action' => 'import', 'csrf_token' => 'valid', 'preview_token' => ['token-1']];
+$_SESSION = [
+    'session_user_level' => 5,
+    'tmf_users_xlsx_preview' => [
+        'token' => ['token-1'], 'created_at' => 900,
+        'records' => [2 => ['login' => 'student']],
+    ],
+];
+$_SERVER['SCRIPT_NAME'] = '/admin/code/tce_users_xlsx.php';
+$GLOBALS['imported'] = null;
+function time() { return 1000; }
+function check_csrf_token($token) { return $token === 'valid'; }
+function F_tmf_users_xlsx_import($records) { $GLOBALS['imported'] = $records; return count($records); }
+function f_get_csrf_token_field() { return '<CSRF>'; }
+$source = file_get_contents($argv[1]);
+$source = preg_replace('/^<\?php\s*/', '', $source);
+$source = preg_replace('/^\s*require_once [^;]+;\s*$/m', '', $source);
+ob_start();
+eval('namespace Harness; ' . $source);
+$html = ob_get_clean();
+echo json_encode([$html, $_SESSION, $GLOBALS['imported']], JSON_THROW_ON_ERROR);
+PHP;
+
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_users_xlsx.php'],
+            dirname(__DIR__) . '/admin/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{string,array<string,mixed>,null} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$html, $session, $imported] = $decoded;
+        self::assertStringContainsString('Предпросмотр истёк. Загрузите файл повторно.', $html);
+        self::assertArrayNotHasKey('tmf_users_xlsx_preview', $session);
+        self::assertNull($imported);
+    }
 }
