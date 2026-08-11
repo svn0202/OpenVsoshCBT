@@ -237,6 +237,8 @@ PHP;
         self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
         self::assertStringContainsString('<table class="testlist">', $results[3]);
         self::assertStringContainsString('data-test-id="22"', $results[3]);
+        self::assertStringContainsString('<td>2026-08-09 00:00:00</td>', $results[3]);
+        self::assertStringContainsString('<td>2026-08-11 00:00:00</td>', $results[3]);
         self::assertStringContainsString('<td style="background-color:#ffffcc;"><strong>INFO:Exam</strong>', $results[3]);
         self::assertStringContainsString('Сначала пройдите обязательный тест', $results[3]);
         self::assertStringNotContainsString('tce_test_execute.php', $results[3]);

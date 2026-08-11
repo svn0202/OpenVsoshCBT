@@ -93,8 +93,8 @@ function f_get_user_tests(): string
                 /** @var string $test_name */
                 $test_name = $m['test_name'];
                 $str .= '<strong>' . f_test_info_link($m['test_id'], $test_name) . '</strong></td>' . K_NEWLINE;
-                $str .= '<td' . $datestyle . '>' . $m['test_begin_time'] . '</td>' . K_NEWLINE;
-                $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
+                $str .= '<td' . $datestyle . '>' . $test_begin_time . '</td>' . K_NEWLINE;
+                $str .= '<td' . $datestyle . '>' . $test_end_time . '</td>' . K_NEWLINE;
                 // status
                 $str .= '<td';
                 $publication_test = $m;
