@@ -2373,6 +2373,8 @@ function f_get_test_ids(mixed $test_id, mixed $user_id, mixed $filter = 'test_re
 {
     global $l, $db;
     require_once '../config/tce_config.php';
+    /** @return array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $str = '0'; // string to return
     $test_id = (int) $test_id;
     $user_id = (int) $user_id;
@@ -2387,8 +2389,8 @@ function f_get_test_ids(mixed $test_id, mixed $user_id, mixed $filter = 'test_re
         . $filter
         . '=1';
     if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_assoc($r)) {
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches permitted test rows as arrays
+        while (($m = $normalize_row(F_db_fetch_assoc($r))) !== null) {
+            /** @var array{test_id:int|numeric-string} $m */
             $str .= ',' . $m['test_id'];
         }
     } else {
