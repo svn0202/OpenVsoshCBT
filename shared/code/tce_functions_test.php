@@ -1158,6 +1158,8 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $testlog_id = (int) $testlog_id;
     // check if the current user is the right testlog_id owner
@@ -1165,8 +1167,11 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
 		FROM ' . K_TABLE_TEST_USER . ', ' . K_TABLE_TESTS_LOGS . '
 		WHERE testuser_id=testlog_testuser_id
 			AND testlog_id=' . $testlog_id . '';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /** @var array{testuser_test_id:int|numeric-string,testuser_user_id:int|numeric-string} $m */
             if (
                 !f_legacy_int_equals($m['testuser_user_id'], (int) $_SESSION['session_user_id'])
                 || !f_legacy_int_equals($m['testuser_test_id'], $test_id)
