@@ -2523,6 +2523,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                     $str .= '<ol class="answer">' . K_NEWLINE;
                 }
 
+                $max_position = 0;
                 if (in_array((int) $m['question_type'], [4, 5], true)) {
                     // get max positions for ordering and matching questions
                     $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id=' . $testlog_id . '');
