@@ -1833,14 +1833,20 @@ function f_add_question_answers(
 
 /**
  * Updates question log data (register user's answers and calculate scores).
- * @param $test_id (int) test ID
- * @param $testlog_id (int) test log ID
- * @param $answpos (array) Array of answer positions
- * @param $answer_text (string) answer text
- * @param $reaction_time (int) reaction time in milliseconds
- * @return boolean TRUE in case of success, FALSE otherwise
+ * @param mixed $test_id Test ID
+ * @param mixed $testlog_id Test log ID
+ * @param mixed $answpos Array of answer positions
+ * @param mixed $answer_text Answer text
+ * @param mixed $reaction_time Reaction time in milliseconds
+ * @return bool TRUE in case of success, FALSE otherwise
  */
-function f_update_question_log($test_id, $testlog_id, $answpos = [], $answer_text = '', $reaction_time = 0)
+function f_update_question_log(
+    mixed $test_id,
+    mixed $testlog_id,
+    mixed $answpos = [],
+    mixed $answer_text = '',
+    mixed $reaction_time = 0,
+): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
