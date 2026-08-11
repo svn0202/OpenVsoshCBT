@@ -1464,7 +1464,11 @@ function f_print_test_result_stat(
      *     w_firstname: string,
      *     w_lastname: string,
      *     w_locked: string,
+     *     w_kurtosi: string,
+     *     w_mean: string,
+     *     w_median: string,
      *     w_minutes: string,
+     *     w_mode: string,
      *     w_not_passed: string,
      *     w_passed: string,
      *     w_questions_unanswered: string,
@@ -1474,6 +1478,8 @@ function f_print_test_result_stat(
      *     w_score: string,
      *     w_select: string,
      *     w_status: string,
+     *     w_standard_deviation: string,
+     *     w_skewness: string,
      *     w_test: string,
      *     w_time_begin: string,
      *     w_time_end: string,
@@ -1824,6 +1830,15 @@ function f_print_test_result_stat(
             if ($pubmode) {
                 $scolspan -= 3;
             }
+            $stat_label = match ($row) {
+                'mean' => $l['w_mean'],
+                'median' => $l['w_median'],
+                'mode' => $l['w_mode'],
+                'standard_deviation' => $l['w_standard_deviation'],
+                'skewness' => $l['w_skewness'],
+                'kurtosi' => $l['w_kurtosi'],
+                default => '',
+            };
 
             $ret .=
                 '<th scope="row" colspan="'
@@ -1831,9 +1846,7 @@ function f_print_test_result_stat(
                 . '" style="text-align:'
                 . $tdalignr
                 . ';">'
-                // @mago-expect analysis:possibly-undefined-string-array-index -- row names map to required translation keys
-                // @mago-expect analysis:possibly-null-operand -- every mapped translation value is a string
-                . $l['w_' . $row]
+                . $stat_label
                 . '</th>'
                 . K_NEWLINE;
             if (in_array($row, $noperc)) {
