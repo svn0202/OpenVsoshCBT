@@ -237,12 +237,16 @@ function f_get_file_info(mixed $file): array
     $file = (string) $file;
     $info = pathinfo($file);
     $info['dir'] = is_dir($file);
-    // @mago-expect lint:no-error-control-operator -- preserve stable metadata output if a listed file disappears
-    $info['lastmod'] = date('Y-m-d H:i:s', (int) @filemtime($file));
-    // @mago-expect lint:no-error-control-operator -- preserve false owner metadata for inaccessible files
-    $info['owner'] = @fileowner($file);
-    // @mago-expect lint:no-error-control-operator -- preserve false permission metadata for inaccessible files
-    $info['perms'] = @fileperms($file);
+    set_error_handler(static fn(): bool => true);
+    try {
+        $stat = stat($file);
+    } finally {
+        restore_error_handler();
+    }
+
+    $info['lastmod'] = date('Y-m-d H:i:s', is_array($stat) ? (int) $stat['mtime'] : 0);
+    $info['owner'] = is_array($stat) ? (int) $stat['uid'] : false;
+    $info['perms'] = is_array($stat) ? (int) $stat['mode'] : false;
     $info['aperms'] = $info['dir'] ? 'd' : '-';
 
     $info['aperms'] .= ($info['perms'] & 0o0400) !== 0 ? 'r' : '-';
@@ -254,8 +258,7 @@ function f_get_file_info(mixed $file): array
     $info['aperms'] .= ($info['perms'] & 0o0004) !== 0 ? 'r' : '-';
     $info['aperms'] .= ($info['perms'] & 0o0002) !== 0 ? 'w' : '-';
     $info['aperms'] .= ($info['perms'] & 0o0001) !== 0 ? 'x' : '-';
-    // @mago-expect lint:no-error-control-operator -- preserve false size metadata if a listed file disappears
-    $info['size'] = @filesize($file);
+    $info['size'] = is_array($stat) ? (int) $stat['size'] : false;
     $info['link'] = is_link($file);
     if ($info['link']) {
         $info['linkto'] = readlink($file);
