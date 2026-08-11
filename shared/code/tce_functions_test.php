@@ -414,12 +414,12 @@ function f_is_valid_ssl_cert(mixed $test_id): bool
 
 /**
  * Check if user is authorized to execute the specified test
- * @param $test_id (int) ID of the selected test
- * @param $user_ip (int) user's IP address.
- * @param $test_ip (int) test IP valid addresses. Various IP addresses may be separated using comma character. The asterisk character may be used to indicate "any number".
+ * @param mixed $test_id ID of the selected test
+ * @param mixed $user_ip User's IP address.
+ * @param mixed $test_ip Test IP valid addresses. Various IP addresses may be separated using comma character. The asterisk character may be used to indicate "any number".
  * @return bool true if the user is authorized, false otherwise
  */
-function f_is_valid_test_user($test_id, $user_ip, $test_ip): bool
+function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
