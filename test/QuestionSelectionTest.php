@@ -235,7 +235,9 @@ PHP;
                     . '"answer_id" => 101, "answer_position" => 3], '
                     . '["answer_id" => 102, "answer_position" => 1]], [['
                     . '"answer_id" => "21", "answer_position" => "4"], '
-                    . '["answer_id" => "17", "answer_position" => "2"]], false]; '
+                    . '["answer_id" => "17", "answer_position" => "2"]], [['
+                    . '"answer_id" => 31, "answer_position" => 2]], [['
+                    . '"answer_id" => 32, "answer_position" => 4]], false]; '
                     . 'function F_escape_sql($db, $value) { return (string) $value; } '
                     . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
@@ -255,8 +257,10 @@ PHP;
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$byPosition = $qualified("07", 1, false, 2, 0, false, 0); '
                     . '$byId = $qualified(8, "", false, 0, 5, false, 2); '
+                    . '$falsyString = $qualified(10, "", false, 0, 0, "0", 0); '
+                    . '$truthyString = $qualified(11, "", false, 0, 0, "false", 0); '
                     . '$failed = $qualified(9, "", false, 0, 0, false, 1); '
-                    . 'echo json_encode([$byPosition, $byId, $failed, '
+                    . 'echo json_encode([$byPosition, $byId, $falsyString, $truthyString, $failed, '
                     . '$GLOBALS["queries"], $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -268,6 +272,8 @@ PHP;
             [
                 [3 => 101, 1 => 102],
                 [21 => '21', 17 => '17'],
+                [2 => 31],
+                [32],
                 false,
                 [
                     "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=7\n"
@@ -275,6 +281,10 @@ PHP;
                         . ' AND answer_position>0 ORDER BY answer_position LIMIT 2',
                     "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=8\n"
                         . "\t\tAND answer_enabled='1' ORDER BY answer_id",
+                    "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=10\n"
+                        . "\t\tAND answer_enabled='1' AND answer_position>0 ORDER BY answer_position",
+                    "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=11\n"
+                        . "\t\tAND answer_enabled='1' ORDER BY RAND()",
                     "SELECT answer_id, answer_position\n\t\tFROM answers\n\t\tWHERE answer_question_id=9\n"
                         . "\t\tAND answer_enabled='1' ORDER BY answer_description",
                 ],

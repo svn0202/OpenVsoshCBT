@@ -1218,6 +1218,7 @@ function f_select_answers(
     $question_id = (int) $question_id;
     $isright = F_escape_sql($db, $isright);
     $limit = (int) $limit;
+    $randorder = !in_array($randorder, [false, null, 0, 0.0, '', '0', []], true);
     $answers_ids = []; // stores answers IDs
     if ($ordering) {
         $randorder = true;
