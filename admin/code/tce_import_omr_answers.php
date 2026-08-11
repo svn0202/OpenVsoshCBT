@@ -150,8 +150,7 @@ if (isset($menu_mode) && $menu_mode === 'upload' && $user_id > 0 && isset($files
     // remove uploaded files
     for ($i = 0; $i <= $max_omr_sheets; ++$i) {
         if ((int) ($omr_file['error'][$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            // @mago-expect lint:no-error-control-operator -- uploaded temporary files may already be removed by PHP
-            @unlink($omr_file['tmp_name'][$i] ?? '');
+            f_omr_unlink_silently($omr_file['tmp_name'][$i] ?? '');
         }
     }
 }
