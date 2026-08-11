@@ -272,12 +272,11 @@ class XMLUserImporter
 
     /**
      * Sets the end element handler function for the XML parser parser.end_element_handler.
-     * @param $parser (resource) The first parameter, parser, is a reference to the XML parser calling the handler.
+     * @param mixed $_parser The XML parser calling the handler.
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    // @mago-expect analysis:unused-parameter -- callback signature is defined by ext-xml
-    private function endElementHandler(mixed $parser, string $name): mixed
+    private function endElementHandler(mixed $_parser, string $name): mixed
     {
         global $l, $db;
         require_once '../config/tce_config.php';
