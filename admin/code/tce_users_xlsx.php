@@ -136,16 +136,16 @@ if (isset($_POST['xlsx_action'])) {
     if ($_POST['xlsx_action'] === 'preview') {
         try {
             $xlsx_file = $_FILES['xlsx_file'] ?? null;
+            $temporary = is_array($xlsx_file) && is_string($xlsx_file['tmp_name'] ?? null)
+                ? $xlsx_file['tmp_name']
+                : '';
             if (
                 !is_array($xlsx_file)
                 || (int) ($xlsx_file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
-                /** @mago-expect analysis:array-to-string-conversion */
-                || !is_uploaded_file((string) ($xlsx_file['tmp_name'] ?? ''))
+                || !is_uploaded_file($temporary)
             ) {
                 throw new RuntimeException('Выберите XLSX-файл без ошибок загрузки.');
             }
-            /** @var array{tmp_name: scalar|null} $xlsx_file */
-            $temporary = (string) $xlsx_file['tmp_name'];
             $signature = file_get_contents($temporary, false, null, 0, 4);
             if ($signature !== "PK\x03\x04") {
                 throw new RuntimeException('Файл не является XLSX-архивом.');
