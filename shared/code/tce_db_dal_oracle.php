@@ -122,8 +122,12 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
         return $committed;
     }
     if ($query === 'ROLLBACK') {
-        // @mago-expect lint:no-error-control-operator -- transaction failures follow the DAL's false-return contract
-        $rolled_back = @oci_rollback($link_identifier);
+        set_error_handler(static fn(): bool => true);
+        try {
+            $rolled_back = oci_rollback($link_identifier);
+        } finally {
+            restore_error_handler();
+        }
         unset($transactions[$connection_id]);
         return $rolled_back;
     }
