@@ -724,8 +724,11 @@ function f_normalize_test_stat_averages(mixed $data): mixed
     $data['qstats']['unrated_perc'] = round((100 * $data['qstats']['unrated']) / $data['qstats']['recurrence']);
     /**
      * @var array<array-key,array{
-     *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
-     *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,subject:mixed
+     *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+     *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+     *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+     *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+     *   unrated:int|float|numeric-string,subject:mixed
      * }> $modules
      */
     $modules = $data['qstats']['module'];
@@ -745,8 +748,11 @@ function f_normalize_test_stat_averages(mixed $data): mixed
         $data['qstats']['module'][$mk]['unrated_perc'] = round((100 * $mv['unrated']) / $mv['recurrence']);
         /**
          * @var array<array-key,array{
-         *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
-         *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,question:mixed
+         *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+         *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+         *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+         *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+         *   unrated:int|float|numeric-string,question:mixed
          * }> $subjects
          */
         $subjects = $mv['subject'];
@@ -776,8 +782,11 @@ function f_normalize_test_stat_averages(mixed $data): mixed
             );
             /**
              * @var array<array-key,array{
-             *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
-             *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,anum:mixed,answer:mixed
+             *   recurrence:int|float|numeric-string,average_score:int|float|numeric-string,
+             *   qnum:int|float|numeric-string,average_score_perc:int|float|numeric-string,
+             *   average_time:int|float|numeric-string,right:int|float|numeric-string,wrong:int|float|numeric-string,
+             *   unanswered:int|float|numeric-string,undisplayed:int|float|numeric-string,
+             *   unrated:int|float|numeric-string,anum:int|float|numeric-string,answer:mixed
              * }> $questions
              */
             $questions = $sv['question'];
@@ -807,7 +816,12 @@ function f_normalize_test_stat_averages(mixed $data): mixed
                 $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['unrated_perc'] = round(
                     (100 * $qv['unrated']) / $qv['recurrence'],
                 );
-                /** @var array<array-key,array{recurrence:mixed,right:mixed,wrong:mixed,unanswered:mixed}> $answers */
+                /**
+                 * @var array<array-key,array{
+                 *   recurrence:int|float|numeric-string,right:int|float|numeric-string,
+                 *   wrong:int|float|numeric-string,unanswered:int|float|numeric-string
+                 * }> $answers
+                 */
                 $answers = $qv['answer'];
                 foreach ($answers as $ak => $av) {
                     $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['recurrence_perc'] = round(
