@@ -722,7 +722,14 @@ function f_normalize_test_stat_averages(mixed $data): mixed
     $data['qstats']['unanswered_perc'] = round((100 * $data['qstats']['unanswered']) / $data['qstats']['recurrence']);
     $data['qstats']['undisplayed_perc'] = round((100 * $data['qstats']['undisplayed']) / $data['qstats']['recurrence']);
     $data['qstats']['unrated_perc'] = round((100 * $data['qstats']['unrated']) / $data['qstats']['recurrence']);
-    foreach ($data['qstats']['module'] as $mk => $mv) {
+    /**
+     * @var array<array-key,array{
+     *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
+     *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,subject:mixed
+     * }> $modules
+     */
+    $modules = $data['qstats']['module'];
+    foreach ($modules as $mk => $mv) {
         $data['qstats']['module'][$mk]['recurrence_perc'] = round(
             (100 * $mv['recurrence']) / $data['qstats']['recurrence'],
         );
@@ -736,7 +743,14 @@ function f_normalize_test_stat_averages(mixed $data): mixed
         $data['qstats']['module'][$mk]['unanswered_perc'] = round((100 * $mv['unanswered']) / $mv['recurrence']);
         $data['qstats']['module'][$mk]['undisplayed_perc'] = round((100 * $mv['undisplayed']) / $mv['recurrence']);
         $data['qstats']['module'][$mk]['unrated_perc'] = round((100 * $mv['unrated']) / $mv['recurrence']);
-        foreach ($mv['subject'] as $sk => $sv) {
+        /**
+         * @var array<array-key,array{
+         *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
+         *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,question:mixed
+         * }> $subjects
+         */
+        $subjects = $mv['subject'];
+        foreach ($subjects as $sk => $sv) {
             $data['qstats']['module'][$mk]['subject'][$sk]['recurrence_perc'] = round(
                 (100 * $sv['recurrence']) / $data['qstats']['recurrence'],
             );
@@ -760,7 +774,14 @@ function f_normalize_test_stat_averages(mixed $data): mixed
             $data['qstats']['module'][$mk]['subject'][$sk]['unrated_perc'] = round(
                 (100 * $sv['unrated']) / $sv['recurrence'],
             );
-            foreach ($sv['question'] as $qk => $qv) {
+            /**
+             * @var array<array-key,array{
+             *   recurrence:mixed,average_score:mixed,qnum:mixed,average_score_perc:mixed,average_time:mixed,
+             *   right:mixed,wrong:mixed,unanswered:mixed,undisplayed:mixed,unrated:mixed,anum:mixed,answer:mixed
+             * }> $questions
+             */
+            $questions = $sv['question'];
+            foreach ($questions as $qk => $qv) {
                 $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['recurrence_perc'] = round(
                     (100 * $qv['recurrence']) / $data['qstats']['recurrence'],
                 );
@@ -786,7 +807,9 @@ function f_normalize_test_stat_averages(mixed $data): mixed
                 $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['unrated_perc'] = round(
                     (100 * $qv['unrated']) / $qv['recurrence'],
                 );
-                foreach ($qv['answer'] as $ak => $av) {
+                /** @var array<array-key,array{recurrence:mixed,right:mixed,wrong:mixed,unanswered:mixed}> $answers */
+                $answers = $qv['answer'];
+                foreach ($answers as $ak => $av) {
                     $data['qstats']['module'][$mk]['subject'][$sk]['question'][$qk]['answer'][$ak]['recurrence_perc'] = round(
                         (100 * $av['recurrence']) / $qv['anum'],
                     );
