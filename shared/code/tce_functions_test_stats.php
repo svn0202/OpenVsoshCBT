@@ -151,14 +151,13 @@ function f_get_test_stat(
     mixed $testuser_id = 0,
     mixed $pubmode = false,
 ): array {
+    /** @var array<array-key,mixed> $data */
     $data = f_get_raw_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, [], $pubmode);
-    /** @var array<array-key, mixed> $data */
     if (isset($data['qstats']['recurrence'])) {
+        /** @var array<array-key,mixed> $data */
         $data = f_normalize_test_stat_averages($data);
-        /** @var array<array-key, mixed> $data */
     }
 
-    /** @var array<array-key, mixed> $data */
     return $data;
 }
 
@@ -277,14 +276,15 @@ function f_get_raw_test_stat(
 
         foreach ($test_ids as $tid) {
             // select test IDs
+            /** @var array<array-key,mixed> $data */
             $data = f_get_raw_test_stat($tid, $group_id, $user_id, $startdate, $enddate, $testuser_id, $data, $pubmode);
         }
 
         return $data;
     }
 
+    /** @var array{test_score_right:int|float|numeric-string} $testdata */
     $testdata = f_get_test_data($test_id);
-    /** @var array{test_score_right:mixed} $testdata */
     // array to be returned
     if (!isset($data['qstats'])) {
         // total number of questions
@@ -365,10 +365,12 @@ function f_get_raw_test_stat(
     }
 
     if (!empty($startdate)) {
+        /** @var string $startdate */
         $sql .= " AND testuser_creation_time>='" . $startdate . "'";
     }
 
     if (!empty($enddate)) {
+        /** @var string $enddate */
         $sql .= " AND testuser_creation_time<='" . $enddate . "'";
     }
 
@@ -459,6 +461,7 @@ function f_get_raw_test_stat(
 
             $question_max_score = $testdata['test_score_right'] * $m['question_difficulty'];
             $question_half_score = $question_max_score / 2;
+            /** @var int|numeric-string $qright */
             $qright = F_count_rows(
                 $sqltot,
                 $sqlw
@@ -468,6 +471,7 @@ function f_get_raw_test_stat(
                 . $question_half_score
                 . '',
             );
+            /** @var int|numeric-string $qwrong */
             $qwrong = F_count_rows(
                 $sqltot,
                 $sqlw
@@ -479,14 +483,17 @@ function f_get_raw_test_stat(
                 . $question_half_score
                 . '',
             );
+            /** @var int|numeric-string $qunanswered */
             $qunanswered = F_count_rows(
                 $sqltot,
                 $sqlw . ' AND testlog_question_id=' . $m['question_id'] . ' AND testlog_change_time IS NULL',
             );
+            /** @var int|numeric-string $qundisplayed */
             $qundisplayed = F_count_rows(
                 $sqltot,
                 $sqlw . ' AND testlog_question_id=' . $m['question_id'] . ' AND testlog_display_time IS NULL',
             );
+            /** @var int|numeric-string $qunrated */
             $qunrated = F_count_rows(
                 $sqltot,
                 $sqlw . ' AND testlog_question_id=' . $m['question_id'] . ' AND testlog_score IS NULL',
@@ -497,6 +504,7 @@ function f_get_raw_test_stat(
             }
             $average_time = (float) $m['average_time'];
 
+            /** @var int|numeric-string $num_all_answers */
             $num_all_answers = F_count_rows($sqltb, $sqlansw . ' AND testlog_question_id=' . $m['question_id']);
             if (!isset($subject_stats['question'][$question_key])) {
                 $subject_stats['question'][$question_key] = [
@@ -616,10 +624,12 @@ function f_get_raw_test_stat(
             }
 
             if (!empty($startdate)) {
+                /** @var string $startdate */
                 $sql .= " AND testuser_creation_time>='" . $startdate . "'";
             }
 
             if (!empty($enddate)) {
+                /** @var string $enddate */
                 $sql .= " AND testuser_creation_time<='" . $enddate . "'";
             }
 
@@ -638,6 +648,7 @@ function f_get_raw_test_stat(
                      *   answer_description:mixed,answer_id:int|numeric-string,recurrence:int|numeric-string
                      * } $ma
                      */
+                    /** @var int|numeric-string $aright */
                     $aright = F_count_rows(
                         $sqltb,
                         $sqlaw
@@ -645,6 +656,7 @@ function f_get_raw_test_stat(
                         . $ma['answer_id']
                         . " AND ((answer_isright='0' AND logansw_selected=0) OR (answer_isright='1' AND logansw_selected=1) OR (answer_position IS NOT NULL AND logansw_position IS NOT NULL AND answer_position=logansw_position))",
                     );
+                    /** @var int|numeric-string $awrong */
                     $awrong = F_count_rows(
                         $sqltb,
                         $sqlaw
@@ -652,6 +664,7 @@ function f_get_raw_test_stat(
                         . $ma['answer_id']
                         . " AND ((answer_isright='0' AND logansw_selected=1) OR (answer_isright='1' AND logansw_selected=0) OR (answer_position IS NOT NULL AND answer_position!=logansw_position))",
                     );
+                    /** @var int|numeric-string $aunanswered */
                     $aunanswered = F_count_rows(
                         $sqltb,
                         $sqlaw . ' AND answer_id=' . $ma['answer_id'] . ' AND logansw_selected=-1',

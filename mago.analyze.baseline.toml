@@ -202,19 +202,13 @@ count = 3
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 13
+count = 7
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 77
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Invalid middle operand: type `truthy-mixed` cannot be reliably used in string concatenation."
-count = 4
+count = 75
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
@@ -238,19 +232,7 @@ count = 2
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Left operand in `>` comparison has `mixed` type."
-count = 14
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Left operand in binary operation has type `mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-operand"
-message = "Right operand in binary operation has type `mixed`."
-count = 11
+count = 13
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
