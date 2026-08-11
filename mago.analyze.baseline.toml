@@ -122,24 +122,6 @@ count = 1
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$description` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$label` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
-message = "Parameter `$value` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `f_tmf_short_answer_score`: expected `string`, but found `mixed`."
 count = 1

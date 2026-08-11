@@ -858,12 +858,12 @@ function f_get_test_start_time(mixed $testuser_id): int|false
  * <li>div.row span.label</li>
  * <li>div.row span.formw</li>
  * </ul>
- * @param $label (string) string to display on the left column
- * @param $description (string) string to display on the title attribute of the left column field
- * @param $value (string) string to display on the right column
+ * @param mixed $label String to display on the left column
+ * @param mixed $description String to display on the title attribute of the left column field
+ * @param mixed $value String to display on the right column
  * @return string XHTML code
  */
-function f_two_col_row($label = '', $description = '', $value = ''): string
+function f_two_col_row(mixed $label = '', mixed $description = '', mixed $value = ''): string
 {
     $str = '';
     $str .= '<div class="row">';
