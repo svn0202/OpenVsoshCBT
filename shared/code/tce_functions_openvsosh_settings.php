@@ -551,6 +551,9 @@ function openvsosh_contrast_text(string $background): string
 
 /**
  * Return the instance-local key used to authenticate offline packages.
+ *
+ * @throws Random\RandomException When secure entropy is unavailable.
+ * @throws RuntimeException When the generated secret cannot be persisted or read back.
  */
 function openvsosh_get_offline_package_secret(): string
 {
@@ -558,10 +561,8 @@ function openvsosh_get_offline_package_secret(): string
     if (is_string($secret) && preg_match('/^[a-f0-9]{64}$/', $secret) === 1) {
         return $secret;
     }
-    // @mago-expect analysis:unhandled-thrown-type -- entropy failure retains the existing exception contract
     $secret = bin2hex(random_bytes(32));
     if (!openvsosh_save_setting('offline_package_secret', $secret)) {
-        // @mago-expect analysis:unhandled-thrown-type -- callers already receive persistence failures
         throw new RuntimeException('Unable to persist the offline package secret.');
     }
     $persisted = openvsosh_get_setting('offline_package_secret');
