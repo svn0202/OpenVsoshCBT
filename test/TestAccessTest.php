@@ -221,6 +221,7 @@ PHP;
                     . '$GLOBALS["published"][] = $test; return true; } '
                     . 'function f_count_user_test(...$arguments) { '
                     . '$GLOBALS["count_args"][] = $arguments; return 0; } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_get_user_test_stat(...$arguments) { return ["user_score" => "8", '
                     . '"test_score_threshold" => "5", "test_max_score" => "10"]; } '
