@@ -2530,11 +2530,15 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l, $examtime, $timeout_logout;
+    /** @var array{w_answers:string,a_meta_charset:string,m_unanswered:string,m_matching_position_reassigned:string} $l */
+    /** @var string $formname */
     /** @return array<array-key,mixed>|null */
     $normalize_row = static fn(mixed $row): ?array => is_array($row) ? $row : null;
     $test_id = (int) $test_id;
     $testlog_id = (int) $testlog_id;
-    $user_id = (int) $_SESSION['session_user_id'];
+    $session = $_SESSION;
+    /** @var array{session_user_id:int|numeric-string} $session */
+    $user_id = (int) $session['session_user_id'];
     $aswkeys = [];
     $str = '';
     if ($test_id === 0) {
@@ -2950,7 +2954,6 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                         $str .= '<option value="0">&nbsp;</option>' . K_NEWLINE;
                                     }
 
-                                    /** @var string $position_charset */
                                     $position_charset = $l['a_meta_charset'];
                                     for ($pos = 1; $pos <= $max_position; ++$pos) {
                                         $str .= '<option value="' . $pos . '"';
@@ -3074,7 +3077,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 				WHERE testlog_id='
                 . $testlog_id
                 . '';
-            if (!($ru = F_db_query($sqlu, $db))) {
+            if (!($ru = f_legacy_db_query_result(F_db_query($sqlu, $db)))) {
                 F_display_db_error();
             }
         }
@@ -3083,7 +3086,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 			SET testuser_last_activity='" . $activity_time . "'
 			WHERE testuser_id=" . (int) $m['testlog_testuser_id'] . '
 				AND testuser_status<4';
-        if (!F_db_query($activity_sql, $db)) {
+        if (!f_legacy_db_query_result(F_db_query($activity_sql, $db))) {
             F_display_db_error();
         }
     } else {
