@@ -232,8 +232,7 @@ if (isset($_POST['xlsx_action'])) {
         } else {
             try {
                 /** @var array{records: array<int, array<string, mixed>>} $pending */
-                /** @mago-expect analysis:redundant-cast */
-                $count = F_tmf_users_xlsx_import((array) $pending['records']);
+                $count = F_tmf_users_xlsx_import($pending['records']);
                 $message = 'Импорт завершён. Создано пользователей: ' . $count . '.';
             } catch (Throwable $exception) {
                 $message = 'Импорт отменён целиком: ' . $exception->getMessage();
