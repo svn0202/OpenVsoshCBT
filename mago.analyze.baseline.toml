@@ -99,12 +99,6 @@ count = 2
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #2 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `htmlspecialchars`: expected `null|string`, but found `mixed`."
 count = 25
 
@@ -118,7 +112,7 @@ count = 113
 file = "shared/code/tce_functions_test.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 39
+count = 38
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -136,7 +130,7 @@ count = 2
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 122
+count = 121
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"

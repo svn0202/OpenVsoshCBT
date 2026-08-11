@@ -2885,6 +2885,7 @@ function f_questions_menu(
             $str .= '&nbsp;';
             // show question score
             // @mago-expect analysis:invalid-array-access -- active DAL fetches question menu rows as arrays
+            /** @var int|float $n_question_score */
             $n_question_score = $testdata['test_score_right'] * $m['question_difficulty'];
             $str .= '<abbr class="offbox" title="' . $l['w_max_score'] . ': ' . $n_question_score . '">';
             $str .= sprintf('% 5.1f', $n_question_score);
