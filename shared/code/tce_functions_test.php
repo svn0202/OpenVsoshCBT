@@ -383,10 +383,10 @@ function f_is_valid_ip($user_ip, $test_ips): bool
 
 /**
  * Check if user's IP is valid over test IP range
- * @param $test_id (int) Test ID
+ * @param mixed $test_id Test ID
  * @return bool true if the client certificate is valid, false otherwise
  */
-function f_is_valid_ssl_cert($test_id): bool
+function f_is_valid_ssl_cert(mixed $test_id): bool
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_authorization.php';
