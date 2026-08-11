@@ -330,11 +330,16 @@ function f_repeat_test(mixed $test_id): void
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array{session_user_id:int|numeric-string} $_SESSION */
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     $sql = 'SELECT test_id FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . " AND test_repeatable<>'0' LIMIT 1";
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if ($normalize_row(F_db_fetch_array($r)) !== null) {
             $sqls =
                 'SELECT testuser_id FROM '
                 . K_TABLE_TEST_USER
@@ -343,15 +348,20 @@ function f_repeat_test(mixed $test_id): void
                 . ' AND testuser_user_id='
                 . $user_id
                 . ' AND testuser_status>3 ORDER BY testuser_status DESC';
-            if ($rs = F_db_query($sqls, $db)) {
-                while ($ms = F_db_fetch_array($rs)) {
+            $rs = F_db_query($sqls, $db);
+            /** @var mixed $rs */
+            if ($rs) {
+                while (($ms = $normalize_row(F_db_fetch_array($rs))) !== null) {
+                    /** @var array{testuser_id:int|numeric-string} $ms */
                     $sqld =
                         'UPDATE '
                         . K_TABLE_TEST_USER
                         . ' SET testuser_status=testuser_status+1 WHERE testuser_id='
                         . $ms['testuser_id']
                         . '';
-                    if (!($rd = F_db_query($sqld, $db))) {
+                    $rd = F_db_query($sqld, $db);
+                    /** @var mixed $rd */
+                    if (!$rd) {
                         F_display_db_error();
                     }
                 }
