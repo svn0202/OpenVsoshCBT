@@ -76,6 +76,7 @@ if (!is_string($backup_file) || $backup_file !== '' && !f_is_valid_backup_file($
     F_print_error('ERROR', 'SECURITY ERROR', true);
 }
 /** @var string $backup_file */
+$downloads_enabled = constant('K_DOWNLOAD_BACKUPS') === true;
 
 switch ($menu_mode) { // process submitted data
     case 'restore':
@@ -132,8 +133,7 @@ switch ($menu_mode) { // process submitted data
         break;
 
     case 'download':
-        /** @mago-expect analysis:redundant-logical-operation */
-        if (K_DOWNLOAD_BACKUPS && $backup_file !== '') {
+        if ($downloads_enabled && $backup_file !== '') {
             $file_to_download = '';
             try {
                 $file_to_download = F_tmf_backup_resolve_file(K_PATH_BACKUP, $backup_file);
@@ -221,8 +221,7 @@ echo '<div class="row">' . K_NEWLINE;
 
 F_submit_button('backup', $l['w_backup'], $l['h_backup']);
 F_submit_button('restore', $l['w_restore'], $l['h_restore']);
-/** @mago-expect analysis:redundant-condition */
-if (K_DOWNLOAD_BACKUPS) {
+if ($downloads_enabled) {
     F_submit_button('download', $l['w_download'], $l['h_download']);
 }
 
