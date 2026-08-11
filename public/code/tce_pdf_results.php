@@ -50,7 +50,7 @@ require_once '../../shared/code/tce_functions_statistics.php';
  *     w_statistics: string
  * } $l
  */
-/** @mago-expect analysis:possibly-undefined-string-array-index */
+/** @var array{session_user_id:int} $_SESSION */
 $user_id = (int) $_SESSION['session_user_id'];
 /** @var int|string $mode_request */
 $mode_request = $_REQUEST['mode'] ?? 0;
