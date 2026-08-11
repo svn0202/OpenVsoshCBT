@@ -379,10 +379,9 @@ if (isset($_REQUEST['user_ssn'])) {
 $user_groups = f_tce_user_registration_groups($_REQUEST['user_groups'] ?? []);
 
 // some fields are always required
-$regfields['user_name'] = 2;
-// @mago-expect lint:no-literal-password -- this is a required-field flag, not a password value
-$regfields['newpassword'] = 2;
-$regfields['newpassword_repeat'] = 2;
+foreach (['user_name', 'newpassword', 'newpassword_repeat'] as $required_field) {
+    $regfields[$required_field] = 2;
+}
 if (f_tce_user_registration_bool(K_USRREG_EMAIL_CONFIRM)) {
     $regfields['user_email'] = 2;
 }
