@@ -3407,7 +3407,9 @@ function f_update_test_comment(mixed $test_id, mixed $testcomment): void
     global $db, $l;
     $test_id = (int) $test_id;
     $testcomment = F_escape_sql($db, $testcomment);
-    $user_id = (int) $_SESSION['session_user_id'];
+    /** @var int|numeric-string $session_user_id */
+    $session_user_id = $_SESSION['session_user_id'] ?? 0;
+    $user_id = (int) $session_user_id;
     $sql =
         'UPDATE '
         . K_TABLE_TEST_USER
@@ -3422,7 +3424,9 @@ function f_update_test_comment(mixed $test_id, mixed $testcomment): void
         . $user_id
         . '
 			AND testuser_status<4';
-    if (!($r = F_db_query($sql, $db))) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if (!$r) {
         F_display_db_error();
     }
 }
