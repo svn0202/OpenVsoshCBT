@@ -23,7 +23,7 @@ final class StatisticsTest extends TestCase
                     . '$GLOBALS["l"] = ["h_answer_right" => "Right", "w_answers_right" => "Correct"]; '
                     . '$row = ["testlog_score" => "2.5", "testlog_user_ip" => "packed", '
                     . '"testlog_reaction_time" => 0, "question_description" => "Question", '
-                    . '"question_explanation" => "", "question_type" => 3, '
+                    . '"question_explanation" => "Hidden question explanation", "question_type" => 3, '
                     . '"testlog_answer_text" => "Answer", "testlog_id" => 77, '
                     . '"testlog_comment" => "Teacher note"]; '
                     . '$invalidRow = $row; $invalidRow["testlog_display_time"] = "invalid-display"; '
@@ -31,7 +31,7 @@ final class StatisticsTest extends TestCase
                     . '$choiceRow = $row; $choiceRow["question_type"] = "2"; '
                     . '$answerRow = ["logansw_position" => "0", "answer_position" => "1", '
                     . '"logansw_selected" => "1", "answer_isright" => "1", '
-                    . '"answer_description" => "Choice", "answer_explanation" => ""]; '
+                    . '"answer_description" => "Choice", "answer_explanation" => "Hidden answer explanation"]; '
                     . '$GLOBALS["results"] = [false, "questions", "invalid-questions", '
                     . '"choice-questions", "answers", "failed-choice-questions", false]; '
                     . '$GLOBALS["rows"] = ["questions" => [$row, false], '
@@ -96,6 +96,8 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('[Question]', $failedChoices);
         self::assertStringContainsString('<ol class="answer">', $failedChoices);
         self::assertStringNotContainsString('[Choice]', $failedChoices);
+        self::assertStringNotContainsString('Hidden question explanation', $markup);
+        self::assertStringNotContainsString('Hidden answer explanation', $choices);
         self::assertCount(7, $queries);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[0]);
         self::assertStringContainsString('testlog_testuser_id=7', $queries[1]);
