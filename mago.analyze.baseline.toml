@@ -244,7 +244,7 @@ count = 4
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
