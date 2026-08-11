@@ -116,5 +116,3 @@ require_once '../../shared/code/tce_functions_general.php';
 
 // @mago-expect lint:no-ini-set -- participant requests need the configured runtime memory ceiling
 ini_set('memory_limit', K_MAX_MEMORY_LIMIT); // set PHP memory limit
-// @mago-expect lint:no-ini-set -- security policy forbids session identifiers in generated URLs
-ini_set('session.use_trans_sid', 0); // if =1 use PHPSESSID (for clients that do not support cookies)

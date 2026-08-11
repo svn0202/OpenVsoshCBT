@@ -67,7 +67,7 @@ final class SessionFunctionsTest extends TestCase
         self::assertSame(K_COOKIE_SAMESITE, $params['samesite']);
     }
 
-    public function testSessionStartOptionsEnableCookieAndStrictPolicies(): void
+    public function testSessionStartOptionsEnforceSecurityPolicies(): void
     {
         [$status, $output] = \F_tcecode_run_process(
             [
@@ -76,7 +76,8 @@ final class SessionFunctionsTest extends TestCase
                 'define("K_COOKIE_SECURE", true); define("K_COOKIE_HTTPONLY", true); '
                     . 'define("K_COOKIE_SAMESITE", "Strict"); require $argv[1]; '
                     . 'session_start(f_get_session_start_options()); '
-                    . 'echo json_encode([ini_get("session.use_cookies"), ini_get("session.use_strict_mode")]); '
+                    . 'echo json_encode([ini_get("session.use_cookies"), ini_get("session.use_strict_mode"), '
+                    . '(bool) ini_get("session.use_trans_sid")]); '
                     . 'session_write_close();',
                 dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php',
             ],
@@ -84,7 +85,7 @@ final class SessionFunctionsTest extends TestCase
         );
 
         self::assertSame(0, $status, $output);
-        self::assertSame(['1', '1'], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(['1', '1', false], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
     public function testSessionClosePassesConfiguredLifetimeAsInteger(): void

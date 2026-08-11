@@ -36,12 +36,13 @@ session_set_cookie_params([
     'samesite' => K_COOKIE_SAMESITE,
 ]);
 
-/** @return array{use_cookies:true,use_strict_mode:true} */
+/** @return array{use_cookies:true,use_strict_mode:true,use_trans_sid:false} */
 function f_get_session_start_options(): array
 {
     return [
         'use_cookies' => true,
         'use_strict_mode' => true,
+        'use_trans_sid' => false,
     ];
 }
 
