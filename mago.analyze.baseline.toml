@@ -34,13 +34,13 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "impossible-condition"
 message = "This condition (type `false`) will always evaluate to false."
-count = 27
+count = 26
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 105
+count = 97
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -112,7 +112,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "no-value"
 message = "Argument #1 passed to function `f_db_fetch_array` has type `never`, meaning it cannot produce a value."
-count = 26
+count = 25
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -154,13 +154,13 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('session_user_id')` accessed on `array<non-empty-string, mixed>`."
-count = 15
+count = 14
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "possibly-undefined-string-array-index"
 message = "Possibly undefined array key `string('session_user_ip')` accessed on `array<non-empty-string, mixed>`."
-count = 3
+count = 2
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
