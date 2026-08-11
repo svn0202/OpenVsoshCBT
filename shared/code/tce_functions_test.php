@@ -60,6 +60,9 @@ function f_get_user_tests(): string
      *     w_to:string
      * } $l
      */
+    /** @var array{session_user_id:int|numeric-string,session_user_ip:string} $_SESSION */
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $user_id = (int) $_SESSION['session_user_id'];
     $str = ''; // temp string
     // get current date-time
@@ -74,20 +77,29 @@ function f_get_user_tests(): string
         . ' WHERE test_id IN (SELECT tsubset_test_id FROM '
         . K_TABLE_TEST_SUBJSET
         . ') ORDER BY test_begin_time DESC';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_array($r)) { // for each active test
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        while (($m = $normalize_row(F_db_fetch_array($r))) !== null) { // for each active test
+            /**
+             * @var array{
+             *     test_id:int|numeric-string,
+             *     test_ip_range:string,
+             *     test_duration_time:int|numeric-string,
+             *     test_repeatable:int|numeric-string,
+             *     test_begin_time:string,
+             *     test_end_time:string,
+             *     test_password:string|null,
+             *     test_name:string,
+             *     test_results_to_users?:mixed
+             * } $m
+             */
             $expired = false;
-            /** @var int|numeric-string $catalog_test_id */
             $catalog_test_id = $m['test_id'];
-            /** @var string $test_ip_range */
             $test_ip_range = $m['test_ip_range'];
-            /** @var int|numeric-string $test_duration_time */
             $test_duration_time = $m['test_duration_time'];
-            /** @var int|numeric-string $test_repeatable */
             $test_repeatable = $m['test_repeatable'];
-            /** @var string $test_begin_time */
             $test_begin_time = $m['test_begin_time'];
-            /** @var string $test_end_time */
             $test_end_time = $m['test_end_time'];
             /** @var int $test_begin_timestamp */
             $test_begin_timestamp = strtotime($test_begin_time);
@@ -95,7 +107,9 @@ function f_get_user_tests(): string
             $test_end_timestamp = strtotime($test_end_time);
             $upcoming = $current_timestamp < $test_begin_timestamp;
             // check user's authorization
-            if (f_is_valid_test_user($catalog_test_id, $_SESSION['session_user_ip'], $test_ip_range)) {
+            /** @var string|null $session_user_ip */
+            $session_user_ip = $_SESSION['session_user_ip'] ?? null;
+            if (f_is_valid_test_user($catalog_test_id, $session_user_ip, $test_ip_range)) {
                 $access_status = F_tmf_test_access_status((int) $catalog_test_id, $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(
@@ -117,7 +131,6 @@ function f_get_user_tests(): string
                     . '" data-end="'
                     . htmlspecialchars($test_end_time, ENT_QUOTES)
                     . '">' . K_NEWLINE;
-                /** @var string|null $test_password */
                 $test_password = $m['test_password'];
                 if ($test_password !== null && strlen($test_password) > 0) {
                     $str .= '<td style="background-color:#ffffcc;">';
@@ -125,7 +138,6 @@ function f_get_user_tests(): string
                     $str .= '<td>';
                 }
 
-                /** @var string $test_name */
                 $test_name = $m['test_name'];
                 $str .= '<strong>' . f_test_info_link($catalog_test_id, $test_name) . '</strong></td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $test_begin_time . '</td>' . K_NEWLINE;
@@ -133,7 +145,6 @@ function f_get_user_tests(): string
                 // status
                 $str .= '<td';
                 $publication_test = $m;
-                // @mago-expect analysis:docblock-type-mismatch -- DAL rows are arrays; its legacy return doc resolves as unknown-ref(Returns)
                 /** @var array<string,mixed> $publication_test */
                 if ($catalog_test_status >= 4 && F_tmf_results_are_published($publication_test)) {
                     $usrtestdata = f_get_user_test_stat($catalog_test_id, $user_id, $testuser_id);
