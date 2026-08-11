@@ -2930,6 +2930,24 @@ function f_questions_menu(
         'theme' => $l['ov_switch_theme'],
         'review' => $l['ov_mark_for_review'],
     ];
+    /**
+     * @var array{
+     *     image:string,close:string,fullscreen:string,saving:string,saved:string,error:string,conflict:string,
+     *     unsaved:string,retrying:string,save:string
+     * } $menu_labels
+     */
+    $menu_labels = [
+        'image' => $l['w_image'],
+        'close' => $l['w_close'],
+        'fullscreen' => $l['w_fullscreen'],
+        'saving' => $l['ov_answer_saving'],
+        'saved' => $l['ov_answer_saved'],
+        'error' => $l['ov_answer_not_saved'],
+        'conflict' => $l['ov_answer_save_conflict'],
+        'unsaved' => $l['ov_answer_unsaved'],
+        'retrying' => $l['ov_answer_retrying'],
+        'save' => $l['ov_save'],
+    ];
     $audio_labels = match (strtolower((string) ($l['a_meta_language'] ?? 'en'))) {
         'ar' => [
             'plays_left' => 'مرات التشغيل المتبقية: {count}',
@@ -2953,9 +2971,9 @@ function f_questions_menu(
 
     $toolbar = '<div class="exam-mobile-toolbar" data-exam-toolbar'
         . ' data-image-preview-label="'
-        . htmlspecialchars($l['w_image'], ENT_QUOTES, $charset)
+        . htmlspecialchars($menu_labels['image'], ENT_QUOTES, $charset)
         . '" data-image-preview-close="'
-        . htmlspecialchars($l['w_close'], ENT_QUOTES, $charset)
+        . htmlspecialchars($menu_labels['close'], ENT_QUOTES, $charset)
         . '" data-audio-play-limit="' . (int) $tmf_options['audio_play_limit']
         . '" data-audio-plays-left="'
         . htmlspecialchars(
@@ -2989,8 +3007,8 @@ function f_questions_menu(
         . '" aria-label="' . htmlspecialchars($mobile_labels['theme'], ENT_QUOTES, $charset)
         . '">◐</button>' . K_NEWLINE;
     $toolbar .= '<button type="button" data-exam-action="fullscreen" title="'
-        . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $charset)
-        . '" aria-label="' . htmlspecialchars($l['w_fullscreen'], ENT_QUOTES, $charset)
+        . htmlspecialchars($menu_labels['fullscreen'], ENT_QUOTES, $charset)
+        . '" aria-label="' . htmlspecialchars($menu_labels['fullscreen'], ENT_QUOTES, $charset)
         . '">⛶</button>' . K_NEWLINE;
     $toolbar .= '</div>' . K_NEWLINE;
     $live_score = F_tmf_live_score((int) ($testdata['test_id'] ?? 0), $testuser_id);
@@ -3033,19 +3051,19 @@ function f_questions_menu(
             . '</span></label>';
         $navlink .=
             '<button type="button" id="saveanswer" data-answer-save="tce_test_answer_save.php" data-answer-saving="'
-            . htmlspecialchars($l['ov_answer_saving'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['saving'], ENT_QUOTES, $charset)
             . '" data-answer-saved="'
-            . htmlspecialchars($l['ov_answer_saved'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['saved'], ENT_QUOTES, $charset)
             . '" data-answer-error="'
-            . htmlspecialchars($l['ov_answer_not_saved'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['error'], ENT_QUOTES, $charset)
             . '" data-answer-conflict="'
-            . htmlspecialchars($l['ov_answer_save_conflict'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['conflict'], ENT_QUOTES, $charset)
             . '" data-answer-unsaved="'
-            . htmlspecialchars($l['ov_answer_unsaved'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['unsaved'], ENT_QUOTES, $charset)
             . '" data-answer-retrying="'
-            . htmlspecialchars($l['ov_answer_retrying'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['retrying'], ENT_QUOTES, $charset)
             . '">'
-            . htmlspecialchars($l['ov_save'], ENT_QUOTES, $charset)
+            . htmlspecialchars($menu_labels['save'], ENT_QUOTES, $charset)
             . '</button>';
         $navlink .=
             '<span id="answer-save-status" class="answer-save-status" role="status" aria-live="polite"></span>';
