@@ -1322,14 +1322,15 @@ function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
 
 /**
  * Returns the ID of the tce_tests_users table corresponding to a complete test of $test_id type.
- * @param $test_id (int) test ID
+ * @param mixed $test_id Test ID
  * @return int|string Test-user ID, or zero when no started attempt exists.
- * @mago-expect analysis:docblock-type-mismatch -- active DAL implementations return an associative array or false
  */
 function f_get_first_test_user(mixed $test_id): int|string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     // check if this is the first test creation
     $firsttest = 0;
@@ -1338,9 +1339,11 @@ function f_get_first_test_user(mixed $test_id): int|string
 		WHERE testuser_test_id=' . $test_id . '
 			AND testuser_status>0
 		LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            /** @var array{testuser_id:int|string} $m */
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /** @var array{testuser_id:int|numeric-string} $m */
             $firsttest = $m['testuser_id'];
         }
     } else {
