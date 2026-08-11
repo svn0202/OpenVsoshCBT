@@ -70,6 +70,7 @@ function f_tmf_backup_start_process(
  * @param resource             $process
  * @param array<mixed>         $pipes
  * @param resource|null        $output
+ * @throws TmfBackupException When the database utility or archive stream fails.
  */
 function f_tmf_backup_finish_process(
     mixed $process,
@@ -94,7 +95,6 @@ function f_tmf_backup_finish_process(
                 if ($error_file !== '' && is_file($error_file)) {
                     unlink($error_file);
                 }
-                // @mago-expect analysis:unhandled-thrown-type -- stream failures use the established exception API
                 throw new TmfBackupException('Не удалось записать резервную копию.');
             }
         }
