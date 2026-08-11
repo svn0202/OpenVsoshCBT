@@ -11,7 +11,7 @@ final class HeartbeatTest extends TestCase
         $source = file_get_contents(dirname(__DIR__) . '/public/code/tce_test_heartbeat.php');
         self::assertIsString($source);
 
-        self::assertStringContainsString('$result = F_db_query($sql, $db);', $source);
+        self::assertStringContainsString('$result = f_legacy_db_query_result(F_db_query($sql, $db));', $source);
         self::assertMatchesRegularExpression(
             '/if \(!\$result\) \{\s*F_tmf_heartbeat_json\(500, \[\'status\' => \'error\'\]\);/s',
             $source,

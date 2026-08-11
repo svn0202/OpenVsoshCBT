@@ -56,8 +56,7 @@ $sql = 'UPDATE ' . K_TABLE_TEST_USER . "
         AND testuser_user_id=' . $session_user_id . '
         AND testuser_status>0
         AND testuser_status<4';
-$result = F_db_query($sql, $db);
-// @mago-expect analysis:redundant-condition -- the active DAL returns false when the UPDATE fails
+$result = f_legacy_db_query_result(F_db_query($sql, $db));
 if (!$result) {
     F_tmf_heartbeat_json(500, ['status' => 'error']);
 }
