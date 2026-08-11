@@ -255,9 +255,9 @@ function f_login_form(): void
 
     // Shibboleth authentication
     require_once '../../shared/config/tce_shibboleth.php';
-    // @mago-expect analysis:redundant-logical-operation -- disabled in this installation, supported by shared code
-    // @mago-expect analysis:impossible-condition -- deployments can enable Shibboleth authentication in configuration
-    if (K_SHIBBOLETH_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
+    /** @var bool $shibboleth_enabled */
+    $shibboleth_enabled = K_SHIBBOLETH_ENABLED;
+    if ($shibboleth_enabled && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
         // redirect to Shibboleth Login Page
         header('Location: ' . K_SHIBBOLETH_LOGIN);
         // html redirect

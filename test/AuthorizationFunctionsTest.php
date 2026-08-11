@@ -259,6 +259,38 @@ final class AuthorizationFunctionsTest extends TestCase
         self::assertSame('WARNING:Denied|shutdown', $output);
     }
 
+    public function testShibbolethLoginStillRendersRedirectAndTerminates(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_HTTPBASIC_ENABLED", false); define("K_SHIBBOLETH_ENABLED", true); '
+                    . 'define("K_SHIBBOLETH_LOGIN", "https://sso.example.test/login"); define("K_NEWLINE", "\\n"); '
+                    . '$GLOBALS["l"] = ["a_meta_language" => "en", "a_meta_dir" => "ltr", '
+                    . '"a_meta_charset" => "UTF-8", "w_login" => "Sign in"]; '
+                    . '$_SERVER["SCRIPT_NAME"] = "/public/code/index.php"; $_SESSION = []; '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_login_form\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval($function); register_shutdown_function(static function (): void { echo "|shutdown"; }); '
+                    . 'F_login_form(); echo "unreachable";',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertStringContainsString(
+            '<a href="https://sso.example.test/login">Sign in</a>',
+            $output,
+        );
+        self::assertStringEndsWith('</html>' . "\n|shutdown", $output);
+        self::assertStringNotContainsString('unreachable', $output);
+    }
+
     public function testLogoutFormRenderingRemainsUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
