@@ -1005,24 +1005,24 @@ function f_is_right_testlog_user(mixed $test_id, mixed $testlog_id): bool
 
 /**
  * Return an array containing answer_id field of selected answers.<br>
- * @param $question_id (int) Question ID.
- * @param $isright (int) Value (0 = false, 1 = true), if non-empty checks for answer_isright value on WHERE clause.
- * @param $ordering (int) Ordering type question (0 = false, 1 = true).
- * @param $limit (int) Maximum number of IDs to return.
- * @param $startindex (int) Array starting index (default = 0).
- * @param $randorder (boolean) If true user random order.
- * @param $ordmode (int) Ordering mode: 0=position; 1=alphabetical; 2=ID.
- * @return array id of selected answers
+ * @param mixed $question_id Question ID.
+ * @param mixed $isright Value (0 = false, 1 = true), if non-empty checks for answer_isright value on WHERE clause.
+ * @param mixed $ordering Ordering type question (0 = false, 1 = true).
+ * @param mixed $limit Maximum number of IDs to return.
+ * @param mixed $startindex Array starting index (default = 0).
+ * @param mixed $randorder If true use random order.
+ * @param mixed $ordmode Ordering mode: 0=position; 1=alphabetical; 2=ID.
+ * @return array<array-key, mixed>|false IDs of selected answers, or false on query failure
  */
 function f_select_answers(
-    $question_id,
-    $isright = '',
-    $ordering = false,
-    $limit = 0,
-    $startindex = 0,
-    $randorder = true,
-    $ordmode = 0,
-) {
+    mixed $question_id,
+    mixed $isright = '',
+    mixed $ordering = false,
+    mixed $limit = 0,
+    mixed $startindex = 0,
+    mixed $randorder = true,
+    mixed $ordmode = 0,
+): array|false {
     require_once '../config/tce_config.php';
     global $db, $l;
     $question_id = (int) $question_id;
@@ -1746,8 +1746,10 @@ function f_add_question_answers(
             case 1:
                 // MCSA
                     // select first right answer
+                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
                     $answers_ids += f_select_answers($question_id, 1, false, 1, 0, $randorder, $ordmode);
                     // select remaining answers
+                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
                     $answers_ids += f_select_answers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
                     if (f_legacy_int_equals($ordmode, 1)) {
                         // reorder answers alphabetically
@@ -1772,6 +1774,7 @@ function f_add_question_answers(
             case 2:
                 // MCMA
                     // select answers
+                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
                     $answers_ids += f_select_answers($question_id, '', false, $num_answers, 0, $randorder, $ordmode);
                     break;
             case 4:
@@ -1779,6 +1782,7 @@ function f_add_question_answers(
                 // ORDERING
                     // select answers
                     $randorder = true;
+                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
                     $answers_ids += f_select_answers($question_id, '', true, 0, 0, $randorder, $ordmode);
                     break;
         }
