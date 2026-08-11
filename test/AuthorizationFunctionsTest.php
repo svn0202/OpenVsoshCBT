@@ -233,6 +233,32 @@ final class AuthorizationFunctionsTest extends TestCase
         );
     }
 
+    public function testHttpBasicLoginChallengeStillDeniesAndTerminates(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_HTTPBASIC_ENABLED", true); define("K_SHIBBOLETH_ENABLED", false); '
+                    . '$GLOBALS["l"] = ["m_authorization_denied" => "Denied"]; '
+                    . '$_SERVER["SCRIPT_NAME"] = "/public/code/index.php"; $_SESSION = []; '
+                    . 'function F_print_error($level, $message) { echo $level . ":" . $message; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_login_form\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval($function); register_shutdown_function(static function (): void { echo "|shutdown"; }); '
+                    . 'F_login_form(); echo "unreachable";',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('WARNING:Denied|shutdown', $output);
+    }
+
     public function testLogoutFormRenderingRemainsUnchanged(): void
     {
         [$status, $output] = \F_tcecode_run_process(
