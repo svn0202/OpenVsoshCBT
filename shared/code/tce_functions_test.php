@@ -2779,7 +2779,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                     . 'var current=this;document.querySelectorAll("select.matching-position").forEach(function(other){'
                     . 'if(other!==current&&other.value===current.value){other.value="0";'
                     . 'document.getElementById("matching-status").textContent='
-                    . json_encode($l['m_matching_position_reassigned'])
+                    . (string) json_encode($l['m_matching_position_reassigned'])
                     . ';}'
                     . '});});});'
                     . K_NEWLINE;
