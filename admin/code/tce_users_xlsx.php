@@ -217,11 +217,16 @@ if (isset($_POST['xlsx_action'])) {
         /** @var mixed $pending */
         $pending = $_SESSION['tmf_users_xlsx_preview'] ?? null;
         unset($_SESSION['tmf_users_xlsx_preview']);
+        $pending_token = is_array($pending) && is_string($pending['token'] ?? null)
+            ? $pending['token']
+            : '';
+        $submitted_token = is_string($_POST['preview_token'] ?? null) ? $_POST['preview_token'] : '';
         if (
             !is_array($pending)
             || time() - (int) ($pending['created_at'] ?? 0) > 900
-            /** @mago-expect analysis:array-to-string-conversion */
-            || !hash_equals((string) ($pending['token'] ?? ''), (string) ($_POST['preview_token'] ?? ''))
+            || $pending_token === ''
+            || $submitted_token === ''
+            || !hash_equals($pending_token, $submitted_token)
         ) {
             $message = 'Предпросмотр истёк. Загрузите файл повторно.';
         } else {
