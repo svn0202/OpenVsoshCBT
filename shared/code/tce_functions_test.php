@@ -2588,8 +2588,17 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
 			WHERE question_id=testlog_question_id
 				AND testlog_id=' . $testlog_id . '
 			LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *   question_fullscreen:mixed,testlog_answer_version:int|numeric-string,
+             *   testlog_testuser_id:int|numeric-string,question_description:string|null,
+             *   question_type:int|numeric-string,testlog_answer_text:string|null,
+             *   question_inline_answers:mixed,question_auto_next:mixed,
+             *   question_timer:int|numeric-string,testlog_display_time:string|null
+             * } $m
+             */
             if (f_get_boolean($m['question_fullscreen'])) {
                 // hide some section for fullscreen mode
                 $str .= '<style>' . K_NEWLINE;
@@ -2666,7 +2675,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                     . K_ANSWER_TEXTAREA_ROWS
                     . '" name="answertext" id="answertext"';
                 $str .= '>';
-                $str .= $m['testlog_answer_text'];
+                $str .= (string) $m['testlog_answer_text'];
                 $str .= '</textarea>' . K_NEWLINE;
                 $attachment_count = count(F_tmf_attachment_list((int) $testlog_id));
                 if ($attachment_count < TMF_ATTACHMENT_MAX_FILES) {
@@ -3034,6 +3043,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
             );
         }
 
+        /** @var array{testlog_display_time:string|null,testlog_testuser_id:int|numeric-string} $m */
         if (empty($m['testlog_display_time'])) {
             // mark test as displayed:
             $sqlu =
