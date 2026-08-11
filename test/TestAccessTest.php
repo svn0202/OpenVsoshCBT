@@ -243,6 +243,7 @@ PHP;
         self::assertStringContainsString('Сначала пройдите обязательный тест', $results[3]);
         self::assertStringNotContainsString('tce_test_execute.php', $results[3]);
         self::assertStringContainsString('<td><strong>INFO:Exam</strong>', $results[4]);
+        self::assertStringContainsString('<td style="background-color:#ddffdd;">', $results[4]);
         self::assertStringContainsString('testuser_id=99&amp;test_id=22', $results[4]);
         self::assertStringContainsString('8 / 10 (80%) - Passed', $results[4]);
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
