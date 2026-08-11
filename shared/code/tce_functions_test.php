@@ -2040,8 +2040,19 @@ function f_add_question_answers(
                     }
                     $answers_ids += $right_answers;
                     // select remaining answers
-                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
-                    $answers_ids += f_select_answers($question_id, 0, false, $num_answers - 1, 1, $randorder, $ordmode);
+                    $remaining_answers = f_select_answers(
+                        $question_id,
+                        0,
+                        false,
+                        $num_answers - 1,
+                        1,
+                        $randorder,
+                        $ordmode,
+                    );
+                    if (!is_array($remaining_answers)) {
+                        throw new \TypeError('Unsupported operand types: array + ' . get_debug_type($remaining_answers));
+                    }
+                    $answers_ids += $remaining_answers;
                     if (f_legacy_int_equals($ordmode, 1)) {
                         // reorder answers alphabetically
                         $answer_ids_sql = $answers_ids;
