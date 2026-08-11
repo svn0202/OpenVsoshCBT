@@ -2906,9 +2906,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                                         $str .= ' />';
                                         $str .= '</span>&nbsp;';
                                         if ($ma['answer_keyboard_key'] > 0) {
-                                            $aswkeys[] = [
-                                                $ma['answer_keyboard_key'] => 'answpos_' . $anspos . 't',
-                                            ];
+                                            $aswkeys[$ma['answer_keyboard_key']] = 'answpos_' . $anspos . 't';
                                         }
 
                                         $str .= F_decode_tcecode($ma['answer_description']);
