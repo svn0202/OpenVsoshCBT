@@ -207,12 +207,6 @@ count = 5
 [[issues]]
 file = "shared/code/tce_functions_test_stats.php"
 code = "mixed-argument"
-message = "Invalid argument type for argument #1 of `strtotime`: expected `string`, but found `truthy-mixed`."
-count = 4
-
-[[issues]]
-file = "shared/code/tce_functions_test_stats.php"
-code = "mixed-argument"
 message = "Invalid argument type for argument #2 of `gmdate`: expected `int|null`, but found `mixed`."
 count = 1
 
