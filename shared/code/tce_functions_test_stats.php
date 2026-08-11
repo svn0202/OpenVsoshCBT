@@ -987,6 +987,8 @@ function f_print_test_stat(
      *   }
      * } $ts
      */
+    /** @var int|float|numeric-string $recurrence */
+    $recurrence = $ts['qstats']['recurrence'];
 
     $txtdir = (($l['a_meta_dir'] <=> 'rtl') === 0) ? 'right' : 'left';
 
@@ -1045,7 +1047,7 @@ function f_print_test_stat(
     $ret .= '<td colspan="4">' . $l['w_all'] . '</td>' . K_NEWLINE;
     $ret .=
         '<td class="numeric">'
-        . $ts['qstats']['recurrence']
+        . $recurrence
         . ' '
         . f_format_percentage($ts['qstats']['recurrence_perc'], false)
         . '</td>'
