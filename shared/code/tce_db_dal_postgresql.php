@@ -87,11 +87,13 @@ function f_db_close(mixed $link_identifier): mixed
 
 /**
  * Returns the text of the error message from previous database operation
+ * @param mixed $link_identifier Legacy shared DAL parameter; PostgreSQL uses the current connection.
  * @return string error message.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_error($link_identifier = null)
+function f_db_error(mixed $link_identifier = null): mixed
 {
+    unset($link_identifier);
     return pg_last_error();
 }
 
