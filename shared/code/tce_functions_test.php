@@ -1883,6 +1883,7 @@ function f_update_question_log(
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var string $answer_text */
     $question_id = 0; // question ID
     $question_type = 3; // question type
     $question_difficulty = 1; // question difficulty
