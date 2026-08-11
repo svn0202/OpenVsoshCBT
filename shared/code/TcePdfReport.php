@@ -148,6 +148,17 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         }
     }
 
+    /** @return array{0:int,1:int,2:int,3:string,bits?:int,channels?:int,mime:string}|false */
+    protected static function getImageSizeSilently(string $filename): array|false
+    {
+        set_error_handler(static fn(): bool => true);
+        try {
+            return getimagesize($filename);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     /**
      * Build the tc-lib-file security options from TCExam configuration constants.
      * Mirrors the tc-lib-pdf fileOptions contract so the allowed local paths, remote
@@ -371,8 +382,7 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             if (is_file($candidate)) {
                 $logoPath = $candidate;
                 $logoW = $this->headerLogoWidth > 0 ? $this->headerLogoWidth : 20.0;
-                // @mago-expect lint:no-error-control-operator -- an invalid optional logo falls back to the configured square size
-                $size = @getimagesize($logoPath);
+                $size = self::getImageSizeSilently($logoPath);
                 $logoH = is_array($size) && (float) $size[0] > 0
                     ? $logoW * ((float) $size[1] / (float) $size[0])
                     : $logoW;

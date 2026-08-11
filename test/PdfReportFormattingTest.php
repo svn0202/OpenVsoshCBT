@@ -63,6 +63,27 @@ final class PdfReportFormattingTest extends TestCase
         self::assertSame('[null,[]]', $output);
     }
 
+    public function testInvalidOptionalLogoReturnsFalseWithoutLeakingWarnings(): void
+    {
+        $logo = tempnam(sys_get_temp_dir(), 'openvsosh-invalid-logo-');
+        self::assertIsString($logo);
+        self::assertNotFalse(file_put_contents($logo, 'not an image'));
+        $warnings = [];
+        set_error_handler(static function (int $severity, string $message) use (&$warnings): bool {
+            $warnings[] = [$severity, $message];
+            return true;
+        });
+        try {
+            $size = FormattingReport::optionalImageSize($logo);
+        } finally {
+            restore_error_handler();
+            unlink($logo);
+        }
+
+        self::assertFalse($size);
+        self::assertSame([], $warnings);
+    }
+
     /** @throws \Throwable */
     public function testQuestionStatisticsKeepLabelsAndFormattedValues(): void
     {
