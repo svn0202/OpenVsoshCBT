@@ -189,21 +189,29 @@ PHP;
                     . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row, false], '
                     . '"blocked" => [$protectedRow, false], "published" => [$row, false]]; '
                     . '$GLOBALS["ip"] = [false, true, true]; $GLOBALS["test_statuses"] = [0, 4]; '
+                    . '$GLOBALS["access_allowed"] = [false, true]; $GLOBALS["count_args"] = []; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["published"] = []; '
-                    . '$GLOBALS["test_ids"] = []; '
+                    . '$GLOBALS["test_ids"] = []; $GLOBALS["validity_args"] = []; '
+                    . '$GLOBALS["status_args"] = []; '
                     . 'function date($format) { return "2026-08-10 12:00:00"; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function f_is_valid_test_user(...$arguments) { '
-                    . '$GLOBALS["test_ids"][] = $arguments[0]; return array_shift($GLOBALS["ip"]); } '
+                    . '$GLOBALS["test_ids"][] = $arguments[0]; $GLOBALS["validity_args"][] = $arguments; '
+                    . 'return array_shift($GLOBALS["ip"]); } '
                     . 'function F_tmf_test_access_status($testId, $userId) { '
-                    . 'return ["allowed" => false, "reason" => "required_test_not_passed"]; } '
+                    . 'return ["allowed" => array_shift($GLOBALS["access_allowed"]), '
+                    . '"reason" => "required_test_not_passed"]; } '
                     . 'function f_check_test_status(...$arguments) { '
+                    . '$GLOBALS["status_args"][] = $arguments; '
                     . 'return [array_shift($GLOBALS["test_statuses"]), 99, false]; } '
                     . 'function F_tmf_catalog_test_status($status, $pregenerated) { return $status; } '
                     . 'function F_tmf_results_are_published($test) { '
                     . '$GLOBALS["published"][] = $test; return true; } '
+                    . 'function f_count_user_test(...$arguments) { '
+                    . '$GLOBALS["count_args"][] = $arguments; return 0; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_get_user_test_stat(...$arguments) { return ["user_score" => "8", '
                     . '"test_score_threshold" => "5", "test_max_score" => "10"]; } '
                     . 'function f_test_info_link($testId, $name) { return "INFO:" . $name; } '
@@ -219,7 +227,8 @@ PHP;
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $catalogues = []; '
                     . 'for ($i = 0; $i < 5; ++$i) { $catalogues[] = $qualified(); } '
                     . 'echo json_encode([$catalogues, count($GLOBALS["queries"]), '
-                    . '$GLOBALS["errors"], $GLOBALS["published"], $GLOBALS["test_ids"]]);',
+                    . '$GLOBALS["errors"], $GLOBALS["published"], $GLOBALS["test_ids"], '
+                    . '$GLOBALS["validity_args"], $GLOBALS["status_args"], $GLOBALS["count_args"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -232,14 +241,19 @@ PHP;
          *   1: int,
          *   2: int,
          *   3: array{0:array<string,mixed>},
-         *   4: list<string>
+         *   4: list<string>,
+         *   5: list<array{string,string,string}>,
+         *   6: list<array{int,string,string}>,
+         *   7: list<array{string,string}>
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$results, $queryCount, $errors, $published, $testIds] = $decoded;
+        [$results, $queryCount, $errors, $published, $testIds, $validityArgs, $statusArgs, $countArgs] = $decoded;
         self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
         self::assertStringContainsString('<table class="testlist">', $results[3]);
         self::assertStringContainsString('data-test-id="22"', $results[3]);
+        self::assertStringContainsString('data-begin="2026-08-09 00:00:00"', $results[3]);
+        self::assertStringContainsString('data-end="2026-08-11 00:00:00"', $results[3]);
         self::assertStringContainsString('<td>2026-08-09 00:00:00</td>', $results[3]);
         self::assertStringContainsString('<td>2026-08-11 00:00:00</td>', $results[3]);
         self::assertStringContainsString('<td style="background-color:#ffffcc;"><strong>INFO:Exam</strong>', $results[3]);
@@ -249,8 +263,19 @@ PHP;
         self::assertStringContainsString('<td style="background-color:#ddffdd;">', $results[4]);
         self::assertStringContainsString('testuser_id=99&amp;test_id=22', $results[4]);
         self::assertStringContainsString('8 / 10 (80%) - Passed', $results[4]);
+        self::assertStringNotContainsString('repeat=1', $results[4]);
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
         self::assertSame(['22', '22', '22'], $testIds);
+        self::assertSame([
+            ['22', '127.0.0.1', '*'],
+            ['22', '127.0.0.1', '*'],
+            ['22', '127.0.0.1', '*'],
+        ], $validityArgs);
+        self::assertSame([
+            [11, '22', '30'],
+            [11, '22', '30'],
+        ], $statusArgs);
+        self::assertSame([['11', '22']], $countArgs);
         self::assertSame(5, $queryCount);
         self::assertSame(1, $errors);
     }
