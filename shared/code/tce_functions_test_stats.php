@@ -1927,26 +1927,26 @@ function f_print_user_test_stat(mixed $testuser_id): string
 
 /**
  * Returns users statistic array for the selected test.
- * @param $test_id (int) test ID.
- * @param $group_id (int) group ID - if greater than zero, filter stats for the specified user group.
- * @param $user_id (int) user ID - if greater than zero, filter stats for the specified user.
- * @param $startdate (string) start date ID - if greater than zero, filter stats for the specified starting date
- * @param $enddate (string) end date ID - if greater than zero, filter stats for the specified ending date
- * @param $full_order_field (string) Ordering fields for SQL query.
- * @param $pubmode (boolean) If true filter the results for the public interface.
- * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
- * return $data array containing test statistics.
+ * @param mixed $test_id Test ID.
+ * @param mixed $group_id Group ID - if greater than zero, filter stats for the specified user group.
+ * @param mixed $user_id User ID - if greater than zero, filter stats for the specified user.
+ * @param mixed $startdate Start date - if greater than zero, filter stats for the specified starting date.
+ * @param mixed $enddate End date - if greater than zero, filter stats for the specified ending date.
+ * @param mixed $full_order_field Ordering fields for SQL query.
+ * @param mixed $pubmode If true filter the results for the public interface.
+ * @param mixed $stats 2 = full stats; 1 = user stats; 0 = disabled stats.
+ * @return array<array-key, mixed> Test statistics.
  */
 function f_get_all_users_test_stat(
-    $test_id,
-    $group_id = 0,
-    $user_id = 0,
-    $startdate = 0,
-    $enddate = 0,
-    $full_order_field = 'total_score',
-    $pubmode = false,
-    $stats = 2,
-) {
+    mixed $test_id,
+    mixed $group_id = 0,
+    mixed $user_id = 0,
+    mixed $startdate = 0,
+    mixed $enddate = 0,
+    mixed $full_order_field = 'total_score',
+    mixed $pubmode = false,
+    mixed $stats = 2,
+): array {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_test.php';
     require_once '../../shared/code/tce_functions_statistics.php';
