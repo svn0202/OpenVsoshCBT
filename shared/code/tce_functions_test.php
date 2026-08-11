@@ -3458,6 +3458,15 @@ function f_test_login_form(
     global $l;
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_form.php';
+    /** @var string $faction */
+    /** @var string $fid */
+    /** @var string $fmethod */
+    /** @var string $fenctype */
+    /**
+     * @var array{
+     *     w_test_password:string,h_test_password:string,w_login:string,h_login_button:string,hp_test_password:string
+     * } $l
+     */
     $str = '';
     $str .= '<div class="container">' . K_NEWLINE;
     $str .= '<div class="tceformbox">' . K_NEWLINE;

@@ -52,7 +52,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 43
+count = 38
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -70,7 +70,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "mixed-operand"
 message = "Invalid middle operand: type `mixed` cannot be reliably used in string concatenation."
-count = 69
+count = 62
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
