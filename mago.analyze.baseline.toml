@@ -231,12 +231,6 @@ count = 1
 [[issues]]
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
-message = "Parameter `$showip` is missing a type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-parameter-type"
 message = "Parameter `$startindex` is missing a type hint."
 count = 1
 
@@ -244,7 +238,7 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-parameter-type"
 message = "Parameter `$test_id` is missing a type hint."
-count = 5
+count = 4
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
@@ -298,12 +292,6 @@ count = 1
 file = "shared/code/tce_functions_test.php"
 code = "missing-return-type"
 message = "Function `f_get_user_tests` is missing a return type hint."
-count = 1
-
-[[issues]]
-file = "shared/code/tce_functions_test.php"
-code = "missing-return-type"
-message = "Function `f_print_test_info` is missing a return type hint."
 count = 1
 
 [[issues]]

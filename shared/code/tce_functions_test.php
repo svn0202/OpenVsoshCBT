@@ -655,11 +655,11 @@ function f_test_info_link(mixed $test_id, mixed $link_name = ''): string
 
 /**
  * Returns an XHTML string containing specified test information.
- * @param $test_id (int) test ID
- * @param $showip (boolean) if true display enabled users' IP range
+ * @param mixed $test_id Test ID
+ * @param mixed $showip If true display enabled users' IP range
  * @return string containing an XHTML code
  */
-function f_print_test_info($test_id, $showip = false)
+function f_print_test_info(mixed $test_id, mixed $showip = false): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
