@@ -414,6 +414,7 @@ final class StatisticsTest extends TestCase
                     . 'preg_match_all("/\\[\'([a-z][a-z0-9_]*)\'\\]/", '
                     . '$statFunction . $resultFunction, $labels); '
                     . '$l = array_fill_keys(array_unique($labels[1]), "label"); $l["a_meta_dir"] = "ltr"; '
+                    . '$l["w_mean"] = "mean"; $l["w_skewness"] = "skewness"; '
                     . 'eval("namespace Harness; " . $resultFunction); '
                     . '$statName = __NAMESPACE__ . "\\\\" . $statMatch[1][0]; '
                     . '$resultName = __NAMESPACE__ . "\\\\" . $resultMatch[1][0]; '
@@ -456,8 +457,13 @@ final class StatisticsTest extends TestCase
                     . '"undisplayed" => "5", "undisplayed_perc" => "50", '
                     . '"unrated" => "6", "unrated_perc" => "60", "locked" => true, '
                     . '"remaining_time" => "-3", "user_comment" => null]; '
+                    . '$mean = ["score_perc" => 1.4, "right_perc" => 2.4, "wrong_perc" => 3.4, '
+                    . '"unanswered_perc" => 4.4, "undisplayed_perc" => 5.4, "unrated_perc" => 6.4]; '
+                    . '$skewness = ["score_perc" => 7.1, "right_perc" => 8.1, "wrong_perc" => 9.1, '
+                    . '"unanswered_perc" => 10.1, "undisplayed_perc" => 11.1, "unrated_perc" => 12.1]; '
                     . '$rowResultData = ["num_records" => 1, "testuser" => [$resultRow], '
-                    . '"passed_perc" => "75", "passed" => "1", "statistics" => []]; '
+                    . '"passed_perc" => "75", "passed" => "1", '
+                    . '"statistics" => ["mean" => $mean, "skewness" => $skewness]]; '
                     . '$returns = [$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 1]], 1), '
                     . '$statName(7, 0, 0, 0, 0, 0, ["qstats" => ["recurrence" => 0]], 2), '
                     . '$resultName(["num_records" => 0], 1, "score", ""), '
@@ -518,6 +524,10 @@ final class StatisticsTest extends TestCase
         self::assertStringContainsString('2&nbsp;P:20', $returns[9]);
         self::assertStringContainsString('label (-3)', $returns[9]);
         self::assertStringContainsString('label: 1 P:75', $returns[9]);
+        self::assertStringContainsString('<td class="numeric">1%</td>', $returns[9]);
+        self::assertStringContainsString('<td class="numeric">6%</td>', $returns[9]);
+        self::assertStringContainsString('<td class="numeric">F:7.1</td>', $returns[9]);
+        self::assertStringContainsString('<td class="numeric">F:12.1</td>', $returns[9]);
         self::assertStringEndsWith('</table>' . "\n", $returns[9]);
     }
 
