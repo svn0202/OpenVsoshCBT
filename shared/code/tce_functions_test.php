@@ -1310,7 +1310,9 @@ function f_add_log_answers(mixed $testlog_id, mixed $answers_ids): bool
 			logansw_selected,
 			logansw_order
 			) VALUES ' . $answer_data_value;
-    if (!($ri = F_db_query($sqli, $db))) {
+    $ri = F_db_query($sqli, $db);
+    /** @var mixed $ri */
+    if (!$ri) {
         F_display_db_error(false);
         return false;
     }
