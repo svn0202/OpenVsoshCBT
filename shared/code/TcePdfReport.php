@@ -106,10 +106,21 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
             return;
         }
         $data = [
+            'appearance' => [
+                'ap' => [],
+                'as' => '',
+                'empty' => [],
+                'name' => '',
+                'page' => 0,
+                'rect' => '',
+                'xobj' => '',
+            ],
+            'approval' => '',
             'signcert' => $signcert,
             'privkey' => self::stringValue(self::configValue('K_DIGSIG_PRIVATE_KEY', $signcert)),
             'password' => self::stringValue(self::configValue('K_DIGSIG_PASSWORD', '')),
             'cert_type' => self::intValue(self::configValue('K_DIGSIG_CERT_TYPE', 2)),
+            'extracerts' => null,
             'info' => [
                 'Name' => self::stringValue(self::configValue('K_DIGSIG_NAME', '')),
                 'Location' => self::stringValue(self::configValue('K_DIGSIG_LOCATION', '')),
@@ -122,7 +133,6 @@ class TcePdfReport extends \Com\Tecnick\Pdf\Tcpdf
         if ($extraCerts !== '') {
             $data['extracerts'] = $extraCerts;
         }
-        // @mago-expect analysis:possibly-invalid-argument -- setSignature merges this valid partial configuration with its defaults
         $this->setSignature($data);
     }
 
