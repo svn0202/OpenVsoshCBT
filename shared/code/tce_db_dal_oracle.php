@@ -171,9 +171,12 @@ function f_db_fetch_array(mixed $result): mixed
 {
     $arr = oci_fetch_array($result, OCI_BOTH + OCI_RETURN_NULLS + OCI_RETURN_LOBS);
     if ($arr !== false) {
-        // @mago-expect analysis:less-specific-argument -- OCI_BOTH intentionally returns numeric and string keys
-        $arr = array_change_key_case($arr, CASE_LOWER);
-        $arr = array_map(static fn(mixed $value): string => f_db_oracle_strip_slashes($value), $arr);
+        /** @var array<int|string, bool|float|int|string|null> $arr */
+        $normalized = [];
+        foreach ($arr as $key => $value) {
+            $normalized[is_string($key) ? strtolower($key) : $key] = stripslashes((string) ($value ?? ''));
+        }
+        $arr = $normalized;
     }
 
     return $arr;
