@@ -2905,6 +2905,9 @@ function f_questions_menu(
     $testlog_id_prev = 0; // previous question ID
     $testlog_id_next = 0; // next question ID
     $testlog_id_last = 0; // temp variable
+    $i = 0;
+    $qprev = '';
+    $qsel = 1;
     $sql =
         'SELECT question_description, question_difficulty, question_timer, testlog_id, testlog_answer_text, testlog_display_time, testlog_change_time, testlog_reviewed
 		FROM '
@@ -2918,9 +2921,6 @@ function f_questions_menu(
         . '
 		ORDER BY testlog_id';
     if ($r = F_db_query($sql, $db)) {
-        $i = 0;
-        $qprev = '';
-        $qsel = 1;
         while ($m = F_db_fetch_array($r)) {
             ++$i;
             $item_classes = [];
