@@ -1492,14 +1492,14 @@ function f_print_test_result_stat(
      *     num:int|numeric-string,id:int|numeric-string,user_id:int|numeric-string,
      *     testuser_creation_time:string,time_diff:string,passmsg:bool|null,
      *     test:array{test_id:int|numeric-string,test_name:string,test_report_to_users:mixed},
-     *     user_name:string,user_lastname:mixed,user_firstname:mixed,
+     *     user_name:string,user_lastname:string|null,user_firstname:string|null,
      *     total_score:int|float|numeric-string,total_score_perc:int|float|numeric-string,
      *     right:int|float|string,right_perc:int|float|string,
      *     wrong:int|float|string,wrong_perc:int|float|string,
      *     unanswered:int|float|string,unanswered_perc:int|float|string,
      *     undisplayed:int|float|string,undisplayed_perc:int|float|string,
      *     unrated:int|float|string,unrated_perc:int|float|string,
-     *     locked:bool,remaining_time:int|float|numeric-string,user_comment:mixed
+     *     locked:bool,remaining_time:int|float|numeric-string,user_comment:string|null
      *   }>,
      *   passed:int|numeric-string,passed_perc:int|float|numeric-string,
      *   statistics:array<array-key,mixed>
@@ -1619,6 +1619,9 @@ function f_print_test_result_stat(
     $ret .= '</tr>' . K_NEWLINE;
     $ret .= '</thead>' . K_NEWLINE;
     foreach ($data['testuser'] as $tu) {
+        $tu['user_lastname'] = (string) $tu['user_lastname'];
+        $tu['user_firstname'] = (string) $tu['user_firstname'];
+        $tu['user_comment'] = (string) $tu['user_comment'];
         $tu['test']['test_name'] = unhtmlentities(strip_tags($tu['test']['test_name']));
         $ret .= '<tr>';
         $ret .= '<td>';
