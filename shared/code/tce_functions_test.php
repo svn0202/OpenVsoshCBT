@@ -1063,6 +1063,8 @@ function f_execute_test(mixed $test_id): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
     $test_id = (int) $test_id;
@@ -1081,10 +1083,21 @@ function f_execute_test(mixed $test_id): bool
 			AND test_end_time > \''
         . $current_time
         . "'";
-    if ($r = F_db_query($sql, $db)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        $m = $normalize_row(F_db_fetch_array($r));
+        /**
+         * @var array{
+         *     test_duration_time:int|numeric-string,
+         *     test_id:int|numeric-string,
+         *     test_ip_range:string,
+         *     test_repeatable:int|numeric-string
+         * }|null $m
+         */
         // check user's authorization
         if (
-            ($m = F_db_fetch_array($r))
+            $m !== null
             && f_is_valid_test_user($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])
             && F_tmf_test_access_status($test_id, (int) $_SESSION['session_user_id'])['allowed']
         ) {

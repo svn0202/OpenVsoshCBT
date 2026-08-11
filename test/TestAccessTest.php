@@ -111,11 +111,13 @@ PHP;
                     . '$GLOBALS["access"] = [false, true, true, true, true, true, true]; '
                     . '$GLOBALS["pregeneration"] = ["invalidated", null, null, null, null, null]; '
                     . '$GLOBALS["statuses"] = [[0, 0], [1, 101], [4, 102], [5, 103], [5, 104]]; '
+                    . '$GLOBALS["query_results"] = [true, true, true, true, true, true, true, true, true, false]; '
                     . '$GLOBALS["counts"] = [1, 1]; $GLOBALS["queries"] = []; '
                     . '$GLOBALS["create_calls"] = []; $GLOBALS["status_calls"] = []; $GLOBALS["errors"] = 0; '
                     . 'function date($format) { return "2026-08-10 12:00:00"; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
-                    . 'preg_replace("/\\s+/", " ", trim($sql)); return true; } '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); '
+                    . 'return array_shift($GLOBALS["query_results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"]); } '
                     . 'function f_is_valid_test_user(...$arguments) { return array_shift($GLOBALS["ip"]); } '
                     . 'function F_tmf_test_access_status($testId, $userId) { '
@@ -137,7 +139,7 @@ PHP;
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $results = []; '
-                    . 'for ($i = 0; $i < 9; ++$i) { $results[] = $qualified("22"); } '
+                    . 'for ($i = 0; $i < 10; ++$i) { $results[] = $qualified("22"); } '
                     . 'echo json_encode([$results, $GLOBALS["create_calls"], '
                     . '$GLOBALS["status_calls"], count($GLOBALS["queries"]), $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -148,7 +150,7 @@ PHP;
         self::assertSame(0, $status, $output);
         self::assertSame(
             [
-                [false, false, false, true, true, true, false, true, false],
+                [false, false, false, true, true, true, false, true, false, false],
                 [[22, 11], [22, '11'], [22, '11']],
                 [
                     ['11', 22, 30],
@@ -157,8 +159,8 @@ PHP;
                     ['11', 22, 30],
                     ['11', 22, 30],
                 ],
-                9,
-                0,
+                10,
+                1,
             ],
             json_decode($output, true, 512, JSON_THROW_ON_ERROR),
         );
