@@ -263,8 +263,7 @@ function f_alt_login(): array|false
                 $sorted_ldap_attr = $ldap_attr;
                 sort($sorted_ldap_attr);
                 //var_export($rdn); // uncomment this to see the structure of the entries
-                // @mago-expect lint:no-error-control-operator -- an unavailable LDAP directory falls through to the other login methods
-                $search = f_tmf_alt_ldap_search(@ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr));
+                $search = f_tmf_alt_ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr);
                 $rdn = false;
                 if ($search instanceof \LDAP\Result) {
                     // @mago-expect lint:no-error-control-operator -- a failed LDAP result lookup is treated as an authentication miss
@@ -337,8 +336,21 @@ function f_tmf_alt_auth_result(mixed $result): array|false
     return is_array($result) ? $result : false;
 }
 
-function f_tmf_alt_ldap_search(mixed $search): ?\LDAP\Result
+/** @param list<string> $attributes */
+function f_tmf_alt_ldap_search(
+    \LDAP\Connection $connection,
+    string $base,
+    string $filter,
+    array $attributes,
+): ?\LDAP\Result
 {
+    set_error_handler(static fn(): bool => true);
+    try {
+        $search = ldap_search($connection, $base, $filter, $attributes);
+    } finally {
+        restore_error_handler();
+    }
+
     return $search instanceof \LDAP\Result ? $search : null;
 }
 
