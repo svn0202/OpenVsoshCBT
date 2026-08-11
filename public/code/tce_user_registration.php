@@ -175,8 +175,7 @@ if ($menu_mode === 'add') { // process submitted data
         // check password
         if (!empty($newpassword) || !empty($newpassword_repeat)) {
             // update password
-            // @mago-expect lint:no-insecure-comparison -- confirm-field match: both operands are same-request user input, not a stored secret
-            if ($newpassword === $newpassword_repeat) {
+            if (hash_equals($newpassword, $newpassword_repeat)) {
                 $user_password = f_tce_user_registration_string(get_password_hash($newpassword));
                 // update OTP key
                 $user_otpkey = f_tce_user_registration_string(f_get_random_otp_key());

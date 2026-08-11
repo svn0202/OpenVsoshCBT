@@ -6,6 +6,43 @@ use PHPUnit\Framework\TestCase;
 
 final class UserRegistrationControllerTest extends TestCase
 {
+    public function testPasswordConfirmationPreservesAllRegistrationOutcomes(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; '
+                    . 'function get_password_hash($value) { return "hash:" . $value; } '
+                    . 'function f_tce_user_registration_string($value) { return (string) $value; } '
+                    . 'function f_get_random_otp_key() { return "otp"; } '
+                    . 'function F_print_error($type, $message) { $GLOBALS["errors"][] = [$type, $message]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "        \\$user_password = \'\';"); '
+                    . '$end = strpos($source, "        if (\\$formstatus) {", $start); '
+                    . '$block = substr($source, $start, $end - $start); '
+                    . '$l = ["m_different_passwords" => "different", "m_empty_password" => "empty"]; '
+                    . '$results = []; foreach ([["same", "same"], ["same", "other"], ["", ""]] as $case) {'
+                    . '[$newpassword, $newpassword_repeat] = $case; $formstatus = true; $GLOBALS["errors"] = []; '
+                    . 'eval("namespace Harness; " . $block); '
+                    . '$results[] = [$user_password, $user_otpkey, $formstatus, $GLOBALS["errors"]]; } '
+                    . 'echo json_encode($results);',
+                dirname(__DIR__) . '/public/code/tce_user_registration.php',
+            ],
+            dirname(__DIR__) . '/public/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            [
+                ['hash:same', 'otp', true, []],
+                ['', '', false, [['WARNING', 'different']]],
+                ['', '', false, [['WARNING', 'empty']]],
+            ],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testRegistrationFormPreservesValuesGroupsAndRequiredFields(): void
     {
         $script = <<<'PHP'
