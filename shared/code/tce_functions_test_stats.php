@@ -308,6 +308,17 @@ function f_get_raw_test_stat(
             'module' => [],
         ];
     }
+    /**
+     * @var array{
+     *   qstats:array{
+     *     recurrence:int|float,recurrence_perc:int|float,average_score:int|float,
+     *     average_score_perc:int|float,average_time:int|float,right:int|float,right_perc:int|float,
+     *     wrong:int|float,wrong_perc:int|float,unanswered:int|float,unanswered_perc:int|float,
+     *     undisplayed:int|float,undisplayed_perc:int|float,unrated:int|float,unrated_perc:int|float,
+     *     qnum:int,module:array<array-key,mixed>
+     *   },...
+     * } $data
+     */
 
     $sql = 'SELECT
 		module_id,
@@ -369,9 +380,20 @@ function f_get_raw_test_stat(
     }
 
     if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
-        while ($m = F_db_fetch_array($r)) {
-            if (!isset($data['qstats']['module']["'" . $m['module_id'] . "'"])) {
-                $data['qstats']['module']["'" . $m['module_id'] . "'"] = [
+        while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *   average_score:int|float|numeric-string,average_time:string,module_id:int|numeric-string,
+             *   module_name:mixed,question_description:mixed,question_difficulty:int|float|numeric-string,
+             *   question_id:int|numeric-string,question_type:int|numeric-string,recurrence:int|numeric-string,
+             *   subject_description:mixed,subject_id:int|numeric-string,subject_name:mixed
+             * } $m
+             */
+            $module_key = "'" . $m['module_id'] . "'";
+            $subject_key = "'" . $m['subject_id'] . "'";
+            $question_key = "'" . $m['question_id'] . "'";
+            if (!isset($data['qstats']['module'][$module_key])) {
+                $data['qstats']['module'][$module_key] = [
                     'id' => $m['module_id'],
                     'name' => $m['module_name'],
                     'recurrence' => 0,
@@ -393,11 +415,17 @@ function f_get_raw_test_stat(
                     'subject' => [],
                 ];
             }
+            /**
+             * @var array{
+             *   recurrence:int|float,average_score:int|float,average_score_perc:int|float,average_time:int|float,
+             *   right:int|float,wrong:int|float,unanswered:int|float,undisplayed:int|float,unrated:int|float,
+             *   qnum:int,subject:array<array-key,mixed>,...
+             * } $module_stats
+             */
+            $module_stats = $data['qstats']['module'][$module_key];
 
-            if (
-                !isset($data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'" . $m['subject_id'] . "'"])
-            ) {
-                $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'" . $m['subject_id'] . "'"] = [
+            if (!isset($module_stats['subject'][$subject_key])) {
+                $module_stats['subject'][$subject_key] = [
                     'id' => $m['subject_id'],
                     'name' => $m['subject_name'],
                     'description' => $m['subject_description'],
@@ -420,6 +448,14 @@ function f_get_raw_test_stat(
                     'question' => [],
                 ];
             }
+            /**
+             * @var array{
+             *   recurrence:int|float,average_score:int|float,average_score_perc:int|float,average_time:int|float,
+             *   right:int|float,wrong:int|float,unanswered:int|float,undisplayed:int|float,unrated:int|float,
+             *   qnum:int,question:array<array-key,mixed>,...
+             * } $subject_stats
+             */
+            $subject_stats = $module_stats['subject'][$subject_key];
 
             $question_max_score = $testdata['test_score_right'] * $m['question_difficulty'];
             $question_half_score = $question_max_score / 2;
@@ -455,22 +491,15 @@ function f_get_raw_test_stat(
                 $sqltot,
                 $sqlw . ' AND testlog_question_id=' . $m['question_id'] . ' AND testlog_score IS NULL',
             );
-            if (stripos($m['average_time'] ?? '', ':') !== false) {
+            if (stripos($m['average_time'], ':') !== false) {
                 // PostgreSQL returns formatted time, while MySQL returns the number of seconds
-                $m['average_time'] = strtotime($m['average_time']);
+                $m['average_time'] = (int) strtotime($m['average_time']);
             }
+            $average_time = (float) $m['average_time'];
 
             $num_all_answers = F_count_rows($sqltb, $sqlansw . ' AND testlog_question_id=' . $m['question_id']);
-            if (
-                !isset(
-                    $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                        . $m['subject_id']
-                        . "'"]['question']["'" . $m['question_id'] . "'"],
-                )
-            ) {
-                $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                    . $m['subject_id']
-                    . "'"]['question']["'" . $m['question_id'] . "'"] = [
+            if (!isset($subject_stats['question'][$question_key])) {
+                $subject_stats['question'][$question_key] = [
                     'id' => $m['question_id'],
                     'description' => $m['question_description'],
                     'type' => $m['question_type'],
@@ -495,91 +524,61 @@ function f_get_raw_test_stat(
                     'answer' => [],
                 ];
             }
+            /**
+             * @var array{
+             *   recurrence:int|float,average_score:int|float,average_score_perc:int|float,average_time:int|float,
+             *   right:int|float,wrong:int|float,unanswered:int|float,undisplayed:int|float,unrated:int|float,
+             *   qnum:int,anum:int|float,answer:array<array-key,mixed>,...
+             * } $question_stats
+             */
+            $question_stats = $subject_stats['question'][$question_key];
 
             // average score ratio
             $average_score_perc = $question_max_score > 0 ? $m['average_score'] / $question_max_score : 0;
 
             // sum values for questions
-            ++$data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['qnum'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['recurrence'] += $m['recurrence'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['average_score'] += $m['average_score'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['average_score_perc'] += $average_score_perc;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['average_time'] += $m['average_time'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['right'] += $qright;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['wrong'] += $qwrong;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['unanswered'] += $qunanswered;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['undisplayed'] += $qundisplayed;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['unrated'] += $qunrated;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['question']["'" . $m['question_id'] . "'"]['anum'] += $num_all_answers;
+            ++$question_stats['qnum'];
+            $question_stats['recurrence'] += $m['recurrence'];
+            $question_stats['average_score'] += $m['average_score'];
+            $question_stats['average_score_perc'] += $average_score_perc;
+            $question_stats['average_time'] += $average_time;
+            $question_stats['right'] += $qright;
+            $question_stats['wrong'] += $qwrong;
+            $question_stats['unanswered'] += $qunanswered;
+            $question_stats['undisplayed'] += $qundisplayed;
+            $question_stats['unrated'] += $qunrated;
+            $question_stats['anum'] += $num_all_answers;
 
             // sum values for subject
-            ++$data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'" . $m['subject_id'] . "'"]['qnum'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['recurrence'] += $m['recurrence'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['average_score'] += $m['average_score'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['average_score_perc'] += $average_score_perc;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['average_time'] += $m['average_time'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'" . $m['subject_id'] . "'"]['right'] +=
-                $qright;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'" . $m['subject_id'] . "'"]['wrong'] +=
-                $qwrong;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['unanswered'] += $qunanswered;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['undisplayed'] += $qundisplayed;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                . $m['subject_id']
-                . "'"]['unrated'] += $qunrated;
+            ++$subject_stats['qnum'];
+            $subject_stats['recurrence'] += $m['recurrence'];
+            $subject_stats['average_score'] += $m['average_score'];
+            $subject_stats['average_score_perc'] += $average_score_perc;
+            $subject_stats['average_time'] += $average_time;
+            $subject_stats['right'] += $qright;
+            $subject_stats['wrong'] += $qwrong;
+            $subject_stats['unanswered'] += $qunanswered;
+            $subject_stats['undisplayed'] += $qundisplayed;
+            $subject_stats['unrated'] += $qunrated;
 
             // sum values for module
-            ++$data['qstats']['module']["'" . $m['module_id'] . "'"]['qnum'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['recurrence'] += $m['recurrence'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['average_score'] += $m['average_score'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['average_score_perc'] += $average_score_perc;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['average_time'] += $m['average_time'];
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['right'] += $qright;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['wrong'] += $qwrong;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['unanswered'] += $qunanswered;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['undisplayed'] += $qundisplayed;
-            $data['qstats']['module']["'" . $m['module_id'] . "'"]['unrated'] += $qunrated;
+            ++$module_stats['qnum'];
+            $module_stats['recurrence'] += $m['recurrence'];
+            $module_stats['average_score'] += $m['average_score'];
+            $module_stats['average_score_perc'] += $average_score_perc;
+            $module_stats['average_time'] += $average_time;
+            $module_stats['right'] += $qright;
+            $module_stats['wrong'] += $qwrong;
+            $module_stats['unanswered'] += $qunanswered;
+            $module_stats['undisplayed'] += $qundisplayed;
+            $module_stats['unrated'] += $qunrated;
 
             // sum totals
             ++$data['qstats']['qnum'];
             $data['qstats']['recurrence'] += $m['recurrence'];
             $data['qstats']['average_score'] += $m['average_score'];
             $data['qstats']['average_score_perc'] += $average_score_perc;
-            $data['qstats']['average_time'] += $m['average_time'];
+            $data['qstats']['average_time'] += $average_time;
             $data['qstats']['right'] += $qright;
             $data['qstats']['wrong'] += $qwrong;
             $data['qstats']['unanswered'] += $qunanswered;
@@ -632,8 +631,13 @@ function f_get_raw_test_stat(
 
             $sqlab .= ' ORDER BY answer_description';
             $sqla = $sqlaa . $sqlaw . $sqlab;
-            if ($ra = F_db_query($sqla, $db)) {
-                while ($ma = F_db_fetch_array($ra)) {
+            if ($ra = f_legacy_db_query_result(F_db_query($sqla, $db))) {
+                while (($ma = $normalize_row(F_db_fetch_array($ra))) !== null) {
+                    /**
+                     * @var array{
+                     *   answer_description:mixed,answer_id:int|numeric-string,recurrence:int|numeric-string
+                     * } $ma
+                     */
                     $aright = F_count_rows(
                         $sqltb,
                         $sqlaw
@@ -652,56 +656,39 @@ function f_get_raw_test_stat(
                         $sqltb,
                         $sqlaw . ' AND answer_id=' . $ma['answer_id'] . ' AND logansw_selected=-1',
                     );
-                    if (
-                        !isset(
-                            $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                                . $m['subject_id']
-                                . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'"
-                                . $ma['answer_id']
-                                . "'"],
-                        )
-                    ) {
-                        $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                            . $m['subject_id']
-                            . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'" . $ma['answer_id'] . "'"] =
-                            [
-                                'id' => $ma['answer_id'],
-                                'description' => $ma['answer_description'],
-                                'recurrence' => 0,
-                                'recurrence_perc' => 0,
-                                'right' => 0,
-                                'right_perc' => 0,
-                                'wrong' => 0,
-                                'wrong_perc' => 0,
-                                'unanswered' => 0,
-                                'unanswered_perc' => 0,
-                            ];
+                    $answer_key = "'" . $ma['answer_id'] . "'";
+                    if (!isset($question_stats['answer'][$answer_key])) {
+                        $question_stats['answer'][$answer_key] = [
+                            'id' => $ma['answer_id'],
+                            'description' => $ma['answer_description'],
+                            'recurrence' => 0,
+                            'recurrence_perc' => 0,
+                            'right' => 0,
+                            'right_perc' => 0,
+                            'wrong' => 0,
+                            'wrong_perc' => 0,
+                            'unanswered' => 0,
+                            'unanswered_perc' => 0,
+                        ];
                     }
-
-                    $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                        . $m['subject_id']
-                        . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'"
-                        . $ma['answer_id']
-                        . "'"]['recurrence'] += $ma['recurrence'];
-                    $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                        . $m['subject_id']
-                        . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'"
-                        . $ma['answer_id']
-                        . "'"]['right'] += $aright;
-                    $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                        . $m['subject_id']
-                        . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'"
-                        . $ma['answer_id']
-                        . "'"]['wrong'] += $awrong;
-                    $data['qstats']['module']["'" . $m['module_id'] . "'"]['subject']["'"
-                        . $m['subject_id']
-                        . "'"]['question']["'" . $m['question_id'] . "'"]['answer']["'"
-                        . $ma['answer_id']
-                        . "'"]['unanswered'] += $aunanswered;
+                    /**
+                     * @var array{
+                     *   recurrence:int|float,right:int|float,wrong:int|float,unanswered:int|float,...
+                     * } $answer_stats
+                     */
+                    $answer_stats = $question_stats['answer'][$answer_key];
+                    $answer_stats['recurrence'] += $ma['recurrence'];
+                    $answer_stats['right'] += $aright;
+                    $answer_stats['wrong'] += $awrong;
+                    $answer_stats['unanswered'] += $aunanswered;
+                    $question_stats['answer'][$answer_key] = $answer_stats;
                 }
             } else {
                 F_display_db_error();
             }
+            $subject_stats['question'][$question_key] = $question_stats;
+            $module_stats['subject'][$subject_key] = $subject_stats;
+            $data['qstats']['module'][$module_key] = $module_stats;
         }
     } else {
         F_display_db_error();

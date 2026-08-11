@@ -246,9 +246,23 @@ final class StatisticsTest extends TestCase
                     . 'define("K_TABLE_USERS", "users"); define("K_TABLE_USERGROUP", "user_groups"); '
                     . 'define("K_TABLE_TESTS", "tests"); define("K_TIMESTAMP_FORMAT", "format"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["queries"] = []; '
-                    . '$GLOBALS["query_results"] = [true, true, true, false, false]; '
+                    . '$statRow = ["module_id" => "1", "module_name" => "Module", '
+                    . '"subject_id" => "2", "subject_name" => "Subject", '
+                    . '"subject_description" => "Subject description", "question_id" => "3", '
+                    . '"question_description" => "Question description", "question_type" => "2", '
+                    . '"question_difficulty" => "3", "recurrence" => "7", '
+                    . '"average_score" => "4.5", "average_time" => "12"]; '
+                    . '$answerStatRow = ["answer_id" => "4", "answer_description" => "Answer", '
+                    . '"recurrence" => "8"]; '
+                    . '$invalidTimeRow = $statRow; $invalidTimeRow["average_time"] = "invalid:time"; '
+                    . '$GLOBALS["query_results"] = ["empty-main", "invalid-main", "test-ids", '
+                    . 'false, false, "stat-main", "stat-answers", "invalid-time-main", false]; '
+                    . '$GLOBALS["rows"] = ["empty-main" => [false], "invalid-main" => [false], '
+                    . '"stat-main" => [$statRow, false], "stat-answers" => [$answerStatRow, false], '
+                    . '"invalid-time-main" => [$invalidTimeRow, false]]; '
                     . '$GLOBALS["test_id_rows"] = [["testuser_test_id" => "9"], false]; '
                     . '$GLOBALS["authorizations"] = []; $GLOBALS["errors"] = 0; '
+                    . '$GLOBALS["count_rows"] = [2, 1, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0]; '
                     . 'function f_get_test_id_results($testId, $userId) { return "7,8"; } '
                     . 'function strtotime($value) { return ["start" => 10, "end" => 20][$value] ?? false; } '
                     . 'function date($format, $timestamp) { return "DATE:" . (int) $timestamp; } '
@@ -258,8 +272,9 @@ final class StatisticsTest extends TestCase
                     . 'preg_replace("/\\s+/", " ", trim($sql)); '
                     . 'return array_shift($GLOBALS["query_results"]); } '
                     . 'function f_legacy_db_query_result($result) { return $result; } '
-                    . 'function F_db_fetch_array($result) { return false; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
                     . 'function F_db_fetch_assoc($result) { return array_shift($GLOBALS["test_id_rows"]); } '
+                    . 'function F_count_rows($tables, $where) { return array_shift($GLOBALS["count_rows"]); } '
                     . 'function f_is_authorized_user(...$arguments) { '
                     . '$GLOBALS["authorizations"][] = $arguments; return false; } '
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
@@ -278,7 +293,10 @@ final class StatisticsTest extends TestCase
                     . '$passthrough = $qualified("0", 0, 0, 0, 0, 0, 17, false); '
                     . '$failed = $qualified("0", 0, 0, 0, 0, 0, ["failed" => "keep"], false); '
                     . '$mainFailed = $qualified("7", 0, 0, 0, 0, 0, ["seed" => "main"], false); '
-                    . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough, $failed, $mainFailed, '
+                    . '$aggregated = $qualified("7", 0, 0, 0, 0, 0, ["seed" => "row"], false); '
+                    . '$invalidTime = $qualified("7", 0, 0, 0, 0, 0, ["seed" => "invalid-time"], false); '
+                    . 'echo json_encode([$data, $GLOBALS["queries"], $passthrough, $failed, $mainFailed, $aggregated, '
+                    . '$invalidTime, '
                     . '$GLOBALS["authorizations"], $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test_stats.php',
             ],
@@ -289,13 +307,16 @@ final class StatisticsTest extends TestCase
         /**
          * @var array{
          *   0: array{seed: string, qstats: array<string, mixed>},
-         *   1: array{0:string,1:string,2:string,3:string,4:string},
+         *   1: array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
          *   2:int,3:array{failed:string},4:array{seed:string,qstats:array{recurrence:int,...}},
-         *   5:array{0:array{0:string,1:string,2:string,3:string}},6:int
+         *   5:array{seed:string,qstats:array<string,mixed>},
+         *   6:array{seed:string,qstats:array{average_time:int|float,...}},
+         *   7:array{0:array{0:string,1:string,2:string,3:string}},8:int
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$data, $queries, $passthrough, $failed, $mainFailed, $authorizations, $errors] = $decoded;
+        [$data, $queries, $passthrough, $failed, $mainFailed, $aggregated, $invalidTime, $authorizations, $errors] =
+            $decoded;
         self::assertSame('keep', $data['seed']);
         self::assertSame(
             [
@@ -334,8 +355,35 @@ final class StatisticsTest extends TestCase
         self::assertSame(['failed' => 'keep'], $failed);
         self::assertSame('main', $mainFailed['seed']);
         self::assertSame(0, $mainFailed['qstats']['recurrence']);
+        self::assertSame('row', $aggregated['seed']);
+        /**
+         * @var array{
+         *   recurrence:int,average_score:float,average_score_perc:float,average_time:int,right:int,wrong:int,
+         *   unanswered:int,undisplayed:int,unrated:int,
+         *   module:array{"'1'":array{subject:array{"'2'":array{question:array{"'3'":array{
+         *     anum:int,answer:array{"'4'":array{recurrence:int,right:int,wrong:int,unanswered:int}}
+         *   }}}}}}
+         * } $aggregate_stats
+         */
+        $aggregate_stats = $aggregated['qstats'];
+        self::assertSame(7, $aggregate_stats['recurrence']);
+        self::assertSame(4.5, $aggregate_stats['average_score']);
+        self::assertSame(0.75, $aggregate_stats['average_score_perc']);
+        self::assertSame(12, $aggregate_stats['average_time']);
+        self::assertSame(2, $aggregate_stats['right']);
+        self::assertSame(1, $aggregate_stats['wrong']);
+        self::assertSame(3, $aggregate_stats['unanswered']);
+        self::assertSame(4, $aggregate_stats['undisplayed']);
+        self::assertSame(5, $aggregate_stats['unrated']);
+        self::assertSame(6, $aggregate_stats['module']["'1'"]['subject']["'2'"]['question']["'3'"]['anum']);
+        $answer = $aggregate_stats['module']["'1'"]['subject']["'2'"]['question']["'3'"]['answer']["'4'"];
+        self::assertSame(8, $answer['recurrence']);
+        self::assertSame(7, $answer['right']);
+        self::assertSame(8, $answer['wrong']);
+        self::assertSame(9, $answer['unanswered']);
+        self::assertSame(0, $invalidTime['qstats']['average_time']);
         self::assertSame([['tests', 'test_id', '9', 'test_user_id']], $authorizations);
-        self::assertSame(2, $errors);
+        self::assertSame(3, $errors);
     }
 
     public function testStatisticsPrintersPreserveDisabledAndEmptyResults(): void
