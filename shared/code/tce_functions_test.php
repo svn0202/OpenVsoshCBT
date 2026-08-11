@@ -2066,8 +2066,19 @@ function f_add_question_answers(
             case 2:
                 // MCMA
                     // select answers
-                    // @mago-expect analysis:possibly-false-operand,possibly-invalid-operand -- upstream preserves a TypeError when answer selection fails
-                    $answers_ids += f_select_answers($question_id, '', false, $num_answers, 0, $randorder, $ordmode);
+                    $selected_answers = f_select_answers(
+                        $question_id,
+                        '',
+                        false,
+                        $num_answers,
+                        0,
+                        $randorder,
+                        $ordmode,
+                    );
+                    if (!is_array($selected_answers)) {
+                        throw new \TypeError('Unsupported operand types: array + ' . get_debug_type($selected_answers));
+                    }
+                    $answers_ids += $selected_answers;
                     break;
             case 4:
             case 5:

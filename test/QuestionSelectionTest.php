@@ -184,7 +184,7 @@ PHP;
                     . '$copied = $qualified(35, 45, 2, 2, 77, $copyData); '
                     . '$GLOBALS["selection_fails"] = true; '
                     . 'try { $qualified(33, 43, 2, 2, 0, $testdata); $failure = null; '
-                    . '} catch (\TypeError $error) { $failure = get_class($error); } '
+                    . '} catch (\TypeError $error) { $failure = [get_class($error), $error->getMessage()]; } '
                     . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
@@ -199,7 +199,7 @@ PHP;
                 true,
                 true,
                 true,
-                'TypeError',
+                ['TypeError', 'Unsupported operand types: array + bool'],
                 [
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=44 LIMIT 1',
