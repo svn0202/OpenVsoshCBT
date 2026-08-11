@@ -165,9 +165,13 @@ function f_create_media_dir(mixed $dirname): bool
 
     if (str_contains($dirname . '/', K_PATH_CACHE)) {
         $oldumask = umask(0);
-        // @mago-expect lint:no-error-control-operator -- callers consume the boolean result instead of a PHP warning
-        $ret = @mkdir($dirname, 0o744, false);
-        umask($oldumask);
+        set_error_handler(static fn(): bool => true);
+        try {
+            $ret = mkdir($dirname, 0o744, false);
+        } finally {
+            restore_error_handler();
+            umask($oldumask);
+        }
         return $ret;
     }
 
