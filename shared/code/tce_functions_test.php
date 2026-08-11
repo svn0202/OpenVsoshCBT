@@ -2922,6 +2922,7 @@ function f_questions_menu(
     }
 
     // build quick navigator links (previous - next)
+    /** @var array{question:string,zoom_in:string,zoom_out:string,theme:string,review:string} $mobile_labels */
     $mobile_labels = [
         'question' => $l['w_question'],
         'zoom_in' => $l['ov_increase_text'],

@@ -70,7 +70,7 @@ count = 5
 file = "shared/code/tce_functions_test.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `htmlspecialchars`: expected `string`, but found `mixed`."
-count = 19
+count = 11
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
