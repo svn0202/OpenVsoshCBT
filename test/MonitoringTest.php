@@ -75,6 +75,15 @@ final class MonitoringTest extends TestCase
         self::assertSame('COMMIT', $queries[7]);
     }
 
+    public function testActionWithoutAuthenticatedActorIsForbiddenBeforeDatabaseAccess(): void
+    {
+        $result = self::runAction('block', false);
+
+        self::assertSame(['status' => 'forbidden', 'testuser_id' => 42], $result['response']);
+        self::assertSame([], $result['queries']);
+        self::assertSame([], $result['created']);
+    }
+
     /**
      * @return array{
      *     response:array{status:string,testuser_id:int,new_testuser_id?:int},
@@ -82,7 +91,7 @@ final class MonitoringTest extends TestCase
      *     created:list<array{int,int}>
      * }
      */
-    private static function runAction(string $action): array
+    private static function runAction(string $action, bool $authenticated = true): array
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -92,7 +101,7 @@ define('K_TABLE_TESTS', 't_tests');
 define('K_TIMESTAMP_FORMAT', 'Y-m-d H:i:s');
 define('K_SECONDS_IN_MINUTE', 60);
 $db = 'db';
-$_SESSION = ['session_user_id' => 9];
+$_SESSION = $argv[3] === 'authenticated' ? ['session_user_id' => 9] : [];
 $_SERVER['REMOTE_ADDR'] = '192.0.2.1';
 $GLOBALS['queries'] = [];
 $GLOBALS['created'] = [];
@@ -133,7 +142,14 @@ echo json_encode([
 PHP;
 
         [$status, $output] = \F_tcecode_run_process(
-            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/shared/code/tce_functions_monitoring.php', $action],
+            [
+                PHP_BINARY,
+                '-r',
+                $script,
+                dirname(__DIR__) . '/shared/code/tce_functions_monitoring.php',
+                $action,
+                $authenticated ? 'authenticated' : 'anonymous',
+            ],
             dirname(__DIR__) . '/shared/code',
         );
 
