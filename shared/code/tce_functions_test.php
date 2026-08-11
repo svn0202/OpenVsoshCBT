@@ -1831,10 +1831,15 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                     $sqlq .= ' LIMIT ' . $m['tsubset_quantity'] . '';
                 }
 
-                if ($rq = F_db_query($sqlq, $db)) {
-                    while ($mq = F_db_fetch_array($rq)) {
+                if ($rq = f_legacy_db_query_result(F_db_query($sqlq, $db))) {
+                    while (($mq = $normalize_row(F_db_fetch_array($rq))) !== null) {
+                        /**
+                         * @var array{
+                         *   question_id:int|numeric-string,question_type:int|numeric-string,
+                         *   question_difficulty:int|float|numeric-string,question_position:int|numeric-string
+                         * } $mq
+                        */
                         $test_score_unanswered = $testdata['test_score_unanswered'];
-                        /** @var int|float|numeric-string $question_difficulty */
                         $question_difficulty = $mq['question_difficulty'];
                         // store questions data
                         $tmp_data = [
