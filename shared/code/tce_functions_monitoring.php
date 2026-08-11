@@ -81,8 +81,10 @@ function f_tmf_monitor_apply_action(
     require_once '../config/tce_config.php';
     global $db;
 
+    $actor_user_id = (int) ($_SESSION['session_user_id'] ?? 0);
     if (
-        $testuser_id <= 0
+        $actor_user_id <= 0
+        || $testuser_id <= 0
         || !F_tmf_monitor_action_is_valid($action)
         || ($action === 'extend' && ($extend_minutes < 1 || $extend_minutes > 60))
         || !F_tmf_monitor_attempt_is_authorized($testuser_id)
@@ -222,8 +224,6 @@ function f_tmf_monitor_apply_action(
 
         $details_sql = $details === null ? 'NULL' : "'" . F_escape_sql($db, $details) . "'";
         $ip = F_escape_sql($db, (string) get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? ''));
-        /** @mago-expect analysis:possibly-undefined-string-array-index */
-        $actor_user_id = (int) $_SESSION['session_user_id'];
         $audit_sql = 'INSERT INTO ' . F_tmf_monitor_audit_table() . ' (
                 monitor_audit_time,
                 monitor_actor_user_id,
