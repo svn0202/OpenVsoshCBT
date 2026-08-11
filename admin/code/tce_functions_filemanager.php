@@ -47,6 +47,19 @@ function f_filemanager_mkdir_silently(string $directory, int $permissions, bool 
 }
 
 /**
+ * Remove an empty directory without exposing a deletion race.
+ */
+function f_filemanager_rmdir_silently(string $directory): bool
+{
+    set_error_handler(static fn(): bool => true);
+    try {
+        return rmdir($directory);
+    } finally {
+        restore_error_handler();
+    }
+}
+
+/**
  * Delete the selected media file
  * @author Nicola Asuni
  * @param $filename (string) the file name
@@ -222,8 +235,7 @@ function f_delete_media_dir(mixed $dirname): bool
         return false;
     }
 
-    // @mago-expect lint:no-error-control-operator -- deletion races are reported through the boolean return value
-    return @rmdir($dirname);
+    return f_filemanager_rmdir_silently($dirname);
 }
 
 /**
