@@ -167,7 +167,9 @@ function f_get_user_tests(): string
                     $reason = $access_status['reason'] === 'required_test_not_passed'
                         ? 'Сначала пройдите обязательный тест'
                         : 'Сначала завершите обязательный тест';
-                    $str .= '<span class="offbox">' . htmlspecialchars($reason, ENT_QUOTES, $l['a_meta_charset'])
+                    /** @var string $catalog_charset */
+                    $catalog_charset = $l['a_meta_charset'];
+                    $str .= '<span class="offbox">' . htmlspecialchars($reason, ENT_QUOTES, $catalog_charset)
                         . '</span>';
                 } elseif (!$expired && !$upcoming) {
                     switch ($catalog_test_status) {
