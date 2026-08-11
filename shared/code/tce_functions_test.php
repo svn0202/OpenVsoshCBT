@@ -764,22 +764,73 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /** @var int|numeric-string $test_id */
+    /** @var array{session_user_ip:string} $_SESSION */
+    /**
+     * @var array{
+     *     a_meta_charset:string,
+     *     h_ip_range:string,
+     *     h_repeatable_test:string,
+     *     h_report_to_users:string,
+     *     h_results_to_users:string,
+     *     h_score_right:string,
+     *     h_score_unanswered:string,
+     *     h_score_wrong:string,
+     *     h_test_score_threshold:string,
+     *     h_test_time:string,
+     *     h_time_begin:string,
+     *     h_time_end:string,
+     *     w_ip_range:string,
+     *     w_max_score:string,
+     *     w_minutes:string,
+     *     w_no:string,
+     *     w_repeatable:string,
+     *     w_report_to_users:string,
+     *     w_results_to_users:string,
+     *     w_score_right:string,
+     *     w_score_unanswered:string,
+     *     w_score_wrong:string,
+     *     w_test_score_threshold:string,
+     *     w_test_time:string,
+     *     w_time_begin:string,
+     *     w_time_end:string,
+     *     w_yes:string
+     * } $l
+     */
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $str = ''; //string to return
-    /** @var string $no_label */
     $no_label = $l['w_no'];
-    /** @var string $yes_label */
     $yes_label = $l['w_yes'];
     //$ordmode = Array($l['w_position'], $l['w_alphabetic'], $l['w_id']);
     $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        if (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+            /**
+             * @var array{
+             *     test_begin_time:mixed,
+             *     test_description:mixed,
+             *     test_duration_time:int|float|numeric-string,
+             *     test_end_time:mixed,
+             *     test_ip_range:string,
+             *     test_max_score:mixed,
+             *     test_name:string,
+             *     test_repeatable:int|numeric-string,
+             *     test_report_to_users:mixed,
+             *     test_results_to_users:mixed,
+             *     test_score_right:mixed,
+             *     test_score_threshold:mixed,
+             *     test_score_unanswered:mixed,
+             *     test_score_wrong:mixed
+             * } $m
+             */
             if (!f_is_valid_test_user($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 return '';
             }
 
-            /** @var string $test_name */
             $test_name = $m['test_name'];
-            /** @var string $charset */
             $charset = $l['a_meta_charset'];
             $str .=
                 '<h1>' . htmlspecialchars($test_name, ENT_NOQUOTES, $charset) . '</h1>' . K_NEWLINE;
