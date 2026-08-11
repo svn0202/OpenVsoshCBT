@@ -32,8 +32,8 @@ require_once '../config/tce_config.php';
  *     hp_test_execute:string,
  *     m_confirm_test_termination:string,
  *     m_exam_end_time:string,
- *     ov_answer_not_saved:string,
- *     ov_answer_save_conflict:string,
+ *     ov_answer_not_saved?:string,
+ *     ov_answer_save_conflict?:string,
  *     t_test_execute:string,
  *     w_cancel:string,
  *     w_index:string,
@@ -240,9 +240,10 @@ if (isset($request['testid']) && $request['testid'] > 0) {
                 );
                 $answer_saved = $save_result['status'] === 'saved';
                 if (!$answer_saved) {
+                    $answer_status_labels = f_tmf_answer_status_labels($l);
                     $answer_save_error = $save_result['status'] === 'conflict'
-                        ? $l['ov_answer_save_conflict']
-                        : $l['ov_answer_not_saved'];
+                        ? $answer_status_labels['conflict']
+                        : $answer_status_labels['error'];
                 }
             } else {
                 $answer_saved = f_update_question_log(

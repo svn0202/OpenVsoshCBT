@@ -455,7 +455,7 @@ PHP;
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; define("K_TABLE_QUESTIONS", "questions"); '
+                'namespace Harness; require $argv[2]; define("K_TABLE_QUESTIONS", "questions"); '
                     . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_NEWLINE", "\\n"); '
                     . '$GLOBALS["db"] = "db"; $GLOBALS["l"] = ['
                     . '"h_question_displayed" => "Displayed", "h_question_not_displayed" => "Not displayed", '
@@ -511,6 +511,7 @@ PHP;
                     . 'echo json_encode([$markup, $emptyMarkup, $GLOBALS["queries"], '
                     . '$fallbackMarkup, $GLOBALS["warnings"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+                dirname(__DIR__) . '/shared/code/tce_functions_answer_save.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );

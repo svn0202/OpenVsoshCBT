@@ -8,6 +8,29 @@ require_once __DIR__ . '/../shared/code/tce_functions_answer_save.php';
 
 final class AnswerSaveTest extends TestCase
 {
+    public function testAnswerStatusLabelsFallBackForAnOutdatedRussianTranslationFile(): void
+    {
+        self::assertSame(
+            [
+                'saving' => 'Сохраняется…',
+                'saved' => 'Сохранено',
+                'error' => 'Не сохранено',
+                'conflict' => 'Более новый ответ уже сохранён. Проверьте текущий ответ и повторите попытку.',
+                'unsaved' => 'Есть несохранённые изменения',
+                'retrying' => 'Связь потеряна. Повтор {attempt} из {maximum} через {seconds} с…',
+                'save' => 'Сохранить',
+            ],
+            \f_tmf_answer_status_labels(['a_meta_language' => 'ru']),
+        );
+        self::assertSame(
+            'Translated conflict',
+            \f_tmf_answer_status_labels([
+                'a_meta_language' => 'ru',
+                'ov_answer_save_conflict' => 'Translated conflict',
+            ])['conflict'],
+        );
+    }
+
     public function testNewOperationCanSaveAtCurrentVersion(): void
     {
         self::assertSame(
