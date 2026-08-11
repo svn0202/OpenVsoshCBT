@@ -540,6 +540,7 @@ function f_terminate_user_test(mixed $test_id, mixed $reason = 'completed'): voi
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @var array{session_user_id:int|numeric-string} $_SESSION */
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     $allowed_reasons = ['completed', 'timeout', 'blocked'];
@@ -561,7 +562,9 @@ function f_terminate_user_test(mixed $test_id, mixed $reason = 'completed'): voi
         . $user_id
         . '
 			AND testuser_status<4';
-    if (!($r = F_db_query($sql, $db))) {
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if (!$r) {
         F_display_db_error();
     }
 }
