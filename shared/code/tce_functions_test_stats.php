@@ -108,7 +108,7 @@ function f_get_user_test_totals(
             . $status_filter
             . '
 		GROUP BY testuser_id, testuser_creation_time, testuser_status, testuser_comment';
-        if ($ru = F_db_query($sqlu, $db)) {
+        if ($ru = f_legacy_db_query_result(F_db_query($sqlu, $db))) {
             if (($mu = $normalize_row(F_db_fetch_array($ru))) !== null) {
                 /**
                  * @var array{
