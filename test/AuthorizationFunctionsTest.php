@@ -6,6 +6,43 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthorizationFunctionsTest extends TestCase
 {
+    public function testNullTestPasswordPreservesAuthorizationTypeError(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; $_POST = ["testpswaction" => "login", '
+                    . '"xtest_password" => "submitted", "testid" => "7"]; '
+                    . '$GLOBALS["l"] = ["m_wrong_test_password" => "wrong"]; '
+                    . '$GLOBALS["session_user_id"] = 11; $GLOBALS["session_user_ip"] = "127.0.0.1"; '
+                    . 'function f_legacy_literal_equals($value, $literal) { return $value === $literal; } '
+                    . 'function f_get_test_password($id) { return null; } '
+                    . 'function openvsosh_authorization_string($value) { return (string) $value; } '
+                    . 'function openvsosh_authorization_submitted_password($value) { return (string) $value; } '
+                    . 'function check_password(string $password, string $hash) { return false; } '
+                    . 'function get_password_hash($value) { return $value; } '
+                    . 'function F_tmf_test_session_unlock($id) {} function F_print_error($type, $message) {} '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "// check for test password"); '
+                    . '$end = strpos($source, "function openvsosh_authorization_string", $start); '
+                    . '$block = substr($source, $start, $end - $start); '
+                    . '$block = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $block); '
+                    . 'try { eval("namespace Harness; " . $block); echo json_encode(["result" => "completed"]); } '
+                    . 'catch (\\Throwable $error) { echo json_encode(["class" => get_class($error), '
+                    . '"message" => $error->getMessage()]); }',
+                dirname(__DIR__) . '/shared/code/tce_authorization.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{class:string,message:string} $result */
+        $result = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('TypeError', $result['class']);
+        self::assertStringContainsString('Argument #2 ($hash) must be of type string, null given', $result['message']);
+    }
+
     public function testSslCertificateValidityRequiresSuccessfulUnexpiredClientCertificate(): void
     {
         [$status, $output] = \F_tcecode_run_process(

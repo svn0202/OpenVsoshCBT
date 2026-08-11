@@ -657,6 +657,7 @@ if (
     $submitted_test_id = openvsosh_authorization_string($_POST['testid']);
     $test_id = (int) $submitted_test_id;
     $tph = f_get_test_password($submitted_test_id);
+    /** @var string $tph Test login forms are rendered only for tests with a non-empty password. */
     $submitted_test_password = openvsosh_authorization_submitted_password($_POST['xtest_password'] ?? null);
     if (check_password($submitted_test_password, $tph)) {
         // test password is correct, save status on a session variable

@@ -170,8 +170,11 @@ final class TestReviewTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; $GLOBALS["ids"] = []; function f_get_test_data($id) { '
-                    . '$GLOBALS["ids"][] = $id; return ["test_password" => "secret"]; } '
+                'namespace Harness; $GLOBALS["ids"] = []; $GLOBALS["errors"] = []; '
+                    . '$GLOBALS["data"] = [["test_password" => "secret"], ["test_password" => null], []]; '
+                    . 'set_error_handler(function ($severity, $message) { $GLOBALS["errors"][] = $message; return true; }); '
+                    . 'function f_get_test_data($id) { $GLOBALS["ids"][] = $id; '
+                    . 'return array_shift($GLOBALS["data"]); } '
                     . '$source = file_get_contents($argv[1]); '
                     . 'preg_match("/function (f_get_test_password)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
@@ -179,14 +182,18 @@ final class TestReviewTest extends TestCase
                     . '$end = strpos($source, "\\n/**", $start); '
                     . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
-                    . 'echo json_encode([$qualified("7"), $GLOBALS["ids"]]);',
+                    . 'echo json_encode([[$qualified("7"), $qualified("8"), $qualified("9")], '
+                    . '$GLOBALS["ids"], $GLOBALS["errors"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        self::assertSame(['secret', [7]], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(
+            [['secret', null, null], [7, 8, 9], ['Undefined array key "test_password"']],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
     }
 
     public function testTestNameReadsTheRequestedTestData(): void
