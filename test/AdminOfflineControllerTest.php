@@ -29,10 +29,18 @@ final class AdminOfflineControllerTest extends TestCase
         self::assertStringNotContainsString('Операция не выполнена', $result['html']);
     }
 
+    public function testNonStringUploadPathIsRejectedWithoutImport(): void
+    {
+        $result = self::runController(false, true);
+
+        self::assertNull($result['imported']);
+        self::assertStringContainsString('Операция не выполнена: invalid_upload', $result['html']);
+    }
+
     /**
      * @return array{html: string, queries: list<string>, imported: string|null}
      */
-    private static function runController(bool $import): array
+    private static function runController(bool $import, bool $malformedUpload = false): array
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -51,6 +59,9 @@ if ($argv[2] === '1') {
     $upload_path = tempnam(sys_get_temp_dir(), 'offline-result-');
     file_put_contents($upload_path, 'offline-result');
     $_FILES = ['result_file' => ['error' => UPLOAD_ERR_OK, 'size' => 14, 'tmp_name' => $upload_path]];
+} elseif ($argv[2] === '2') {
+    $_POST = ['import_offline' => '1', 'csrf_token' => 'valid'];
+    $_FILES = ['result_file' => ['error' => UPLOAD_ERR_OK, 'size' => 14, 'tmp_name' => ['nested']]];
 }
 $GLOBALS['queries'] = [];
 $GLOBALS['kinds'] = [];
@@ -108,13 +119,21 @@ echo json_encode([
 ], JSON_THROW_ON_ERROR);
 PHP;
 
+        $mode = '0';
+        if ($import) {
+            $mode = '1';
+        }
+        if ($malformedUpload) {
+            $mode = '2';
+        }
+
         [$status, $output] = \F_tcecode_run_process(
             [
                 PHP_BINARY,
                 '-r',
                 $script,
                 dirname(__DIR__) . '/admin/code/tce_offline.php',
-                $import ? '1' : '0',
+                $mode,
             ],
             dirname(__DIR__) . '/admin/code',
         );

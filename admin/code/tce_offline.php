@@ -57,17 +57,18 @@ if (isset($_POST['export_offline'])) {
 }
 if (isset($_POST['import_offline'])) {
     $result_file = $_FILES['result_file'] ?? null;
+    $result_file_path = is_array($result_file) && is_string($result_file['tmp_name'] ?? null)
+        ? $result_file['tmp_name']
+        : '';
     if (
         !is_array($result_file)
         || (int) ($result_file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
         || (int) ($result_file['size'] ?? 0) > TMF_OFFLINE_MAX_RESULT_BYTES
-        /** @mago-expect analysis:array-to-string-conversion */
-        || !is_uploaded_file((string) ($result_file['tmp_name'] ?? ''))
+        || !is_uploaded_file($result_file_path)
     ) {
         $action_status = 'invalid_upload';
     } else {
-        /** @var array{tmp_name: scalar|null} $result_file */
-        $contents = file_get_contents((string) $result_file['tmp_name']);
+        $contents = file_get_contents($result_file_path);
         $imported = F_tmf_offline_import(is_string($contents) ? $contents : '');
         $action_status = $imported['status'];
     }
