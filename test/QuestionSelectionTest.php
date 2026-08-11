@@ -185,7 +185,9 @@ PHP;
                     . '$GLOBALS["selection_fails"] = true; '
                     . 'try { $qualified(33, 43, 2, 2, 0, $testdata); $failure = null; '
                     . '} catch (\TypeError $error) { $failure = [get_class($error), $error->getMessage()]; } '
-                    . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $GLOBALS["queries"], '
+                    . 'try { $qualified(36, 46, 1, 2, 0, $testdata); $mcsaFailure = null; '
+                    . '} catch (\TypeError $error) { $mcsaFailure = [get_class($error), $error->getMessage()]; } '
+                    . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $mcsaFailure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -200,6 +202,7 @@ PHP;
                 true,
                 true,
                 ['TypeError', 'Unsupported operand types: array + bool'],
+                ['TypeError', 'Unsupported operand types: array + bool'],
                 [
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=44 LIMIT 1',
@@ -210,12 +213,14 @@ PHP;
                         . "\t\t\t\tAND testlog_testuser_id=77\n"
                         . "\t\t\t\tAND testlog_question_id=45 ORDER BY logansw_order",
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=43 LIMIT 1',
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=46 LIMIT 1',
                 ],
                 [
                     [42, '', false, 2, 0, false, 0],
                     [44, 1, false, 1, 0, false, 1],
                     [44, 0, false, 1, 1, false, 1],
                     [43, '', false, 2, 0, false, 0],
+                    [46, 1, false, 1, 0, false, 0],
                 ],
                 [[32, [0 => 13, 2 => 17]], [34, ['13', '17']], [35, ['23', '29']]],
             ],
