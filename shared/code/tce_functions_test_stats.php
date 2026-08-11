@@ -318,8 +318,6 @@ function f_get_raw_test_stat(
     }
 
     $datetime_diff_sql = F_db_datetime_diff_seconds('testlog_display_time', 'testlog_change_time');
-    // @mago-expect analysis:docblock-type-mismatch -- the DAL returns a SQL string; its legacy return doc resolves as unknown-ref(SQL)
-    /** @var string $datetime_diff_sql */
     $sql .=
         ' COUNT(question_id) AS recurrence,
 		AVG(testlog_score) AS average_score,
