@@ -149,9 +149,9 @@ if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_access'])) {
 
     if (openvsosh_save_access_settings($registration_enabled, $password_reset_enabled, $access_help)) {
         $access_config = openvsosh_get_access_settings();
-        F_print_error('MESSAGE', $l['ov_access_settings_saved']);
+        F_print_error('MESSAGE', $access_labels['settings_saved']);
     } else {
-        F_print_error('ERROR', $l['ov_settings_save_failed'], false);
+        F_print_error('ERROR', $access_labels['settings_save_failed'], false);
     }
 }
 
