@@ -6,6 +6,22 @@ use PHPUnit\Framework\TestCase;
 
 final class UserChangeEmailControllerTest extends TestCase
 {
+    public function testSessionValuesAreReadOnlyAfterAuthorization(): void
+    {
+        $source = file_get_contents(dirname(__DIR__) . '/public/code/tce_user_change_email.php');
+
+        self::assertIsString($source);
+        $authorization = strpos($source, "require_once '../../shared/code/tce_authorization.php';");
+        $userId = strpos($source, "\$_SESSION['session_user_id']");
+        $userLevel = strpos($source, "\$_SESSION['session_user_level']");
+
+        self::assertIsInt($authorization);
+        self::assertIsInt($userId);
+        self::assertIsInt($userLevel);
+        self::assertLessThan($userId, $authorization);
+        self::assertLessThan($userLevel, $authorization);
+    }
+
     public function testPrivilegedEmailChangePreservesRoleAndSkipsVerification(): void
     {
         $output = self::runSuccessfulUpdate(5);

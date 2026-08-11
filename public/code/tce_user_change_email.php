@@ -57,8 +57,9 @@ require_once '../../shared/code/tce_authorization.php';
 require_once '../../shared/code/tce_functions_form.php';
 require_once '../code/tce_page_header.php';
 
-/** @mago-expect analysis:possibly-undefined-string-array-index */
+/** @var array{session_user_id:int, session_user_level:int} $_SESSION */
 $user_id = (int) $_SESSION['session_user_id'];
+$current_level = (int) $_SESSION['session_user_level'];
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'user_email,user_email_repeat';
@@ -100,8 +101,6 @@ switch ($menu_mode) {
                 break;
             }
 
-            /** @mago-expect analysis:possibly-undefined-string-array-index */
-            $current_level = (int) $_SESSION['session_user_level'];
             $user_verifycode = get_new_session_id(); // verification code
             $requires_verification = $current_level < 5;
             $sql =
