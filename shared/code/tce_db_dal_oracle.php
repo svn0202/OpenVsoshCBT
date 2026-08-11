@@ -133,10 +133,9 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
     }
 
     // convert MySQL RAND() function to Oracle dbms_random.random
-    $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY dbms_random.random', $query);
+    $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY dbms_random.random', $query) ?? $query;
     // remove last limit clause
-    // @mago-expect analysis:possibly-null-argument -- the fixed pattern is valid and the asserted input is a string
-    $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
+    $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query) ?? $query;
 
     set_error_handler(static fn(): bool => true);
     try {
