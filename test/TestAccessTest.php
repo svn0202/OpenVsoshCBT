@@ -190,11 +190,13 @@ PHP;
                     . '"blocked" => [$protectedRow, false], "published" => [$row, false]]; '
                     . '$GLOBALS["ip"] = [false, true, true]; $GLOBALS["test_statuses"] = [0, 4]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; $GLOBALS["published"] = []; '
+                    . '$GLOBALS["test_ids"] = []; '
                     . 'function date($format) { return "2026-08-10 12:00:00"; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
-                    . 'function f_is_valid_test_user(...$arguments) { return array_shift($GLOBALS["ip"]); } '
+                    . 'function f_is_valid_test_user(...$arguments) { '
+                    . '$GLOBALS["test_ids"][] = $arguments[0]; return array_shift($GLOBALS["ip"]); } '
                     . 'function F_tmf_test_access_status($testId, $userId) { '
                     . 'return ["allowed" => false, "reason" => "required_test_not_passed"]; } '
                     . 'function f_check_test_status(...$arguments) { '
@@ -217,7 +219,7 @@ PHP;
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $catalogues = []; '
                     . 'for ($i = 0; $i < 5; ++$i) { $catalogues[] = $qualified(); } '
                     . 'echo json_encode([$catalogues, count($GLOBALS["queries"]), '
-                    . '$GLOBALS["errors"], $GLOBALS["published"]]);',
+                    . '$GLOBALS["errors"], $GLOBALS["published"], $GLOBALS["test_ids"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -229,11 +231,12 @@ PHP;
          *   0: array{0:string,1:string,2:string,3:string,4:string},
          *   1: int,
          *   2: int,
-         *   3: array{0:array<string,mixed>}
+         *   3: array{0:array<string,mixed>},
+         *   4: list<string>
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$results, $queryCount, $errors, $published] = $decoded;
+        [$results, $queryCount, $errors, $published, $testIds] = $decoded;
         self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
         self::assertStringContainsString('<table class="testlist">', $results[3]);
         self::assertStringContainsString('data-test-id="22"', $results[3]);
@@ -247,6 +250,7 @@ PHP;
         self::assertStringContainsString('testuser_id=99&amp;test_id=22', $results[4]);
         self::assertStringContainsString('8 / 10 (80%) - Passed', $results[4]);
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
+        self::assertSame(['22', '22', '22'], $testIds);
         self::assertSame(5, $queryCount);
         self::assertSame(1, $errors);
     }
