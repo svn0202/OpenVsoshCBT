@@ -52,9 +52,16 @@ function f_db_connect(
         return false;
     }
 
-    // @mago-expect lint:no-error-control-operator -- database selection failures follow the legacy DAL's false-return contract
-    if (strlen($database) > 0 && !@mysql_select_db($database, $db)) {
-        return false;
+    if (strlen($database) > 0) {
+        set_error_handler(static fn(): bool => true);
+        try {
+            $selected = mysql_select_db($database, $db);
+        } finally {
+            restore_error_handler();
+        }
+        if (!$selected) {
+            return false;
+        }
     }
 
     // set the correct charset encoding
