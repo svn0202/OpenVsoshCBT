@@ -6,6 +6,39 @@ use PHPUnit\Framework\TestCase;
 
 final class AlternativeAuthTest extends TestCase
 {
+    public function testLdapSearchFailureReturnsNullWithoutLeakingWarnings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; $GLOBALS["calls"] = []; '
+                    . 'function ldap_search($connection, $base, $filter, $attributes) {'
+                    . '$GLOBALS["calls"][] = [get_class($connection), $base, $filter, $attributes]; '
+                    . 'trigger_error("directory unavailable", E_USER_WARNING); return false; } '
+                    . 'function ldap_unbind($connection) { return true; } '
+                    . 'function ldap_bind($connection, $dn, $password) { return true; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function f_tmf_alt_ldap_search"); '
+                    . 'eval("namespace Harness; " . substr($source, $start)); '
+                    . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
+                    . '$warnings[] = [$severity, $message]; return true; }); '
+                    . '$connection = \\ldap_connect("ldap://127.0.0.1:1"); '
+                    . '$value = f_tmf_alt_ldap_search($connection, "dc=example", "uid=alice", ["cn", "dn"]); '
+                    . 'restore_error_handler(); echo json_encode([$value, $warnings, $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_altauth.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            '[null,[],[["LDAP\\\\Connection","dc=example","uid=alice",["cn","dn"]]]]',
+            $output,
+        );
+    }
+
     public function testLdapCredentialFailureReturnsFalseWithoutLeakingWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(
