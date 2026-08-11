@@ -217,15 +217,13 @@ function f_login_form(): void
     // Keep the administration area from rendering its own copy of the participant login page.
     // Anonymous visitors use the regular public login and return to the requested admin page
     // after a successful operator/administrator login.
-    // @mago-expect analysis:redundant-null-coalesce -- keep the function safe in isolated and non-web execution
-    // @mago-expect analysis:redundant-cast -- server values are normalized at the authorization boundary
-    $script_name = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+    /** @var array<string, bool|float|int|string|null> $server */
+    $server = $_SERVER;
+    $script_name = (string) ($server['SCRIPT_NAME'] ?? '');
     $admin_code_pos = strpos($script_name, '/admin/code/');
     if ((int) ($_SESSION['session_user_level'] ?? 0) === 0 && $admin_code_pos !== false) {
-        // @mago-expect analysis:redundant-cast -- preserve normalization if server globals are replaced by a harness
-        $request_method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-        // @mago-expect analysis:redundant-cast -- preserve normalization if server globals are replaced by a harness
-        $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? $script_name);
+        $request_method = strtoupper((string) ($server['REQUEST_METHOD'] ?? 'GET'));
+        $request_uri = (string) ($server['REQUEST_URI'] ?? $script_name);
         $request_path = parse_url($request_uri, PHP_URL_PATH);
         if (
             in_array($request_method, ['GET', 'HEAD'], true)
