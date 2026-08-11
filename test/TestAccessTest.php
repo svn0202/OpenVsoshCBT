@@ -542,4 +542,84 @@ PHP;
         ];
         self::assertSame([[88, '101', '3', '0', 0, $expectedTestData]], $answerCalls);
     }
+
+    public function testCreateTestCopiesQuestionsFromFirstTest(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; define("K_DATABASE_TYPE", "MYSQL"); '
+                    . 'define("K_TIMESTAMP_FORMAT", "format"); define("K_TABLE_TEST_USER", "test_users"); '
+                    . 'define("K_TABLE_TESTS_LOGS", "test_logs"); define("K_TABLE_QUESTIONS", "questions"); '
+                    . '$GLOBALS["db"] = "db"; $GLOBALS["results"] = [true, "questions", true]; '
+                    . '$GLOBALS["rows"] = ["questions" => [["question_difficulty" => "3", '
+                    . '"testlog_question_id" => "101", "testlog_num_answers" => "4", '
+                    . '"question_id" => "101", "question_type" => "2"], false]]; '
+                    . '$GLOBALS["queries"] = []; $GLOBALS["log_calls"] = []; $GLOBALS["answer_calls"] = []; '
+                    . '$testdata = ["test_random_questions_select" => false, '
+                    . '"test_random_questions_order" => false, "test_questions_order_mode" => 0, '
+                    . '"test_random_answers_select" => false, "test_random_answers_order" => false, '
+                    . '"test_answers_order_mode" => 0, "test_score_unanswered" => "2"]; '
+                    . 'function f_is_test_over_limits() { return false; } '
+                    . 'function f_get_test_data($testId) { return $GLOBALS["testdata"]; } '
+                    . 'function f_get_boolean($value) { return (bool) $value; } '
+                    . 'function date($format) { return "2026-08-11 12:34:56"; } '
+                    . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
+                    . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
+                    . 'function f_legacy_db_query_result($result) { return $result; } '
+                    . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function F_display_db_error(...$arguments) { throw new \\RuntimeException("DB error"); } '
+                    . 'function F_db_insert_id(...$arguments) { return 55; } '
+                    . 'function f_update_testuser_stat($date) {} '
+                    . 'function f_get_first_test_user($testId) { return 77; } '
+                    . 'function f_new_test_log(...$arguments) { $GLOBALS["log_calls"][] = $arguments; return 88; } '
+                    . 'function f_add_question_answers(...$arguments) { '
+                    . '$GLOBALS["answer_calls"][] = $arguments; return true; } '
+                    . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
+                    . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
+                    . '$GLOBALS["testdata"] = $testdata; $source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function (f_create_test)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$name = $match[1][0]; $start = $match[0][1]; '
+                    . '$end = strpos($source, "\\n/**", $start); '
+                    . '$function = substr($source, $start, $end - $start); '
+                    . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
+                    . 'eval("namespace Harness; " . $function); $qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$result = $qualified("007", "011"); '
+                    . 'echo json_encode([$result, $GLOBALS["queries"], '
+                    . '$GLOBALS["log_calls"], $GLOBALS["answer_calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_functions_test.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        /** @var array{0:true,1:array{0:string,1:string,2:string},2:list<list<mixed>>,3:list<list<mixed>>} $decoded */
+        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$result, $queries, $logCalls, $answerCalls] = $decoded;
+        self::assertTrue($result);
+        self::assertCount(3, $queries);
+        self::assertStringContainsString('VALUES ( 7, 11, 0,', $queries[0]);
+        self::assertSame(
+            'SELECT * FROM test_logs, questions WHERE question_id=testlog_question_id '
+                . 'AND testlog_testuser_id=77 ORDER BY testlog_order',
+            $queries[1],
+        );
+        self::assertSame(
+            "UPDATE test_users SET testuser_status=1, testuser_creation_time='2026-08-11 12:34:56' "
+                . 'WHERE testuser_id=55',
+            $queries[2],
+        );
+        self::assertSame([[55, '101', 6, 1, '4']], $logCalls);
+        $expectedTestData = [
+            'test_random_questions_select' => false,
+            'test_random_questions_order' => false,
+            'test_questions_order_mode' => 0,
+            'test_random_answers_select' => false,
+            'test_random_answers_order' => false,
+            'test_answers_order_mode' => 0,
+            'test_score_unanswered' => '2',
+        ];
+        self::assertSame([[88, '101', '2', '4', 77, $expectedTestData]], $answerCalls);
+    }
 }
