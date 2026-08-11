@@ -3274,10 +3274,10 @@ function f_get_test_groups(mixed $test_id): string
 
 /**
  * Get a comma separated list of valid SSL certificates IDs for the selected test.
- * @param $test_id (int) ID of the selected test
+ * @param mixed $test_id ID of the selected test
  * @return string containing a comma separated list SSL certificates IDs.
  */
-function f_get_test_ssl_certs($test_id): string
+function f_get_test_ssl_certs(mixed $test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
