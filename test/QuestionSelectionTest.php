@@ -148,7 +148,8 @@ PHP;
                     . 'define("K_TABLE_LOG_ANSWER", "log_answers"); '
                     . 'define("K_TABLE_TESTS_LOGS", "test_logs"); $GLOBALS["db"] = "db"; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["select_calls"] = []; $GLOBALS["logged"] = []; '
-                    . '$GLOBALS["selection_fails"] = false; $GLOBALS["ordered_rows"] = '
+                    . '$GLOBALS["selection_fails"] = false; $GLOBALS["selection_fail_after"] = null; '
+                    . '$GLOBALS["ordered_rows"] = '
                     . '[["answer_id" => "13"], ["answer_id" => "17"], false]; '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_legacy_db_query_result($result) { return $result; } '
@@ -160,6 +161,9 @@ PHP;
                     . 'return array_shift($GLOBALS["ordered_rows"]); } '
                     . 'function f_select_answers(...$arguments) { $GLOBALS["select_calls"][] = $arguments; '
                     . 'if ($GLOBALS["selection_fails"]) { return false; } '
+                    . 'if (is_int($GLOBALS["selection_fail_after"])) { '
+                    . 'if ($GLOBALS["selection_fail_after"] === 0) { return false; } '
+                    . '--$GLOBALS["selection_fail_after"]; } '
                     . 'return [2 => 17, 0 => 13]; } '
                     . 'function f_add_log_answers($testlogId, $answerIds) { '
                     . '$GLOBALS["logged"][] = [$testlogId, $answerIds]; } '
@@ -187,7 +191,12 @@ PHP;
                     . '} catch (\TypeError $error) { $failure = [get_class($error), $error->getMessage()]; } '
                     . 'try { $qualified(36, 46, 1, 2, 0, $testdata); $mcsaFailure = null; '
                     . '} catch (\TypeError $error) { $mcsaFailure = [get_class($error), $error->getMessage()]; } '
-                    . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $mcsaFailure, $GLOBALS["queries"], '
+                    . '$GLOBALS["selection_fails"] = false; $GLOBALS["selection_fail_after"] = 1; '
+                    . 'try { $qualified(37, 47, 1, 2, 0, $testdata); $mcsaRemainderFailure = null; '
+                    . '} catch (\TypeError $error) { '
+                    . '$mcsaRemainderFailure = [get_class($error), $error->getMessage()]; } '
+                    . 'echo json_encode([$freeText, $multiple, $ordered, $copied, $failure, $mcsaFailure, '
+                    . '$mcsaRemainderFailure, $GLOBALS["queries"], '
                     . '$GLOBALS["select_calls"], $GLOBALS["logged"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
@@ -203,6 +212,7 @@ PHP;
                 true,
                 ['TypeError', 'Unsupported operand types: array + bool'],
                 ['TypeError', 'Unsupported operand types: array + bool'],
+                ['TypeError', 'Unsupported operand types: array + bool'],
                 [
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=42 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=44 LIMIT 1',
@@ -214,6 +224,7 @@ PHP;
                         . "\t\t\t\tAND testlog_question_id=45 ORDER BY logansw_order",
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=43 LIMIT 1',
                     'SELECT question_shuffle_answers FROM questions WHERE question_id=46 LIMIT 1',
+                    'SELECT question_shuffle_answers FROM questions WHERE question_id=47 LIMIT 1',
                 ],
                 [
                     [42, '', false, 2, 0, false, 0],
@@ -221,6 +232,8 @@ PHP;
                     [44, 0, false, 1, 1, false, 1],
                     [43, '', false, 2, 0, false, 0],
                     [46, 1, false, 1, 0, false, 0],
+                    [47, 1, false, 1, 0, false, 0],
+                    [47, 0, false, 1, 1, false, 0],
                 ],
                 [[32, [0 => 13, 2 => 17]], [34, ['13', '17']], [35, ['23', '29']]],
             ],
