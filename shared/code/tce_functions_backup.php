@@ -26,6 +26,7 @@ function f_tmf_backup_environment(array $config): array
  * @param array<string,string> $environment
  * @param array<array-key,mixed> $pipes
  * @return resource
+ * @throws TmfBackupException When the database process cannot be started.
  */
 function f_tmf_backup_start_process(
     array $command,
@@ -35,7 +36,6 @@ function f_tmf_backup_start_process(
 ): mixed {
     $error_file = tempnam(sys_get_temp_dir(), 'openvsosh-db-command-');
     if ($error_file === false) {
-        // @mago-expect analysis:unhandled-thrown-type -- process launch failures use the established exception API
         throw new TmfBackupException('Не удалось создать файл диагностики команды БД.');
     }
     $descriptors = [
