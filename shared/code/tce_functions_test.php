@@ -2765,6 +2765,7 @@ function f_questions_menu(
     $testlog_id = (int) $testlog_id;
     $str = '';
     $question_reviewed = false;
+    $question_timer = false;
     $tmf_options = F_tmf_question_options('');
     $testlog_id_prev = 0; // previous question ID
     $testlog_id_next = 0; // next question ID

@@ -371,6 +371,7 @@ PHP;
                     . '"ov_answer_not_saved" => "Error", "ov_answer_save_conflict" => "Conflict", '
                     . '"ov_answer_unsaved" => "Unsaved", "ov_answer_retrying" => "Retrying", '
                     . '"ov_save" => "Save", "a_meta_charset" => "UTF-8", "a_meta_language" => "ru"]; '
+                    . 'set_error_handler(static fn() => true); '
                     . '$row = ["question_description" => "Question description", "question_difficulty" => 2, '
                     . '"question_timer" => 0, "testlog_id" => 8, "testlog_answer_text" => "", '
                     . '"testlog_display_time" => "shown", "testlog_change_time" => "answered", '
@@ -399,20 +400,23 @@ PHP;
                     . '"test_hide_exam_info" => false, "test_disable_previous" => false, '
                     . '"test_disable_next" => false]; '
                     . '$markup = $qualified($testdata, "055", "008", false); '
-                    . 'echo json_encode([$markup, $GLOBALS["queries"]]);',
+                    . '$emptyMarkup = $qualified($testdata, "056", "009", false); '
+                    . 'echo json_encode([$markup, $emptyMarkup, $GLOBALS["queries"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: string, 1: array{0: string}} $decoded */
+        /** @var array{0:string,1:string,2:array{0:string,1:string}} $decoded */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        [$markup, $queries] = $decoded;
+        [$markup, $emptyMarkup, $queries] = $decoded;
         self::assertStringContainsString('data-audio-play-limit="2"', $markup);
         self::assertStringContainsString('Question <span>1</span> / 1', $markup);
         self::assertStringContainsString('class="selected marked-for-review" data-testlog-id="8"', $markup);
         self::assertStringContainsString('title="Displayed">+', $markup);
+        self::assertStringContainsString('id="prevquestion"', $emptyMarkup);
+        self::assertStringNotContainsString('id="forceterminate"', $emptyMarkup);
         self::assertStringContainsString('title="Answered">+', $markup);
         self::assertStringContainsString('title="Maximum: 4">  4.0', $markup);
         self::assertStringContainsString('LINE:Question description', $markup);
