@@ -1291,7 +1291,7 @@ function f_count_executed_tests(mixed $startdate, mixed $enddate): int
  * Track generated tests.
  * @param $date (string) date-time when the test was generated.
  */
-function f_update_testuser_stat($date): void
+function f_update_testuser_stat(mixed $date): void
 {
     require_once '../config/tce_config.php';
     global $db;
