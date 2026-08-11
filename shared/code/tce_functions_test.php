@@ -1548,6 +1548,8 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     if (f_is_test_over_limits()) {
         return false;
     }
@@ -1662,7 +1664,14 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
         if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
             $questions_data = [];
             $expected_questions = 0;
-            while ($m = F_db_fetch_array($r)) {
+            while (($m = $normalize_row(F_db_fetch_array($r))) !== null) {
+                /**
+                 * @var array{
+                 *   tsubset_id:int|numeric-string,tsubset_quantity:int|numeric-string,
+                 *   tsubset_difficulty:int|float|numeric-string,tsubset_type:int|numeric-string,
+                 *   tsubset_answers:int|numeric-string
+                 * } $m
+                 */
                 $expected_questions += max(0, (int) $m['tsubset_quantity']);
                 // 3. select the subjects IDs
                 $selected_subjects = '0';
@@ -1671,8 +1680,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                     . K_TABLE_SUBJECT_SET
                     . ' WHERE subjset_tsubset_id='
                     . $m['tsubset_id'];
-                if ($rt = F_db_query($sqlt, $db)) {
-                    while ($mt = F_db_fetch_array($rt)) {
+                if ($rt = f_legacy_db_query_result(F_db_query($sqlt, $db))) {
+                    while (($mt = $normalize_row(F_db_fetch_array($rt))) !== null) {
+                        /** @var array{subjset_subject_id:int|numeric-string} $mt */
                         $selected_subjects .= ',' . $mt['subjset_subject_id'];
                     }
                 }
