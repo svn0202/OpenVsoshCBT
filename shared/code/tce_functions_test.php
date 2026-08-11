@@ -1984,6 +1984,7 @@ function f_update_question_log(
             $oldtext = $m['testlog_answer_text'];
             $question_id = $m['question_id'];
             $question_type = $m['question_type'];
+            /** @var int|float|numeric-string $question_difficulty */
             $question_difficulty = $m['question_difficulty'];
             $question_description = $m['question_description'];
         }
@@ -2011,9 +2012,15 @@ function f_update_question_log(
     $answer_id = f_get_answer_id_from_position($testlog_id, $answpos);
 
     // calculate question score
-    $question_right_score = $testdata['test_score_right'] * $question_difficulty;
-    $question_wrong_score = $testdata['test_score_wrong'] * $question_difficulty;
-    $question_unanswered_score = $testdata['test_score_unanswered'] * $question_difficulty;
+    /** @var int|float|numeric-string $test_score_right */
+    $test_score_right = $testdata['test_score_right'];
+    $question_right_score = $test_score_right * $question_difficulty;
+    /** @var int|float|numeric-string $test_score_wrong */
+    $test_score_wrong = $testdata['test_score_wrong'];
+    $question_wrong_score = $test_score_wrong * $question_difficulty;
+    /** @var int|float|numeric-string $test_score_unanswered */
+    $test_score_unanswered = $testdata['test_score_unanswered'];
+    $question_unanswered_score = $test_score_unanswered * $question_difficulty;
     if (!f_legacy_int_equals($question_type, 3)) {
         $sql =
             'SELECT *
@@ -2173,7 +2180,6 @@ function f_update_question_log(
                 }
             }
 
-            /** @var int|float $answer_score */
             if ($question_type > 1) {
                 // normalize score
                 if (f_get_boolean($testdata['test_mcma_partial_score'])) {
@@ -2226,9 +2232,7 @@ function f_update_question_log(
                     $short_answer_keys,
                     K_SHORT_ANSWERS_BINARY,
                     (int) $tmf_options['similarity_threshold'],
-                    // @mago-expect analysis:invalid-type-cast -- database score is intentionally normalized for scoring
                     (float) $question_right_score,
-                    // @mago-expect analysis:invalid-type-cast -- database score is intentionally normalized for scoring
                     (float) $question_wrong_score,
                 );
                 if ($short_score !== null) {
