@@ -2733,8 +2733,13 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                             . ' WHERE logansw_answer_id=answer_id'
                             . ' AND logansw_testlog_id='
                             . $testlog_id;
-                        if ($maximum_position_result = F_db_query($maximum_position_sql, $db)) {
-                            if ($maximum_position_row = F_db_fetch_array($maximum_position_result)) {
+                        if ($maximum_position_result = f_legacy_db_query_result(
+                            F_db_query($maximum_position_sql, $db),
+                        )) {
+                            if (($maximum_position_row = $normalize_row(
+                                F_db_fetch_array($maximum_position_result),
+                            )) !== null) {
+                                /** @var array{maximum_position:int|numeric-string} $maximum_position_row */
                                 $max_position = max(
                                     $max_position,
                                     (int) $maximum_position_row['maximum_position'],

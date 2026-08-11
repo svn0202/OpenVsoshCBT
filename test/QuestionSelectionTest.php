@@ -312,7 +312,7 @@ PHP;
                     . '$_SESSION["session_user_id"] = "11"; '
                     . '$GLOBALS["examtime"] = 0; $GLOBALS["timeout_logout"] = false; '
                     . '$GLOBALS["results"] = ["first-empty", false, "question", true, "question-2", true, '
-                    . '"matching-question", "matching-answers", true]; '
+                    . '"matching-question", "matching-maximum", "matching-answers", true]; '
                     . '$row = ["question_fullscreen" => false, "testlog_answer_version" => 4, '
                     . '"testlog_testuser_id" => 55, "question_description" => "Question", '
                     . '"question_type" => 3, "testlog_answer_text" => "Saved answer", '
@@ -326,6 +326,7 @@ PHP;
                     . '"answer_keyboard_key" => "0"]; '
                     . '$GLOBALS["rows"] = ["first-empty" => [false], "question" => [$row], '
                     . '"question-2" => [$row], "matching-question" => [$matchingRow], '
+                    . '"matching-maximum" => [["maximum_position" => "2"]], '
                     . '"matching-answers" => [$matchingAnswer, false]]; '
                     . '$GLOBALS["queries"] = []; $GLOBALS["errors"] = 0; '
                     . 'function f_get_test_data($testId) { return ["test_noanswer_enabled" => false, '
@@ -339,8 +340,9 @@ PHP;
                     . 'function F_display_db_error() { ++$GLOBALS["errors"]; } '
                     . '$GLOBALS["start_times"] = [1000, false, 500]; '
                     . 'function f_get_test_start_time($testUserId) { return array_shift($GLOBALS["start_times"]); } '
-                    . 'function F_tmf_question_options($description) { return ["matching_positions" => 2, '
-                    . '"matching_reuse_positions" => false, "checkbox" => false, "max_selections" => 0]; } '
+                    . 'function F_tmf_question_options($description) { return ["matching_positions" => 0, '
+                    . '"matching_reuse_positions" => $description === "Matching", '
+                    . '"checkbox" => false, "max_selections" => 0]; } '
                     . 'function F_tmf_matching_presentation($description, $positions) { return '
                     . '["description" => $description, "labels" => ["One &", "Two <"]]; } '
                     . 'function F_tmf_question_editor_description($description) { return "EDITED:" . $description; } '
@@ -374,7 +376,7 @@ PHP;
         /**
          * @var array{
          *     0:array{0:null,1:null,2:string,3:string,4:string,5:string},
-         *     1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
+         *     1:array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string,9:string},
          *     2:int,
          *     3:int
          * } $decoded
@@ -398,7 +400,8 @@ PHP;
         self::assertStringContainsString('<option value="2" selected="selected">Two &lt;</option>', $outputs[5]);
         self::assertStringContainsString('name="examtime" id="examtime" value="2300"', $outputs[5]);
         self::assertStringContainsString('<MENU:55,8,0>', $outputs[5]);
-        self::assertCount(9, $queries);
+        self::assertCount(10, $queries);
+        self::assertStringContainsString('SELECT MAX(answer_position) AS maximum_position', $queries[7]);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[3]);
         self::assertStringContainsString("SET testuser_last_activity='2026-08-10 12:34:56'", $queries[5]);
         self::assertSame(1, $errors);
