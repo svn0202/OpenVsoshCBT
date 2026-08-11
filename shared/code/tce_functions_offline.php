@@ -80,6 +80,7 @@ function f_tmf_offline_string(mixed $value): ?string
  *
  * @return array{status:string,envelope?:array{format:string,payload_b64:string,signature:string},filename?:string}
  * @throws Random\RandomException
+ * @throws RuntimeException
  */
 function f_tmf_offline_issue(int $testuser_id): array
 {
@@ -232,6 +233,8 @@ function f_tmf_offline_issue(int $testuser_id): array
  * Import and score one signed offline result.
  *
  * @return array{status:string,package_id?:string}
+ * @throws Random\RandomException
+ * @throws RuntimeException
  */
 function f_tmf_offline_import(string $result_json): array
 {

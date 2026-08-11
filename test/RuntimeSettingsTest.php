@@ -12,6 +12,30 @@ require_once __DIR__ . '/../shared/code/tce_functions_openvsosh_settings.php';
 
 final class RuntimeSettingsTest extends TestCase
 {
+    public function testOfflineSecretPreservesEntropyFailure(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'namespace Harness; '
+                    . 'function openvsosh_get_setting($key) { return null; } '
+                    . 'function openvsosh_save_setting($key, $value) { return true; } '
+                    . 'function random_bytes($length) { throw new \\Random\\RandomException("entropy unavailable"); } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . '$start = strpos($source, "function openvsosh_get_offline_package_secret"); '
+                    . 'eval("namespace Harness; " . substr($source, $start)); '
+                    . 'try { openvsosh_get_offline_package_secret(); echo "completed"; } '
+                    . 'catch (\\Throwable $error) { echo get_class($error) . ":" . $error->getMessage(); }',
+                dirname(__DIR__) . '/shared/code/tce_functions_openvsosh_settings.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('Random\\RandomException:entropy unavailable', $output);
+    }
+
     public function testDatabaseBackedSettingsReadAndUpdateContractsRemainUnchanged(): void
     {
         $script = <<<'PHP'
