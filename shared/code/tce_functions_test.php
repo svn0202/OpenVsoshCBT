@@ -39,6 +39,27 @@ function f_get_user_tests(): string
     require_once '../../shared/code/tce_functions_tcecode.php';
     require_once '../../shared/code/tce_functions_test_stats.php';
     global $db, $l;
+    /**
+     * @var array{
+     *     a_meta_charset:string,
+     *     h_continue:string,
+     *     h_execute:string,
+     *     h_repeat_test:string,
+     *     h_result:string,
+     *     m_no_test_available:string,
+     *     t_test_list:string,
+     *     w_action:string,
+     *     w_continue:string,
+     *     w_execute:string,
+     *     w_from:string,
+     *     w_not_passed:string,
+     *     w_passed:string,
+     *     w_repeat:string,
+     *     w_status:string,
+     *     w_test:string,
+     *     w_to:string
+     * } $l
+     */
     $user_id = (int) $_SESSION['session_user_id'];
     $str = ''; // temp string
     // get current date-time
@@ -125,12 +146,10 @@ function f_get_user_tests(): string
                     ) {
                         if ($usrtestdata['user_score'] >= $usrtestdata['test_score_threshold']) {
                             $str .= ' style="background-color:#ddffdd;"';
-                            /** @var string $passed_label */
                             $passed_label = $l['w_passed'];
                             $passmsg = ' - ' . $passed_label;
                         } else {
                             $str .= ' style="background-color:#ffdddd;"';
-                            /** @var string $not_passed_label */
                             $not_passed_label = $l['w_not_passed'];
                             $passmsg = ' - ' . $not_passed_label;
                         }
@@ -140,7 +159,6 @@ function f_get_user_tests(): string
                     if (isset($usrtestdata['user_score']) && strlen('' . $usrtestdata['user_score']) > 0) {
                         $user_score = $usrtestdata['user_score'];
                         $test_max_score = $usrtestdata['test_max_score'];
-                        /** @var string $result_title */
                         $result_title = $l['h_result'];
                         if ($test_max_score > 0) {
                             $str .=
@@ -186,7 +204,6 @@ function f_get_user_tests(): string
                     $reason = $access_status['reason'] === 'required_test_not_passed'
                         ? 'Сначала пройдите обязательный тест'
                         : 'Сначала завершите обязательный тест';
-                    /** @var string $catalog_charset */
                     $catalog_charset = $l['a_meta_charset'];
                     $str .= '<span class="offbox">' . htmlspecialchars($reason, ENT_QUOTES, $catalog_charset)
                         . '</span>';
@@ -282,7 +299,6 @@ function f_get_user_tests(): string
         $out .= '</tbody>' . K_NEWLINE;
         $out .= '</table>' . K_NEWLINE;
     } else {
-        /** @var string $out */
         $out = $l['m_no_test_available'];
     }
 
