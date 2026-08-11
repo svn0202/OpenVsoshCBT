@@ -3524,6 +3524,8 @@ function f_get_test_groups(mixed $test_id): string
 {
     require_once '../config/tce_config.php';
     global $db, $l;
+    /** @return non-empty-array<array-key,mixed>|null */
+    $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $test_id = (int) $test_id;
     $ids = '0';
     // select groups in this test
@@ -3533,9 +3535,11 @@ function f_get_test_groups(mixed $test_id): string
         . ' WHERE tstgrp_test_id='
         . $test_id
         . ' ORDER BY tstgrp_group_id';
-    if ($r = F_db_query($sql, $db)) {
-        while ($m = F_db_fetch_assoc($r)) {
-            // @mago-expect analysis:invalid-array-access -- active DAL fetches test group rows as arrays
+    $r = F_db_query($sql, $db);
+    /** @var mixed $r */
+    if ($r) {
+        while (($m = $normalize_row(F_db_fetch_assoc($r))) !== null) {
+            /** @var array{tstgrp_group_id:int|numeric-string} $m */
             $ids .= ',' . $m['tstgrp_group_id'];
         }
     } else {
