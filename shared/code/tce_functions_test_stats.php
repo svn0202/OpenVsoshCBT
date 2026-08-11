@@ -937,7 +937,20 @@ function f_print_test_stat(
         // get statistics array
         $ts = f_get_test_stat($test_id, $group_id, $user_id, $startdate, $enddate, $testuser_id, $pubmode);
     }
-    /** @var array{qstats:array{recurrence:mixed,recurrence_perc:mixed,average_score_perc:mixed,average_time:mixed,right:mixed,right_perc:mixed,wrong:mixed,wrong_perc:mixed,unanswered:mixed,unanswered_perc:mixed,undisplayed:mixed,undisplayed_perc:mixed,unrated:mixed,unrated_perc:mixed,module:array<array-key,mixed>}} $ts */
+    /**
+     * @var array{
+     *   qstats:array{
+     *     recurrence:int|float|numeric-string,recurrence_perc:int|float|numeric-string,
+     *     average_score_perc:int|float|numeric-string,average_time:int|float|numeric-string,
+     *     right:int|float|numeric-string,right_perc:int|float|numeric-string,
+     *     wrong:int|float|numeric-string,wrong_perc:int|float|numeric-string,
+     *     unanswered:int|float|numeric-string,unanswered_perc:int|float|numeric-string,
+     *     undisplayed:int|float|numeric-string,undisplayed_perc:int|float|numeric-string,
+     *     unrated:int|float|numeric-string,unrated_perc:int|float|numeric-string,
+     *     module:array<array-key,mixed>
+     *   }
+     * } $ts
+     */
 
     $txtdir = (($l['a_meta_dir'] <=> 'rtl') === 0) ? 'right' : 'left';
 
