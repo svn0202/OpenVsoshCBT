@@ -40,7 +40,7 @@ count = 34
 file = "shared/code/tce_functions_test.php"
 code = "invalid-array-access"
 message = "Cannot perform array access on value of type `unknown-ref(Returns)`."
-count = 168
+count = 165
 
 [[issues]]
 file = "shared/code/tce_functions_test.php"
