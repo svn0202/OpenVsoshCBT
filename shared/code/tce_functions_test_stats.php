@@ -1724,10 +1724,10 @@ function f_print_test_result_stat($data, $nextorderdir, $order_field, $filter, $
 
 /**
  * Returns user test stats as HTML table
- * @param $testuser_id (int) test-user ID - if greater than zero, filter stats for the specified test-user.
- * return $data string containing HTML table.
+ * @param mixed $testuser_id Test-user ID - if greater than zero, filter stats for the specified test-user.
+ * @return string HTML table.
  */
-function f_print_user_test_stat($testuser_id)
+function f_print_user_test_stat(mixed $testuser_id): string
 {
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
