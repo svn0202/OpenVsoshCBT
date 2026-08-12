@@ -51,7 +51,7 @@ function mysql_real_escape_string(string $unescaped_string, mixed $link_identifi
 
 /**
  * @param resource $result
- * @return array<int, mixed>|false
+ * @return non-empty-list<mixed>|false
  */
 function mysql_fetch_row(mixed $result): array|false
 {
