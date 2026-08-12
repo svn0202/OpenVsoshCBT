@@ -101,7 +101,6 @@ function f_db_error(mixed $link_identifier = null): mixed
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
-    /** @var string $query */
     /** @var \PgSql\Connection $link_identifier */
     // convert MySQL RAND() function to PostgreSQL RANDOM()
     $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY RANDOM()', $query) ?? $query;
