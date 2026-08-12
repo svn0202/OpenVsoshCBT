@@ -22,3 +22,8 @@ function mysql_affected_rows(mixed $link_identifier): int
 function mysql_errno(mixed $link_identifier): int
 {
 }
+
+/** @param resource $link_identifier */
+function mysql_error(mixed $link_identifier): string
+{
+}
