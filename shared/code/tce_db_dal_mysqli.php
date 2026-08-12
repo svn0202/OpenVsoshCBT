@@ -106,8 +106,9 @@ function f_db_error(mixed $link_identifier = null): mixed
  * @return false in case of error, TRUE or resource-identifier in case of success.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_query($query, $link_identifier)
+function f_db_query(mixed $query, $link_identifier)
 {
+    /** @var string $query */
     // convert PostgreSQL RANDOM() function to MySQL RAND()
     //$query = preg_replace("/ORDER BY RANDOM\(\)/i", "ORDER BY RAND()", $query);
     return mysqli_query($link_identifier, $query);
