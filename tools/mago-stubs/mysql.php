@@ -61,3 +61,8 @@ function mysql_fetch_row(mixed $result): array|false
 function mysql_select_db(string $database_name, mixed $link_identifier): bool
 {
 }
+
+/** @return resource|false */
+function mysql_connect(string $server, string $username, string $password): mixed
+{
+}
