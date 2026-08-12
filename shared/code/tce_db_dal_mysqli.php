@@ -48,12 +48,13 @@ function f_db_connect(
     mixed $port = '3306',
     mixed $username = 'root',
     #[\SensitiveParameter]
-    $password = '',
+    mixed $password = '',
     $database = '',
 ) {
     /** @var string $host */
     /** @var int $port */
     /** @var string $username */
+    /** @var string $password */
     set_error_handler(static fn(): bool => true);
     try {
         $db = mysqli_connect($host, $username, $password, $database, $port);
