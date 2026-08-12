@@ -78,6 +78,7 @@ function f_db_connect(
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_close(mixed $link_identifier): mixed
 {
+    /** @var resource $link_identifier */
     return mysql_close($link_identifier);
 }
 
