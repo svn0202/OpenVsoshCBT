@@ -207,7 +207,6 @@ function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_fie
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
-    /** @var string $str */
     /** @var bool $stripslashes */
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
     if ($stripslashes) {
