@@ -116,7 +116,7 @@ function f_db_query($query, $link_identifier)
  * @return array<int|string, mixed>|false Row data, or false if there are no more rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_fetch_array($result)
+function f_db_fetch_array(mixed $result): mixed
 {
     return mysql_fetch_array($result);
 }
