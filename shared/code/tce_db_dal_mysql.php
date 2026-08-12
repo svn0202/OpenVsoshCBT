@@ -167,6 +167,7 @@ function f_db_num_rows($result)
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
+    unset($fieldname);
     /*
      * NOTE : mysql_insert_id() converts the return type of the
      * native MySQL C API function mysql_insert_id() to a type
