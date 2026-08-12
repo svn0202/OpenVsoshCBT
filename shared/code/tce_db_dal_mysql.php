@@ -186,7 +186,7 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 
 /**
  * Returns the SQL string to calculate the difference in seconds between to datetime fields.
- * @return SQL query string
+ * @return string SQL query string.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_datetime_diff_seconds($start_date_field, $end_date_field)
