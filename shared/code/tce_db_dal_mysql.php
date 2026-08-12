@@ -175,6 +175,7 @@ function f_db_num_rows(mixed $result): mixed
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
+    /** @var string $tablename */
     unset($fieldname);
     /*
      * NOTE : mysql_insert_id() converts the return type of the
