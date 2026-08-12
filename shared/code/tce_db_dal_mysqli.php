@@ -103,7 +103,7 @@ function f_db_error(mixed $link_identifier = null): mixed
  * Sends a query to the currently active database on the server that's associated with the specified link identifier.<br>
  * @param $query (string) The query tosend. The query string should not end with a semicolon.
  * @param $link_identifier (resource) database link identifier.
- * @return false in case of error, TRUE or resource-identifier in case of success.
+ * @return mysqli_result|bool Result object or true on success, false on error.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_query(mixed $query, mixed $link_identifier)
