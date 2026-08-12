@@ -43,6 +43,7 @@ function f_db_connect(
     mixed $database = '',
 ): mixed {
     /** @var string $host */
+    /** @var string $port */
     set_error_handler(static fn(): bool => true);
     try {
         $db = mysql_connect($host . ':' . $port, $username, $password);
