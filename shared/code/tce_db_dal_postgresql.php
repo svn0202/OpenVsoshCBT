@@ -43,7 +43,6 @@ function f_db_connect(
     mixed $password = '',
     mixed $database = 'template1',
 ): mixed {
-    /** @var string $database */
     $connection_string =
         "host='"
         . $host
