@@ -28,7 +28,7 @@
  */
 class XMLQuestionImporter
 {
-    public XMLParser $parser;
+    public \XMLParser $parser;
 
     /**
      * Current level: 'module', 'subject', 'question', 'answer'.
@@ -138,7 +138,7 @@ class XMLQuestionImporter
      * @param array<string, string> $_attribs Element attributes keyed by attribute name.
      * @private
      */
-    private function startElementHandler(XMLParser $_parser, string $name, array $_attribs): void
+    private function startElementHandler(\XMLParser $_parser, string $name, array $_attribs): void
     {
         $name = strtolower($name);
         switch ($name) {
@@ -205,7 +205,7 @@ class XMLQuestionImporter
      * @param $name (string) The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
      * @private
      */
-    private function endElementHandler(XMLParser $_parser, string $name): void
+    private function endElementHandler(\XMLParser $_parser, string $name): void
     {
         global $l, $db;
         require_once '../config/tce_config.php';
@@ -256,7 +256,7 @@ class XMLQuestionImporter
      * @param $data (string) The second parameter, data, contains the character data as a string.
      * @private
      */
-    private function segContentHandler(XMLParser $_parser, string $data): void
+    private function segContentHandler(\XMLParser $_parser, string $data): void
     {
         if (strlen($this->current_element) > 0) {
             // we are inside an element

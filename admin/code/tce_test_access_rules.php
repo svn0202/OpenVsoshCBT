@@ -32,7 +32,7 @@ $parse_publication_time = static function (mixed $value): string|false|null {
     if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $value)) {
         return false;
     }
-    $date = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value);
+    $date = \DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value);
     if (!$date || $date->format('Y-m-d\TH:i') !== $value) {
         return false;
     }

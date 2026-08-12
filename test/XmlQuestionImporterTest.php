@@ -13,7 +13,6 @@ final class XmlQuestionImporterTest extends TestCase
     {
         $script = <<<'PHP'
 namespace Harness;
-class_alias(\XMLParser::class, __NAMESPACE__ . '\\XMLParser');
 define('K_TABLE_MODULES', 'modules');
 define('K_TABLE_SUBJECTS', 'subjects');
 define('K_TABLE_QUESTIONS', 'questions');
