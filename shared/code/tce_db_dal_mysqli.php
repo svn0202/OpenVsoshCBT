@@ -158,7 +158,7 @@ function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 /**
  * Get number of rows in result.
  * @param $result (resource) result resource to the query result.
- * @return int Number of affected rows.
+ * @return int|string Number of affected rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_num_rows(mixed $result): mixed
