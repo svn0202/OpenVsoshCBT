@@ -106,7 +106,7 @@ function f_db_error(mixed $link_identifier = null): mixed
  * @return mysqli_result|bool Result object or true on success, false on error.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_query(mixed $query, mixed $link_identifier)
+function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
     /** @var string $query */
     /** @var mysqli $link_identifier */
