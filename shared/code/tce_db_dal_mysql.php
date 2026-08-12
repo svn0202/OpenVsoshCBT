@@ -44,6 +44,7 @@ function f_db_connect(
 ): mixed {
     /** @var string $host */
     /** @var string $port */
+    /** @var string $username */
     /** @var string $database */
     set_error_handler(static fn(): bool => true);
     try {
