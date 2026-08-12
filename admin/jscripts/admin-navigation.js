@@ -140,7 +140,10 @@
     const editorState = editor?.querySelector('[data-editor-save-state]');
     if (editor && editorState) {
         let dirty = false;
-        const setDirty = () => {
+        const setDirty = (event) => {
+            if (event.target.closest('[data-editor-navigation]')) {
+                return;
+            }
             dirty = true;
             editorState.textContent = 'Есть несохранённые изменения';
             editorState.dataset.state = 'dirty';

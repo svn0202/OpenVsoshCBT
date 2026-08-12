@@ -6,6 +6,16 @@ use PHPUnit\Framework\TestCase;
 
 final class QuestionSelectionTest extends TestCase
 {
+    public function testModuleAndSubjectSelectorsNavigateWithConsistentFilters(): void
+    {
+        $controller = (string) file_get_contents(__DIR__ . '/../admin/code/tce_show_all_questions.php');
+
+        self::assertStringContainsString("isset(\$_REQUEST['changemodule'])", $controller);
+        self::assertStringContainsString("isset(\$_REQUEST['changecategory'])", $controller);
+        self::assertStringContainsString("tce_show_all_questions.php?changemodule=1&amp;subject_module_id=", $controller);
+        self::assertStringContainsString("tce_show_all_questions.php?changecategory=1&amp;subject_module_id=", $controller);
+    }
+
     public function testEmptyQuestionSelectionReportsMessageAndReturnsFalse(): void
     {
         [$status, $output] = \F_tcecode_run_process(

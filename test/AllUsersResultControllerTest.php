@@ -6,6 +6,20 @@ use PHPUnit\Framework\TestCase;
 
 final class AllUsersResultControllerTest extends TestCase
 {
+    public function testTestSelectorUsesReadOnlyNavigation(): void
+    {
+        $controller = (string) file_get_contents(__DIR__ . '/../admin/code/tce_show_result_allusers.php');
+
+        self::assertStringContainsString(
+            "window.location.assign(\\'tce_show_result_allusers.php?test_id=",
+            $controller,
+        );
+        self::assertStringNotContainsString(
+            "form_resultallusers\\').changecategory.value=1",
+            $controller,
+        );
+    }
+
     public function testFiltersAndSelectionsAreRenderedWithoutLoadingStatistics(): void
     {
         $script = <<<'PHP'

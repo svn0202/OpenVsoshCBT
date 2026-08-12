@@ -123,6 +123,15 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('.result-question-list > .result-question-incorrect', $stylesheet);
     }
 
+    public function testDarkExamThemeKeepsAnswerLabelsReadable(): void
+    {
+        $stylesheet = (string) file_get_contents(__DIR__ . '/../public/styles/tmf-reference.css');
+
+        self::assertStringContainsString('body.app-page.exam-page .answergroup label,', $stylesheet);
+        self::assertStringContainsString('body.app-page.exam-page .answergroup label p {', $stylesheet);
+        self::assertStringContainsString('color: var(--tmf-text);', $stylesheet);
+    }
+
     public function testImagePreviewIsKeyboardAccessibleAndSurvivesAjaxNavigation(): void
     {
         $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/mobile-exam.js');
@@ -228,6 +237,16 @@ final class ExamUiAssetsTest extends TestCase
 
         self::assertStringContainsString("is_string(\$_POST['test_password'])", $editor);
         self::assertStringContainsString('f_empty_to_null($test_password)', $editor);
+    }
+
+    public function testTestEditorNavigationDoesNotCreateAFalseUnsavedChangesWarning(): void
+    {
+        $editor = (string) file_get_contents(__DIR__ . '/../admin/code/tce_edit_test.php');
+        $navigation = (string) file_get_contents(__DIR__ . '/../admin/jscripts/admin-navigation.js');
+
+        self::assertStringContainsString('data-editor-navigation', $editor);
+        self::assertStringContainsString("window.location.assign(\\'tce_edit_test.php?test_id=", $editor);
+        self::assertStringContainsString("event.target.closest('[data-editor-navigation]')", $navigation);
     }
 
     public function testExamRendererRemovesQuestionMetadataBeforeDisplay(): void

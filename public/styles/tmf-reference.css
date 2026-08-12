@@ -2189,6 +2189,10 @@ body.app-page.exam-page #testform > div > .tcecontentbox {
     font-size: calc(1rem * var(--exam-font-scale, 1));
     line-height: 1.55;
 }
+body.app-page.exam-page .answergroup label,
+body.app-page.exam-page .answergroup label p {
+    color: var(--tmf-text);
+}
 body.app-page.exam-page #testform > div > .tcecontentbox > p,
 body.app-page.exam-page #testform > div > .tcecontentbox > div,
 body.app-page.exam-page #testform > div > .tcecontentbox > table,
