@@ -48,3 +48,11 @@ function mysql_fetch_assoc(mixed $result): array|false
 function mysql_real_escape_string(string $unescaped_string, mixed $link_identifier): string
 {
 }
+
+/**
+ * @param resource $result
+ * @return array<int, mixed>|false
+ */
+function mysql_fetch_row(mixed $result): array|false
+{
+}
