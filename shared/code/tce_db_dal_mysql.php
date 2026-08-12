@@ -193,6 +193,7 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
+    /** @var string $start_date_field */
     return 'TIMESTAMPDIFF(SECOND, ' . $start_date_field . ', ' . $end_date_field . ')';
 }
 
