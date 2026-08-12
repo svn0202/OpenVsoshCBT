@@ -311,6 +311,14 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('position: absolute;', $stylesheet);
     }
 
+    public function testQuestionListIgnoresClicksOutsideQuestionItems(): void
+    {
+        $theme = (string) file_get_contents(__DIR__ . '/../public/config.default/theme/picoman.php');
+
+        self::assertStringContainsString('if (!e.target.firstElementChild) {', $theme);
+        self::assertStringContainsString('if (inputButton) {', $theme);
+    }
+
     public function testInterruptedExamCanBeResumedAndSaveConflictsDoNotPersist(): void
     {
         $renderer = (string) file_get_contents(__DIR__ . '/../shared/code/tce_functions_test.php');
