@@ -838,6 +838,36 @@ final class DatabaseDalFunctionsTest extends TestCase
         );
     }
 
+    public function testMysqliErrorPreservesCodeMessageAndConnection(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; class mysqli {} $GLOBALS["calls"] = []; '
+                    . 'function mysqli_errno($connection) { '
+                    . '$GLOBALS["calls"][] = ["errno", spl_object_id($connection)]; return 17; } '
+                    . 'function mysqli_error($connection) { '
+                    . '$GLOBALS["calls"][] = ["error", spl_object_id($connection)]; return "broken"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_error/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$connection = new mysqli(); echo json_encode(['
+                    . 'F_db_error($connection), spl_object_id($connection), $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_mysqli.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['[17]: broken', 1, [['errno', 1], ['error', 1]]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testDatetimeDifferenceExpressionRemainsDriverSpecific(): void
     {
         $expectations = [

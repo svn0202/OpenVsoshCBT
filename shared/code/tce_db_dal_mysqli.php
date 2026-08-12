@@ -89,12 +89,13 @@ function f_db_close(mixed $link_identifier): mixed
  * @return string error message.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_error($link_identifier = null)
+function f_db_error(mixed $link_identifier = null)
 {
     if (empty($link_identifier)) {
         return '';
     }
 
+    /** @var mysqli $link_identifier */
     return '[' . mysqli_errno($link_identifier) . ']: ' . mysqli_error($link_identifier) . '';
 }
 
