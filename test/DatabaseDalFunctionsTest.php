@@ -758,6 +758,33 @@ final class DatabaseDalFunctionsTest extends TestCase
         }
     }
 
+    public function testLegacyMysqlErrorPreservesCodeMessageAndConnection(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; $GLOBALS["calls"] = []; '
+                    . 'function mysql_errno($connection) { $GLOBALS["calls"][] = ["errno", $connection]; return 17; } '
+                    . 'function mysql_error($connection) { $GLOBALS["calls"][] = ["error", $connection]; return "broken"; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_error/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . 'echo json_encode([F_db_error("connection"), $GLOBALS["calls"]]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_mysql.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['[17]: broken', [['errno', 'connection'], ['error', 'connection']]],
+            json_decode($output, true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function testDatetimeDifferenceExpressionRemainsDriverSpecific(): void
     {
         $expectations = [
