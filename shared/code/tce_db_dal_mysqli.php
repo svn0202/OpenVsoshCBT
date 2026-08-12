@@ -148,7 +148,7 @@ function f_db_fetch_assoc(mixed $result): mixed
  * @return int Number of rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_affected_rows(mixed $link_identifier, mixed $result)
+function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
     /** @var mysqli $link_identifier */
     unset($result);
