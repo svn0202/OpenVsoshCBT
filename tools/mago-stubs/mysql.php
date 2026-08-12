@@ -7,3 +7,8 @@
 function mysql_close(mixed $link_identifier): bool
 {
 }
+
+/** @param resource $result */
+function mysql_num_rows(mixed $result): int
+{
+}
