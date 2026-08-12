@@ -34,7 +34,6 @@
  * @param string $database Database name.
  * @return \PgSql\Connection|false PostgreSQL connection on success, or false on failure.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
     mixed $host = 'localhost',
     mixed $port = '5432',
@@ -73,7 +72,6 @@ function f_db_connect(
  * @param \PgSql\Connection|null $link_identifier Database connection.
  * @return bool True on success or false on failure.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_close(mixed $link_identifier): mixed
 {
     return pg_close($link_identifier);
@@ -84,7 +82,6 @@ function f_db_close(mixed $link_identifier): mixed
  * @param mixed $link_identifier Legacy shared DAL parameter; PostgreSQL uses the current connection.
  * @return string error message.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_error(mixed $link_identifier = null): mixed
 {
     unset($link_identifier);
@@ -98,7 +95,6 @@ function f_db_error(mixed $link_identifier = null): mixed
  * @param \PgSql\Connection $link_identifier Database connection.
  * @return \PgSql\Result|false Query result on success, false on error.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
     // convert MySQL RAND() function to PostgreSQL RANDOM()
@@ -112,7 +108,6 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
  * @param PgSql\Result $result result resource to the query result.
  * @return array<int|string, mixed>|false row data, or false if there are no more rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_array(mixed $result): mixed
 {
     return pg_fetch_array($result);
@@ -124,7 +119,6 @@ function f_db_fetch_array(mixed $result): mixed
  * @param \PgSql\Result $result Query result.
  * @return array<int|string, string|null>|false Associative row, or false if there are no more rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_assoc(mixed $result): mixed
 {
     return pg_fetch_assoc($result);
@@ -136,7 +130,6 @@ function f_db_fetch_assoc(mixed $result): mixed
  * @param \PgSql\Result $result Query result.
  * @return int Number of affected rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
     unset($link_identifier);
@@ -148,7 +141,6 @@ function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
  * @param \PgSql\Result $result Query result.
  * @return int Number of rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_num_rows(mixed $result): mixed
 {
     return pg_num_rows($result);
@@ -161,7 +153,6 @@ function f_db_num_rows(mixed $result): mixed
  * @param string $fieldname Field name (column name).
  * @return int|string ID generated from the last INSERT operation, or 0 when unavailable.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
     set_error_handler(static fn(): bool => true);
@@ -190,7 +181,6 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
  * @param string $end_date_field End datetime field or expression.
  * @return string SQL query string.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
     return 'EXTRACT(EPOCH FROM (' . $end_date_field . ' - ' . $start_date_field . '))';
@@ -204,7 +194,6 @@ function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_fie
  * @return string Escaped string.
  * @since 5.0.005 2007-12-05
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.

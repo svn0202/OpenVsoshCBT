@@ -42,7 +42,6 @@ if (function_exists('mysqli_report')) {
  * @param $database (string) Database name.
  * @return mysqli|false Link identifier on success, or false on failure.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
     mixed $host = 'localhost',
     mixed $port = '3306',
@@ -77,7 +76,6 @@ function f_db_connect(
  * @param $link_identifier (resource) database link identifier.
  * @return bool TRUE on success or FALSE on failure
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_close(mixed $link_identifier): mixed
 {
     /** @var mysqli $link_identifier */
@@ -88,7 +86,6 @@ function f_db_close(mixed $link_identifier): mixed
  * Returns the text of the error message from previous database operation
  * @return string error message.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_error(mixed $link_identifier = null): mixed
 {
     if (empty($link_identifier)) {
@@ -105,7 +102,6 @@ function f_db_error(mixed $link_identifier = null): mixed
  * @param $link_identifier (resource) database link identifier.
  * @return mysqli_result|bool Result object or true on success, false on error.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
     /** @var string $query */
@@ -121,7 +117,6 @@ function f_db_query(mixed $query, mixed $link_identifier): mixed
  * @param $result (resource) result resource to the query result.
  * @return array<int|string, mixed>|false|null Row data, or false/null if there are no more rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_array(mixed $result): mixed
 {
     /** @var mysqli_result $result */
@@ -134,7 +129,6 @@ function f_db_fetch_array(mixed $result): mixed
  * @param $result (resource) result resource to the query result.
  * @return array<int|string, mixed>|false|null Associative row, or false/null if there are no more rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_assoc(mixed $result): mixed
 {
     /** @var mysqli_result $result */
@@ -147,7 +141,6 @@ function f_db_fetch_assoc(mixed $result): mixed
  * @param $result (resource) result resource to the query result [UNUSED].
  * @return int|string Number of rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
     /** @var mysqli $link_identifier */
@@ -160,7 +153,6 @@ function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
  * @param $result (resource) result resource to the query result.
  * @return int|string Number of affected rows.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_num_rows(mixed $result): mixed
 {
     /** @var mysqli_result $result */
@@ -174,7 +166,6 @@ function f_db_num_rows(mixed $result): mixed
  * @param $fieldname (string) Field name (column name). (unused here but required for other DAL).
  * @return int|string ID generated from the last INSERT operation.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
 {
     /** @var mysqli $link_identifier */
@@ -187,7 +178,6 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
  * Returns the SQL string to calculate the difference in seconds between to datetime fields.
  * @return string SQL query string.
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
     /** @var string $start_date_field */
@@ -203,7 +193,6 @@ function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_fie
  * @return string Returns the escaped string, or FALSE on error.
  * @since 5.0.005 2007-12-05
  */
-// @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
     /** @var mysqli $link_identifier */
