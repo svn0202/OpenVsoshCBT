@@ -113,7 +113,7 @@ function f_db_query($query, $link_identifier)
  * Fetch a result row as an associative and numeric array.
  * Note: This function sets NULL fields to PHP NULL value.
  * @param $result (resource) result resource to the query result.
- * @return Returns an array that corresponds to the fetched row, or FALSE if there are no more rows.
+ * @return array<int|string, mixed>|false Row data, or false if there are no more rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_array($result)
