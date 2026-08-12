@@ -46,13 +46,14 @@ if (function_exists('mysqli_report')) {
 function f_db_connect(
     mixed $host = 'localhost',
     mixed $port = '3306',
-    $username = 'root',
+    mixed $username = 'root',
     #[\SensitiveParameter]
     $password = '',
     $database = '',
 ) {
     /** @var string $host */
     /** @var int $port */
+    /** @var string $username */
     set_error_handler(static fn(): bool => true);
     try {
         $db = mysqli_connect($host, $username, $password, $database, $port);
