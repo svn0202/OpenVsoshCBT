@@ -175,10 +175,11 @@ function f_db_num_rows(mixed $result): mixed
  * @return int ID generated from the last INSERT operation.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', $fieldname = '')
+function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = '')
 {
     /** @var mysqli $link_identifier */
     unset($tablename);
+    unset($fieldname);
     return mysqli_insert_id($link_identifier);
 }
 
