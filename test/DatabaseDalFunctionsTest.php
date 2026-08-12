@@ -447,6 +447,30 @@ final class DatabaseDalFunctionsTest extends TestCase
         }
     }
 
+    public function testLegacyMysqlInsertIdPreservesNumericString(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-n',
+                '-r',
+                'namespace Harness; function mysql_query($query, $link) { return "statement"; } '
+                    . 'function mysql_fetch_row($result) { return ["9007199254740993"]; } '
+                    . '$source = file_get_contents($argv[1]); '
+                    . 'preg_match("/function [Ff]_db_insert_id/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                    . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                    . '$value = F_db_insert_id("connection", "users", "id"); '
+                    . 'echo json_encode([get_debug_type($value), $value]);',
+                dirname(__DIR__) . '/shared/code/tce_db_dal_mysql.php',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('["string","9007199254740993"]', $output);
+    }
+
     public function testPostgresqlMissingSequenceReturnsZeroWithoutLeakingWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(

@@ -175,7 +175,7 @@ function f_db_num_rows(mixed $result): mixed
  * @param $link_identifier (resource) database link identifier.
  * @param $tablename (string) Table name.
  * @param $fieldname (string) Field name (column name).
- * @return int ID generated from the last INSERT operation.
+ * @return int|string ID generated from the last INSERT operation, or zero on failure.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fieldname = ''): mixed
@@ -197,6 +197,7 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
         /** @var resource $result */
         $row = mysql_fetch_row($result);
         if ($row) {
+            /** @var array{0:int|string} $row */
             return $row[0];
         }
     }
