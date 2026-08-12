@@ -418,6 +418,35 @@ final class DatabaseDalFunctionsTest extends TestCase
         }
     }
 
+    public function testLegacyMysqlInsertIdFailuresReturnZeroAndPreserveShortCircuiting(): void
+    {
+        foreach (['query', 'row'] as $failure) {
+            [$status, $output] = \F_tcecode_run_process(
+                [
+                    PHP_BINARY,
+                    '-n',
+                    '-r',
+                    'namespace Harness; $GLOBALS["fetches"] = 0; '
+                        . 'function mysql_query($query, $link) { return $GLOBALS["failure"] === "query" '
+                        . '? false : "statement"; } function mysql_fetch_row($result) { '
+                        . '++$GLOBALS["fetches"]; return false; } $GLOBALS["failure"] = $argv[2]; '
+                        . '$source = file_get_contents($argv[1]); '
+                        . 'preg_match("/function [Ff]_db_insert_id/", $source, $match, PREG_OFFSET_CAPTURE); '
+                        . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
+                        . 'eval("namespace Harness; " . substr($source, $start, $end - $start)); '
+                        . '$value = F_db_insert_id("connection", "users", "id"); '
+                        . 'echo json_encode([$value, $GLOBALS["fetches"]]);',
+                    dirname(__DIR__) . '/shared/code/tce_db_dal_mysql.php',
+                    $failure,
+                ],
+                dirname(__DIR__) . '/shared/code',
+            );
+
+            self::assertSame(0, $status, $failure . ': ' . $output);
+            self::assertSame($failure === 'query' ? '[0,0]' : '[0,1]', $output, $failure);
+        }
+    }
+
     public function testPostgresqlMissingSequenceReturnsZeroWithoutLeakingWarnings(): void
     {
         [$status, $output] = \F_tcecode_run_process(
