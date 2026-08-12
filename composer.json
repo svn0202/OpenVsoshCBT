@@ -56,7 +56,10 @@
         "source": "https://github.com/tecnickcom/tcexam"
     },
     "scripts": {
-        "test": "@php vendor/bin/phpunit --stderr --no-coverage --testsuite unit",
+        "test": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php vendor/bin/phpunit --stderr --no-coverage --testsuite unit"
+        ],
         "cs-check": [
             "@cs-check:src",
             "@cs-check:test"
