@@ -92,7 +92,10 @@ PHP;
             [
                 PHP_BINARY,
                 '-r',
-                'require_once "../config/tce_config.php"; require_once "tce_class_import_xml.php"; '
+                'require_once "../config/tce_config.php"; '
+                    . 'if (!function_exists("F_escape_sql")) { '
+                    . 'function F_escape_sql($db, $value, $quoted) { return $value; } } '
+                    . 'require_once "tce_class_import_xml.php"; '
                     . '$importer = new XMLQuestionImporter($argv[1]); $importer->__destruct(); '
                     . 'echo json_encode(file_exists($argv[1]));',
                 $path,
@@ -174,6 +177,8 @@ PHP;
                 PHP_BINARY,
                 '-r',
                 'require_once "../config/tce_config.php"; '
+                    . 'if (!function_exists("F_escape_sql")) { '
+                    . 'function F_escape_sql($db, $value, $quoted) { return $value; } } '
                     . 'require_once "../../shared/code/tce_functions_general.php"; '
                     . 'require_once "tce_class_import_xml.php"; '
                     . '$class = new ReflectionClass(XMLQuestionImporter::class); '

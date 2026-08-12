@@ -137,11 +137,15 @@ lint:
 	fi
 
 ## Run the unit test suite on the host (DB-free; integration tests run via `make dockertest`)
+.PHONY: preparetestconfig
+preparetestconfig:
+	@$(PHP) tools/prepare-test-config.php
+
 .PHONY: test
-test: ensuretarget
+test: ensuretarget preparetestconfig
 	@if [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; then \
 		[ -f phpunit.xml ] || cp phpunit.xml.dist phpunit.xml; \
-		./vendor/bin/phpunit --stderr --no-coverage --testsuite unit; \
+		TCEXAM_TEST_MODE=1 ./vendor/bin/phpunit --stderr --no-coverage --testsuite unit; \
 	else \
 		echo "Skipping tests (no phpunit.xml(.dist) yet — see plan Stage 5)"; \
 	fi
