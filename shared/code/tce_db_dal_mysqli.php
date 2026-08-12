@@ -45,13 +45,14 @@ if (function_exists('mysqli_report')) {
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
     mixed $host = 'localhost',
-    $port = '3306',
+    mixed $port = '3306',
     $username = 'root',
     #[\SensitiveParameter]
     $password = '',
     $database = '',
 ) {
     /** @var string $host */
+    /** @var int $port */
     set_error_handler(static fn(): bool => true);
     try {
         $db = mysqli_connect($host, $username, $password, $database, $port);
