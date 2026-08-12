@@ -43,3 +43,8 @@ function mysql_fetch_array(mixed $result): array|false
 function mysql_fetch_assoc(mixed $result): array|false
 {
 }
+
+/** @param resource $link_identifier */
+function mysql_real_escape_string(string $unescaped_string, mixed $link_identifier): string
+{
+}
