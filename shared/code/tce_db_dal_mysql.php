@@ -211,6 +211,7 @@ function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = 
 {
     /** @var resource $link_identifier */
     /** @var string $str */
+    /** @var bool $stripslashes */
     // Reverse magic_quotes_gpc/magic_quotes_sybase effects if ON.
     if ($stripslashes) {
         $str = stripslashes($str);
