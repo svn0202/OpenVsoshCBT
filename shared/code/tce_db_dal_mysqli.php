@@ -50,7 +50,7 @@ function f_db_connect(
     #[\SensitiveParameter]
     mixed $password = '',
     mixed $database = '',
-) {
+): mixed {
     /** @var string $host */
     /** @var int $port */
     /** @var string $username */
