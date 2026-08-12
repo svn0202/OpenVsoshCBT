@@ -17,3 +17,8 @@ function mysql_num_rows(mixed $result): int
 function mysql_affected_rows(mixed $link_identifier): int
 {
 }
+
+/** @param resource $link_identifier */
+function mysql_errno(mixed $link_identifier): int
+{
+}
