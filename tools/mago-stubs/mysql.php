@@ -35,3 +35,11 @@ function mysql_error(mixed $link_identifier): string
 function mysql_fetch_array(mixed $result): array|false
 {
 }
+
+/**
+ * @param resource $result
+ * @return array<string, mixed>|false
+ */
+function mysql_fetch_assoc(mixed $result): array|false
+{
+}
