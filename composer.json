@@ -71,7 +71,7 @@
             "@analyse:src",
             "@analyse:test"
         ],
-        "analyse:src": "vendor/bin/mago --config mago.src.toml analyze --baseline mago.analyze.baseline.toml",
+        "analyse:src": "bash tools/analyse-src.sh",
         "analyse:test": "vendor/bin/mago --config mago.test.toml analyze --baseline mago.test.analyze.baseline.toml",
         "qa": [
             "@cs-check",
