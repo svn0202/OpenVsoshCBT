@@ -80,8 +80,8 @@ require_once '../../shared/config/tce_user_registration.php';
  * } $l
  */
 $thispage_title = $l['t_tests_editor'];
-require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
+require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once 'tce_functions_tcecode_editor.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
@@ -1276,7 +1276,7 @@ echo '<label for="test_id">' . $l['w_test'] . '</label>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo
-    '<select name="test_id" id="test_id" onchange="document.getElementById(\'form_testeditor\').submit()" title="'
+    '<select name="test_id" id="test_id" data-editor-navigation onchange="window.location.assign(\'tce_edit_test.php?test_id=\' + encodeURIComponent(this.value))" title="'
         . $l['h_test']
         . '">'
         . K_NEWLINE

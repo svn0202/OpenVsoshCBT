@@ -57,8 +57,8 @@ require_once '../../shared/code/tce_authorization.php';
 $server = $_SERVER;
 
 $thispage_title = $l['t_questions_list'];
-require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
+require_once '../code/tce_page_header.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_auth_sql.php';
 require_once 'tce_functions_questions.php';
@@ -74,11 +74,11 @@ if (f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')) {
     $order_field .= ' question_description';
 }
 
-if (isset($_POST['selectmodule'])) {
+if (isset($_POST['selectmodule']) || isset($_REQUEST['changemodule'])) {
     $changemodule = 1;
 }
 
-if (isset($_POST['selectcategory'])) {
+if (isset($_POST['selectcategory']) || isset($_REQUEST['changecategory'])) {
     $changecategory = 1;
 }
 
@@ -180,7 +180,7 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<input type="hidden" name="changemodule" id="changemodule" value="" />' . K_NEWLINE;
 echo
-    '<select name="subject_module_id" id="subject_module_id" onchange="document.getElementById(\'form_selectquestions\').changemodule.value=1;document.getElementById(\'form_selectquestions\').changecategory.value=1; document.getElementById(\'form_selectquestions\').submit();" title="'
+    '<select name="subject_module_id" id="subject_module_id" onchange="window.location.assign(\'tce_show_all_questions.php?changemodule=1&amp;subject_module_id=\' + encodeURIComponent(this.value))" title="'
         . $l['w_module']
         . '">'
         . K_NEWLINE
@@ -233,7 +233,9 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<input type="hidden" name="changecategory" id="changecategory" value="" />' . K_NEWLINE;
 echo
-    '<select name="subject_id" id="subject_id" onchange="document.getElementById(\'form_selectquestions\').changecategory.value=1;document.getElementById(\'form_selectquestions\').submit()" title="'
+    '<select name="subject_id" id="subject_id" onchange="window.location.assign(\'tce_show_all_questions.php?changecategory=1&amp;subject_module_id='
+        . $subject_module_id
+        . '&amp;subject_id=\' + encodeURIComponent(this.value))" title="'
         . $l['h_subject']
         . '">'
         . K_NEWLINE

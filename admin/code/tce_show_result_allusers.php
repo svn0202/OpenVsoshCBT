@@ -44,8 +44,8 @@ require_once '../../shared/code/tce_authorization.php';
 $server = $_SERVER;
 
 $thispage_title = $l['t_result_all_users'];
-require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_form.php';
+require_once 'tce_page_header.php';
 require_once '../../shared/code/tce_functions_tcecode.php';
 require_once '../../shared/code/tce_functions_test.php';
 require_once '../../shared/code/tce_functions_test_stats.php';
@@ -296,7 +296,7 @@ echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo '<input type="hidden" name="changecategory" id="changecategory" value="" />' . K_NEWLINE;
 echo
-    '<select name="test_id" id="test_id" onchange="document.getElementById(\'form_resultallusers\').changecategory.value=1; document.getElementById(\'form_resultallusers\').submit()" title="'
+    '<select name="test_id" id="test_id" onchange="window.location.assign(\'tce_show_result_allusers.php?test_id=\' + encodeURIComponent(this.value))" title="'
         . $l['h_test']
         . '">'
         . K_NEWLINE
