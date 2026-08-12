@@ -140,7 +140,6 @@ function f_db_fetch_assoc(mixed $result): mixed
 function f_db_affected_rows(mixed $link_identifier, mixed $result): mixed
 {
     unset($link_identifier);
-    /** @var \PgSql\Result $result */
     return pg_affected_rows($result);
 }
 
