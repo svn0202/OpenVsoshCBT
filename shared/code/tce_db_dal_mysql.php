@@ -35,13 +35,13 @@
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
-    $host = 'localhost',
-    $port = '3306',
-    $username = 'root',
+    mixed $host = 'localhost',
+    mixed $port = '3306',
+    mixed $username = 'root',
     #[\SensitiveParameter]
-    $password = '',
-    $database = '',
-) {
+    mixed $password = '',
+    mixed $database = '',
+): mixed {
     set_error_handler(static fn(): bool => true);
     try {
         $db = mysql_connect($host . ':' . $port, $username, $password);
