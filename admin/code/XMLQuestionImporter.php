@@ -295,7 +295,6 @@ class XMLQuestionImporter
             . $module['module_name']
             . '\'
 			LIMIT 1';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if ($r) {
             $m = $this->databaseRow(F_db_fetch_array($r));
@@ -328,7 +327,6 @@ class XMLQuestionImporter
                     . $session['session_user_id']
                     . '\'
 					)';
-                /** @var object|resource|bool $r */
                 $r = F_db_query($sql, $db);
                 if (!$r) {
                     F_display_db_error();
@@ -383,7 +381,6 @@ class XMLQuestionImporter
             . $module['module_id']
             . '
 			LIMIT 1';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if ($r) {
             $m = $this->databaseRow(F_db_fetch_array($r));
@@ -419,7 +416,6 @@ class XMLQuestionImporter
                     . $module['module_id']
                     . '
 					)';
-                /** @var object|resource|bool $r */
                 $r = F_db_query($sql, $db);
                 if (!$r) {
                     F_display_db_error();
@@ -487,7 +483,6 @@ class XMLQuestionImporter
         }
 
         $sql .= ' AND question_subject_id=' . $subject['subject_id'] . ' LIMIT 1';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if ($r) {
             $m = $this->databaseRow(F_db_fetch_array($r));
@@ -531,7 +526,6 @@ class XMLQuestionImporter
         }
 
         $sql = 'START TRANSACTION';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if (!$r) {
             F_display_db_error();
@@ -592,7 +586,6 @@ class XMLQuestionImporter
             . ($this->boolval[$question['question_shuffle_answers']] ?? '0')
             . '\'
 			)';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if (!$r) {
             F_display_db_error(false);
@@ -611,7 +604,6 @@ class XMLQuestionImporter
         }
 
         $sql = 'COMMIT';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if (!$r) {
             F_display_db_error();
@@ -677,7 +669,6 @@ class XMLQuestionImporter
         }
 
         $sql .= ' AND answer_question_id=' . $question['question_id'] . ' LIMIT 1';
-        /** @var object|resource|bool $r */
         $r = F_db_query($sql, $db);
         if ($r) {
             $m = $this->databaseRow(F_db_fetch_array($r));
@@ -687,7 +678,6 @@ class XMLQuestionImporter
                 $answer['answer_id'] = $m['answer_id'];
             } else {
                 $sql = 'START TRANSACTION';
-                /** @var object|resource|bool $r */
                 $r = F_db_query($sql, $db);
                 if (!$r) {
                     F_display_db_error();
@@ -731,7 +721,6 @@ class XMLQuestionImporter
                     . f_empty_to_null($answer['answer_weight'])
                     . '
 						)';
-                /** @var object|resource|bool $r */
                 $r = F_db_query($sql, $db);
                 if (!$r) {
                     F_display_db_error(false);
@@ -744,7 +733,6 @@ class XMLQuestionImporter
                 }
 
                 $sql = 'COMMIT';
-                /** @var object|resource|bool $r */
                 $r = F_db_query($sql, $db);
                 if (!$r) {
                     F_display_db_error();

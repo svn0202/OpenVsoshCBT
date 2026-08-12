@@ -94,8 +94,7 @@ function f_db_error(mixed $link_identifier = null): mixed
  * NOTE: Convert MySQL RAND() function to Oracle RANDOM() on ORDER BY clause of selection queries.
  * @param $query (string) The query tosend. The query string should not end with a semicolon.
  * @param $link_identifier (resource) database link identifier.
- * @return false in case of error, TRUE or resource-identifier in case of success.
- * @mago-expect analysis:invalid-return-statement(2),less-specific-return-statement(2) -- legacy shared DAL contract
+ * @return object|resource|bool Statement or true on success, false on error.
  */
 function f_db_query(mixed $query, mixed $link_identifier): mixed
 {
@@ -251,7 +250,6 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
     $query = 'SELECT ' . $tablename . '_seq.currval FROM dual';
     set_error_handler(static fn (): bool => true);
     try {
-        /** @var object|resource|bool $r */
         $r = F_db_query($query, $link_identifier);
     } finally {
         restore_error_handler();
