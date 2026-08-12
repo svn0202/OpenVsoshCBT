@@ -86,7 +86,7 @@ function f_db_close($link_identifier)
  * @return string error message.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_error($link_identifier = null)
+function f_db_error(mixed $link_identifier = null): mixed
 {
     if (empty($link_identifier)) {
         return '';
