@@ -24,8 +24,13 @@ $toggle.addEventListener("click", function() {
 if(document.getElementById("testform")){
 	if(document.querySelector('ol.qlist')){
 		document.querySelector('ol.qlist').addEventListener('click', e => {
+			if (!e.target.firstElementChild) {
+				return;
+			}
 			var inputButton = document.getElementById(e.target.firstElementChild.id);
-			inputButton.click();
+			if (inputButton) {
+				inputButton.click();
+			}
 		});
 	}
 }
