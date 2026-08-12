@@ -188,7 +188,7 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
  * @return string SQL query string.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field)
+function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
     /** @var string $start_date_field */
     /** @var string $end_date_field */
