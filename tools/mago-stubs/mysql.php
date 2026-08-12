@@ -66,3 +66,8 @@ function mysql_select_db(string $database_name, mixed $link_identifier): bool
 function mysql_connect(string $server, string $username, string $password): mixed
 {
 }
+
+/** @return resource|bool */
+function mysql_query(mixed $query, mixed $link_identifier): mixed
+{
+}
