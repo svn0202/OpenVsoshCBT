@@ -10,7 +10,6 @@ final class TestAccessRulesControllerTest extends TestCase
     {
         $script = <<<'PHP'
 namespace Harness;
-class_alias(\DateTimeImmutable::class, __NAMESPACE__ . '\\DateTimeImmutable');
 define('K_AUTH_ADMIN_TESTS', 10);
 define('K_TABLE_TESTS', 'tests');
 define('K_TIMESTAMP_FORMAT', 'Y-m-d H:i:s');
