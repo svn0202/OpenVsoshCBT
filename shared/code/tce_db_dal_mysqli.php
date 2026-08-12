@@ -145,7 +145,7 @@ function f_db_fetch_assoc(mixed $result): mixed
  * Returns number of rows (tuples) affected by the last INSERT, UPDATE or DELETE query associated with link_identifier.
  * @param $link_identifier (resource) database link identifier.
  * @param $result (resource) result resource to the query result [UNUSED].
- * @return Number of rows.
+ * @return int Number of rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_affected_rows($link_identifier, $result)
