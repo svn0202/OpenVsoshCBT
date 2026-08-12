@@ -56,3 +56,8 @@ function mysql_real_escape_string(string $unescaped_string, mixed $link_identifi
 function mysql_fetch_row(mixed $result): array|false
 {
 }
+
+/** @param resource $link_identifier */
+function mysql_select_db(string $database_name, mixed $link_identifier): bool
+{
+}
