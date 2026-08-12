@@ -345,12 +345,14 @@ final class DatabaseDalIntegrationTest extends TestCase
         $dryRunErr = self::readAndClosePipe($dryRunPipes[2] ?? null, 'Dry-run stderr');
         $this->assertSame(0, proc_close($dryRun), $dryRunErr);
         $this->assertStringContainsString('pending openvsosh_access_settings.sql', $dryRunOut);
+        $migrationJournalQuery = (string) getenv('TCEXAM_DB_TYPE') === 'POSTGRESQL'
+            ? "SELECT COUNT(*) FROM information_schema.tables "
+                . "WHERE table_schema=current_schema() AND table_name='tce_schema_migrations'"
+            : "SELECT COUNT(*) FROM information_schema.tables "
+                . "WHERE table_schema=DATABASE() AND table_name='tce_schema_migrations'";
         $this->assertSame(
             '0',
-            $this->dbScalar(
-                "SELECT COUNT(*) FROM information_schema.tables "
-                . "WHERE table_schema=current_schema() AND table_name='tce_schema_migrations'"
-            ),
+            $this->dbScalar($migrationJournalQuery),
             '--dry-run must not create the migration journal',
         );
 

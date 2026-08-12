@@ -41,7 +41,8 @@ final class AlternativeAuthTest extends TestCase
                 PHP_BINARY,
                 '-n',
                 '-r',
-                'namespace Harness; $GLOBALS["calls"] = []; '
+                'namespace LDAP; if (!class_exists(Connection::class, false)) { class Connection {} } '
+                    . 'namespace Harness; $GLOBALS["calls"] = []; '
                     . 'function ldap_search($connection, $base, $filter, $attributes) {'
                     . '$GLOBALS["calls"][] = [get_class($connection), $base, $filter, $attributes]; '
                     . 'trigger_error("directory unavailable", E_USER_WARNING); return false; } '
@@ -52,7 +53,8 @@ final class AlternativeAuthTest extends TestCase
                     . 'eval("namespace Harness; " . substr($source, $start)); '
                     . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
                     . '$warnings[] = [$severity, $message]; return true; }); '
-                    . '$connection = \\ldap_connect("ldap://127.0.0.1:1"); '
+                    . '$connection = function_exists("ldap_connect") '
+                    . '? \\ldap_connect("ldap://127.0.0.1:1") : new \\LDAP\\Connection(); '
                     . '$value = f_tmf_alt_ldap_search($connection, "dc=example", "uid=alice", ["cn", "dn"]); '
                     . 'restore_error_handler(); echo json_encode([$value, $warnings, $GLOBALS["calls"]]);',
                 dirname(__DIR__) . '/shared/code/tce_altauth.php',
@@ -74,7 +76,8 @@ final class AlternativeAuthTest extends TestCase
                 PHP_BINARY,
                 '-n',
                 '-r',
-                'namespace Harness; $GLOBALS["calls"] = []; '
+                'namespace LDAP; if (!class_exists(Connection::class, false)) { class Connection {} } '
+                    . 'namespace Harness; $GLOBALS["calls"] = []; '
                     . 'function ldap_bind($connection, $dn, $password) {'
                     . '$GLOBALS["calls"][] = [get_class($connection), $dn, $password]; '
                     . 'trigger_error("invalid credentials", E_USER_WARNING); return false; } '
@@ -84,7 +87,8 @@ final class AlternativeAuthTest extends TestCase
                     . 'eval("namespace Harness; " . substr($source, $start)); '
                     . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
                     . '$warnings[] = [$severity, $message]; return true; }); '
-                    . '$connection = \\ldap_connect("ldap://127.0.0.1:1"); '
+                    . '$connection = function_exists("ldap_connect") '
+                    . '? \\ldap_connect("ldap://127.0.0.1:1") : new \\LDAP\\Connection(); '
                     . '$value = f_tmf_alt_ldap_bind_silently($connection, "uid=alice", "wrong"); '
                     . 'restore_error_handler(); echo json_encode([$value, $warnings, $GLOBALS["calls"]]);',
                 dirname(__DIR__) . '/shared/code/tce_altauth.php',
@@ -106,7 +110,8 @@ final class AlternativeAuthTest extends TestCase
                 PHP_BINARY,
                 '-n',
                 '-r',
-                'namespace Harness; $GLOBALS["calls"] = []; '
+                'namespace LDAP; if (!class_exists(Connection::class, false)) { class Connection {} } '
+                    . 'namespace Harness; $GLOBALS["calls"] = []; '
                     . 'function ldap_unbind($connection) {'
                     . '$GLOBALS["calls"][] = get_class($connection); '
                     . 'trigger_error("unbind failed", E_USER_WARNING); return false; } '
@@ -116,7 +121,8 @@ final class AlternativeAuthTest extends TestCase
                     . 'eval("namespace Harness; " . substr($source, $start)); '
                     . '$warnings = []; set_error_handler(static function ($severity, $message) use (&$warnings) {'
                     . '$warnings[] = [$severity, $message]; return true; }); '
-                    . '$connection = \\ldap_connect("ldap://127.0.0.1:1"); '
+                    . '$connection = function_exists("ldap_connect") '
+                    . '? \\ldap_connect("ldap://127.0.0.1:1") : new \\LDAP\\Connection(); '
                     . '$value = f_tmf_alt_ldap_unbind_silently($connection); '
                     . 'restore_error_handler(); echo json_encode([$value, $warnings, $GLOBALS["calls"]]);',
                 dirname(__DIR__) . '/shared/code/tce_altauth.php',

@@ -29,5 +29,9 @@ vendor/bin/mago --config mago.src.toml analyze "${common_files[@]}" --baseline m
 
 for driver in mysql mysqli postgresql oracle; do
     driver_file="shared/code/tce_db_dal_${driver}.php"
-    vendor/bin/mago --config mago.src.toml analyze "$driver_file" --ignore-baseline
+    # Mago resolves the configured workspace even when a single path is supplied, which makes
+    # mutually exclusive DAL implementations look like duplicate definitions. Stdin mode keeps
+    # each driver in its own analysis unit while preserving the original filename in diagnostics.
+    sed '/@mago-expect analysis:duplicate-definition/d' "$driver_file" \
+        | vendor/bin/mago --config mago.src.toml analyze --stdin-input "$driver_file" --ignore-baseline
 done
