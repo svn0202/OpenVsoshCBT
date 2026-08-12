@@ -192,11 +192,13 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
      * mysql_insert_id() will be incorrect.
      */
     //return mysql_insert_id($link_identifier);
-    if (
-        ($r = mysql_query('SELECT LAST_INSERT_ID() FROM ' . $tablename . '', $link_identifier)) && ($m =
-            mysql_fetch_row($r))
-    ) {
-        return $m[0];
+    $result = mysql_query('SELECT LAST_INSERT_ID() FROM ' . $tablename . '', $link_identifier);
+    if ($result) {
+        /** @var resource $result */
+        $row = mysql_fetch_row($result);
+        if ($row) {
+            return $row[0];
+        }
     }
 
     return 0;
