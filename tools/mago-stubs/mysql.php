@@ -27,3 +27,11 @@ function mysql_errno(mixed $link_identifier): int
 function mysql_error(mixed $link_identifier): string
 {
 }
+
+/**
+ * @param resource $result
+ * @return array<int|string, mixed>|false
+ */
+function mysql_fetch_array(mixed $result): array|false
+{
+}
