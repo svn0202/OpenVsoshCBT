@@ -31,7 +31,7 @@
  * @param $username (string) Name of the user that owns the server process.
  * @param $password (string) Password of the user that owns the server process.
  * @param $database (string) Database name.
- * @return MySQL link identifier on success, or FALSE on failure.
+ * @return resource|false Link identifier on success, or false on failure.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_connect(
