@@ -12,3 +12,8 @@ function mysql_close(mixed $link_identifier): bool
 function mysql_num_rows(mixed $result): int
 {
 }
+
+/** @param resource $link_identifier */
+function mysql_affected_rows(mixed $link_identifier): int
+{
+}
