@@ -194,6 +194,7 @@ function f_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_field): mixed
 {
     /** @var string $start_date_field */
+    /** @var string $end_date_field */
     return 'TIMESTAMPDIFF(SECOND, ' . $start_date_field . ', ' . $end_date_field . ')';
 }
 
