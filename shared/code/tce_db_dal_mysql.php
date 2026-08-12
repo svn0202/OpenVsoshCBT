@@ -177,6 +177,7 @@ function f_db_insert_id(mixed $link_identifier, mixed $tablename = '', mixed $fi
 {
     /** @var resource $link_identifier */
     /** @var string $tablename */
+    /** @var string $fieldname */
     unset($fieldname);
     /*
      * NOTE : mysql_insert_id() converts the return type of the
