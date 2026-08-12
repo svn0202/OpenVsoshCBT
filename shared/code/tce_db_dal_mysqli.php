@@ -204,7 +204,7 @@ function f_db_datetime_diff_seconds(mixed $start_date_field, mixed $end_date_fie
  * @since 5.0.005 2007-12-05
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
-function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true)
+function f_escape_sql(mixed $link_identifier, mixed $str, mixed $stripslashes = true): mixed
 {
     /** @var mysqli $link_identifier */
     /** @var string $str */
