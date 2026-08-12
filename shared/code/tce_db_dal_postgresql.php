@@ -131,7 +131,7 @@ function f_db_fetch_array(mixed $result): mixed
  * Fetch a result row as an associative array.
  * Note: This function sets NULL fields to PHP NULL value.
  * @param \PgSql\Result $result Query result.
- * @return array<string, string|null>|false Associative row, or false if there are no more rows.
+ * @return array<int|string, string|null>|false Associative row, or false if there are no more rows.
  */
 // @mago-expect analysis:duplicate-definition -- only one configured DAL implementation is loaded at runtime
 function f_db_fetch_assoc(mixed $result): mixed
