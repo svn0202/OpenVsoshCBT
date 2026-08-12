@@ -55,7 +55,6 @@ $logged = false; // the user is not yet logged in
 $PHPSESSIDSQL = openvsosh_authorization_string(F_escape_sql($db, $PHPSESSID));
 $fingerprintkey = get_client_fingerprint();
 $sqls = 'SELECT * FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $PHPSESSIDSQL . "'";
-/** @var object|resource|bool $rs */
 $rs = F_db_query($sqls, $db);
 if ($rs) {
     $ms = openvsosh_authorization_row(F_db_fetch_array($rs));
@@ -96,7 +95,6 @@ if ($rs) {
             . "' WHERE cpsession_id='"
             . $PHPSESSIDSQL
             . "'";
-        /** @var object|resource|bool $rx */
         $rx = F_db_query($sqlx, $db);
         if (!$rx) {
             F_display_db_error();
@@ -215,7 +213,6 @@ if (
         $bruteforce = true;
         // we are using another entry in the session table to keep track of the login attempts
         $sqlt = 'SELECT * FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $fingerprintkey . "' LIMIT 1";
-        /** @var object|resource|bool $rt */
         $rt = F_db_query($sqlt, $db);
         if ($rt) {
             $mt = openvsosh_authorization_row(F_db_fetch_array($rt));
@@ -245,7 +242,6 @@ if (
 					WHERE cpsession_id=\''
                     . $fingerprintkey
                     . "'";
-                /** @var object|resource|bool $updated_attempt */
                 $updated_attempt = F_db_query($sqlup, $db);
                 if (!$updated_attempt) {
                     F_display_db_error();
@@ -271,7 +267,6 @@ if (
                     . $wait
                     . '\'
 					)';
-                /** @var object|resource|bool $inserted_attempt */
                 $inserted_attempt = F_db_query($sqls, $db);
                 if (!$inserted_attempt) {
                     F_display_db_error();
@@ -309,7 +304,6 @@ if (
                     . " WHERE cpsession_id='"
                     . $xuser_otpcode
                     . "' LIMIT 1";
-                /** @var object|resource|bool $rt */
                 $rt = F_db_query($sqlt, $db);
                 if ($rt && !openvsosh_authorization_row(F_db_fetch_array($rt))) {
                     // Store this token on the session table to mark it as invalid for 5 minute (300 seconds)
@@ -329,7 +323,6 @@ if (
                         . '\',
 							\'300\'
 							)';
-                    /** @var object|resource|bool $stored_otp */
                     $stored_otp = F_db_query($sqltu, $db);
                     if (!$stored_otp) {
                         F_display_db_error();
@@ -348,7 +341,6 @@ if (
                 . " WHERE user_name='"
                 . openvsosh_authorization_string(F_escape_sql($db, $submitted_username))
                 . "'";
-            /** @var object|resource|bool $r */
             $r = F_db_query($sql, $db);
             if ($r) {
                 $m = openvsosh_authorization_row(F_db_fetch_array($r));
@@ -390,7 +382,6 @@ if (
 								WHERE user_name=\''
                             . openvsosh_authorization_string(F_escape_sql($db, $submitted_username))
                             . "'";
-                        /** @var object|resource|bool $ru */
                         $ru = F_db_query($sqlu, $db);
                         if (!$ru) {
                             F_display_db_error();
@@ -405,7 +396,6 @@ if (
                             . "' AND user_password='"
                             . F_escape_sql($db, $xuser_password)
                             . "'";
-                        /** @var object|resource|bool $rd */
                         $rd = F_db_query($sqld, $db);
                         if ($rd) {
                             $md = openvsosh_authorization_row(F_db_fetch_array($rd));
@@ -490,7 +480,6 @@ if (
                         . (int) $altusr['user_level']
                         . '\'
 							)';
-                    /** @var object|resource|bool $r */
                     $r = F_db_query($sql, $db);
                     if (!$r) {
                         F_display_db_error();

@@ -220,7 +220,6 @@ function f_show_select_user(
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     if ($r) {
         $m = $row_result(F_db_fetch_array($r));
@@ -385,7 +384,6 @@ function f_show_select_user(
                     . $user_id
                     . '
 					ORDER BY group_name';
-                /** @var object|resource|bool $rg */
                 $rg = F_db_query($sqlg, $db);
                 if ($rg) {
                     while ($mg = $row_result(F_db_fetch_array($rg))) {
@@ -682,7 +680,6 @@ function f_show_select_user_popup(
         $sql .= ' LIMIT ' . $rowsperpage . ' OFFSET ' . $firstrow . '';
     }
 
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     if ($r) {
         $m = $row_result(F_db_fetch_array($r));
@@ -930,7 +927,6 @@ function f_is_test_on_group(mixed $test_id, mixed $group_id): bool
         . ' AND tstgrp_group_id='
         . (int) $group_id
         . ' LIMIT 1';
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     return $r && (bool) F_db_fetch_array($r);
 }
@@ -954,7 +950,6 @@ function f_is_user_on_group(mixed $user_id, mixed $group_id): bool
         . ' AND usrgrp_group_id='
         . (int) $group_id
         . ' LIMIT 1';
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     return $r && (bool) F_db_fetch_array($r);
 }
@@ -1077,7 +1072,6 @@ function f_user_group_select(mixed $name = 'group_id'): string
         . '">'
         . K_NEWLINE;
     $sql = F_user_group_select_sql();
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     if ($r) {
         $str .= '<option value="0" style="color:gray" selected="selected">' . $l['w_group'] . '</option>' . K_NEWLINE;
@@ -1114,7 +1108,6 @@ function f_get_user_groups(mixed $user_id): array
     $sql = 'SELECT usrgrp_group_id
 		FROM ' . K_TABLE_USERGROUP . '
 		WHERE usrgrp_user_id=' . $user_id . '';
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     if ($r) {
         while ($m = $row_result(F_db_fetch_array($r))) {
@@ -1150,7 +1143,6 @@ function f_get_uid_from_regnum(mixed $regnum): int|string
     };
     require_once '../config/tce_config.php';
     $sql = 'SELECT user_id FROM ' . K_TABLE_USERS . " WHERE user_regnumber='" . F_escape_sql($db, $regnum) . "' LIMIT 1";
-    /** @var object|resource|bool $r */
     $r = F_db_query($sql, $db);
     if (!$r) {
         return 0;
