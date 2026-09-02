@@ -164,17 +164,27 @@
         surface.setAttribute('aria-multiline', 'true');
         surface.setAttribute('aria-label', textarea.title || 'Редактор');
 
-        const imageInspector = document.createElement('div');
-        imageInspector.className = 'rich-content-editor__image-inspector';
-        imageInspector.hidden = true;
-        imageInspector.setAttribute('aria-label', 'Свойства изображения');
-        imageInspector.innerHTML = '<span class="rich-content-editor__image-title">Изображение</span>'
-            + '<label>Ширина <input type="number" min="1" step="1" inputmode="numeric" data-image-property="width" /></label>'
-            + '<label>Высота <input type="number" min="1" step="1" inputmode="numeric" data-image-property="height" /></label>'
-            + '<label class="rich-content-editor__image-alt">Описание <input type="text" data-image-property="alt" /></label>'
-            + '<button type="button" data-image-action="reset">Сбросить размер</button>';
+        const imageMenu = document.createElement('div');
+        imageMenu.className = 'rich-content-editor__image-menu';
+        imageMenu.setAttribute('role', 'menu');
+        imageMenu.hidden = true;
+        imageMenu.innerHTML = '<button type="button" role="menuitem">Редактировать изображение</button>';
 
-        editor.append(toolbar, imageInspector, surface);
+        const imageDialog = document.createElement('dialog');
+        imageDialog.className = 'rich-content-editor__image-dialog';
+        imageDialog.innerHTML = '<form method="dialog">'
+            + '<h2>Свойства изображения</h2>'
+            + '<label>Ширина, px <input type="number" min="1" step="1" inputmode="numeric" name="width" /></label>'
+            + '<label>Высота, px <input type="number" min="1" step="1" inputmode="numeric" name="height" /></label>'
+            + '<label>Описание <input type="text" name="alt" /></label>'
+            + '<div class="rich-content-editor__dialog-actions">'
+            + '<button type="button" data-image-action="reset">Исходный размер</button>'
+            + '<span></span><button type="submit" value="cancel">Отмена</button>'
+            + '<button type="submit" value="save" class="primary">Сохранить</button></div>'
+            + '</form>';
+        const imageForm = imageDialog.querySelector('form');
+
+        editor.append(toolbar, imageMenu, imageDialog, surface);
         textarea.insertAdjacentElement('afterend', editor);
 
         // The legacy TCECode buttons are kept in the markup for fields that
@@ -189,7 +199,6 @@
 
         let sourceMode = false;
         let selectedImage = null;
-        let imageAspectRatio = null;
         const syncFromSource = () => {
             surface.replaceChildren(sanitizeFragment(textarea.value));
         };
@@ -199,20 +208,29 @@
         const clearImageSelection = () => {
             selectedImage?.classList.remove('is-selected');
             selectedImage = null;
-            imageAspectRatio = null;
-            imageInspector.hidden = true;
+            imageMenu.hidden = true;
         };
         const selectImage = (image) => {
             clearImageSelection();
             selectedImage = image;
             selectedImage.classList.add('is-selected');
-            const width = image.getAttribute('width') || Math.round(image.getBoundingClientRect().width) || '';
-            const height = image.getAttribute('height') || Math.round(image.getBoundingClientRect().height) || '';
-            imageAspectRatio = Number(width) > 0 && Number(height) > 0 ? Number(width) / Number(height) : null;
-            imageInspector.querySelector('[data-image-property="width"]').value = width;
-            imageInspector.querySelector('[data-image-property="height"]').value = height;
-            imageInspector.querySelector('[data-image-property="alt"]').value = image.alt;
-            imageInspector.hidden = false;
+        };
+        const openImageDialog = () => {
+            if (!selectedImage) {
+                return;
+            }
+            const width = selectedImage.getAttribute('width') || Math.round(selectedImage.getBoundingClientRect().width) || '';
+            const height = selectedImage.getAttribute('height') || Math.round(selectedImage.getBoundingClientRect().height) || '';
+            imageForm.elements.width.value = width;
+            imageForm.elements.height.value = height;
+            imageForm.elements.alt.value = selectedImage.alt;
+            imageMenu.hidden = true;
+            if (typeof imageDialog.showModal === 'function') {
+                imageDialog.showModal();
+            } else {
+                imageDialog.setAttribute('open', 'open');
+            }
+            imageForm.elements.width.focus();
         };
 
         surface.addEventListener('input', syncToSource);
@@ -223,42 +241,57 @@
                 clearImageSelection();
             }
         });
+        surface.addEventListener('contextmenu', (event) => {
+            if (!(event.target instanceof HTMLImageElement)) {
+                clearImageSelection();
+                return;
+            }
+            event.preventDefault();
+            selectImage(event.target);
+            imageMenu.style.left = `${event.clientX}px`;
+            imageMenu.style.top = `${event.clientY}px`;
+            imageMenu.hidden = false;
+        });
         surface.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 clearImageSelection();
             }
         });
-        imageInspector.addEventListener('input', (event) => {
-            const input = event.target.closest('input[data-image-property]');
-            if (!input || !selectedImage) {
-                return;
+        imageMenu.addEventListener('click', openImageDialog);
+        document.addEventListener('click', (event) => {
+            if (!imageMenu.contains(event.target)) {
+                imageMenu.hidden = true;
             }
-            const property = input.dataset.imageProperty;
-            const value = input.value.trim();
-            if (property === 'alt') {
-                selectedImage.alt = value;
-            } else if (value === '' || Number(value) < 1) {
-                selectedImage.removeAttribute(property);
-            } else {
-                selectedImage.setAttribute(property, String(Math.round(Number(value))));
-                if (property === 'width' && imageAspectRatio) {
-                    const height = Math.max(1, Math.round(Number(value) / imageAspectRatio));
-                    selectedImage.setAttribute('height', String(height));
-                    imageInspector.querySelector('[data-image-property="height"]').value = height;
-                }
-            }
-            syncToSource();
         });
-        imageInspector.addEventListener('click', (event) => {
+        imageDialog.addEventListener('click', (event) => {
             if (!event.target.closest('[data-image-action="reset"]') || !selectedImage) {
                 return;
             }
             selectedImage.removeAttribute('width');
             selectedImage.removeAttribute('height');
-            imageInspector.querySelector('[data-image-property="width"]').value = '';
-            imageInspector.querySelector('[data-image-property="height"]').value = '';
-            imageAspectRatio = null;
+            imageForm.elements.width.value = '';
+            imageForm.elements.height.value = '';
             syncToSource();
+        });
+        imageDialog.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (event.submitter?.value === 'save' && selectedImage) {
+                ['width', 'height'].forEach((property) => {
+                    const value = imageForm.elements[property].value.trim();
+                    if (value === '' || Number(value) < 1) {
+                        selectedImage.removeAttribute(property);
+                    } else {
+                        selectedImage.setAttribute(property, String(Math.round(Number(value))));
+                    }
+                });
+                selectedImage.alt = imageForm.elements.alt.value.trim();
+                syncToSource();
+            }
+            if (typeof imageDialog.close === 'function') {
+                imageDialog.close();
+            } else {
+                imageDialog.removeAttribute('open');
+            }
         });
         textarea.form?.addEventListener('submit', () => {
             if (!sourceMode && !editor.hidden) {
