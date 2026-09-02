@@ -1115,8 +1115,8 @@ body.admin-density-compact .admin-shell button {
     resize: vertical;
 }
 
-.admin-shell .formw:has(> .rich-content-editor:not([hidden])) .tcecode-toolbar {
-    display: none;
+.admin-shell .rich-content-editor__legacy-toolbar {
+    display: none !important;
 }
 
 @media (max-width: 700px) {

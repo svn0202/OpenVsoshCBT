@@ -177,6 +177,16 @@
         editor.append(toolbar, imageInspector, surface);
         textarea.insertAdjacentElement('afterend', editor);
 
+        // The legacy TCECode buttons are kept in the markup for fields that
+        // still use the old editor, but must not duplicate the visual editor.
+        const legacyToolbar = Array.from(textarea.parentElement?.children || []).find((element) => (
+            element.classList?.contains('tcecode-toolbar')
+        ));
+        if (legacyToolbar) {
+            legacyToolbar.classList.add('rich-content-editor__legacy-toolbar');
+            legacyToolbar.hidden = true;
+        }
+
         let sourceMode = false;
         let selectedImage = null;
         let imageAspectRatio = null;
