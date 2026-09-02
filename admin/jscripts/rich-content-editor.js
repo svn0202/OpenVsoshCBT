@@ -10,6 +10,7 @@
         'APPLET', 'EMBED', 'FORM', 'IFRAME', 'MATH', 'OBJECT', 'SCRIPT', 'STYLE', 'SVG', 'TEMPLATE',
     ]);
     const commonAttributes = new Set(['dir', 'lang', 'style', 'title']);
+    const richEditors = new Map();
 
     const isSafeUrl = (value, image) => {
         const url = value.trim();
@@ -397,10 +398,10 @@
                     return;
                 }
             } else if (command === 'insertImage') {
-                value = window.prompt('Адрес изображения', 'https://');
-                if (!value || !isSafeUrl(value, true)) {
-                    return;
-                }
+                const formId = textarea.form?.id || '';
+                const url = `tce_select_mediafile.php?frm=${encodeURIComponent(formId)}&fld=${encodeURIComponent(textarea.id)}`;
+                window.open(url, 'mediaselect', 'height=600,width=680,resizable=yes,menubar=no,scrollbars=yes,toolbar=no,status=no');
+                return;
             }
             if (command === 'insertTable') {
                 const rows = Number.parseInt(window.prompt('Количество строк', '2') || '', 10);
@@ -469,7 +470,34 @@
                 editor.hidden = true;
                 textarea.hidden = false;
             },
+            insertMedia(file, width, height, alt) {
+                const path = String(file).replace(/^\/+/, '');
+                if (path === '' || path.includes('..')) {
+                    return;
+                }
+                const image = document.createElement('img');
+                image.src = `../../cache/${path}`;
+                image.alt = String(alt || '');
+                if (/^\d{1,4}$/.test(String(width))) {
+                    image.width = Number(width);
+                }
+                if (/^\d{1,4}$/.test(String(height))) {
+                    image.height = Number(height);
+                }
+                surface.append(document.createElement('br'), image, document.createElement('br'));
+                syncToSource();
+                surface.focus();
+            },
         };
+    };
+
+    window.F_rich_content_editor_insert_media = (fieldId, file, width, height, alt) => {
+        const editor = richEditors.get(String(fieldId));
+        if (!editor) {
+            return false;
+        }
+        editor.insertMedia(file, width, height, alt);
+        return true;
     };
 
     document.querySelectorAll('[data-rich-editor-for]').forEach((toggle) => {
@@ -478,6 +506,7 @@
             return;
         }
         const editor = createEditor(textarea);
+        richEditors.set(textarea.id, editor);
         let open = false;
         toggle.addEventListener('click', () => {
             open = !open;

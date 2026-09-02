@@ -392,11 +392,18 @@ if (!empty($file)) {
             . '"/></td>'
     ;
     $onclick =
-        "FJ_insert_text(window.opener.document.getElementById('"
+        "if (!(window.opener && typeof window.opener.F_rich_content_editor_insert_media === 'function'"
+        . " && window.opener.F_rich_content_editor_insert_media('"
+        . $callingfield
+        . "', document.getElementById('tcefile').value, document.getElementById('object_width').value, "
+        . "document.getElementById('object_height').value, document.getElementById('object_alt').value)"
+        . ')) {'
+        . "FJ_insert_text(window.opener.document.getElementById('"
         . $callingform
         . "')."
         . $callingfield
-        . ", '[object]'+document.getElementById('tcefile').value+'[/object:'+document.getElementById('object_width').value+':'+document.getElementById('object_height').value+':'+document.getElementById('object_alt').value+']');";
+        . ", '[object]'+document.getElementById('tcefile').value+'[/object:'+document.getElementById('object_width').value+':'+document.getElementById('object_height').value+':'+document.getElementById('object_alt').value+']');"
+        . '}';
     echo
         '<td><input type="button" name="addobject" id="addobject" value="'
             . $l['w_add']
