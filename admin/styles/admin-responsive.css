@@ -981,18 +981,31 @@ body.admin-density-compact .admin-shell button {
 .admin-shell .rich-content-editor {
     width: 100%;
     overflow: hidden;
-    border: 1px solid #bec9d8;
-    border-radius: 7px;
+    border: 1px solid #b9c7d7;
+    border-radius: 9px;
     background: #fff;
+    box-shadow: 0 2px 8px rgba(31, 55, 88, 0.08);
 }
 
 .admin-shell .rich-content-editor__toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
-    padding: 7px;
+    gap: 6px;
+    padding: 8px;
     border-bottom: 1px solid #d7dee8;
-    background: #f4f7fa;
+    background: #f6f8fb;
+}
+
+.admin-shell .rich-content-editor__group {
+    display: inline-flex;
+    gap: 4px;
+    padding-inline-end: 6px;
+    border-inline-end: 1px solid #d7dee8;
+}
+
+.admin-shell .rich-content-editor__group:last-child {
+    padding-inline-end: 0;
+    border-inline-end: 0;
 }
 
 .admin-shell .rich-content-editor__toolbar button,
@@ -1001,7 +1014,7 @@ body.admin-density-compact .admin-shell button {
     min-height: 34px;
     padding: 5px 8px;
     border: 1px solid #b8c5d4;
-    border-radius: 4px;
+    border-radius: 5px;
     background: #fff;
     color: var(--admin-text);
     font: inherit;
@@ -1011,6 +1024,18 @@ body.admin-density-compact .admin-shell button {
 .admin-shell .rich-content-editor__toolbar button:hover {
     border-color: var(--admin-accent);
     background: #eaf4fd;
+}
+
+.admin-shell .rich-content-editor__toolbar button:focus-visible,
+.admin-shell .rich-content-editor__toolbar select:focus-visible {
+    outline: 2px solid var(--admin-accent);
+    outline-offset: 1px;
+}
+
+.admin-shell .rich-content-editor__toolbar button.is-active {
+    border-color: var(--admin-accent-dark);
+    background: var(--admin-accent);
+    color: #fff;
 }
 
 .admin-shell .rich-content-editor__surface {
@@ -1027,13 +1052,78 @@ body.admin-density-compact .admin-shell button {
     box-shadow: inset 0 0 0 3px rgba(8, 121, 201, 0.14);
 }
 
+.admin-shell .rich-content-editor__image-inspector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 8px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #d7dee8;
+    background: #eef6fd;
+}
+
+.admin-shell .rich-content-editor__image-title {
+    padding-bottom: 8px;
+    color: #29445e;
+    font-weight: bold;
+}
+
+.admin-shell .rich-content-editor__image-inspector label {
+    display: grid;
+    gap: 3px;
+    color: #50657a;
+    font-size: 12px;
+}
+
+.admin-shell .rich-content-editor__image-inspector input {
+    box-sizing: border-box;
+    width: 94px;
+    min-height: 32px;
+}
+
+.admin-shell .rich-content-editor__image-inspector .rich-content-editor__image-alt input {
+    width: min(240px, 42vw);
+}
+
+.admin-shell .rich-content-editor__image-inspector button {
+    min-height: 32px;
+    margin-bottom: 0;
+    border: 1px solid #b8c5d4;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--admin-text);
+    cursor: pointer;
+}
+
 .admin-shell .rich-content-editor__surface img {
     max-width: 100%;
     height: auto;
+    cursor: pointer;
+}
+
+.admin-shell .rich-content-editor__surface img.is-selected {
+    outline: 3px solid var(--admin-accent);
+    outline-offset: 2px;
+}
+
+.admin-shell .rich-content-editor > textarea {
+    display: block;
+    box-sizing: border-box;
+    width: calc(100% - 28px);
+    min-height: 260px;
+    margin: 14px;
+    resize: vertical;
 }
 
 .admin-shell .formw:has(> .rich-content-editor:not([hidden])) .tcecode-toolbar {
     display: none;
+}
+
+@media (max-width: 700px) {
+    .admin-shell .rich-content-editor__group {
+        padding-inline-end: 0;
+        border-inline-end: 0;
+    }
 }
 
 .admin-shell input[type="submit"],
