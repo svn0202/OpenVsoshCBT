@@ -1133,6 +1133,25 @@ body.admin-density-compact .admin-shell button {
     outline-offset: 2px;
 }
 
+.admin-shell .rich-content-editor__surface table {
+    width: 100%;
+    margin: 12px 0;
+    border-collapse: collapse;
+}
+
+.admin-shell .rich-content-editor__surface th,
+.admin-shell .rich-content-editor__surface td {
+    min-width: 72px;
+    padding: 7px 9px;
+    border: 1px solid #8fa4ba;
+    vertical-align: top;
+}
+
+.admin-shell .rich-content-editor__surface th {
+    background: #eef4fa;
+    font-weight: bold;
+}
+
 .admin-shell .rich-content-editor > textarea {
     display: block;
     box-sizing: border-box;

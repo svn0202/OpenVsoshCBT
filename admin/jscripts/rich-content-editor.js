@@ -125,6 +125,7 @@
             ['←', 'По левому краю', 'justifyLeft'],
             ['↔', 'По центру', 'justifyCenter'],
             ['→', 'По правому краю', 'justifyRight'],
+            ['Таблица', 'Вставить таблицу', 'insertTable'],
         ].forEach((item) => listGroup.appendChild(toolbarButton(...item)));
 
         const actionGroup = toolbarGroup('Дополнительные действия');
@@ -344,6 +345,31 @@
                 if (!value || !isSafeUrl(value, true)) {
                     return;
                 }
+            }
+            if (command === 'insertTable') {
+                const rows = Number.parseInt(window.prompt('Количество строк', '2') || '', 10);
+                const columns = Number.parseInt(window.prompt('Количество столбцов', '2') || '', 10);
+                if (!Number.isInteger(rows) || !Number.isInteger(columns)
+                    || rows < 1 || columns < 1 || rows > 20 || columns > 20) {
+                    window.alert('Укажите от 1 до 20 строк и столбцов.');
+                    return;
+                }
+                const table = document.createElement('table');
+                const body = document.createElement('tbody');
+                for (let row = 0; row < rows; row += 1) {
+                    const tableRow = document.createElement('tr');
+                    for (let column = 0; column < columns; column += 1) {
+                        const cell = document.createElement(row === 0 ? 'th' : 'td');
+                        cell.textContent = row === 0 ? `Заголовок ${column + 1}` : 'Текст';
+                        tableRow.appendChild(cell);
+                    }
+                    body.appendChild(tableRow);
+                }
+                table.appendChild(body);
+                document.execCommand('insertHTML', false, table.outerHTML);
+                syncToSource();
+                surface.focus();
+                return;
             }
             document.execCommand(command, false, value);
             syncToSource();
