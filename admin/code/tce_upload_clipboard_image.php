@@ -30,20 +30,28 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
     f_clipboard_image_response(['error' => 'Не удалось получить изображение из буфера.'], 400);
 }
 
-$temporary_name = (string) ($upload['tmp_name'] ?? '');
-$size = (int) ($upload['size'] ?? 0);
+$temporary_name = $upload['tmp_name'] ?? null;
+$size = $upload['size'] ?? null;
+if (!is_string($temporary_name) || !is_int($size)) {
+    f_clipboard_image_response(['error' => 'Не удалось получить изображение из буфера.'], 400);
+}
 if (!is_uploaded_file($temporary_name) || $size < 1 || $size > K_MAX_UPLOAD_SIZE) {
     f_clipboard_image_response(['error' => 'Размер изображения превышает допустимый.'], 413);
 }
 
-$image_info = @getimagesize($temporary_name);
+set_error_handler(static fn(): bool => true);
+$image_info = getimagesize($temporary_name);
+restore_error_handler();
+if (!is_array($image_info)) {
+    f_clipboard_image_response(['error' => 'Файл из буфера не является изображением.'], 415);
+}
 $mime_to_extension = [
     'image/gif' => 'gif',
     'image/jpeg' => 'jpg',
     'image/png' => 'png',
 ];
-$mime = is_array($image_info) ? (string) ($image_info['mime'] ?? '') : '';
-if (!isset($mime_to_extension[$mime])) {
+$extension = $mime_to_extension[$image_info['mime']] ?? null;
+if ($extension === null) {
     f_clipboard_image_response(['error' => 'Можно вставить изображение в формате PNG, JPEG или GIF.'], 415);
 }
 
@@ -58,7 +66,7 @@ if ($user_level < K_AUTH_ADMINISTRATOR) {
     }
 }
 
-$filename = 'clipboard_' . gmdate('Ymd_His') . '_' . bin2hex(random_bytes(6)) . '.' . $mime_to_extension[$mime];
+$filename = 'clipboard_' . gmdate('Ymd_His') . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
 $target = $directory . $filename;
 if (!move_uploaded_file($temporary_name, $target)) {
     f_clipboard_image_response(['error' => 'Не удалось сохранить изображение.'], 500);
@@ -67,6 +75,6 @@ if (!move_uploaded_file($temporary_name, $target)) {
 $relative_path = $user_level < K_AUTH_ADMINISTRATOR ? 'uid/' . $user_id . '/' . $filename : $filename;
 f_clipboard_image_response([
     'file' => $relative_path,
-    'width' => (int) ($image_info[0] ?? 0),
-    'height' => (int) ($image_info[1] ?? 0),
+    'width' => $image_info[0],
+    'height' => $image_info[1],
 ]);
