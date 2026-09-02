@@ -169,7 +169,8 @@
         imageMenu.className = 'rich-content-editor__image-menu';
         imageMenu.setAttribute('role', 'menu');
         imageMenu.hidden = true;
-        imageMenu.innerHTML = '<button type="button" role="menuitem">Редактировать изображение</button>';
+        imageMenu.innerHTML = '<button type="button" role="menuitem" data-image-menu-action="edit">Редактировать изображение</button>'
+            + '<button type="button" role="menuitem" data-image-menu-action="delete">Удалить изображение</button>';
 
         const imageDialog = document.createElement('dialog');
         imageDialog.className = 'rich-content-editor__image-dialog';
@@ -266,11 +267,29 @@
             imageMenu.hidden = false;
         });
         surface.addEventListener('keydown', (event) => {
+            if ((event.key === 'Delete' || event.key === 'Backspace') && selectedImage) {
+                event.preventDefault();
+                selectedImage.remove();
+                clearImageSelection();
+                syncToSource();
+                return;
+            }
             if (event.key === 'Escape') {
                 clearImageSelection();
             }
         });
-        imageMenu.addEventListener('click', openImageDialog);
+        imageMenu.addEventListener('click', (event) => {
+            const action = event.target.closest('[data-image-menu-action]')?.dataset.imageMenuAction;
+            if (action === 'delete' && selectedImage) {
+                selectedImage.remove();
+                clearImageSelection();
+                syncToSource();
+                return;
+            }
+            if (action === 'edit') {
+                openImageDialog();
+            }
+        });
         document.addEventListener('click', (event) => {
             if (!imageMenu.contains(event.target)) {
                 imageMenu.hidden = true;
