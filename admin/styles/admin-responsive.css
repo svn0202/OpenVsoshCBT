@@ -1038,6 +1038,12 @@ body.admin-density-compact .admin-shell button {
     color: #fff;
 }
 
+.admin-shell .rich-content-editor__paste-notice {
+    margin: 0.5rem 0.75rem 0;
+    color: #345;
+    font-size: 0.875rem;
+}
+
 .admin-shell .rich-content-editor__surface {
     min-height: 260px;
     max-height: 65vh;

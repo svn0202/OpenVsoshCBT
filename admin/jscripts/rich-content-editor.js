@@ -166,6 +166,11 @@
         surface.setAttribute('aria-multiline', 'true');
         surface.setAttribute('aria-label', textarea.title || 'Редактор');
 
+        const pasteNotice = document.createElement('div');
+        pasteNotice.className = 'rich-content-editor__paste-notice';
+        pasteNotice.hidden = true;
+        pasteNotice.setAttribute('role', 'status');
+
         const imageMenu = document.createElement('div');
         imageMenu.className = 'rich-content-editor__image-menu';
         imageMenu.setAttribute('role', 'menu');
@@ -190,7 +195,7 @@
             + '</form>';
         const imageForm = imageDialog.querySelector('form');
 
-        editor.append(toolbar, imageMenu, imageDialog, surface);
+        editor.append(toolbar, pasteNotice, imageMenu, imageDialog, surface);
         textarea.insertAdjacentElement('afterend', editor);
 
         // The legacy TCECode buttons are kept in the markup for fields that
@@ -249,6 +254,58 @@
         };
 
         surface.addEventListener('input', syncToSource);
+        surface.addEventListener('paste', async (event) => {
+            const image = Array.from(event.clipboardData?.items || [])
+                .find((item) => item.kind === 'file' && item.type.startsWith('image/'));
+            const file = image?.getAsFile();
+            if (!file) {
+                return;
+            }
+
+            event.preventDefault();
+            const selection = window.getSelection();
+            const range = selection?.rangeCount ? selection.getRangeAt(0).cloneRange() : null;
+            const payload = new FormData();
+            payload.append('image', file, file.name || 'clipboard-image.png');
+            pasteNotice.textContent = 'Загружаем изображение из буфера…';
+            pasteNotice.hidden = false;
+
+            try {
+                const response = await window.fetch('tce_upload_clipboard_image.php', {
+                    method: 'POST',
+                    body: payload,
+                    credentials: 'same-origin',
+                });
+                const result = await response.json();
+                if (!response.ok || !result.file) {
+                    throw new Error(result.error || 'Не удалось загрузить изображение.');
+                }
+                surface.focus();
+                if (range) {
+                    const currentSelection = window.getSelection();
+                    currentSelection?.removeAllRanges();
+                    currentSelection?.addRange(range);
+                }
+                const inserted = document.createElement('img');
+                inserted.src = `../../cache/${String(result.file).replace(/^\/+/, '')}`;
+                inserted.alt = '';
+                if (Number.isInteger(result.width) && result.width > 0) {
+                    inserted.width = result.width;
+                }
+                if (Number.isInteger(result.height) && result.height > 0) {
+                    inserted.height = result.height;
+                }
+                document.execCommand('insertHTML', false, inserted.outerHTML);
+                syncToSource();
+                selectImage(surface.querySelector('img:last-of-type'));
+                pasteNotice.textContent = 'Изображение добавлено в медиатеку.';
+            } catch (error) {
+                pasteNotice.textContent = error instanceof Error ? error.message : 'Не удалось загрузить изображение.';
+            }
+            window.setTimeout(() => {
+                pasteNotice.hidden = true;
+            }, 3500);
+        });
         surface.addEventListener('click', (event) => {
             if (event.target instanceof HTMLImageElement) {
                 selectImage(event.target);
