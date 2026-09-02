@@ -177,6 +177,9 @@
             + '<h2>Свойства изображения</h2>'
             + '<label>Ширина, px <input type="number" min="1" step="1" inputmode="numeric" name="width" /></label>'
             + '<label>Высота, px <input type="number" min="1" step="1" inputmode="numeric" name="height" /></label>'
+            + '<label class="rich-content-editor__image-lock" title="Автоматически изменять вторую сторону">'
+            + '<input type="checkbox" name="lockAspectRatio" checked="checked" />'
+            + '<span aria-hidden="true">🔒</span> Сохранять пропорции</label>'
             + '<label>Описание <input type="text" name="alt" /></label>'
             + '<div class="rich-content-editor__dialog-actions">'
             + '<button type="button" data-image-action="reset">Исходный размер</button>'
@@ -200,6 +203,8 @@
 
         let sourceMode = false;
         let selectedImage = null;
+        let imageAspectRatio = null;
+        let imageUseOriginalSize = false;
         const syncFromSource = () => {
             surface.replaceChildren(sanitizeFragment(textarea.value));
         };
@@ -209,6 +214,8 @@
         const clearImageSelection = () => {
             selectedImage?.classList.remove('is-selected');
             selectedImage = null;
+            imageAspectRatio = null;
+            imageUseOriginalSize = false;
             imageMenu.hidden = true;
         };
         const selectImage = (image) => {
@@ -222,9 +229,14 @@
             }
             const width = selectedImage.getAttribute('width') || Math.round(selectedImage.getBoundingClientRect().width) || '';
             const height = selectedImage.getAttribute('height') || Math.round(selectedImage.getBoundingClientRect().height) || '';
+            const naturalWidth = selectedImage.naturalWidth || Number(width);
+            const naturalHeight = selectedImage.naturalHeight || Number(height);
+            imageAspectRatio = naturalWidth > 0 && naturalHeight > 0 ? naturalWidth / naturalHeight : null;
+            imageUseOriginalSize = false;
             imageForm.elements.width.value = width;
             imageForm.elements.height.value = height;
             imageForm.elements.alt.value = selectedImage.alt;
+            imageForm.elements.lockAspectRatio.checked = true;
             imageMenu.hidden = true;
             if (typeof imageDialog.showModal === 'function') {
                 imageDialog.showModal();
@@ -270,21 +282,46 @@
             }
             selectedImage.removeAttribute('width');
             selectedImage.removeAttribute('height');
-            imageForm.elements.width.value = '';
-            imageForm.elements.height.value = '';
+            const width = selectedImage.naturalWidth || Math.round(selectedImage.getBoundingClientRect().width) || '';
+            const height = selectedImage.naturalHeight || Math.round(selectedImage.getBoundingClientRect().height) || '';
+            imageForm.elements.width.value = width;
+            imageForm.elements.height.value = height;
+            imageAspectRatio = Number(width) > 0 && Number(height) > 0 ? Number(width) / Number(height) : null;
+            imageUseOriginalSize = true;
             syncToSource();
+        });
+        imageForm.addEventListener('input', (event) => {
+            const input = event.target;
+            if (!(input instanceof HTMLInputElement)
+                || !['width', 'height'].includes(input.name)
+                || !imageForm.elements.lockAspectRatio.checked
+                || !imageAspectRatio) {
+                return;
+            }
+            const value = Number(input.value);
+            if (!Number.isFinite(value) || value < 1) {
+                return;
+            }
+            if (input.name === 'width') {
+                imageForm.elements.height.value = Math.max(1, Math.round(value / imageAspectRatio));
+            } else {
+                imageForm.elements.width.value = Math.max(1, Math.round(value * imageAspectRatio));
+            }
+            imageUseOriginalSize = false;
         });
         imageDialog.addEventListener('submit', (event) => {
             event.preventDefault();
             if (event.submitter?.value === 'save' && selectedImage) {
-                ['width', 'height'].forEach((property) => {
-                    const value = imageForm.elements[property].value.trim();
-                    if (value === '' || Number(value) < 1) {
-                        selectedImage.removeAttribute(property);
-                    } else {
-                        selectedImage.setAttribute(property, String(Math.round(Number(value))));
-                    }
-                });
+                if (!imageUseOriginalSize) {
+                    ['width', 'height'].forEach((property) => {
+                        const value = imageForm.elements[property].value.trim();
+                        if (value === '' || Number(value) < 1) {
+                            selectedImage.removeAttribute(property);
+                        } else {
+                            selectedImage.setAttribute(property, String(Math.round(Number(value))));
+                        }
+                    });
+                }
                 selectedImage.alt = imageForm.elements.alt.value.trim();
                 syncToSource();
             }

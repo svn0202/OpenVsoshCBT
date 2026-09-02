@@ -1104,6 +1104,21 @@ body.admin-density-compact .admin-shell button {
     font-size: 13px;
 }
 
+.admin-shell .rich-content-editor__image-dialog .rich-content-editor__image-lock {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--admin-text);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.admin-shell .rich-content-editor__image-dialog .rich-content-editor__image-lock input {
+    width: 18px;
+    min-height: 18px;
+    margin: 0;
+}
+
 .admin-shell .rich-content-editor__image-dialog input {
     min-height: 36px;
     box-sizing: border-box;
