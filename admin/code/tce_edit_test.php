@@ -92,6 +92,13 @@ require_once 'tce_functions_test_select.php';
 /** @var bool $formstatus */
 /** @var string $menu_mode */
 
+// This action intentionally bypasses the full-test update restriction.  It only
+// changes the retry policy and therefore does not alter a participant's saved
+// questions, answers, score, or assigned groups.
+if (isset($_POST['updateattempts'])) {
+    $menu_mode = 'updateattempts';
+}
+
 $matching_reuse_condition = f_legacy_literal_equals(K_DATABASE_TYPE, 'ORACLE')
     ? "dbms_lob.instr(question_description,'<!--TMF_MATCH_REUSE-->',1,1)>0"
     : "question_description LIKE '%<!--TMF_MATCH_REUSE-->%'";
@@ -256,7 +263,7 @@ if (!isset($_REQUEST['test_mcma_radio']) || empty($_REQUEST['test_mcma_radio']))
 if (!isset($_REQUEST['test_repeatable']) || empty($_REQUEST['test_repeatable'])) {
     $test_repeatable = 0;
 } else {
-    $test_repeatable = (int) $_REQUEST['test_repeatable'];
+    $test_repeatable = max(0, min(127, (int) $_REQUEST['test_repeatable']));
 }
 
 if (!isset($_REQUEST['test_mcma_partial_score']) || empty($_REQUEST['test_mcma_partial_score'])) {
@@ -831,6 +838,32 @@ switch ($menu_mode) {
                         }
                     }
                 }
+            }
+
+            break;
+
+    case 'updateattempts':
+        // This is safe after a test has started: the value only controls whether
+        // a future attempt may be created. Existing attempts remain untouched.
+            if (!isset($_POST['confirmattempts']) || !f_legacy_int_equals($_POST['confirmattempts'], 1)) {
+                F_print_error('WARNING', 'Подтвердите изменение количества попыток.');
+                $formstatus = false;
+
+                break;
+            }
+
+            if (!f_legacy_is_positive($test_id)) {
+                $formstatus = false;
+
+                break;
+            }
+
+            $sql = 'UPDATE ' . K_TABLE_TESTS . ' SET test_repeatable=' . (int) $test_repeatable
+                . ' WHERE test_id=' . $test_id;
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                F_display_db_error(false);
+            } else {
+                F_print_error('MESSAGE', 'Количество попыток обновлено.');
             }
 
             break;
@@ -1651,14 +1684,29 @@ echo get_form_row_checkbox('test_results_to_users', $l['w_results_to_users'], ''
 echo get_form_row_checkbox('test_report_to_users', $l['w_report_to_users'], '', '', 1, $test_report_to_users, false);
 
 $repeat_options = [
-    0 => $l['w_no'],
-    1 => $l['w_repeatable'],
+    0 => $l['w_no'] . ' — одна попытка всего',
+    1 => $l['w_repeatable'] . ' — без ограничений',
 ];
 for ($i = 2; $i <= 127; ++$i) {
-    $repeat_options[$i] = $i;
+    $repeat_options[$i] = $i . ' — всего попыток';
 }
 
-echo get_form_row_select_box('test_repeatable', $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
+echo get_form_row_select_box(
+    'test_repeatable',
+    $l['w_repeatable'],
+    '',
+    '«Нет» — одна попытка. «Повторяющийся» — без ограничений. Число — общее число попыток, включая первую.',
+    $test_repeatable,
+    $repeat_options,
+    '',
+);
+if (f_legacy_is_positive($test_id)) {
+    echo '<div class="row"><span class="label">Количество попыток</span><span class="formw">';
+    echo '<input type="checkbox" name="confirmattempts" id="confirmattempts" value="1" />';
+    echo '<label for="confirmattempts"> Подтвердить изменение только количества попыток</label> ';
+    F_submit_button('updateattempts', 'Сохранить количество попыток', 'Не изменяет вопросы, ответы, результаты и группы');
+    echo '</span></div>' . K_NEWLINE;
+}
 
 echo get_form_row_checkbox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
 
@@ -1750,7 +1798,7 @@ if (f_legacy_is_positive($test_id)) {
             . K_NEWLINE
     ;
     echo
-        '<select name="subject_id[]" id="subject_id" size="10" multiple="multiple" title="'
+        '<select name="subject_id[]" id="subject_id" class="subject-selector" size="10" multiple="multiple" title="'
             . $l['h_subjects']
             . '">'
             . K_NEWLINE

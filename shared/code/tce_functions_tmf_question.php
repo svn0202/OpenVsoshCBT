@@ -163,6 +163,61 @@ function f_tmf_matching_presentation(string $description, int $positions): array
 }
 
 /**
+ * Hide an answer key accidentally left in a matching question's description.
+ *
+ * A key exported from a source document is an ordered list whose entries are
+ * a permutation of 1..N (for example, 3, 4, 2, 1).  This is deliberately
+ * narrower than removing arbitrary numbered lists: an explanatory list must
+ * remain visible to the participant.
+ */
+function f_tmf_hide_matching_answer_key(string $description): string
+{
+    $candidate_pattern =
+        '~<div\b[^>]*>\s*<ol\b[^>]*>.*?</ol>\s*</div>|<ol\b[^>]*>.*?</ol>~isu';
+    $candidates = [];
+    if (!preg_match_all($candidate_pattern, $description, $candidates, PREG_OFFSET_CAPTURE)) {
+        return $description;
+    }
+
+    foreach (array_reverse($candidates[0] ?? []) as $candidate_capture) {
+        if (!is_array($candidate_capture) || !is_string($candidate_capture[0] ?? null)) {
+            continue;
+        }
+        $candidate = $candidate_capture[0];
+        $offset = $candidate_capture[1] ?? null;
+        if (!is_int($offset)) {
+            continue;
+        }
+
+        $items = [];
+        if (!preg_match_all('~<li\b[^>]*>(.*?)</li>~isu', $candidate, $items)) {
+            continue;
+        }
+        $values = [];
+        foreach ($items[1] ?? [] as $item) {
+            $value = html_entity_decode(strip_tags((string) $item), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $value = trim((string) preg_replace('/\s+/u', ' ', $value));
+            if (!preg_match('/^[1-9]\d{0,2}$/', $value)) {
+                continue 2;
+            }
+            $values[] = (int) $value;
+        }
+        if (count($values) < 2) {
+            continue;
+        }
+
+        $expected = range(1, count($values));
+        $actual = $values;
+        sort($actual, SORT_NUMERIC);
+        if ($actual === $expected) {
+            return substr_replace($description, '', $offset, strlen($candidate));
+        }
+    }
+
+    return $description;
+}
+
+/**
  * Replace the optional short-answer similarity marker in a question description.
  */
 function f_tmf_set_similarity_threshold(string $description, int $threshold): string

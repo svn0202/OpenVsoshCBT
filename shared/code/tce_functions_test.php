@@ -2707,6 +2707,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                 );
                 $question_description = $matching_presentation['description'];
                 $matching_labels = $matching_presentation['labels'];
+                $question_description = F_tmf_hide_matching_answer_key($question_description);
             }
             $question_description = F_tmf_question_editor_description($question_description);
             // display question description

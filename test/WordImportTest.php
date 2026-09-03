@@ -322,6 +322,18 @@ final class WordImportTest extends TestCase
         );
         self::assertSame([], $unmatchedPresentation['labels']);
         self::assertStringContainsString('<ol>', $unmatchedPresentation['description']);
+        self::assertSame(
+            '<p>Установите соответствие.</p>',
+            \F_tmf_hide_matching_answer_key(
+                '<p>Установите соответствие.</p><ol><li>3</li><li>4</li><li>2</li><li>1</li></ol>',
+            ),
+        );
+        self::assertSame(
+            '<p>Установите соответствие.</p><ol><li>Причина</li><li>Следствие</li></ol>',
+            \F_tmf_hide_matching_answer_key(
+                '<p>Установите соответствие.</p><ol><li>Причина</li><li>Следствие</li></ol>',
+            ),
+        );
         $editorDescription = \F_tmf_question_editor_description(
             'Вопрос<!--TMF_CHECKBOX--><!--TMF_SIMILARITY:85-->'
             . '<!--TMF_MATCH_POSITIONS:2--><!--TMF_MATCH_REUSE--><!--TMF_AUDIO_PLAYS:3-->',

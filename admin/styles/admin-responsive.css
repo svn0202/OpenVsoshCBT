@@ -970,6 +970,13 @@ body.admin-density-compact .admin-shell button {
     flex: 1 1 220px;
 }
 
+/* Topic names include a question-set summary; give this picker the room to
+   show it instead of forcing administrators to scroll horizontally. */
+.admin-shell .subject-selector {
+    flex: 1 1 680px;
+    min-width: min(680px, 100%);
+}
+
 .admin-shell input:focus,
 .admin-shell select:focus,
 .admin-shell textarea:focus {
@@ -2139,6 +2146,12 @@ body.admin-density-compact .admin-shell button {
     .admin-shell span.formw > select,
     .admin-shell span.formw > textarea {
         flex-basis: 100%;
+        width: 100%;
+    }
+
+    .admin-shell .subject-selector {
+        flex-basis: 100%;
+        min-width: 0;
         width: 100%;
     }
 
