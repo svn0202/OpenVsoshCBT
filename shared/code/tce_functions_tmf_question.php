@@ -179,15 +179,22 @@ function f_tmf_hide_matching_answer_key(string $description): string
         return $description;
     }
 
-    foreach (array_reverse($candidates[0] ?? []) as $candidate_capture) {
-        if (!is_array($candidate_capture) || !is_string($candidate_capture[0] ?? null)) {
+    $normalize_capture = static function (mixed $capture): ?array {
+        if (
+            !is_array($capture)
+            || !is_string($capture[0] ?? null)
+            || !is_int($capture[1] ?? null)
+        ) {
+            return null;
+        }
+        return [$capture[0], $capture[1]];
+    };
+    $candidate_matches = array_map($normalize_capture, $candidates[0] ?? []);
+    foreach (array_reverse($candidate_matches) as $candidate_capture) {
+        if ($candidate_capture === null) {
             continue;
         }
-        $candidate = $candidate_capture[0];
-        $offset = $candidate_capture[1] ?? null;
-        if (!is_int($offset)) {
-            continue;
-        }
+        [$candidate, $offset] = $candidate_capture;
 
         $items = [];
         if (!preg_match_all('~<li\b[^>]*>(.*?)</li>~isu', $candidate, $items)) {
@@ -195,7 +202,7 @@ function f_tmf_hide_matching_answer_key(string $description): string
         }
         $values = [];
         foreach ($items[1] ?? [] as $item) {
-            $value = html_entity_decode(strip_tags((string) $item), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $value = html_entity_decode(strip_tags($item), ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $value = trim((string) preg_replace('/\s+/u', ' ', $value));
             if (!preg_match('/^[1-9]\d{0,2}$/', $value)) {
                 continue 2;

@@ -405,6 +405,7 @@ PHP;
                     . '"headers" => ["Question", "True", "False", "Unanswered"]]; } '
                     . 'function F_tmf_matching_presentation($description, $positions) { return '
                     . '["description" => $description, "labels" => ["One &", "Two <"]]; } '
+                    . 'function F_tmf_hide_matching_answer_key($description) { return $description; } '
                     . 'function F_tmf_question_editor_description($description) { return "EDITED:" . $description; } '
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function F_decode_tcecode($value) { return "[" . $value . "]"; } '
