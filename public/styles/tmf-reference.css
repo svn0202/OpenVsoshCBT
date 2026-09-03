@@ -2385,6 +2385,25 @@ body.app-page.exam-page .answer-save-status[data-state="saved"] { color: #18713c
 body.app-page.exam-page .answer-save-status[data-state="error"] { color: #a12020; }
 body.app-page.exam-page .answer-save-status[data-state="dirty"],
 body.app-page.exam-page .answer-save-status[data-state="retrying"] { color: #8a5700; }
+body.app-page.exam-page #testform.exam-question-loading {
+    opacity: .58;
+    pointer-events: none;
+}
+body.app-page.exam-page .exam-question-loading-status {
+    position: sticky;
+    top: 10px;
+    z-index: 30;
+    width: fit-content;
+    max-width: calc(100% - 24px);
+    margin: 8px auto;
+    padding: 10px 16px;
+    border: 1px solid #08769b;
+    border-radius: 8px;
+    background: #e5f6fc;
+    color: #083b50;
+    font-weight: 700;
+    box-shadow: 0 3px 12px rgba(7, 38, 61, .18);
+}
 body.app-page.exam-page #terminatetest { margin: 18px 0 0; }
 
 @media (min-width: 1000px) {

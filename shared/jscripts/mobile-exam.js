@@ -540,7 +540,10 @@
             });
         }
 
-        form.querySelectorAll('.tcecontentbox img, ol.answer img').forEach(function (source) {
+        // Answer options can be image-only.  Their label must retain the
+        // native click behaviour that selects the corresponding control;
+        // attaching the preview handler here would intercept that choice.
+        form.querySelectorAll('.tcecontentbox img').forEach(function (source) {
             if (source.dataset.examPreviewBound === '1') {
                 return;
             }
@@ -635,6 +638,23 @@
         }
     }
 
+    function setQuestionLoading(loading) {
+        var status = document.getElementById('exam-question-loading-status');
+        if (!status) {
+            status = document.createElement('div');
+            status.id = 'exam-question-loading-status';
+            status.className = 'exam-question-loading-status';
+            status.setAttribute('role', 'status');
+            status.setAttribute('aria-live', 'polite');
+            status.hidden = true;
+            form.insertAdjacentElement('beforebegin', status);
+        }
+        form.classList.toggle('exam-question-loading', loading);
+        form.setAttribute('aria-busy', loading ? 'true' : 'false');
+        status.hidden = !loading;
+        status.textContent = loading ? 'Загрузка задания…' : '';
+    }
+
     function navigationTarget(submitter) {
         if (!submitter || !submitter.name) {
             return null;
@@ -705,6 +725,7 @@
                 window.history.replaceState({testlogid: target}, '', url);
                 formSubmitting = false;
                 refreshQuestionState();
+                setQuestionLoading(false);
                 var question = form.querySelector('#questionsection');
                 if (question) {
                     question.scrollIntoView({block: 'start'});
@@ -757,6 +778,9 @@
         event.preventDefault();
         if (saveActive) {
             return;
+        }
+        if (String(target) !== String(testlogId)) {
+            setQuestionLoading(true);
         }
         saveCurrentAnswer().then(function () {
             if (String(target) === String(testlogId)) {

@@ -332,10 +332,10 @@ final class ExamUiAssetsTest extends TestCase
 
     public function testQuestionListIgnoresClicksOutsideQuestionItems(): void
     {
-        $theme = (string) file_get_contents(__DIR__ . '/../public/config.default/theme/picoman.php');
+        $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/mobile-exam.js');
 
-        self::assertStringContainsString('if (!e.target.firstElementChild) {', $theme);
-        self::assertStringContainsString('if (inputButton) {', $theme);
+        self::assertStringContainsString("event.target.closest('input, button, a, label, select, textarea')", $script);
+        self::assertStringContainsString("event.target.closest('li.question-menu-link')", $script);
     }
 
     public function testInterruptedExamCanBeResumedAndSaveConflictsDoNotPersist(): void
