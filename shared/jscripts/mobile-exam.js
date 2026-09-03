@@ -418,6 +418,38 @@
         });
     }
 
+    function bindAnswerTextPasteProtection() {
+        form.querySelectorAll('textarea[name="answertext"], input[name="answertext"]').forEach(
+            function (control) {
+                if (control.dataset.pasteProtectionBound === '1') {
+                    return;
+                }
+                control.dataset.pasteProtectionBound = '1';
+
+                var block = function (event) {
+                    event.preventDefault();
+                };
+                control.addEventListener('paste', block);
+                control.addEventListener('drop', block);
+                control.addEventListener('contextmenu', block);
+                control.addEventListener('beforeinput', function (event) {
+                    if (/^insertFrom(?:Paste|Drop)/.test(event.inputType || '')) {
+                        event.preventDefault();
+                    }
+                });
+                control.addEventListener('keydown', function (event) {
+                    var key = String(event.key || '').toLowerCase();
+                    if (
+                        (key === 'v' && (event.ctrlKey || event.metaKey))
+                        || (key === 'insert' && event.shiftKey)
+                    ) {
+                        event.preventDefault();
+                    }
+                });
+            }
+        );
+    }
+
     function bindAnswerControls() {
         saveButton = form.querySelector('[data-answer-save]');
         saveStatus = form.querySelector('#answer-save-status');
@@ -425,6 +457,8 @@
         answerDirty = false;
         saveActive = false;
         changedDuringSave = false;
+
+        bindAnswerTextPasteProtection();
 
         if (!saveButton || !saveStatus || !answerVersion || !window.fetch) {
             return;

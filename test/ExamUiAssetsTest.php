@@ -152,6 +152,21 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('data-audio-limit-exhausted="', $renderer);
     }
 
+    public function testTextAnswerFieldsBlockClipboardAndContextMenuInput(): void
+    {
+        $script = (string) file_get_contents(__DIR__ . '/../shared/jscripts/mobile-exam.js');
+
+        self::assertStringContainsString('function bindAnswerTextPasteProtection()', $script);
+        self::assertStringContainsString('textarea[name="answertext"], input[name="answertext"]', $script);
+        self::assertStringContainsString("control.addEventListener('paste', block);", $script);
+        self::assertStringContainsString("control.addEventListener('contextmenu', block);", $script);
+        self::assertStringContainsString("control.addEventListener('drop', block);", $script);
+        self::assertStringContainsString('insertFrom(?:Paste|Drop)', $script);
+        self::assertStringContainsString("key === 'v' && (event.ctrlKey || event.metaKey)", $script);
+        self::assertStringContainsString("key === 'insert' && event.shiftKey", $script);
+        self::assertStringContainsString('bindAnswerTextPasteProtection();', $script);
+    }
+
     public function testBothDirectionsKeepMatchingAndMediaResponsive(): void
     {
         foreach (['picoman.css', 'picoman_rtl.css'] as $stylesheet) {
