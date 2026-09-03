@@ -158,6 +158,7 @@ CREATE TABLE tce_tests (
 	test_live_score NUMBER(1) DEFAULT 0 NOT NULL,
 	test_auto_fullscreen NUMBER(1) DEFAULT 0 NOT NULL,
 	test_hide_exam_info NUMBER(1) DEFAULT 0 NOT NULL,
+	test_ai_trap_enabled NUMBER(1) DEFAULT 0 NOT NULL,
 	test_disable_previous NUMBER(1) DEFAULT '0' NOT NULL,
 	test_disable_next NUMBER(1) DEFAULT '0' NOT NULL,
 	test_hide_editor NUMBER(1) DEFAULT '0' NOT NULL,

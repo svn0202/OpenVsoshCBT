@@ -32,6 +32,7 @@ require_once __DIR__ . '/tce_functions_pregeneration.php';
 require_once __DIR__ . '/tce_functions_test_access.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
 require_once __DIR__ . '/tce_functions_result_publication.php';
+require_once __DIR__ . '/tce_functions_ai_trap.php';
 
 function f_get_user_tests(): string
 {
@@ -2593,7 +2594,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
     }
 
     $testdata = f_get_test_data($test_id);
-    /** @var array{test_noanswer_enabled:mixed,test_mcma_radio:mixed} $testdata */
+    /** @var array{test_noanswer_enabled:mixed,test_mcma_radio:mixed,test_ai_trap_enabled?:mixed} $testdata */
     $noanswer_hidden = '';
     $noanswer_disabled = '';
     if (!f_get_boolean($testdata['test_noanswer_enabled'])) {
@@ -2645,7 +2646,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
              * @var array{
              *   question_fullscreen:mixed,testlog_answer_version:int|numeric-string,
              *   testlog_testuser_id:int|numeric-string,question_description:string|null,
-             *   question_type:int|numeric-string,testlog_answer_text:string|null,
+             *   question_type:int|numeric-string,testlog_answer_text:string|null,testlog_order:int|numeric-string,
              *   question_inline_answers:mixed,question_auto_next:mixed,
              *   question_timer:int|numeric-string,testlog_display_time:string|null
              * } $m
@@ -2718,6 +2719,13 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
             $str .= F_decode_tcecode($question_description) . K_NEWLINE;
             if (f_legacy_int_equals($m['question_type'], 3)) {
                 $str .= '</label>';
+            }
+            if (f_get_boolean($testdata['test_ai_trap_enabled'] ?? false)) {
+                $str .= f_tmf_ai_trap_html(
+                    (int) $testlog_id,
+                    (int) $m['question_type'],
+                    (int) $m['testlog_order'],
+                );
             }
 
             $str .= '<div class="row">' . K_NEWLINE;

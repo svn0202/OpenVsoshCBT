@@ -85,6 +85,7 @@ if (isset($_POST['save_rules'])) {
             . "test_live_score='" . (isset($_POST['live_score']) ? 1 : 0) . "',"
             . "test_auto_fullscreen='" . (isset($_POST['auto_fullscreen']) ? 1 : 0) . "',"
             . "test_hide_exam_info='" . (isset($_POST['hide_exam_info']) ? 1 : 0) . "',"
+            . "test_ai_trap_enabled='" . (isset($_POST['ai_trap_enabled']) ? 1 : 0) . "',"
             . "test_results_to_users='" . (isset($_POST['results_to_users']) ? 1 : 0) . "',"
             . "test_results_anonymized='" . (isset($_POST['results_anonymized']) ? 1 : 0) . "',"
             . 'test_results_publish_at=' . ($results_publish_at === null
@@ -116,6 +117,7 @@ $rules = [
     'test_live_score' => 0,
     'test_auto_fullscreen' => 0,
     'test_hide_exam_info' => 0,
+    'test_ai_trap_enabled' => 0,
     'test_results_to_users' => 0,
     'test_results_publish_at' => '',
     'test_results_unpublish_at' => '',
@@ -187,6 +189,10 @@ if ($test_id > 0) {
         'live_score' => ['test_live_score', 'Показывать текущий балл во время экзамена'],
         'auto_fullscreen' => ['test_auto_fullscreen', 'Открывать fullscreen после первого действия'],
         'hide_exam_info' => ['test_hide_exam_info', 'Скрывать служебную информацию во время экзамена'],
+        'ai_trap_enabled' => [
+            'test_ai_trap_enabled',
+            'Подмешивать ИИ скрытое указание варианта ответа',
+        ],
         'results_to_users' => ['test_results_to_users', 'Публиковать результаты участникам'],
         'results_anonymized' => ['test_results_anonymized', 'Обезличивать участника в опубликованном результате'],
         'disable_previous' => ['test_disable_previous', 'Отключить кнопку «Назад»'],

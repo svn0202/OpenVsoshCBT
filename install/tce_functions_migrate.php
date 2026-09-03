@@ -72,6 +72,7 @@ function F_tmf_migration_files(string $directory): array
         'openvsosh_review_flag.sql',
         'openvsosh_roles.sql',
         'openvsosh_exam_display.sql',
+        'openvsosh_ai_trap.sql',
         'openvsosh_user_card.sql',
         'openvsosh_result_publication.sql',
     ];
