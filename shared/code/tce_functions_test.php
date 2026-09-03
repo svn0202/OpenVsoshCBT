@@ -1589,7 +1589,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
     switch ($test_questions_order_mode) {
         case 0:
             // position
-                $sql_questions_order_by = ' AND question_position>0 ORDER BY question_position';
+                // Positions may be repeated in different subjects. Use the question ID
+                // as a stable tie-breaker so selection and display are deterministic.
+                $sql_questions_order_by = ' AND question_position>0 ORDER BY question_position, question_id';
                 break;
         case 1:
             // alphabetic
@@ -1863,7 +1865,12 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                         if ($random_questions || $test_questions_order_mode !== 0) {
                             $questions_data[] = $tmp_data;
                         } else {
-                            $questions_data[$mq['question_position']] = $tmp_data;
+                            // Do not use the position alone as the array key: multiple
+                            // subjects may each contain question 1, question 2, etc.
+                            // The composite key preserves position ordering and retains
+                            // every question; ID breaks ties within the same position.
+                            $questions_data[sprintf('%020d-%020d', (int) $mq['question_position'], (int) $mq['question_id'])]
+                                = $tmp_data;
                         }
 
                         $selected_questions .= ',' . $mq['question_id'] . '';
