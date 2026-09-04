@@ -110,6 +110,65 @@ function f_tmf_matching_presentation(string $description, int $positions): array
         return $result;
     }
 
+    $table_pattern = '~<table\b[^>]*>.*?</table>~isu';
+    $tables = [];
+    if (preg_match_all($table_pattern, $description, $tables, PREG_OFFSET_CAPTURE)) {
+        $normalize_capture = static function (mixed $capture): ?array {
+            if (
+                !is_array($capture)
+                || !is_string($capture[0] ?? null)
+                || !is_int($capture[1] ?? null)
+            ) {
+                return null;
+            }
+            return [$capture[0], $capture[1]];
+        };
+        $table_matches = array_map($normalize_capture, $tables[0] ?? []);
+        foreach (array_reverse($table_matches) as $table_capture) {
+            if ($table_capture === null) {
+                continue;
+            }
+            [$table, $offset] = $table_capture;
+            $rows = [];
+            if (!preg_match_all('~<tr\b[^>]*>(.*?)</tr>~isu', $table, $rows)) {
+                continue;
+            }
+
+            $table_rows = [];
+            foreach ($rows[1] ?? [] as $row) {
+                $cells = [];
+                if (!preg_match_all('~<t[hd]\b[^>]*>(.*?)</t[hd]>~isu', $row, $cells)) {
+                    continue 2;
+                }
+                $cell_values = $cells[1] ?? [];
+                if (count($cell_values) !== 2) {
+                    continue 2;
+                }
+                $table_rows[] = $cell_values;
+            }
+            if (!in_array(count($table_rows), [$positions, $positions + 1], true)) {
+                continue;
+            }
+
+            $table_rows = array_slice($table_rows, -$positions);
+            $labels = [];
+            foreach ($table_rows as $row) {
+                $label = preg_replace('~<br\s*/?>~iu', ' ', $row[0] ?? '');
+                $label = html_entity_decode(strip_tags((string) $label), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $label = str_replace("\u{00A0}", ' ', $label);
+                $label = trim((string) preg_replace('/\s+/u', ' ', $label));
+                if ($label === '') {
+                    continue 2;
+                }
+                $labels[] = $label;
+            }
+
+            $result['description'] = substr_replace($description, '', $offset, strlen($table));
+            $result['labels'] = $labels;
+            return $result;
+        }
+    }
+
     $candidate_pattern =
         '~<div\b[^>]*>\s*<ol\b[^>]*>.*?</ol>\s*</div>|<ol\b[^>]*>.*?</ol>~isu';
     $candidates = [];

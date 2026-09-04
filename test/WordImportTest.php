@@ -356,6 +356,16 @@ final class WordImportTest extends TestCase
         self::assertSame(['Автомобиль', 'Город'], $matchingPresentation['labels']);
         self::assertStringNotContainsString('<ol>', $matchingPresentation['description']);
         self::assertStringContainsString('<!--TMF_MATCH_POSITIONS:2-->', $matchingPresentation['description']);
+        $tableMatchingPresentation = \F_tmf_matching_presentation(
+            'Сопоставление<table><tr><th>Правило</th><th>Толкование</th></tr>'
+            . '<tr><td>А) Первый факт</td><td>1) Первое следствие</td></tr>'
+            . '<tr><td>Б) Второй факт</td><td>2) Второе следствие</td></tr></table>'
+            . '<p>Выберите соответствия.</p><!--TMF_MATCH_POSITIONS:2-->',
+            2,
+        );
+        self::assertSame(['А) Первый факт', 'Б) Второй факт'], $tableMatchingPresentation['labels']);
+        self::assertStringNotContainsString('<table>', $tableMatchingPresentation['description']);
+        self::assertStringContainsString('Выберите соответствия.', $tableMatchingPresentation['description']);
         self::assertSame(
             'Сопоставление',
             \F_tmf_question_editor_description($matchingPresentation['description']),
