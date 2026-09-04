@@ -12,6 +12,21 @@ require_once __DIR__ . '/TmfWordImportException.php';
 const TMF_WORD_IMPORT_PREVIEW_TTL = 86_400;
 
 /**
+ * Return a human-readable label for every question type supported by TCExam.
+ */
+function f_tmf_word_import_question_type_name(int $type): string
+{
+    return match ($type) {
+        1 => 'одиночный',
+        2 => 'множественный',
+        3 => 'текстовый',
+        4 => 'порядок',
+        5 => 'соответствие',
+        default => 'неизвестный (' . $type . ')',
+    };
+}
+
+/**
  * Build the canonical Word-import template offered by the admin interface.
  *
  * @throws TmfWordImportException

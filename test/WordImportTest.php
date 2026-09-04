@@ -19,6 +19,12 @@ require_once __DIR__ . '/../shared/code/tce_functions_tmf_question.php';
 
 final class WordImportTest extends TestCase
 {
+    public function testPreviewQuestionTypeNamesCoverMatchingAndUnknownValues(): void
+    {
+        self::assertSame('соответствие', \f_tmf_word_import_question_type_name(5));
+        self::assertSame('неизвестный (99)', \f_tmf_word_import_question_type_name(99));
+    }
+
     private string $temporaryDirectory;
 
     /** @throws \Random\RandomException */

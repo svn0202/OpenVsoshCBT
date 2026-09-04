@@ -157,19 +157,43 @@ if (is_array($preview)) {
     }
     echo '<div class="scrollmenu"><table class="userselect">' . K_NEWLINE;
     echo
-        '<thead><tr><th>№</th><th>Тип</th><th>Формулировка</th><th>Ответов</th><th>Ключ</th></tr></thead><tbody>'
+        '<thead><tr><th>№</th><th>Тип</th><th>Формулировка</th><th>Варианты ответа</th><th>Ключ</th></tr></thead><tbody>'
             . K_NEWLINE
     ;
-    $type_names = array(1 => 'одиночный', 2 => 'множественный', 3 => 'текст', 4 => 'порядок');
     foreach ($preview['questions'] as $question) {
         $description = trim(strip_tags($question['description']));
         if (mb_strlen($description, 'UTF-8') > 180) {
             $description = mb_substr($description, 0, 177, 'UTF-8') . '...';
         }
         echo '<tr><td>' . intval($question['source_number']) . '</td>';
-        echo '<td>' . $type_names[$question['type']] . '</td>';
+        echo
+            '<td>'
+                . htmlspecialchars(
+                    f_tmf_word_import_question_type_name((int) $question['type']),
+                    ENT_QUOTES,
+                    'UTF-8',
+                )
+                . '</td>'
+        ;
         echo '<td>' . htmlspecialchars($description, ENT_QUOTES, 'UTF-8') . '</td>';
-        echo '<td>' . count($question['answers']) . '</td>';
+        echo '<td>';
+        if (empty($question['answers'])) {
+            echo '<em>Без вариантов</em>';
+        } else {
+            echo '<ol class="answer">' . K_NEWLINE;
+            foreach ($question['answers'] as $answer) {
+                echo
+                    '<li><strong>'
+                        . htmlspecialchars($answer['key'], ENT_QUOTES, 'UTF-8')
+                        . ':</strong> '
+                        . $answer['description']
+                        . '</li>'
+                        . K_NEWLINE
+                ;
+            }
+            echo '</ol>' . K_NEWLINE;
+        }
+        echo '</td>';
         echo
             '<td>'
                 . htmlspecialchars(implode(', ', $question['right_keys']), ENT_QUOTES, 'UTF-8')
