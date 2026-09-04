@@ -37,8 +37,11 @@ final class WordImportTest extends TestCase
         $paragraphs = [
             'MODULE:=Модуль',
             'TOPIC:=Тема',
-            'Q:1) .',
+            'Q:1) [[TMF_CHECKBOX]] .',
             'Формулировка без лишней точки.',
+            'A:) Первый',
+            'B:) Второй',
+            'RIGHT:A,B',
         ];
         $body = '';
         foreach ($paragraphs as $paragraph) {

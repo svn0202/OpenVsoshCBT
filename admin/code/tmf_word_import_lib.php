@@ -1222,6 +1222,7 @@ class TmfWordImporter
             $question['auto_next'] = 1;
             $question['description'] = $this->removeHtmlMarker($question['description'], $match[0]);
         }
+        $question['description'] = $this->removeLeadingHtmlSeparator($question['description']);
 
         foreach ($question['answers'] as &$answer) {
             $answer_plain = $this->htmlPlainText($answer['description']);
@@ -1325,6 +1326,25 @@ class TmfWordImporter
         // The marker can be split across Word runs. In that case, removing it
         // from the plain representation is safer than leaving a visible token.
         return preg_replace('/' . preg_quote($marker, '/') . '/iu', '', $html) ?? $html;
+    }
+
+    /**
+     * Remove a standalone full stop used as a separator after Q:n) metadata.
+     * A real word beginning with a dot (for example, .NET) is preserved.
+     */
+    private function removeLeadingHtmlSeparator(string $html): string
+    {
+        $dom = $this->loadHtmlFragment($html);
+        $xpath = new DOMXPath($dom);
+        foreach ($this->queryTextNodes($xpath, '//body//text()') as $node) {
+            $node_value = $node->nodeValue ?? '';
+            if (trim($node_value) === '') {
+                continue;
+            }
+            $node->nodeValue = preg_replace('/^\s*\.(?:\s+|$)/u', '', $node_value) ?? $node_value;
+            break;
+        }
+        return $this->bodyInnerHtml($dom);
     }
 
     private function loadHtmlFragment(string $html): DOMDocument
