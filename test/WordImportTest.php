@@ -25,6 +25,41 @@ final class WordImportTest extends TestCase
         self::assertSame('неизвестный (99)', \f_tmf_word_import_question_type_name(99));
     }
 
+    /** @throws \TmfWordImportException */
+    public function testStandaloneDotAfterQuestionMarkerIsDiscarded(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            self::markTestSkipped('ZipArchive is not installed.');
+        }
+        $filename = $this->temporaryDirectory . '/question-separator.docx';
+        $zip = new ZipArchive();
+        self::assertTrue($zip->open($filename, ZipArchive::CREATE));
+        $paragraphs = [
+            'MODULE:=Модуль',
+            'TOPIC:=Тема',
+            'Q:1) .',
+            'Формулировка без лишней точки.',
+        ];
+        $body = '';
+        foreach ($paragraphs as $paragraph) {
+            $body .= '<w:p><w:r><w:t>'
+                . htmlspecialchars($paragraph, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+                . '</w:t></w:r></w:p>';
+        }
+        self::assertTrue($zip->addFromString(
+            'word/document.xml',
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                . '<w:body>' . $body . '</w:body></w:document>',
+        ));
+        $zip->close();
+
+        $data = (new TmfWordImporter($filename))->parse();
+        self::assertSame(
+            'Формулировка без лишней точки.',
+            trim(strip_tags($data['questions'][0]['description'] ?? '')),
+        );
+    }
+
     private string $temporaryDirectory;
 
     /** @throws \Random\RandomException */

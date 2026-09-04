@@ -1044,7 +1044,10 @@ class TmfWordImporter
                 $result['topic'] = trim($match[1]);
                 continue;
             }
-            if (preg_match('/^\s*Q:\s*(\d+)\)\s*/iu', $plain, $match) && isset($match[0], $match[1])) {
+            if (
+                preg_match('/^\s*Q:\s*(\d+)\)\s*(?:\.(?:\s+|$))?/iu', $plain, $match)
+                && isset($match[0], $match[1])
+            ) {
                 if ($question !== null) {
                     /**
                      * @var array{
