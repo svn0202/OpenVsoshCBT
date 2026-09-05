@@ -72,6 +72,7 @@ class XMLQuestionImporter
         'multiple' => '2',
         'text' => '3',
         'ordering' => '4',
+        'matching' => '5',
     ];
 
     /**

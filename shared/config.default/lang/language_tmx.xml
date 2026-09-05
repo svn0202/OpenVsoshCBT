@@ -50133,5 +50133,325 @@ YYYYMMDDhhmmss_tcexam_backup.sql.gz، جہاں YYYYMMDDhhmmss سال (Y)، ما�
             <seg>گراف</seg>
          </tuv>
       </tu>
+      <tu tuid="w_matching_answer" datatype="plaintext">
+         <tuv xml:lang="NL">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="MR">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="IT">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="TR">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="JP">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="VN">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="HI">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="MS">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="PL">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="EN">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="HE">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="EL">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>сопоставление</seg>
+         </tuv>
+         <tuv xml:lang="ID">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="FR">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="BG">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="AZ">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="ES">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="CN">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="HU">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="BR">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="RO">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="FA">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="DE">
+            <seg>matching answer</seg>
+         </tuv>
+         <tuv xml:lang="UR">
+            <seg>matching answer</seg>
+         </tuv>
+      </tu>
+      <tu tuid="h_enable_matching_answer" datatype="plaintext">
+         <tuv xml:lang="NL">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="MR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="IT">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="TR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="JP">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="VN">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="HI">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="MS">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="PL">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="EN">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="HE">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="EL">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>включить тип вопроса «Сопоставление»</seg>
+         </tuv>
+         <tuv xml:lang="ID">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="FR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="BG">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="AZ">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="ES">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="CN">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="HU">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="BR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="RO">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="FA">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="DE">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+         <tuv xml:lang="UR">
+            <seg>enable the matching answer type</seg>
+         </tuv>
+      </tu>
+      <tu tuid="h_matching_test" datatype="plaintext">
+         <tuv xml:lang="NL">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="MR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="IT">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="TR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="JP">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="VN">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="HI">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="MS">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="PL">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="EN">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="HE">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="EL">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Для каждого варианта выберите номер соответствующего элемента. Каждый номер можно использовать только один раз.</seg>
+         </tuv>
+         <tuv xml:lang="ID">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="FR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="BG">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="AZ">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="ES">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="CN">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="HU">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="BR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="RO">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="FA">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="DE">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+         <tuv xml:lang="UR">
+            <seg>Assign each answer the number of the matching item. Each number can be used once.</seg>
+         </tuv>
+      </tu>
+      <tu tuid="m_matching_position_reassigned" datatype="plaintext">
+         <tuv xml:lang="NL">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="MR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="IT">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="TR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="JP">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="VN">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="HI">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="MS">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="PL">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="EN">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="HE">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="EL">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>Позиция переназначена; предыдущее соответствие очищено.</seg>
+         </tuv>
+         <tuv xml:lang="ID">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="FR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="BG">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="AZ">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="ES">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="CN">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="HU">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="BR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="RO">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="FA">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="AR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="DE">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+         <tuv xml:lang="UR">
+            <seg>The position was reassigned; the previous match was cleared.</seg>
+         </tuv>
+      </tu>
    </body>
 </tmx>

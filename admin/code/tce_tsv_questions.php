@@ -85,7 +85,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
     $module_id = (int) $module_id;
     $subject_id = (int) $subject_id;
     $expmode = (int) $expmode;
-    $qtype = ['S', 'M', 'T', 'O'];
+    $qtype = ['S', 'M', 'T', 'O', 'C'];
     $tsv = ''; // TSV data to be returned
 
     // headers
@@ -168,7 +168,7 @@ function F_tsv_export_questions($module_id, $subject_id, $expmode)
                             $tsv .= K_TAB . (int) F_getBoolean($m['question_enabled']);
                             $tsv .= K_TAB . F_text_to_tsv($m['question_description']);
                             $tsv .= K_TAB . F_text_to_tsv($m['question_explanation']);
-                            $tsv .= K_TAB . $qtype[$m['question_type'] - 1];
+                            $tsv .= K_TAB . ($qtype[(int) $m['question_type'] - 1] ?? '');
                             $tsv .= K_TAB . $m['question_difficulty'];
                             $tsv .= K_TAB . $m['question_position'];
                             $tsv .= K_TAB . $m['question_timer'];

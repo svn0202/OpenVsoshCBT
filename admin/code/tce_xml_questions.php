@@ -118,7 +118,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
     $expmode = (int) $expmode;
 
     $boolean = ['false', 'true'];
-    $type = ['single', 'multiple', 'text', 'ordering'];
+    $type = ['single', 'multiple', 'text', 'ordering', 'matching'];
 
     $xml = ''; // XML data to be returned
 
@@ -191,7 +191,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= '</enabled>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<type>';
-                            $xml .= $type[$m['question_type'] - 1];
+                            $xml .= $type[(int) $m['question_type'] - 1] ?? '';
                             $xml .= '</type>' . K_NEWLINE;
 
                             $xml .= K_TAB . K_TAB . K_TAB . K_TAB . K_TAB . '<difficulty>';

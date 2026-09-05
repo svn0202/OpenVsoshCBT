@@ -123,6 +123,12 @@ count = 3
 [[issues]]
 file = "test/GeneralFunctionsTest.php"
 code = "non-existent-function"
+message = "Function `f_normalize_matching_positions` could not be found."
+count = 2
+
+[[issues]]
+file = "test/GeneralFunctionsTest.php"
+code = "non-existent-function"
 message = "Function `getContrastColor` could not be found."
 count = 2
 

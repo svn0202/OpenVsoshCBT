@@ -160,6 +160,7 @@ function F_TSVQuestionImporter($tsvfile)
         'M' => 2,
         'T' => 3,
         'O' => 4,
+        'C' => 5,
     ];
     $tsvfp = fopen($tsvfile, 'r');
     if ($tsvfp === false) {
@@ -325,7 +326,11 @@ function F_TSVQuestionImporter($tsvfile)
                     $question_enabled = (int) $qdata[1];
                     $question_description = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
                     $question_explanation = F_empty_to_null(F_tsv_to_text($qdata[3]));
-                    $question_type = $qtype[$qdata[4]];
+                    $question_type_code = (string) $qdata[4];
+                    $question_type = $qtype[$question_type_code] ?? 0;
+                    if ($question_type === 0) {
+                        break;
+                    }
                     $question_difficulty = (int) $qdata[5];
                     $question_position = isset($qdata[6]) ? F_zero_to_null($qdata[6]) : F_zero_to_null(0);
 

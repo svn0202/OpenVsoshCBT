@@ -234,6 +234,7 @@ plain `phpunit` invocation on the host stays green.
 | [doc/UPGRADE.md](doc/UPGRADE.md) | Upgrade process and per-version notes |
 | [install/README.md](install/README.md) | Full installation manual |
 | [doc/LATEX.md](doc/LATEX.md) | Enabling LaTeX formula rendering |
+| [doc/MATCHING.md](doc/MATCHING.md) | Creating and scoring matching questions |
 | [doc/TRANSLATORS.md](doc/TRANSLATORS.md) | How to contribute a translation |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute code |
 | [SECURITY.md](SECURITY.md) | Security policy and vulnerability reporting |

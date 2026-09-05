@@ -119,7 +119,7 @@ if (isset($_REQUEST['answer_description'])) {
 
 $answer_explanation = isset($_REQUEST['answer_explanation']) ? utrim($_REQUEST['answer_explanation']) : '';
 
-$qtype = ['S', 'M', 'T', 'O']; // question types
+$qtype = ['S', 'M', 'T', 'O', 'C']; // question types
 
 // check user's authorization
 if ($answer_id > 0) {
@@ -844,7 +844,7 @@ if ($r = F_db_query($sql, $db)) {
         if (!F_getBoolean($m['question_enabled'])) {
             echo '-';
         } else {
-            echo $qtype[$m['question_type'] - 1];
+            echo $qtype[(int) $m['question_type'] - 1] ?? '';
         }
 
         echo

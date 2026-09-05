@@ -35,6 +35,15 @@ final class GeneralFunctionsTest extends TestCase
         $this->assertFalse(\F_getBoolean(0));
     }
 
+    public function testNormalizeMatchingPositions(): void
+    {
+        $this->assertSame(
+            [10 => 2, 20 => 1, 30 => 0, 40 => 0],
+            \f_normalize_matching_positions([10 => '2', 20 => '1', 30 => '2', 40 => '0']),
+        );
+        $this->assertSame([], \f_normalize_matching_positions([]));
+    }
+
     public function testUnhtmlentities(): void
     {
         $this->assertSame('&', \unhtmlentities('&amp;'));

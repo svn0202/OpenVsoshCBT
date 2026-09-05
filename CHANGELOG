@@ -1,3 +1,6 @@
+17.3.0 (2026-09-06)
+	- Added matching questions with partial or all-or-nothing scoring, import/export support, accessible answer controls and PDF/statistics output.
+
 17.2.0 (2026-06-25)
 	- Fixed creating and importing questions and answers on databases using the utf8mb4 character set (issue #461); the binary uniqueness-check collation is now configurable via the new K_MYSQL_QA_BIN_COLLATION constant.
 
