@@ -1172,7 +1172,8 @@ echo '</div>' . K_NEWLINE;
 
 // question difficulty
 $items = [];
-for ($i = 0; $i <= K_QUESTION_DIFFICULTY_LEVELS; ++$i) {
+$question_difficulty_levels = max(openvsosh_get_question_difficulty_levels(), $question_difficulty);
+for ($i = 0; $i <= $question_difficulty_levels; ++$i) {
     $items[$i] = $i;
 }
 

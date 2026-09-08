@@ -24,6 +24,7 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString('class="settings-preview"', $settings);
         self::assertStringContainsString('name="admin_palette"', $settings);
         self::assertStringContainsString('name="login_background_overlay"', $settings);
+        self::assertStringContainsString('name="question_difficulty_levels"', $settings);
         self::assertStringContainsString("preview.dataset.palette", $script);
         self::assertStringContainsString('body.admin-palette-forest', $stylesheet);
         self::assertStringContainsString('.dashboard-stats {', $stylesheet);

@@ -416,8 +416,8 @@ function openvsosh_save_appearance_settings(array $input): array
 }
 
 /**
- * @return array{default_language:string,default_timezone:string,timer_warning_seconds:int,
- *     timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string}
+ * @return array{default_language:string,default_timezone:string,question_difficulty_levels:int,
+ *     timer_warning_seconds:int,timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string}
  */
 function openvsosh_get_runtime_settings(): array
 {
@@ -425,12 +425,13 @@ function openvsosh_get_runtime_settings(): array
     $default_language = defined('K_LANGUAGE') ? K_LANGUAGE : 'ru';
     /** @var string $default_timezone */
     $default_timezone = defined('K_TIMEZONE') ? K_TIMEZONE : 'UTC';
-    /** @var array{default_language:string,default_timezone:string,timer_warning_seconds:int,
-     *     timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string} $defaults
+    /** @var array{default_language:string,default_timezone:string,question_difficulty_levels:int,
+     *     timer_warning_seconds:int,timer_critical_seconds:int,timer_warning_color:string,timer_critical_color:string} $defaults
      */
     $defaults = [
         'default_language' => $default_language,
         'default_timezone' => $default_timezone,
+        'question_difficulty_levels' => openvsosh_get_question_difficulty_levels(),
         'timer_warning_seconds' => 600,
         'timer_critical_seconds' => 300,
         'timer_warning_color' => '#b45309',
@@ -455,6 +456,19 @@ function openvsosh_get_runtime_settings(): array
     return $defaults;
 }
 
+/**
+ * Return the administrator-controlled upper bound used by question score selectors.
+ */
+function openvsosh_get_question_difficulty_levels(): int
+{
+    $fallback = defined('K_QUESTION_DIFFICULTY_LEVELS') ? (int) K_QUESTION_DIFFICULTY_LEVELS : 10;
+    $value = openvsosh_get_setting('question_difficulty_levels');
+    if ($value === null || preg_match('/^[0-9]+$/', $value) !== 1) {
+        return max(1, min(100, $fallback));
+    }
+    return max(1, min(100, (int) $value));
+}
+
 function openvsosh_bootstrap_settings_path(): string
 {
     return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'openvsosh-bootstrap.json';
@@ -476,6 +490,11 @@ function openvsosh_save_runtime_settings(array $input): array
     $languages = array_keys($decoded_languages);
     $language = (string) ($input['default_language'] ?? '');
     $timezone = (string) ($input['default_timezone'] ?? '');
+    $difficulty_levels_default = defined('K_QUESTION_DIFFICULTY_LEVELS') ? K_QUESTION_DIFFICULTY_LEVELS : 10;
+    if (function_exists('openvsosh_get_question_difficulty_levels')) {
+        $difficulty_levels_default = openvsosh_get_question_difficulty_levels();
+    }
+    $difficulty_levels = (int) ($input['question_difficulty_levels'] ?? $difficulty_levels_default);
     $warning = (int) ($input['timer_warning_seconds'] ?? -1);
     $critical = (int) ($input['timer_critical_seconds'] ?? -1);
     $warning_color = strtolower((string) ($input['timer_warning_color'] ?? ''));
@@ -486,6 +505,9 @@ function openvsosh_save_runtime_settings(array $input): array
     }
     if (!in_array($timezone, timezone_identifiers_list(), true)) {
         $errors[] = 'Выбран неподдерживаемый часовой пояс.';
+    }
+    if ($difficulty_levels < 1 || $difficulty_levels > 100) {
+        $errors[] = 'Максимальный балл задания должен быть от 1 до 100.';
     }
     if ($warning < 0 || $warning > 86_400 || $critical < 0 || $critical > $warning) {
         $errors[] = 'Пороги таймера должны быть от 0 до 86400 секунд, критический — не больше предупреждения.';
@@ -502,6 +524,7 @@ function openvsosh_save_runtime_settings(array $input): array
     $values = [
         'default_language' => $language,
         'default_timezone' => $timezone,
+        'question_difficulty_levels' => (string) $difficulty_levels,
         'timer_warning_seconds' => (string) $warning,
         'timer_critical_seconds' => (string) $critical,
         'timer_warning_color' => $warning_color,

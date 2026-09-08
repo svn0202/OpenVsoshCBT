@@ -289,6 +289,10 @@ foreach (timezone_identifiers_list() as $timezone) {
     echo '<option value="' . htmlspecialchars($timezone, ENT_QUOTES) . '"></option>';
 }
 echo '</datalist></div>' . K_NEWLINE;
+echo '<div class="row"><label for="question_difficulty_levels">Максимальный балл задания</label>'
+    . '<input type="number" name="question_difficulty_levels" id="question_difficulty_levels" min="1" max="100" value="'
+    . (int) $runtime_config['question_difficulty_levels'] . '" />'
+    . '<span class="form-help">Верхняя граница в списке баллов при создании задания.</span></div>' . K_NEWLINE;
 echo '<div class="row"><label for="timer_warning_seconds">Предупреждение таймера, сек.</label>'
     . '<input type="number" name="timer_warning_seconds" id="timer_warning_seconds" min="0" max="86400" value="'
     . (int) $runtime_config['timer_warning_seconds'] . '" /></div>' . K_NEWLINE;

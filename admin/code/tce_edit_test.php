@@ -2006,7 +2006,8 @@ if (f_legacy_is_positive($test_id)) {
             . '">'
             . K_NEWLINE
     ;
-    for ($i = 0; $i <= K_QUESTION_DIFFICULTY_LEVELS; ++$i) {
+    $question_difficulty_levels = max(openvsosh_get_question_difficulty_levels(), $tsubset_difficulty);
+    for ($i = 0; $i <= $question_difficulty_levels; ++$i) {
         echo '<option value="' . $i . '"';
         if ($i === $tsubset_difficulty) {
             echo ' selected="selected"';

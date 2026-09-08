@@ -65,6 +65,7 @@ function F_tmf_question_options($description) {
     ];
 }
 function F_tmf_question_editor_description($description) { return 'Question body <tag>'; }
+function openvsosh_get_question_difficulty_levels() { return 14; }
 function F_select_modules_sql() { return 'SELECT modules'; }
 function F_select_subjects_sql($where) { return 'SELECT subjects WHERE ' . $where; }
 function F_db_query($sql, $db) {
@@ -117,7 +118,8 @@ function get_form_row_text_input($name, $label, $title, $required, $value, ...$a
     return '<TEXT:' . $name . ':' . $value . '>';
 }
 function get_form_row_select_box($name, $label, $title, $required, $value, ...$arguments) {
-    return '<SELECT:' . $name . ':' . $value . '>';
+    $maximum = is_array($arguments[0] ?? null) ? max(array_keys($arguments[0])) : '';
+    return '<SELECT:' . $name . ':' . $value . ':' . $maximum . '>';
 }
 function F_submit_button($name, $label, $title) { echo '<BUTTON:' . $name . ':' . $label . '>'; }
 function f_get_csrf_token_field() { return '<CSRF>'; }
@@ -146,7 +148,7 @@ PHP;
         self::assertStringContainsString('>Question body &lt;tag&gt;</textarea>', $result['html']);
         self::assertStringContainsString('>Because &lt;reason&gt;</textarea>', $result['html']);
         self::assertStringContainsString('id="multiple_answers" value="2" checked="checked"', $result['html']);
-        self::assertStringContainsString('<SELECT:question_difficulty:3>', $result['html']);
+        self::assertStringContainsString('<SELECT:question_difficulty:3:14>', $result['html']);
         self::assertStringContainsString('<option value="2" selected="selected">2</option>', $result['html']);
         self::assertStringContainsString('<TEXT:question_timer:30>', $result['html']);
         self::assertStringContainsString('<TEXT:question_similarity_threshold:75>', $result['html']);

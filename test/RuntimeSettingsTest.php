@@ -221,4 +221,53 @@ PHP;
         self::assertSame(0, $status, $output);
         self::assertSame('["string","#b45309","string","#b91c1c"]', $output);
     }
+
+    public function testQuestionDifficultyLimitIsReadFromInstanceSettings(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_TABLE_PREFIX", "tce_"); define("K_DATABASE_TYPE", "MYSQLI"); '
+                    . 'define("K_QUESTION_DIFFICULTY_LEVELS", 10); '
+                    . 'function F_db_query($sql, $db) { return str_contains($sql, "SELECT setting_value") '
+                    . '? "value" : true; } '
+                    . 'function F_db_fetch_array($result) { return $result === "value" '
+                    . '? ["setting_value" => "14"] : false; } '
+                    . 'function F_escape_sql($db, $value) { return $value; } '
+                    . '$db = new stdClass(); require "tce_functions_openvsosh_settings.php"; '
+                    . 'echo openvsosh_get_question_difficulty_levels();',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('14', $output);
+    }
+
+    public function testQuestionDifficultyLimitRejectsValuesAboveOneHundred(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_TABLE_PREFIX", "tce_"); define("K_DATABASE_TYPE", "UNSUPPORTED"); '
+                    . 'define("K_AVAILABLE_LANGUAGES", serialize(["ru" => "Russian"])); '
+                    . 'function F_db_query($sql, $db) { return false; } '
+                    . '$db = new stdClass(); require "tce_functions_openvsosh_settings.php"; '
+                    . '$result = openvsosh_save_runtime_settings(["default_language" => "ru", '
+                    . '"default_timezone" => "UTC", "question_difficulty_levels" => 101, '
+                    . '"timer_warning_seconds" => 600, "timer_critical_seconds" => 300, '
+                    . '"timer_warning_color" => "#b45309", "timer_critical_color" => "#b91c1c"]); '
+                    . 'echo json_encode($result, JSON_UNESCAPED_UNICODE);',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame(
+            ['saved' => false, 'errors' => ['Максимальный балл задания должен быть от 1 до 100.']],
+            json_decode($output, true, flags: JSON_THROW_ON_ERROR),
+        );
+    }
 }

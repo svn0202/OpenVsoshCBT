@@ -107,7 +107,7 @@ define('K_BRUTE_FORCE_DELAY_RATIO', 2);
 /**
  * Number of difficulty levels for questions.
  */
-define('K_QUESTION_DIFFICULTY_LEVELS', 10);
+define('K_QUESTION_DIFFICULTY_LEVELS', 100);
 
 /**
  * Popup window height in pixels for test info.
