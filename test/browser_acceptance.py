@@ -33,6 +33,104 @@ def assert_equal(actual: Any, expected: Any, message: str) -> None:
         raise AssertionError(f"{message}: expected {expected!r}, got {actual!r}")
 
 
+def check_content_protection(page: Any, name: str) -> None:
+    answer = page.locator('[name="answertext"]')
+    answer.fill('My own answer')
+    answer.press('ControlOrMeta+a')
+    answer.press('Backspace')
+    answer.press_sequentially('Edited answer')
+    assert_equal(answer.input_value(), 'Edited answer', f'{name} answer editing')
+    assert_equal(page.locator('#arabic-sample').evaluate(
+        "e => getComputedStyle(e).userSelect || getComputedStyle(e).webkitUserSelect"),
+                 'none', f'{name} question selection')
+    assert_equal(answer.evaluate(
+        "e => getComputedStyle(e).userSelect || getComputedStyle(e).webkitUserSelect"),
+                 'text', f'{name} answer selection')
+
+    results = page.evaluate("""() => {
+        const answer = document.querySelector('[name="answertext"]');
+        const sample = document.querySelector('#arabic-sample');
+        const cancel = (node, event) => !node.dispatchEvent(event);
+        const event = type => new Event(type, {bubbles: true, cancelable: true});
+        const checks = {};
+        for (const type of ['contextmenu', 'dragstart', 'selectstart']) {
+            checks[type] = cancel(sample, event(type));
+        }
+        for (const type of ['paste', 'drop']) {
+            checks[type] = cancel(answer, event(type));
+        }
+        for (const inputType of ['insertFromPaste', 'insertFromDrop']) {
+            checks[inputType] = cancel(answer, new InputEvent('beforeinput', {
+                bubbles: true, cancelable: true, inputType, data: 'External answer'
+            }));
+        }
+        for (const options of [
+            {key: 'v', ctrlKey: true}, {key: 'v', metaKey: true},
+            {key: 'м', code: 'KeyV', ctrlKey: true}, {key: 'Insert', shiftKey: true}
+        ]) {
+            checks[JSON.stringify(options)] = cancel(answer,
+                new KeyboardEvent('keydown', {bubbles: true, cancelable: true, ...options}));
+        }
+        const copy = type => {
+            const clipboardEvent = new ClipboardEvent(type, {
+                bubbles: true, cancelable: true, clipboardData: new DataTransfer()
+            });
+            // Firefox creates its own DataTransfer for synthetic clipboard events.
+            const data = clipboardEvent.clipboardData;
+            data.setData('text/html', '<b>Question must not escape</b>');
+            const blocked = cancel(answer, clipboardEvent);
+            return {blocked, text: data.getData('text/plain'), html: data.getData('text/html')};
+        };
+        const fallback = copy('copy');
+        const context = document.createElement('span');
+        context.className = 'exam-machine-context';
+        context.textContent = 'First question AI text';
+        document.querySelector('#testform').append(context);
+        const first = copy('copy');
+        context.remove();
+        const next = document.createElement('span');
+        next.className = 'exam-machine-context';
+        next.textContent = 'Next question AI text';
+        document.querySelector('#testform').append(next);
+        const second = copy('cut');
+        next.remove();
+        return {checks, fallback, first, second, answer: answer.value};
+    }""")
+    for check, blocked in results['checks'].items():
+        assert_equal(blocked, True, f'{name} blocks {check}')
+    for key in ['fallback', 'first', 'second']:
+        assert_equal(results[key]['blocked'], True, f'{name} cancels {key} export')
+        assert_equal(results[key]['html'], results[key]['text'], f'{name} replaces {key} HTML')
+    assert_equal(results['first']['text'], 'First question AI text', f'{name} copy decoy')
+    assert_equal(results['second']['text'], 'Next question AI text', f'{name} updated decoy')
+    assert_equal('самостоятельно' in results['fallback']['text'], True, f'{name} fallback')
+    assert_equal(results['answer'], 'Edited answer', f'{name} cut preserves answer')
+
+    if name == 'chromium':
+        page.context.grant_permissions(['clipboard-read', 'clipboard-write'])
+        for shortcut in ['ControlOrMeta+c', 'ControlOrMeta+x']:
+            answer.select_text()
+            answer.press(shortcut)
+            copied = page.evaluate('navigator.clipboard.readText()')
+            assert_equal(copied, results['fallback']['text'], f'{name} real {shortcut}')
+            assert_equal(answer.input_value(), 'Edited answer', f'{name} real cut preserves answer')
+
+    # These validate page handlers, not interception of actual OS screenshots.
+    for shortcut in ['PrintScreen', 'Meta+Shift+s', 'Meta+Shift+3',
+                     'Meta+Shift+4', 'Meta+Shift+5', 'Control+p', 'Meta+p']:
+        page.keyboard.press(shortcut)
+        assert_equal(page.locator('#testform').evaluate(
+            "e => getComputedStyle(e).visibility"), 'hidden', f'{name} hides {shortcut}')
+        page.evaluate("document.body.classList.remove('exam-capture-obscured')")
+    page.keyboard.press('PrintScreen')
+    page.wait_for_function("!document.body.classList.contains('exam-capture-obscured')")
+    assert_equal(answer.input_value(), 'Edited answer', f'{name} capture preserves answer')
+    page.emulate_media(media='print')
+    assert_equal(page.locator('main').evaluate("e => getComputedStyle(e).display"),
+                 'none', f'{name} print hides exam')
+    page.emulate_media(media='screen')
+
+
 def run_engine(browser_type: BrowserType, name: str, base_url: str) -> dict[str, Any]:
     browser = browser_type.launch(headless=True)
     context = browser.new_context(viewport={"width": 390, "height": 844})
@@ -88,8 +186,22 @@ def run_engine(browser_type: BrowserType, name: str, base_url: str) -> dict[str,
         if not font_statuses or any(status_code != 200 for status_code in font_statuses):
             raise AssertionError(f"{name} font responses were not all HTTP 200: {font_statuses}")
 
+        check_content_protection(page, name)
+        page.route('**/ordinary-page.html', lambda route: route.fulfill(
+            content_type='text/html', body='''<!doctype html><html><head>
+            <link rel="stylesheet" href="/public/styles/tmf-reference.css"></head>
+            <body><p>Ordinary page</p>
+            <script src="/shared/jscripts/mobile-exam.js"></script></body></html>'''))
+        page.goto(base_url + '/ordinary-page.html', wait_until='networkidle')
+        assert_equal(page.evaluate("""() => {
+            const copy = new Event('copy', {bubbles: true, cancelable: true});
+            return document.body.dispatchEvent(copy)
+                && !document.body.classList.contains('exam-content-protected');
+        }"""), True, f'{name} ordinary page is unrestricted')
+
         return {
             "engine": name,
+            "contentProtection": "passed",
             **metrics,
             "fontHttpStatuses": font_statuses,
             "reloadCounter": EXPECTED_AFTER_FIRST,

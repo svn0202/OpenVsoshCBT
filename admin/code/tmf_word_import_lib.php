@@ -26,6 +26,22 @@ function f_tmf_word_import_question_type_name(int $type): string
     };
 }
 
+/** @throws TmfWordImportException */
+function f_tmf_word_import_preview_name(mixed $value, string $label): string
+{
+    if (!is_string($value)) {
+        throw new TmfWordImportException($label . ' указано неверно.');
+    }
+    $value = trim($value);
+    if ($value === '') {
+        throw new TmfWordImportException($label . ' не может быть пустым.');
+    }
+    if (mb_strlen($value, 'UTF-8') > 255) {
+        throw new TmfWordImportException($label . ' длиннее 255 символов.');
+    }
+    return $value;
+}
+
 /**
  * Build the canonical Word-import template offered by the admin interface.
  *

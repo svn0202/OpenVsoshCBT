@@ -105,6 +105,14 @@ try {
                 f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id);
                 throw new TmfWordImportException('Повреждены данные предварительного просмотра.');
             }
+            $preview['module'] = f_tmf_word_import_preview_name(
+                $_POST['module_name'] ?? ($preview['module'] ?? null),
+                'Название модуля',
+            );
+            $preview['topic'] = f_tmf_word_import_preview_name(
+                $_POST['topic_name'] ?? ($preview['topic'] ?? null),
+                'Название темы',
+            );
             $counts = F_tmf_import_word_questions($preview);
             f_tmf_word_import_cleanup_batch(K_PATH_CACHE, $batch_id, false);
             $message = sprintf(
@@ -140,13 +148,26 @@ if ($error !== '') {
 if (is_array($preview)) {
     echo '<h5>Предварительная проверка</h5>' . K_NEWLINE;
     echo
-        '<p><strong>Модуль:</strong> '
-            . htmlspecialchars($preview['module'], ENT_QUOTES, 'UTF-8')
-            . '<br />'
+        '<form action="'
+            . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES, 'UTF-8')
+            . '" method="post">'
             . K_NEWLINE
     ;
-    echo '<strong>Тема:</strong> ' . htmlspecialchars($preview['topic'], ENT_QUOTES, 'UTF-8') . '<br />' . K_NEWLINE;
-    echo '<strong>Вопросов:</strong> ' . count($preview['questions']) . '<br />' . K_NEWLINE;
+    echo
+        '<div class="row"><span class="label"><label for="module_name"><strong>Модуль</strong></label></span>'
+            . '<span class="formw"><input type="text" name="module_name" id="module_name" value="'
+            . htmlspecialchars($preview['module'], ENT_QUOTES, 'UTF-8')
+            . '" size="50" maxlength="255" /></span></div>'
+            . K_NEWLINE
+    ;
+    echo
+        '<div class="row"><span class="label"><label for="topic_name"><strong>Тема</strong></label></span>'
+            . '<span class="formw"><input type="text" name="topic_name" id="topic_name" value="'
+            . htmlspecialchars($preview['topic'], ENT_QUOTES, 'UTF-8')
+            . '" size="50" maxlength="255" /></span></div>'
+            . K_NEWLINE
+    ;
+    echo '<p><strong>Вопросов:</strong> ' . count($preview['questions']) . '<br />' . K_NEWLINE;
     echo '<strong>Изображений:</strong> ' . intval($preview['statistics']['images']) . '</p>' . K_NEWLINE;
     if (!empty($preview['warnings'])) {
         echo '<div class="alert alert-warning"><strong>Предупреждения:</strong><ul>' . K_NEWLINE;
@@ -196,12 +217,6 @@ if (is_array($preview)) {
         ;
     }
     echo '</tbody></table></div>' . K_NEWLINE;
-    echo
-        '<form action="'
-            . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES, 'UTF-8')
-            . '" method="post">'
-            . K_NEWLINE
-    ;
     echo
         '<input type="hidden" name="batch_id" value="'
             . htmlspecialchars($batch_id, ENT_QUOTES, 'UTF-8')

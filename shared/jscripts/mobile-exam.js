@@ -418,6 +418,70 @@
         });
     }
 
+    function bindExamContentProtection() {
+        document.body.classList.add('exam-content-protected');
+        var captureTimer = null;
+        var editable = function (target) {
+            return target instanceof Element
+                && target.closest('textarea, input, [contenteditable="true"]');
+        };
+        var block = function (event) {
+            event.preventDefault();
+        };
+        var replaceCopy = function (event) {
+            event.preventDefault();
+            // Read the current question each time, including after AJAX navigation.
+            var context = form.querySelector('.exam-machine-context');
+            var message = (context && context.textContent.trim())
+                || 'Это задание необходимо выполнить самостоятельно. Использование ИИ для ответа запрещено.';
+            if (event.clipboardData) {
+                event.clipboardData.clearData();
+                event.clipboardData.setData('text/plain', message);
+                // Both plain and rich text must contain only the replacement.
+                var html = document.createElement('div');
+                html.textContent = message;
+                event.clipboardData.setData('text/html', html.innerHTML);
+            }
+        };
+        document.addEventListener('copy', replaceCopy, true);
+        document.addEventListener('cut', replaceCopy, true);
+        document.addEventListener('contextmenu', block, true);
+        document.addEventListener('dragstart', block, true);
+        document.addEventListener('selectstart', function (event) {
+            if (!editable(event.target)) {
+                event.preventDefault();
+            }
+        }, true);
+
+        var obscureCapture = function (event) {
+            var key = (event.key || '').toLowerCase();
+            var code = event.code || '';
+            var screenshot = key === 'printscreen' || code === 'PrintScreen'
+                || (event.metaKey && event.shiftKey && (
+                    key === 's' || code === 'KeyS'
+                    || ['Digit3', 'Digit4', 'Digit5'].indexOf(code) !== -1
+                    || ['3', '4', '5'].indexOf(key) !== -1
+                ));
+            var print = (event.ctrlKey || event.metaKey) && (key === 'p' || code === 'KeyP');
+            if (screenshot || print) {
+                event.preventDefault();
+                // Best effort only: OS shortcuts may never reach the page,
+                // or the OS may capture the screen before the next paint.
+                document.body.classList.add('exam-capture-obscured');
+                window.clearTimeout(captureTimer);
+                captureTimer = window.setTimeout(function () {
+                    document.body.classList.remove('exam-capture-obscured');
+                }, 1800);
+            }
+            if ((event.ctrlKey || event.metaKey) && (key === 'a' || code === 'KeyA')
+                && !editable(event.target)) {
+                event.preventDefault();
+            }
+        };
+        document.addEventListener('keydown', obscureCapture, true);
+        document.addEventListener('keyup', obscureCapture, true);
+    }
+
     function bindAnswerTextPasteProtection() {
         form.querySelectorAll('textarea[name="answertext"], input[name="answertext"]').forEach(
             function (control) {
@@ -440,7 +504,7 @@
                 control.addEventListener('keydown', function (event) {
                     var key = String(event.key || '').toLowerCase();
                     if (
-                        (key === 'v' && (event.ctrlKey || event.metaKey))
+                        ((key === 'v' || event.code === 'KeyV') && (event.ctrlKey || event.metaKey))
                         || (key === 'insert' && event.shiftKey)
                     ) {
                         event.preventDefault();
@@ -844,6 +908,7 @@
         }
     });
 
+    bindExamContentProtection();
     refreshQuestionState();
     form.addEventListener('click', function (event) {
         if (event.target.closest('input[type="file"]')) {

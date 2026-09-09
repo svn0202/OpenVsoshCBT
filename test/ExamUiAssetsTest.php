@@ -163,7 +163,7 @@ final class ExamUiAssetsTest extends TestCase
         self::assertStringContainsString("control.addEventListener('contextmenu', block);", $script);
         self::assertStringContainsString("control.addEventListener('drop', block);", $script);
         self::assertStringContainsString('insertFrom(?:Paste|Drop)', $script);
-        self::assertStringContainsString("key === 'v' && (event.ctrlKey || event.metaKey)", $script);
+        self::assertStringContainsString("(key === 'v' || event.code === 'KeyV') && (event.ctrlKey || event.metaKey)", $script);
         self::assertStringContainsString("key === 'insert' && event.shiftKey", $script);
         self::assertStringContainsString('bindAnswerTextPasteProtection();', $script);
     }

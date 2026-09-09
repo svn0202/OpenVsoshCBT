@@ -25,6 +25,19 @@ final class WordImportTest extends TestCase
         self::assertSame('неизвестный (99)', \f_tmf_word_import_question_type_name(99));
     }
 
+    /** @throws TmfWordImportException */
+    public function testPreviewNamesAreTrimmedAndValidated(): void
+    {
+        self::assertSame('Новый модуль', \f_tmf_word_import_preview_name('  Новый модуль  ', 'Модуль'));
+
+        try {
+            \f_tmf_word_import_preview_name('', 'Тема');
+            self::fail('Пустое название должно быть отклонено.');
+        } catch (TmfWordImportException $exception) {
+            self::assertSame('Тема не может быть пустым.', $exception->getMessage());
+        }
+    }
+
     /** @throws \TmfWordImportException */
     public function testStandaloneDotAfterQuestionMarkerIsDiscarded(): void
     {

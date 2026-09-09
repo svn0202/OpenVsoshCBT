@@ -2250,6 +2250,48 @@ body.app-page.exam-page.exam-focus-obscured #testform > div {
     pointer-events: none;
     user-select: none;
 }
+/* Keep native selection inside answer fields for editing. Clipboard export
+   is handled separately by mobile-exam.js. */
+body.exam-content-protected,
+body.exam-content-protected * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+body.exam-content-protected :is(input, textarea, [contenteditable="true"], [contenteditable="true"] *) {
+    -webkit-user-select: text;
+    user-select: text;
+}
+body.exam-content-protected img {
+    -webkit-user-drag: none;
+}
+body.exam-capture-obscured > *,
+body.exam-capture-obscured > * * {
+    visibility: hidden !important;
+}
+body.exam-capture-obscured::after {
+    content: 'Снимки экрана и печать во время тестирования запрещены';
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    background: #fff;
+    color: #222;
+    text-align: center;
+}
+@media print {
+    body.exam-content-protected > * {
+        display: none !important;
+    }
+    body.exam-content-protected::after {
+        content: 'Печать заданий во время тестирования запрещена';
+        display: block;
+        color: #000;
+        background: #fff;
+    }
+}
 /* Hidden from participants and assistive technology, but kept as DOM text
    for clients that build an automated page context. */
 body.app-page.exam-page .exam-machine-context {
