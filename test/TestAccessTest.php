@@ -8,6 +8,18 @@ require_once __DIR__ . '/../shared/code/tce_functions_test_access.php';
 
 final class TestAccessTest extends TestCase
 {
+    public function testExpiredCatalogueFilterKeepsTestsWithAnAttempt(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../shared/code/tce_functions_test.php');
+        $status_check = strpos($source, '[$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(');
+        $expired_filter = strpos($source, '$hide_unattempted_expired_tests', (int) $status_check + 1);
+
+        self::assertNotFalse($status_check);
+        self::assertNotFalse($expired_filter);
+        self::assertGreaterThan($status_check, $expired_filter);
+        self::assertStringContainsString('&& (int) $testuser_id <= 0', $source);
+    }
+
     protected function tearDown(): void
     {
         unset($_SESSION['session_unlocked_tests'], $_SESSION['session_user_id']);
@@ -217,6 +229,7 @@ PHP;
                     . '$GLOBALS["status_args"][] = $arguments; '
                     . 'return [array_shift($GLOBALS["test_statuses"]), 99, false]; } '
                     . 'function F_tmf_catalog_test_status($status, $pregenerated) { return $status; } '
+                    . 'function openvsosh_hide_unattempted_expired_tests() { return false; } '
                     . 'function F_tmf_results_are_published($test) { '
                     . '$GLOBALS["published"][] = $test; return true; } '
                     . 'function f_count_user_test(...$arguments) { '

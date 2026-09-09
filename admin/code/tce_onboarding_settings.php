@@ -35,11 +35,13 @@ $server = $_SERVER;
  *     save_onboarding?:mixed,
  *     save_site?:mixed,
  *     save_access?:mixed,
+ *     save_catalog?:mixed,
  *     csrf_token?:mixed,
  *     instruction_test_id?:mixed,
  *     demo_test_id?:mixed,
  *     disable_registration?:mixed,
  *     disable_password_reset?:mixed,
+ *     hide_unattempted_expired_tests?:mixed,
  *     access_help?:string,
  *     ...<string,mixed>
  * } $post
@@ -70,6 +72,7 @@ $access_config = openvsosh_get_access_settings();
 $site_config = openvsosh_get_site_settings();
 $runtime_config = openvsosh_get_runtime_settings();
 $appearance_config = openvsosh_get_appearance_settings();
+$hide_unattempted_expired_tests = openvsosh_hide_unattempted_expired_tests();
 $access_labels = openvsosh_access_labels($l);
 if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_onboarding'])) {
     if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
@@ -152,6 +155,18 @@ if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_access'])) {
         F_print_error('MESSAGE', $access_labels['settings_saved']);
     } else {
         F_print_error('ERROR', $access_labels['settings_save_failed'], false);
+    }
+}
+
+if ($server['REQUEST_METHOD'] === 'POST' && isset($post['save_catalog'])) {
+    if (empty($post['csrf_token']) || !is_string($post['csrf_token']) || !check_csrf_token($post['csrf_token'])) {
+        exit();
+    }
+    $hide_unattempted_expired_tests = isset($post['hide_unattempted_expired_tests']);
+    if (openvsosh_save_catalog_settings($hide_unattempted_expired_tests)) {
+        F_print_error('MESSAGE', 'Настройки каталога сохранены.');
+    } else {
+        F_print_error('ERROR', 'Не удалось сохранить настройки каталога.', false);
     }
 }
 
@@ -339,9 +354,20 @@ echo '<div class="onboarding-admin-actions"><button type="submit" name="save_acc
     . '</button></div>' . K_NEWLINE;
 echo f_get_csrf_token_field() . K_NEWLINE;
 echo '</form>' . K_NEWLINE;
+echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">04</span> Каталог участника</legend>' . K_NEWLINE;
+echo '<div class="row check-row"><input type="checkbox" name="hide_unattempted_expired_tests"'
+    . ' id="hide_unattempted_expired_tests" value="1"'
+    . ($hide_unattempted_expired_tests ? ' checked="checked"' : '') . ' />' . K_NEWLINE;
+echo '<div><label for="hide_unattempted_expired_tests">Скрывать завершённые тесты без прохождения</label>'
+    . '<span class="form-help">Участник продолжит видеть завершённые тесты, в которых он принимал участие. Текущие и будущие тесты также остаются видимыми. Административная часть не меняется.</span>'
+    . '</div></div></fieldset>' . K_NEWLINE;
+echo '<div class="onboarding-admin-actions"><button type="submit" name="save_catalog" value="1" class="button">Сохранить</button></div>' . K_NEWLINE;
+echo f_get_csrf_token_field() . K_NEWLINE;
+echo '</form>' . K_NEWLINE;
 echo '<p>Укажите, какие тесты считать инструкцией и демо. Они будут показаны участнику над основным каталогом, пока он их не завершит.</p>' . K_NEWLINE;
 echo '<form class="settings-form" action="' . htmlspecialchars($server['SCRIPT_NAME'], ENT_QUOTES) . '" method="post">' . K_NEWLINE;
-echo '<fieldset class="settings-card"><legend><span aria-hidden="true">04</span> Последовательность знакомства</legend>' . K_NEWLINE;
+echo '<fieldset class="settings-card"><legend><span aria-hidden="true">05</span> Последовательность знакомства</legend>' . K_NEWLINE;
 echo '<div class="row"><label for="instruction_test_id">1. Тест-инструкция</label>' . K_NEWLINE;
 f_onboarding_test_select(
     'instruction_test_id',

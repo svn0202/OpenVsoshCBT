@@ -287,6 +287,29 @@ function openvsosh_save_setting(string $key, string $value): bool
 }
 
 /**
+ * Whether expired tests should be omitted from the participant catalogue.
+ *
+ * This setting is intentionally consumed only by the public catalogue. The
+ * administrator test lists and reports must always retain access to expired
+ * tests.
+ */
+function openvsosh_hide_unattempted_expired_tests(): bool
+{
+    $fallback = defined('K_HIDE_EXPIRED_TESTS') && constant('K_HIDE_EXPIRED_TESTS') === true;
+    $value = openvsosh_get_setting('hide_unattempted_expired_tests');
+    return $value === null ? $fallback : $value === '1';
+}
+
+/** Store the participant-catalogue visibility preference. */
+function openvsosh_save_catalog_settings(bool $hide_unattempted_expired_tests): bool
+{
+    return openvsosh_save_setting(
+        'hide_unattempted_expired_tests',
+        $hide_unattempted_expired_tests ? '1' : '0',
+    );
+}
+
+/**
  * @return array{site_name:string,site_description:string,site_contact:string,welcome:string,login_instruction:string}
  */
 function openvsosh_get_site_settings(): array

@@ -39,6 +39,7 @@ function f_get_user_tests(): string
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     require_once '../../shared/code/tce_functions_test_stats.php';
+    require_once '../../shared/code/tce_functions_openvsosh_settings.php';
     global $db, $l;
     /**
      * @var array{
@@ -71,6 +72,7 @@ function f_get_user_tests(): string
     $current_time = date(K_TIMESTAMP_FORMAT);
     /** @var int $current_timestamp */
     $current_timestamp = strtotime($current_time);
+    $hide_unattempted_expired_tests = openvsosh_hide_unattempted_expired_tests();
     // Return the complete catalogue. The public page separates current,
     // future and completed tests and applies a useful date order to each.
     $sql =
@@ -119,6 +121,13 @@ function f_get_user_tests(): string
                     $catalog_test_id,
                     $test_duration_time,
                 );
+                if (
+                    $hide_unattempted_expired_tests
+                    && $current_timestamp >= $test_end_timestamp
+                    && (int) $testuser_id <= 0
+                ) {
+                    continue;
+                }
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
                 if ($current_timestamp >= $test_end_timestamp) {
                     // the test is expired.

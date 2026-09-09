@@ -137,6 +137,28 @@ PHP;
         );
     }
 
+    public function testUnattemptedExpiredTestVisibilityUsesDatabaseSettingBeforeFileFallback(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [
+                PHP_BINARY,
+                '-r',
+                'define("K_TABLE_PREFIX", "tce_"); define("K_HIDE_EXPIRED_TESTS", false); '
+                    . 'function F_db_query($sql, $db) { return str_contains($sql, "SELECT setting_value") '
+                    . '? "value" : true; } '
+                    . 'function F_db_fetch_array($result) { return $result === "value" '
+                    . '? ["setting_value" => "1"] : false; } '
+                    . 'function F_escape_sql($db, $value) { return $value; } '
+                    . '$db = new stdClass(); require "tce_functions_openvsosh_settings.php"; '
+                    . 'echo openvsosh_hide_unattempted_expired_tests() ? "hidden" : "shown";',
+            ],
+            dirname(__DIR__) . '/shared/code',
+        );
+
+        self::assertSame(0, $status, $output);
+        self::assertSame('hidden', $output);
+    }
+
     public function testAccessLabelsFallBackWhenLocalTranslationsAreOutdated(): void
     {
         self::assertSame(
