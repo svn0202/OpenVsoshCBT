@@ -207,10 +207,11 @@ if (
     $submitted_otpcode = is_string($_POST['xuser_otpcode'] ?? null) ? $_POST['xuser_otpcode'] : '';
     $bruteforce = false;
     $wait = 1;
+    $previous_wait = 0;
+    $bruteforce_record_exists = false;
     $brute_force_delay_ratio = openvsosh_authorization_int(K_BRUTE_FORCE_DELAY_RATIO);
     if ($brute_force_delay_ratio > 0) {
         // check login attempt from the current client device to avoid brute force attack
-        $bruteforce = true;
         // we are using another entry in the session table to keep track of the login attempts
         $sqlt = 'SELECT * FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $fingerprintkey . "' LIMIT 1";
         $rt = F_db_query($sqlt, $db);
@@ -218,61 +219,20 @@ if (
             $mt = openvsosh_authorization_row(F_db_fetch_array($rt));
             if ($mt) {
                 /** @var array{cpsession_expiry:string,cpsession_data:int|string} $mt */
-                // check the expiration time
-                if ((int) strtotime($mt['cpsession_expiry']) < time()) {
-                    $bruteforce = false;
+                $bruteforce_record_exists = true;
+                $stored_wait = max(1, (int) $mt['cpsession_data']);
+                $maximum_wait = openvsosh_authorization_int(K_SECONDS_IN_HOUR);
+                $previous_wait = min($stored_wait, $maximum_wait);
+                $remaining_wait = f_login_throttle_remaining(
+                    $mt['cpsession_expiry'],
+                    time(),
+                    $stored_wait,
+                    $maximum_wait,
+                );
+                if ($remaining_wait > 0) {
+                    $bruteforce = true;
+                    $wait = $remaining_wait;
                 }
-
-                // update wait time
-                $wait = (int) $mt['cpsession_data'];
-                if ($wait < openvsosh_authorization_int(K_SECONDS_IN_HOUR)) {
-                    $wait *= $brute_force_delay_ratio;
-                }
-
-                $sqlup =
-                    'UPDATE '
-                    . K_TABLE_SESSIONS
-                    . ' SET
-					cpsession_expiry=\''
-                    . date(K_TIMESTAMP_FORMAT, time() + $wait)
-                    . '\',
-					cpsession_data=\''
-                    . $wait
-                    . '\'
-					WHERE cpsession_id=\''
-                    . $fingerprintkey
-                    . "'";
-                $updated_attempt = F_db_query($sqlup, $db);
-                if (!$updated_attempt) {
-                    F_display_db_error();
-                }
-            } else {
-                // add new record
-                $wait = 1; // number of seconds to wait for the second attempt
-                $sqls =
-                    'INSERT INTO '
-                    . K_TABLE_SESSIONS
-                    . ' (
-					cpsession_id,
-					cpsession_expiry,
-					cpsession_data
-					) VALUES (
-					\''
-                    . $fingerprintkey
-                    . '\',
-					\''
-                    . date(K_TIMESTAMP_FORMAT, time() + $wait)
-                    . '\',
-					\''
-                    . $wait
-                    . '\'
-					)';
-                $inserted_attempt = F_db_query($sqls, $db);
-                if (!$inserted_attempt) {
-                    F_display_db_error();
-                }
-
-                $bruteforce = false;
             }
         }
     }
@@ -509,6 +469,67 @@ if (
             }
         } else {
             $login_error = true;
+        }
+
+        if ($logged) {
+            // A successful login ends the failure streak. Without this reset, ordinary
+            // re-logins after a session timeout eventually grow into hour-long lockouts.
+            if ($bruteforce_record_exists) {
+                $cleared_attempts = F_db_query(
+                    'DELETE FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $fingerprintkey . "'",
+                    $db,
+                );
+                if (!$cleared_attempts) {
+                    F_display_db_error();
+                }
+            }
+        } elseif ($brute_force_delay_ratio > 0) {
+            // Increase the delay only after an actual failed authentication. Merely
+            // submitting during an active delay must not extend that delay.
+            $wait = f_login_throttle_next_delay(
+                $previous_wait,
+                $brute_force_delay_ratio,
+                openvsosh_authorization_int(K_SECONDS_IN_HOUR),
+            );
+            if ($bruteforce_record_exists) {
+                $sqlup =
+                    'UPDATE '
+                    . K_TABLE_SESSIONS
+                    . ' SET
+					cpsession_expiry=\''
+                    . date(K_TIMESTAMP_FORMAT, time() + $wait)
+                    . '\',
+					cpsession_data=\''
+                    . $wait
+                    . '\'
+					WHERE cpsession_id=\''
+                    . $fingerprintkey
+                    . "'";
+                $stored_attempt = F_db_query($sqlup, $db);
+            } else {
+                $sqls =
+                    'INSERT INTO '
+                    . K_TABLE_SESSIONS
+                    . ' (
+					cpsession_id,
+					cpsession_expiry,
+					cpsession_data
+					) VALUES (
+					\''
+                    . $fingerprintkey
+                    . '\',
+					\''
+                    . date(K_TIMESTAMP_FORMAT, time() + $wait)
+                    . '\',
+					\''
+                    . $wait
+                    . '\'
+					)';
+                $stored_attempt = F_db_query($sqls, $db);
+            }
+            if (!$stored_attempt) {
+                F_display_db_error();
+            }
         }
     } // end of brute-force check
 }

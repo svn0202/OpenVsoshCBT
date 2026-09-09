@@ -200,6 +200,43 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
 }
 
 /**
+ * Return the number of seconds left in an active login throttle window.
+ */
+function f_login_throttle_remaining(string $expiry, int $now, int $stored_delay, int $maximum): int
+{
+    // Older releases could create a 4096-second window despite the intended
+    // one-hour cap. Let one authentication attempt through so a valid login can
+    // clear that legacy record; another failure immediately stores the cap.
+    if ($stored_delay > $maximum) {
+        return 0;
+    }
+
+    $expiry_timestamp = strtotime($expiry);
+    if ($expiry_timestamp === false) {
+        return 0;
+    }
+
+    return max(0, $expiry_timestamp - $now);
+}
+
+/**
+ * Return the delay to store after a failed login attempt.
+ */
+function f_login_throttle_next_delay(int $previous, int $ratio, int $maximum): int
+{
+    if ($previous <= 0 || $ratio <= 0 || $maximum <= 1) {
+        return 1;
+    }
+
+    $previous = min($previous, $maximum);
+    if ($previous >= intdiv($maximum, $ratio)) {
+        return $maximum;
+    }
+
+    return $previous * $ratio;
+}
+
+/**
  * Display login page.
  * NOTE: This function calls exit() after execution.
  */

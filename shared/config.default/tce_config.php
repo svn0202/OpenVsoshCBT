@@ -152,7 +152,7 @@ define('K_SHORT_ANSWERS_BINARY', false);
 /**
  * User's session life time in seconds.
  */
-define('K_SESSION_LIFE', K_SECONDS_IN_HOUR);
+define('K_SESSION_LIFE', 2 * K_SECONDS_IN_HOUR);
 
 /**
  * When an alternate authentication method is used,
