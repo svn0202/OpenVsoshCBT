@@ -367,7 +367,12 @@ final class DatabaseDalIntegrationTest extends TestCase
 
         $result = \F_db_query('SELECT COUNT(*) AS n FROM tce_schema_migrations', $this->db);
         $row = self::dalRow(\F_db_fetch_assoc($result));
-        $this->assertSame(15, (int) ($row['n'] ?? null));
+        require_once __DIR__ . '/../../install/tce_functions_migrate.php';
+        $migrationDialect = (string) getenv('TCEXAM_DB_TYPE') === 'POSTGRESQL' ? 'postgresql' : 'mysql';
+        $expectedMigrationCount = count(\F_tmf_migration_files(
+            __DIR__ . '/../../install/upgrade/' . $migrationDialect,
+        ));
+        $this->assertSame($expectedMigrationCount, (int) ($row['n'] ?? null));
 
         $verifyPipes = [];
         $verify = proc_open(
