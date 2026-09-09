@@ -39013,6 +39013,14 @@ Statistiken der Fragen und Antworten können nicht nur online betrachtet werden,
          </tuv>
       </tu>
       <!-- TCExam 9.0.000 -->
+      <tu tuid="w_unlimited" datatype="plaintext">
+         <tuv xml:lang="EN">
+            <seg>unlimited</seg>
+         </tuv>
+         <tuv xml:lang="RU">
+            <seg>без ограничений</seg>
+         </tuv>
+      </tu>
       <tu tuid="w_repeatable" datatype="plaintext">
          <tuv xml:lang="NL">
             <seg>repeatable</seg>

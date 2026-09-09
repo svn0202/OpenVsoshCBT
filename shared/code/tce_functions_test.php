@@ -805,6 +805,7 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
      *     w_test_time:string,
      *     w_time_begin:string,
      *     w_time_end:string,
+     *     w_unlimited?:string,
      *     w_yes:string
      * } $l
      */
@@ -874,7 +875,7 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
             $is_test_repeatable = f_legacy_int_equals($m['test_repeatable'], 0) ? $no_label : $yes_label;
             $repeat_times = '';
             if (f_legacy_int_equals($m['test_repeatable'], 1)) {
-                $repeat_times = ' ( unlimited )';
+                $repeat_times = ' (' . ($l['w_unlimited'] ?? 'без ограничений') . ')';
             } elseif ($m['test_repeatable'] > 1) {
                 $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
             }
