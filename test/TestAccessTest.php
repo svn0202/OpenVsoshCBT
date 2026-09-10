@@ -432,16 +432,30 @@ PHP;
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$outputs = [$qualified("007", true), $qualified("007", true), '
                     . '$qualified("007", true), $qualified("007", true)]; '
-                    . 'echo json_encode([$outputs, $GLOBALS["queries"], '
-                    . '$GLOBALS["errors"], $GLOBALS["two_col"]]);',
+                    . '$detailed = [$outputs, $GLOBALS["queries"], $GLOBALS["errors"], $GLOBALS["two_col"]]; '
+                    . '$publicRows = []; foreach ([0, 1, 3] as $attempts) { '
+                    . '$row["test_repeatable"] = $attempts; $GLOBALS["results"] = ["public"]; '
+                    . '$GLOBALS["rows"]["public"] = [$row]; $GLOBALS["valid"] = [true]; '
+                    . '$GLOBALS["two_col"] = []; $qualified("007", false); '
+                    . '$publicRows[] = $GLOBALS["two_col"]; } '
+                    . 'echo json_encode([$detailed, $publicRows]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],
             dirname(__DIR__) . '/shared/code',
         );
 
         self::assertSame(0, $status, $output);
-        /** @var array{0: array{0: string, 1: string, 2: string, 3: string}, 1: list<string>, 2: int, 3: list<list<mixed>>} $decoded */
-        $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        /** @var array{array{array{string,string,string,string},list<string>,int,list<list<mixed>>},list<list<array{string,string,string}>>} $payload */
+        $payload = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        [$decoded, $publicRows] = $payload;
+        foreach ($publicRows as $index => $publicInfo) {
+            self::assertSame(
+                ['Время начала', 'Время окончания', 'Время на выполнение', 'Количество попыток'],
+                array_column($publicInfo, 0),
+            );
+            self::assertSame(['begin', 'end', '30 minutes', ['1', 'Без ограничений', '3'][$index] ?? ''], array_column($publicInfo, 2));
+        }
+        self::assertCount(3, $publicRows);
         [$outputs, $queries, $errors, $rows] = $decoded;
         self::assertSame(['</div>', '</div>', ''], array_slice($outputs, 0, 3));
         self::assertStringContainsString('<h1>&lt;Exam &amp; "Q"&gt;</h1>', $outputs[3]);

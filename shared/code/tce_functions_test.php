@@ -854,46 +854,54 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
                 . '<br /><br /></div>'
                 . K_NEWLINE;
             $str .= '<div class="tceformbox">' . K_NEWLINE;
-            $str .= f_two_col_row($l['w_time_begin'], $l['h_time_begin'], $m['test_begin_time']);
-            $str .= f_two_col_row($l['w_time_end'], $l['h_time_end'], $m['test_end_time']);
-            $str .= f_two_col_row($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
-            $str .= f_two_col_row($l['w_score_right'], $l['h_score_right'], $m['test_score_right']);
-            $str .= f_two_col_row($l['w_score_wrong'], $l['h_score_wrong'], $m['test_score_wrong']);
-            $str .= f_two_col_row($l['w_score_unanswered'], $l['h_score_unanswered'], $m['test_score_unanswered']);
-            $str .= f_two_col_row($l['w_max_score'], $l['w_max_score'], $m['test_max_score']);
-            $str .= f_two_col_row($l['w_test_score_threshold'], $l['h_test_score_threshold'], $m['test_score_threshold']);
-            $str .= f_two_col_row(
-                $l['w_results_to_users'],
-                $l['h_results_to_users'],
-                f_get_boolean($m['test_results_to_users']) ? $yes_label : $no_label,
-            );
-            $str .= f_two_col_row(
-                $l['w_report_to_users'],
-                $l['h_report_to_users'],
-                f_get_boolean($m['test_report_to_users']) ? $yes_label : $no_label,
-            );
-            $is_test_repeatable = f_legacy_int_equals($m['test_repeatable'], 0) ? $no_label : $yes_label;
-            $repeat_times = '';
-            if (f_legacy_int_equals($m['test_repeatable'], 1)) {
-                $repeat_times = ' (' . ($l['w_unlimited'] ?? 'без ограничений') . ')';
-            } elseif ($m['test_repeatable'] > 1) {
-                $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
-            }
+            if (!$showip) {
+                $attempts = (int) $m['test_repeatable'];
+                $attempts_label = $attempts === 1 ? 'Без ограничений' : (string) max(1, $attempts);
+                $str .= f_two_col_row('Время начала', $l['h_time_begin'], $m['test_begin_time']);
+                $str .= f_two_col_row('Время окончания', $l['h_time_end'], $m['test_end_time']);
+                $str .= f_two_col_row('Время на выполнение', $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
+                $str .= f_two_col_row('Количество попыток', 'Общее количество разрешённых попыток', $attempts_label);
+            } else {
+                $str .= f_two_col_row($l['w_time_begin'], $l['h_time_begin'], $m['test_begin_time']);
+                $str .= f_two_col_row($l['w_time_end'], $l['h_time_end'], $m['test_end_time']);
+                $str .= f_two_col_row($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
+                $str .= f_two_col_row($l['w_score_right'], $l['h_score_right'], $m['test_score_right']);
+                $str .= f_two_col_row($l['w_score_wrong'], $l['h_score_wrong'], $m['test_score_wrong']);
+                $str .= f_two_col_row($l['w_score_unanswered'], $l['h_score_unanswered'], $m['test_score_unanswered']);
+                $str .= f_two_col_row($l['w_max_score'], $l['w_max_score'], $m['test_max_score']);
+                $str .= f_two_col_row($l['w_test_score_threshold'], $l['h_test_score_threshold'], $m['test_score_threshold']);
+                $str .= f_two_col_row(
+                    $l['w_results_to_users'],
+                    $l['h_results_to_users'],
+                    f_get_boolean($m['test_results_to_users']) ? $yes_label : $no_label,
+                );
+                $str .= f_two_col_row(
+                    $l['w_report_to_users'],
+                    $l['h_report_to_users'],
+                    f_get_boolean($m['test_report_to_users']) ? $yes_label : $no_label,
+                );
+                $is_test_repeatable = f_legacy_int_equals($m['test_repeatable'], 0) ? $no_label : $yes_label;
+                $repeat_times = '';
+                if (f_legacy_int_equals($m['test_repeatable'], 1)) {
+                    $repeat_times = ' (' . ($l['w_unlimited'] ?? 'без ограничений') . ')';
+                } elseif ($m['test_repeatable'] > 1) {
+                    $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
+                }
 
-            $str .= f_two_col_row($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
-            // Additional information hidden by default
-            //$str .= f_two_col_row($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(f_get_boolean($m['test_random_questions_select']))]);
-            //$str .= f_two_col_row($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(f_get_boolean($m['test_random_questions_order']))]);
-            //$str .= f_two_col_row($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(f_get_boolean($m['test_questions_order_mode']))]);
-            //$str .= f_two_col_row($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(f_get_boolean($m['test_random_answers_select']))]);
-            //$str .= f_two_col_row($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(f_get_boolean($m['test_random_answers_order']))]);
-            //$str .= f_two_col_row($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(f_get_boolean($m['test_answers_order_mode']))]);
-            //$str .= f_two_col_row($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(f_get_boolean($m['test_comment_enabled']))]);
-            //$str .= f_two_col_row($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(f_get_boolean($m['test_menu_enabled']))]);
-            //$str .= f_two_col_row($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(f_get_boolean($m['test_noanswer_enabled']))]);
-            //$str .= f_two_col_row($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(f_get_boolean($m['test_mcma_radio']))]);
-            if ($showip) {
+                $str .= f_two_col_row($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
+                // Additional information hidden by default
+                //$str .= f_two_col_row($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(f_get_boolean($m['test_random_questions_select']))]);
+                //$str .= f_two_col_row($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(f_get_boolean($m['test_random_questions_order']))]);
+                //$str .= f_two_col_row($l['w_questions_order_mode'], $l['h_questions_order_mode'], $ordmode[intval(f_get_boolean($m['test_questions_order_mode']))]);
+                //$str .= f_two_col_row($l['w_random_answers_select'], $l['h_random_answers_select'], $boolval[intval(f_get_boolean($m['test_random_answers_select']))]);
+                //$str .= f_two_col_row($l['w_random_answers_order'], $l['h_random_answers_order'], $boolval[intval(f_get_boolean($m['test_random_answers_order']))]);
+                //$str .= f_two_col_row($l['w_answers_order_mode'], $l['h_answers_order_mode'], $ordmode[intval(f_get_boolean($m['test_answers_order_mode']))]);
+                //$str .= f_two_col_row($l['w_comment_enabled'], $l['h_comment_enabled'], $boolval[intval(f_get_boolean($m['test_comment_enabled']))]);
+                //$str .= f_two_col_row($l['w_menu_enabled'], $l['h_menu_enabled'], $boolval[intval(f_get_boolean($m['test_menu_enabled']))]);
+                //$str .= f_two_col_row($l['w_noanswer_enabled'], $l['h_noanswer_enabled'], $boolval[intval(f_get_boolean($m['test_noanswer_enabled']))]);
+                //$str .= f_two_col_row($l['w_mcma_radio'], $l['h_mcma_radio'], $boolval[intval(f_get_boolean($m['test_mcma_radio']))]);
                 $str .= f_two_col_row($l['w_ip_range'], $l['h_ip_range'], $m['test_ip_range']);
+
             }
 
             $str .= '<br/>';
