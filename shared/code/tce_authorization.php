@@ -164,11 +164,11 @@ if ($rs) {
 
 // Apply database-backed defaults after the connection is available. The language cookie +
 // one safe GET reload also upgrades installations whose preserved local tce_config.php predates
-// the bootstrap JSON reader; timezone changes take effect for the remainder of this request.
+// the bootstrap JSON reader. The timezone is already applied by tce_db_connect.php
+// before any session timestamps are read or written.
 require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
 $openvsosh_runtime = openvsosh_get_runtime_settings();
 /** @var array{default_timezone:string,default_language:string} $openvsosh_runtime */
-date_default_timezone_set($openvsosh_runtime['default_timezone']);
 if (
         $server['REQUEST_METHOD'] === 'GET'
     && !isset($_GET['lang'], $_COOKIE['SessionUserLang'])

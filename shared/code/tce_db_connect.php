@@ -33,3 +33,13 @@ if (
 ) {
     die('<h2>Unable to connect to the database!</h2>');
 }
+
+// Database timestamps are local wall-clock values. Apply the instance timezone
+// before session handling or any test date parsing, including on installations
+// whose preserved config predates the bootstrap JSON reader.
+// Config may also be included from a function; settings helpers use global $db.
+$GLOBALS['db'] = $db;
+require_once __DIR__ . '/tce_functions_openvsosh_settings.php';
+$openvsosh_timezone = openvsosh_get_setting('default_timezone') ?? (string) K_TIMEZONE;
+date_default_timezone_set($openvsosh_timezone);
+unset($openvsosh_timezone);

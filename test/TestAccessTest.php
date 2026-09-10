@@ -387,6 +387,7 @@ PHP;
                 PHP_BINARY,
                 '-r',
                 'namespace Harness; define("K_TABLE_TESTS", "tests"); define("K_NEWLINE", "\\n"); '
+                    . 'date_default_timezone_set("Asia/Yekaterinburg"); '
                     . '$GLOBALS["db"] = "db"; $_SESSION["session_user_ip"] = "127.0.0.1"; '
                     . '$GLOBALS["l"] = ["w_no" => "No", "w_yes" => "Yes", "a_meta_charset" => "UTF-8", '
                     . '"w_time_begin" => "Begin", "h_time_begin" => "Begin help", '
@@ -450,10 +451,10 @@ PHP;
         [$decoded, $publicRows] = $payload;
         foreach ($publicRows as $index => $publicInfo) {
             self::assertSame(
-                ['Время начала', 'Время окончания', 'Время на выполнение', 'Количество попыток'],
+                ['Часовой пояс', 'Время начала', 'Время окончания', 'Время на выполнение', 'Количество попыток'],
                 array_column($publicInfo, 0),
             );
-            self::assertSame(['begin', 'end', '30 minutes', ['1', 'Без ограничений', '3'][$index] ?? ''], array_column($publicInfo, 2));
+            self::assertSame(['Asia/Yekaterinburg', 'begin', 'end', '30 minutes', ['1', 'Без ограничений', '3'][$index] ?? ''], array_column($publicInfo, 2));
         }
         self::assertCount(3, $publicRows);
         [$outputs, $queries, $errors, $rows] = $decoded;
@@ -462,7 +463,7 @@ PHP;
         self::assertStringContainsString('[Description]', $outputs[3]);
         self::assertStringContainsString('<ROW:Repeatable:Yes ( 3 )>', $outputs[3]);
         self::assertStringContainsString('<ROW:IP range:127.0.0.1>', $outputs[3]);
-        self::assertCount(12, $rows);
+        self::assertCount(13, $rows);
         self::assertCount(4, $queries);
         self::assertStringContainsString('test_id=007', $queries[0] ?? '');
         self::assertSame(1, $errors);

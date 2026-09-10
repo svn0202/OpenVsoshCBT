@@ -1422,6 +1422,10 @@ echo
         true,
     )
 ;
+echo '<p class="pagehelp">Время открытия и закрытия задаётся в часовом поясе площадки: <strong>'
+    . htmlspecialchars(date_default_timezone_get(), ENT_QUOTES, $l['a_meta_charset'])
+    . '</strong>. Вводите местное время без вычитания часов. '
+    . 'Часовой пояс меняется в настройках площадки.</p>' . K_NEWLINE;
 echo
     get_form_row_text_input(
         'test_begin_time',

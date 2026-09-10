@@ -854,6 +854,7 @@ function f_print_test_info(mixed $test_id, mixed $showip = false): string
                 . '<br /><br /></div>'
                 . K_NEWLINE;
             $str .= '<div class="tceformbox">' . K_NEWLINE;
+            $str .= f_two_col_row('Часовой пояс', 'Часовой пояс расписания испытания', date_default_timezone_get());
             if (!$showip) {
                 $attempts = (int) $m['test_repeatable'];
                 $attempts_label = $attempts === 1 ? 'Без ограничений' : (string) max(1, $attempts);
@@ -1102,7 +1103,7 @@ function f_execute_test(mixed $test_id): bool
 		WHERE test_id='
         . $test_id
         . '
-			AND test_begin_time < \''
+			AND test_begin_time <= \''
         . $current_time
         . '\'
 			AND test_end_time > \''
@@ -3901,7 +3902,7 @@ function f_openvsosh_admin_test_context(int $test_id, string $active, ?array $te
     if ($begin !== false && $begin > time()) {
         $status = 'Запланировано';
         $status_key = 'upcoming';
-    } elseif ($end !== false && $end < time()) {
+    } elseif ($end !== false && $end <= time()) {
         $status = 'Завершено';
         $status_key = 'closed';
     } else {
