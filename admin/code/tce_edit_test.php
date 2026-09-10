@@ -644,47 +644,66 @@ switch ($menu_mode) {
 
     case 'update':
         // Update
-            // check if the confirmation chekbox has been selected
-            if (!isset($_REQUEST['confirmupdate']) || !f_legacy_int_equals($_REQUEST['confirmupdate'], 1)) {
-                F_print_error(
-                    'WARNING',
-                    $l['m_form_missing_fields'] . ': ' . $l['w_confirm'] . ' &rarr; ' . $l['w_update'],
-                );
+        // check if the confirmation chekbox has been selected
+        if (!isset($_REQUEST['confirmupdate']) || !f_legacy_int_equals($_REQUEST['confirmupdate'], 1)) {
+            F_print_error(
+                'WARNING',
+                $l['m_form_missing_fields'] . ': ' . $l['w_confirm'] . ' &rarr; ' . $l['w_update'],
+            );
+            $formstatus = false;
+
+            break;
+        }
+
+        if ($formstatus = F_check_form_fields()) {
+            // Existing attempts keep their questions, timing and scoring rules.
+            $test_has_attempts = !F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id=' . $test_id);
+
+            // check if name is unique
+            if (!F_check_unique(
+                K_TABLE_TESTS,
+                "test_name='" . F_escape_sql($db, $test_name) . "'",
+                'test_id',
+                $test_id,
+            )) {
+                F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
 
                 break;
             }
 
-            if ($formstatus = F_check_form_fields()) {
-                // check referential integrity (NOTE: mysql do not support "ON UPDATE" constraint)
-                if (!F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id=' . $test_id . '')) {
-                    F_print_error('WARNING', $l['m_update_restrict']);
-                    $formstatus = false;
+            if (!empty($new_test_password)) {
+                $test_password = get_password_hash($new_test_password);
+            }
 
-                    break;
-                }
+            if ($test_score_threshold > $test_max_score) {
+                $test_score_threshold = 0.6 * $test_max_score;
+            }
 
-                // check if name is unique
-                if (!F_check_unique(
-                    K_TABLE_TESTS,
-                    "test_name='" . F_escape_sql($db, $test_name) . "'",
-                    'test_id',
-                    $test_id,
-                )) {
-                    F_print_error('WARNING', $l['m_duplicate_name']);
-                    $formstatus = false;
-
-                    break;
-                }
-
-                if (!empty($new_test_password)) {
-                    $test_password = get_password_hash($new_test_password);
-                }
-
-                if ($test_score_threshold > $test_max_score) {
-                    $test_score_threshold = 0.6 * $test_max_score;
-                }
-
+            if ($test_has_attempts) {
+                $sql =
+                    'UPDATE '
+                    . K_TABLE_TESTS
+                    . " SET test_name='"
+                    . F_escape_sql($db, $test_name)
+                    . "', test_description='"
+                    . F_escape_sql($db, $test_description)
+                    . "', test_begin_time="
+                    . f_empty_to_null($test_begin_time)
+                    . ', test_end_time='
+                    . f_empty_to_null($test_end_time)
+                    . ", test_ip_range='"
+                    . F_escape_sql($db, $test_ip_range)
+                    . "', test_results_to_users="
+                    . (int) $test_results_to_users
+                    . ', test_report_to_users='
+                    . (int) $test_report_to_users
+                    . ', test_repeatable='
+                    . (int) $test_repeatable
+                    . (empty($new_test_password) ? '' : ', test_password=' . f_empty_to_null($test_password))
+                    . ' WHERE test_id='
+                    . $test_id;
+            } else {
                 $sql =
                     'UPDATE '
                     . K_TABLE_TESTS
@@ -773,74 +792,80 @@ switch ($menu_mode) {
 				WHERE test_id='
                     . $test_id
                     . '';
-                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
-                    F_display_db_error(false);
-                } else {
-                    F_print_error('MESSAGE', $l['m_updated']);
-                }
+            }
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                F_display_db_error(false);
+            } else {
+                F_print_error(
+                    'MESSAGE',
+                    $test_has_attempts
+                        ? 'Настройки доступа и группы сохранены. Параметры проведения и оценивания существующих попыток не изменены.'
+                        : $l['m_updated'],
+                );
+            }
 
-                // delete previous groups
-                $sql = 'DELETE FROM ' . K_TABLE_TEST_GROUPS . '
+            // delete previous groups
+            $sql = 'DELETE FROM ' . K_TABLE_TEST_GROUPS . '
 				WHERE tstgrp_test_id=' . $test_id . '';
-                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
-                    F_display_db_error(false);
-                }
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                F_display_db_error(false);
+            }
 
-                // update authorized groups
-                if (!empty($user_groups)) {
-                    foreach ($user_groups as $group_id) {
-                        $sql =
-                            'INSERT INTO '
-                            . K_TABLE_TEST_GROUPS
-                            . ' (
+            // update authorized groups
+            if (!empty($user_groups)) {
+                foreach ($user_groups as $group_id) {
+                    $sql =
+                        'INSERT INTO '
+                        . K_TABLE_TEST_GROUPS
+                        . ' (
 						tstgrp_test_id,
 						tstgrp_group_id
 						) VALUES (
 						\''
-                            . $test_id
-                            . '\',
+                        . $test_id
+                        . '\',
 						\''
-                            . (int) $group_id
-                            . '\'
+                        . (int) $group_id
+                        . '\'
 						)';
-                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
-                            F_display_db_error(false);
-                        }
-                    }
-                }
-
-                // delete previous SSL certificates
-                $sql = 'DELETE FROM ' . K_TABLE_TEST_SSLCERTS . '
-				WHERE tstssl_test_id=' . $test_id . '';
-                if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
-                    F_display_db_error(false);
-                }
-
-                // update authorized SSL certificates
-                if (!empty($sslcerts)) {
-                    foreach ($sslcerts as $ssl_id) {
-                        $sql =
-                            'INSERT INTO '
-                            . K_TABLE_TEST_SSLCERTS
-                            . ' (
-						tstssl_test_id,
-						tstssl_ssl_id
-						) VALUES (
-						\''
-                            . $test_id
-                            . '\',
-						\''
-                            . (int) $ssl_id
-                            . '\'
-						)';
-                        if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
-                            F_display_db_error(false);
-                        }
+                    if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                        F_display_db_error(false);
                     }
                 }
             }
 
-            break;
+            // delete previous SSL certificates
+            $sql = 'DELETE FROM ' . K_TABLE_TEST_SSLCERTS . '
+				WHERE tstssl_test_id=' . $test_id . '';
+            if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                F_display_db_error(false);
+            }
+
+            // update authorized SSL certificates
+            if (!empty($sslcerts)) {
+                foreach ($sslcerts as $ssl_id) {
+                    $sql =
+                        'INSERT INTO '
+                        . K_TABLE_TEST_SSLCERTS
+                        . ' (
+						tstssl_test_id,
+						tstssl_ssl_id
+						) VALUES (
+						\''
+                        . $test_id
+                        . '\',
+						\''
+                        . (int) $ssl_id
+                        . '\'
+						)';
+                    if (!($r = f_legacy_db_query_result(F_db_query($sql, $db)))) {
+                        F_display_db_error(false);
+                    }
+                }
+            }
+        }
+
+        break;
 
     case 'updateattempts':
         // This is safe after a test has started: the value only controls whether
@@ -1374,6 +1399,15 @@ echo '<nav class="editor-section-nav" aria-label="Разделы настрое�
 
 echo '<fieldset class="test-editor-main">' . K_NEWLINE;
 echo '<legend>' . $l['w_test'] . '</legend>' . K_NEWLINE;
+if (f_legacy_is_positive($test_id) && !F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id=' . (int) $test_id)) {
+    echo
+        '<p role="note">В тесте уже есть попытки. Можно сохранять название, описание, сроки доступа, '
+            . 'IP-адреса, группы, SSL-сертификаты, пароль, показ результатов и количество попыток. '
+            . 'Длительность, вопросы, оценивание и остальные параметры проведения защищены от изменения.</p>'
+            . K_NEWLINE
+    ;
+}
+
 echo '<h2 class="editor-section-heading" id="editor-basics">Основное</h2>' . K_NEWLINE;
 
 echo get_form_row_text_input('test_name', $l['w_name'], $l['h_test_name'], '', $test_name, '', 255, false, false, false);
@@ -1448,7 +1482,7 @@ echo
 echo '<h2 class="editor-section-heading" id="editor-audience">Участники и доступ</h2>' . K_NEWLINE;
 echo '<div class="row">' . K_NEWLINE;
 echo '<span class="label">' . K_NEWLINE;
-echo '<label for="user_groups">' . $l['w_groups'] . '</label>' . K_NEWLINE;
+echo '<label for="user_groups_filter" id="user_groups_label">' . $l['w_groups'] . '</label>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '<span class="formw">' . K_NEWLINE;
 echo
@@ -1459,24 +1493,31 @@ echo
         . '" aria-controls="user_groups" autocomplete="off" />'
         . K_NEWLINE
 ;
-echo '<select name="user_groups[]" id="user_groups" size="5" multiple="multiple">' . K_NEWLINE;
-//$sql = F_user_group_select_sql();
+echo '<span id="user_groups" class="test-group-list" role="group" aria-labelledby="user_groups_label">' . K_NEWLINE;
 $sql = 'SELECT * FROM ' . K_TABLE_GROUPS . ' ORDER BY group_name';
 if ($r = f_legacy_db_query_result(F_db_query($sql, $db))) {
     while (($m = f_tce_edit_test_group_row(F_db_fetch_array($r))) !== null) {
-        echo '<option value="' . $m['group_id'] . '"';
+        echo
+            '<label class="test-group-option"><input type="checkbox" name="user_groups[]" value="'
+                . (int) $m['group_id']
+                . '"'
+        ;
         if (f_legacy_is_positive($test_id) && f_is_test_on_group($test_id, $m['group_id'])) {
-            echo ' selected="selected"';
+            echo ' checked="checked"';
         }
 
-        echo '>' . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset']) . '</option>' . K_NEWLINE;
+        echo
+            ' /> <span>'
+                . htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset'])
+                . '</span></label>'
+                . K_NEWLINE
+        ;
     }
 } else {
-    echo '</select></span></div>' . K_NEWLINE;
     F_display_db_error();
 }
 
-echo '</select>' . K_NEWLINE;
+echo '</span>' . K_NEWLINE;
 echo '</span>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
@@ -2233,17 +2274,15 @@ echo " var filter=document.getElementById('user_groups_filter');" . K_NEWLINE;
 echo " var groups=document.getElementById('user_groups');" . K_NEWLINE;
 echo ' if (!filter || !groups) {return;}' . K_NEWLINE;
 echo ' var query=filter.value.trim().toLocaleLowerCase();' . K_NEWLINE;
-echo ' for (var i=0;i<groups.options.length;i++) {' . K_NEWLINE;
-echo '  var option=groups.options[i];' . K_NEWLINE;
-echo '  var visible=(query==="" || option.text.toLocaleLowerCase().indexOf(query)!==-1);' . K_NEWLINE;
+echo ' var options=groups.querySelectorAll(".test-group-option");' . K_NEWLINE;
+echo ' for (var i=0;i<options.length;i++) {' . K_NEWLINE;
+echo '  var option=options[i];' . K_NEWLINE;
+echo '  var visible=(query==="" || option.textContent.toLocaleLowerCase().indexOf(query)!==-1);' . K_NEWLINE;
 echo '  option.hidden=!visible;' . K_NEWLINE;
 echo '  option.style.display=visible?"":"none";' . K_NEWLINE;
 echo ' }' . K_NEWLINE;
 echo '}' . K_NEWLINE;
-echo
-    "document.getElementById('user_groups_filter').addEventListener('input', JF_filter_user_groups);"
-        . K_NEWLINE
-;
+echo "document.getElementById('user_groups_filter').addEventListener('input', JF_filter_user_groups);" . K_NEWLINE;
 echo '//]]>' . K_NEWLINE;
 echo '</script>' . K_NEWLINE;
 

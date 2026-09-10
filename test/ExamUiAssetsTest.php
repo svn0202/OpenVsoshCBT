@@ -243,7 +243,7 @@ final class ExamUiAssetsTest extends TestCase
 
         self::assertStringContainsString('type="search" id="user_groups_filter"', $editor);
         self::assertStringContainsString("addEventListener('input', JF_filter_user_groups)", $editor);
-        self::assertStringContainsString('option.text.toLocaleLowerCase().indexOf(query)!==-1', $editor);
+        self::assertStringContainsString('option.textContent.toLocaleLowerCase().indexOf(query)!==-1', $editor);
         self::assertStringContainsString('option.hidden=!visible', $editor);
     }
 
