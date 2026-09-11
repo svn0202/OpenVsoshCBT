@@ -712,6 +712,38 @@
         });
     }
 
+    function bindMatchingAnswerPreviews() {
+        var update = function () {
+            form.querySelectorAll('select.matching-position').forEach(function (control) {
+                var row = control.closest('li');
+                if (!row) {
+                    return;
+                }
+                var preview = row.querySelector('.exam-matching-selected-text');
+                if (!preview) {
+                    preview = document.createElement('p');
+                    preview.className = 'exam-matching-selected-text';
+                    // The selected option is already announced by the select.
+                    preview.setAttribute('aria-hidden', 'true');
+                    row.appendChild(preview);
+                }
+                var option = control.options[control.selectedIndex];
+                preview.hidden = !option || control.value === '0';
+                preview.textContent = preview.hidden ? '' : option.textContent;
+            });
+        };
+        if (form.dataset.matchingPreviewsBound !== '1') {
+            form.dataset.matchingPreviewsBound = '1';
+            form.addEventListener('change', function (event) {
+                if (event.target.matches('select.matching-position')) {
+                    // Update all rows after the matching handler clears duplicates.
+                    update();
+                }
+            });
+        }
+        update();
+    }
+
     function refreshQuestionState() {
         testId = (form.querySelector('#testid') || {}).value || '0';
         testlogId = (form.querySelector('#testlogid') || {}).value || '0';
@@ -720,6 +752,7 @@
         bindToolbar();
         bindAnswerControls();
         bindQuestionMenu();
+        bindMatchingAnswerPreviews();
         resizeAnswerText();
         bindImagePreviews();
         bindAudioLimits();

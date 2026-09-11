@@ -2859,7 +2859,7 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                          * } $ma
                          */
                         $anspos = $ma['logansw_order'];
-                        $str .= '<li>';
+                        $str .= (int) $m['question_type'] === 5 ? '<li class="exam-matching-answer">' : '<li>';
                         switch ($m['question_type']) {
                             case 1:
                                     // MCSA - single-answer question
