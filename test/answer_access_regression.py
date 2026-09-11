@@ -11,6 +11,7 @@ def endpoint_tests():
   with tempfile.TemporaryDirectory() as directory:
    p=pathlib.Path(directory)
    for d in ['public/code','public/config','shared/code']:(p/d).mkdir(parents=True,exist_ok=True)
+   shutil.copy(ROOT/'shared/code/tce_functions_request_log.php',p/'shared/code/tce_functions_request_log.php')
    shutil.copy(ROOT/'public/code/tce_test_answer_save.php',p/'public/code/tce_test_answer_save.php')
    shutil.copy(ROOT/'shared/code/tce_functions_answer_access.php',p/'shared/code/tce_functions_answer_access.php')
    (p/'public/config/tce_config.php').write_text("<?php define('K_AUTH_PUBLIC_TEST_EXECUTE',3);define('K_TABLE_TESTS_LOGS','logs');define('K_TABLE_TEST_USER','users');define('K_TABLE_TESTS','tests');")

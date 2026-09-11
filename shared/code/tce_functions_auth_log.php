@@ -3,15 +3,8 @@
 /** Structured authentication events sent to the configured PHP error log. */
 function openvsosh_log_auth_event(string $event, string $reason = ''): void
 {
-    static $request_id = null;
-    if ($request_id === null) {
-        try {
-            $request_id = bin2hex(random_bytes(16));
-        } catch (\Random\RandomException) {
-            // Correlation only: an unavailable entropy source must not break login.
-            $request_id = uniqid('auth-', true);
-        }
-    }
+    require_once __DIR__ . '/tce_functions_request_log.php';
+    $request_id = openvsosh_request_id();
 
     // Explicit allowlist: never serialize POST, cookies, session contents or headers wholesale.
     $text = static function (mixed $value, int $limit): string {

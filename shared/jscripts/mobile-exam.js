@@ -267,7 +267,7 @@
         var message = messages[error.message] || (error.httpStatus === 403
             ? 'Сервер запретил сохранение, причина не указана. Ответ остаётся в форме. Обратитесь к организатору.'
             : button.dataset.answerError);
-        if (error.requestId && /^[a-f0-9]{24}$/.test(error.requestId)) { message += ' Код запроса: ' + error.requestId; }
+        if (error.requestId && /^(?:[a-f0-9]{24}|[a-f0-9]{32})$/.test(error.requestId)) { message += ' Код запроса: ' + error.requestId; }
         var login = document.getElementById('answer-login-link');
         if (login) { login.remove(); }
         if (error.message === 'session_required' || error.message === 'csrf_failed') {

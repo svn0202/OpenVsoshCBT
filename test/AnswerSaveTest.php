@@ -69,6 +69,7 @@ final class AnswerSaveTest extends TestCase
                 '-r',
                 '$root = sys_get_temp_dir() . "/openvsosh-answer-save-" . uniqid(); '
                     . 'mkdir($root . "/shared/code", 0700, true); mkdir($root . "/shared/config", 0700); '
+                    . 'copy(dirname($argv[1]) . "/tce_functions_request_log.php", $root . "/shared/code/tce_functions_request_log.php"); '
                     . 'copy($argv[1], $root . "/shared/code/tce_functions_answer_save.php"); '
                     . 'file_put_contents($root . "/shared/config/tce_config.php", "<?php '
                     . 'define(\\"K_TABLE_TESTS_LOGS\\", \\"test_logs\\"); '
@@ -83,15 +84,18 @@ final class AnswerSaveTest extends TestCase
                     . 'function f_update_question_log(...$arguments) { $GLOBALS["update"] = $arguments; return true; } '
                     . 'function F_tmf_live_score($testId, $testUserId) { '
                     . '$GLOBALS["score"] = [$testId, $testUserId]; return 7.5; } '
+                    . 'ini_set("error_log", $root . "/events.log"); '
                     . 'chdir($root . "/shared/code"); require "tce_functions_answer_save.php"; '
                     . '$invalid = f_tmf_save_question_answer(4, 9, [], "", 0, -1, str_repeat("a", 32)); '
                     . '$queryCount = count($GLOBALS["queries"]); '
                     . '$saved = f_tmf_save_question_answer(4, 9, [1 => 2], "answer", 123, 2, str_repeat("b", 32)); '
                     . '$result = [$invalid, $queryCount, $saved, $GLOBALS["queries"], '
-                    . '$GLOBALS["update"], $GLOBALS["score"]]; '
+                    . '$GLOBALS["update"], $GLOBALS["score"], file_get_contents($root . "/events.log")]; '
+                    . 'unlink($root . "/shared/code/tce_functions_request_log.php"); '
                     . 'unlink($root . "/shared/code/tce_functions_answer_save.php"); '
                     . 'unlink($root . "/shared/config/tce_config.php"); '
                     . 'rmdir($root . "/shared/code"); rmdir($root . "/shared/config"); '
+                    . 'unlink($root . "/events.log"); '
                     . 'rmdir($root . "/shared"); rmdir($root); echo json_encode($result);',
                 dirname(__DIR__) . '/shared/code/tce_functions_answer_save.php',
             ],
@@ -120,6 +124,14 @@ final class AnswerSaveTest extends TestCase
         self::assertSame('COMMIT', $decoded[3][4]);
         self::assertSame([4, 9, [1 => 2], 'answer', 123], $decoded[4]);
         self::assertSame([4, 55], $decoded[5]);
+        $lines = explode("\n", trim($decoded[6]));
+        $event = json_decode(substr($lines[1], strpos($lines[1], '{')), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('saved', $event['status']);
+        self::assertSame(2, $event['expected_version']);
+        self::assertSame(3, $event['result_version']);
+        self::assertSame(str_repeat('b', 32), $event['operation_id']);
+        self::assertSame(9, $event['testlogid']);
+        self::assertArrayNotHasKey('answer_text', $event);
     }
 
     public function testQuestionLogUpdatePreservesFailuresLimitsAndTextAnswerSql(): void

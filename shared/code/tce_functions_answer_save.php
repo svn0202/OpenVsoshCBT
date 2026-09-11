@@ -86,6 +86,27 @@ function f_tmf_answer_save_decision(
  * @return array{status:string,version:int,live_score?:float}
  */
 function f_tmf_save_question_answer(
+    int $test_id, int $testlog_id, array $answer_positions, string $answer_text,
+    int $reaction_time, int $expected_version, string $operation_id,
+): array {
+    require_once __DIR__ . '/tce_functions_request_log.php';
+    $started = hrtime(true);
+    $result = f_tmf_save_question_answer_transaction($test_id, $testlog_id, $answer_positions,
+        $answer_text, $reaction_time, $expected_version, $operation_id);
+    openvsosh_log_answer_event('write', [
+        'testid' => $test_id, 'testlogid' => $testlog_id,
+        'operation_id' => f_tmf_answer_operation_is_valid($operation_id) ? $operation_id : null,
+        'expected_version' => $expected_version,
+        // On failure the returned version may only be the supplied version.
+        'result_version' => in_array($result['status'], ['saved', 'conflict'], strict: true)
+            ? $result['version'] : null,
+        'status' => $result['status'], 'duration_ms' => round((hrtime(true) - $started) / 1e6, 3),
+    ]);
+    return $result;
+}
+
+/** Transaction implementation; callers use the logged wrapper above. */
+function f_tmf_save_question_answer_transaction(
     int $test_id,
     int $testlog_id,
     array $answer_positions,

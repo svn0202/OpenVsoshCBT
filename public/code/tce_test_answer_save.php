@@ -1,6 +1,8 @@
 <?php
 
 ob_start();
+require_once __DIR__ . '/../../shared/code/tce_functions_request_log.php';
+openvsosh_request_id();
 
 define('OPENVSOSH_ANSWER_API', true);
 
@@ -12,20 +14,20 @@ function f_tmf_answer_json(int $status_code, array $payload): never
     header('Content-Type: application/json; charset=UTF-8');
     header('Cache-Control: no-store');
     header('X-Content-Type-Options: nosniff');
-    if ($status_code >= 400) {
-        try {
-            $payload['request_id'] = bin2hex(random_bytes(12));
-        } catch (\Random\RandomException) {
-            $payload['request_id'] = uniqid('answer-', true);
-        }
-        $entry = json_encode([
-            'request_id' => $payload['request_id'], 'status' => $payload['status'] ?? 'error',
-            'http_status' => $status_code,
-        ]);
-        if (is_string($entry)) {
-            error_log('[openvsosh.answer] ' . $entry);
-        }
-    }
+    $payload['request_id'] = openvsosh_request_id();
+    $input = $_SERVER['REQUEST_METHOD'] === 'GET' ? $_GET : $_POST;
+    $integer = static function (mixed $value): ?int {
+        $parsed = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
+        return is_int($parsed) ? $parsed : null;
+    };
+    $operation = $input['answer_operation'] ?? '';
+    openvsosh_log_answer_event('', [
+        'testid' => $integer($input['testid'] ?? null),
+        'testlogid' => $integer($input['testlogid'] ?? null),
+        'expected_version' => $integer($input['answer_version'] ?? null),
+        'operation_id' => is_string($operation) && preg_match('/^[a-f0-9]{32}$/D', $operation) === 1 ? $operation : null,
+        'status' => $payload['status'] ?? 'error', 'http_status' => $status_code,
+    ]);
     http_response_code($status_code);
     if (ob_get_level() > 0) {
         ob_clean();

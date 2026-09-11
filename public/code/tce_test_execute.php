@@ -20,6 +20,8 @@
  * @since 2004-05-29
  */
 
+require_once __DIR__ . '/../../shared/code/tce_functions_request_log.php';
+openvsosh_request_id();
 require_once '../config/tce_config.php';
 
 /**
@@ -176,10 +178,10 @@ if (isset($request['testid']) && $request['testid'] > 0) {
             }
             header('Content-Type: application/json; charset=UTF-8');
             header('Cache-Control: no-store');
-            error_log('[openvsosh.answer.final] ' . json_encode([
+            openvsosh_log_answer_event('final', [
                 'testid' => $test_id, 'testlogid' => $testlog_id, 'status' => $final_result['status'],
-            ]));
-            echo json_encode($final_result);
+            ]);
+            echo json_encode($final_result + ['request_id' => openvsosh_request_id()]);
             exit();
         }
 
@@ -224,13 +226,13 @@ if (isset($request['testid']) && $request['testid'] > 0) {
                 }
                 f_terminate_user_test($test_id, $final_save_result !== null ? 'timeout' : 'completed');
                 if ($final_save_result !== null) {
-                    error_log('[openvsosh.answer.final] ' . json_encode([
+                    openvsosh_log_answer_event('final', [
                         'testid' => $test_id, 'testlogid' => $testlog_id, 'status' => $final_save_result['status'],
-                    ]));
+                    ]);
                     if (($post['final_save_json'] ?? '') === '1') {
                         header('Content-Type: application/json; charset=UTF-8');
                         header('Cache-Control: no-store');
-                        echo json_encode(['status' => $final_save_result['status'],
+                        echo json_encode(['request_id' => openvsosh_request_id(), 'status' => $final_save_result['status'],
                             'version' => $final_save_result['version'] ?? null]);
                         exit();
                     }

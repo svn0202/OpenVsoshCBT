@@ -7,6 +7,7 @@ for outcome, mode in [(o, m) for o in ['saved','conflict','error'] for m in ['la
  with tempfile.TemporaryDirectory(prefix='ov-timeout-analysis-') as d:
   p=pathlib.Path(d)
   for path in ['public/code','public/config','shared/code']:(p/path).mkdir(parents=True,exist_ok=True)
+  shutil.copy(ROOT/'shared/code/tce_functions_request_log.php',p/'shared/code/tce_functions_request_log.php')
   shutil.copy(ROOT/'public/code/tce_test_execute.php',p/'public/code/tce_test_execute.php')
   (p/'public/config/tce_config.php').write_text('''<?php
 define('K_AUTH_PUBLIC_TEST_EXECUTE',3);define('K_NEWLINE',"\\n");
