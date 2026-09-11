@@ -15,7 +15,8 @@ final class PublicXhtmlHeaderTest extends TestCase
         self::assertStringContainsString('<meta name="tcexam_level" content="0" />', $html);
         self::assertStringContainsString('Default description [security-key]', $html);
         self::assertStringContainsString('href="../styles/picoman.css?v=20260718-2"', $html);
-        self::assertStringContainsString('navigator.serviceWorker.register("../sw.js",{scope:"../"})', $html);
+        self::assertStringContainsString('navigator.serviceWorker.register("../sw.js",{scope:"../",updateViaCache:"none"})', $html);
+        self::assertStringContainsString('rel="apple-touch-icon" href="../../apple-touch-icon.png"', $html);
         self::assertStringContainsString('<body class="login-page ui-font-system"', $html);
         self::assertStringContainsString('--login-background-position:center center;', $html);
         self::assertStringContainsString('--login-background-size:cover;', $html);

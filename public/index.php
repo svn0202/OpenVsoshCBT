@@ -12,4 +12,5 @@
 //    See LICENSE file for more information.
 //============================================================+
 
+header('Cache-Control: no-store, max-age=0');
 header('Location: code/index.php'); //redirect browser to public main page

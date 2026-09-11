@@ -22,4 +22,5 @@
  * @since 2004-04-20
  */
 
+header('Cache-Control: no-store, max-age=0');
 header('Location: public/code/index.php'); //redirect browser to public main page

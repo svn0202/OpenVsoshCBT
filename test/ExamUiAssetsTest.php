@@ -374,7 +374,8 @@ final class ExamUiAssetsTest extends TestCase
             "document.querySelectorAll('[data-answer-save-error]')",
             $script,
         );
-        self::assertStringContainsString("if (error.message === 'conflict')", $script);
+        // Conflict behavior is exercised by answer_conflict_regression.py.
+        self::assertStringContainsString('function showAnswerConflict()', $script);
         self::assertStringContainsString('return loadQuestion(target);', $script);
         self::assertStringContainsString('function bindQuestionMenu()', $script);
         self::assertStringContainsString("item.classList.add('question-menu-link')", $script);

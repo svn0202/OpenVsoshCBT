@@ -1,0 +1,2 @@
+/* Compatibility for previously served root-relative stylesheet URLs. */
+@import url('../public/styles/picoman.css');

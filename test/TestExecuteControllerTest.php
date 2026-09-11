@@ -62,6 +62,7 @@ mkdir($root . '/public/code', 0700, true);
 mkdir($root . '/public/config', 0700);
 mkdir($root . '/shared/code', 0700, true);
 copy($argv[1], $root . '/public/code/tce_test_execute.php');
+copy(dirname($argv[1], 3) . '/shared/code/tce_functions_request_log.php', $root . '/shared/code/tce_functions_request_log.php');
 file_put_contents($root . '/public/config/tce_config.php', base64_decode($argv[2], true));
 file_put_contents($root . '/public/code/tce_page_header.php', base64_decode($argv[3], true));
 file_put_contents($root . '/public/code/tce_page_footer.php', "<?php echo \"<FOOTER>\\n\";");

@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'openvsosh-public-static-v1';
+const CACHE_NAME = 'openvsosh-public-static-v2';
 const PUBLIC_SCOPE = new URL(self.registration.scope).pathname;
 const APP_ROOT = PUBLIC_SCOPE.replace(/public\/$/, '');
 const STATIC_PATHS = new Set([
