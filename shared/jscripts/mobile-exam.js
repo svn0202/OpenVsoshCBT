@@ -32,6 +32,7 @@
     var testlogId = '0';
     var testuserId = '0';
     var reviewKey = '';
+    var reviewSaves = Object.create(null);
     var heartbeatTimer = null;
     var focusLossOpen = false;
     var focusLossSending = false;
@@ -474,31 +475,93 @@
             writeJson(reviewKey, reviewed);
             review.checked = reviewed.indexOf(String(testlogId)) !== -1;
             paintReviewed(reviewed);
-            review.addEventListener('change', function () {
-                reviewed = getReviewed().filter(function (id) {
-                    return id !== String(testlogId);
-                });
-                if (review.checked) {
-                    reviewed.push(String(testlogId));
-                }
-                writeJson(reviewKey, reviewed);
-                paintReviewed(reviewed);
+            var key = String(testId) + ':' + String(testlogId);
+            var state = reviewSaves[key];
+            if (!state || !state.pending) {
+                state = {desired: review.checked, pending: false, active: false, revision: 0, error: false};
+                reviewSaves[key] = state;
+            }
+            var questionId = String(testlogId);
+            var currentTestId = String(testId);
+            var storageKey = reviewKey;
+            var status = document.createElement('span');
+            status.setAttribute('role', 'status');
+            status.dataset.reviewStatus = '1';
+            var retry = document.createElement('button');
+            retry.type = 'button';
+            retry.textContent = 'Повторить сохранение отметки';
+            retry.dataset.reviewRetry = '1';
+            review.insertAdjacentElement('afterend', status);
+            status.insertAdjacentElement('afterend', retry);
+            state.render = function () {
+                review.checked = state.desired;
+                status.textContent = state.active ? 'Сохраняем отметку…'
+                    : state.error ? 'Сохранение отметки не подтверждено. Повторите отправку.'
+                    : state.pending ? 'Отметка ожидает сохранения.' : 'Отметка сохранена.';
+                status.dataset.state = state.error ? 'error' : state.pending ? 'pending' : 'saved';
+                retry.hidden = !state.error;
+                retry.disabled = state.active || finalSaveActive;
+            };
+            function paintLocalReview() {
+                var ids = readJson(storageKey, []);
+                ids = (Array.isArray(ids) ? ids.map(String) : []).filter(function (id) { return id !== questionId; });
+                if (state.desired) { ids.push(questionId); }
+                writeJson(storageKey, ids);
+                paintReviewed(ids);
+            }
+            function sendReview() {
+                if (state.active || !state.pending || finalSaveActive) { return; }
                 var csrf = form.querySelector('[name="csrf_token"]');
-                if (window.fetch && csrf && review.dataset.reviewSave) {
-                    var data = new FormData();
-                    data.set('csrf_token', csrf.value);
-                    data.set('testid', testId);
-                    data.set('testlogid', testlogId);
-                    data.set('reviewed', review.checked ? '1' : '0');
-                    window.fetch(review.dataset.reviewSave, {
-                        method: 'POST',
-                        body: data,
-                        credentials: 'same-origin',
-                        headers: {'Accept': 'application/json'}
-                    }).catch(function () {
-                        // The local copy remains available until the server can be reached.
-                    });
+                if (!window.fetch || !csrf || !review.dataset.reviewSave) {
+                    state.error = true;
+                    state.render();
+                    return;
                 }
+                var sentRevision = state.revision;
+                var sentValue = state.desired;
+                var data = new FormData();
+                data.set('csrf_token', csrf.value);
+                data.set('testid', currentTestId);
+                data.set('testlogid', questionId);
+                data.set('reviewed', sentValue ? '1' : '0');
+                state.active = true;
+                state.error = false;
+                state.render();
+                var controller = new AbortController();
+                var timer = window.setTimeout(function () { controller.abort(); }, saveRequestTimeout);
+                window.fetch(review.dataset.reviewSave, {
+                    method: 'POST', body: data, credentials: 'same-origin',
+                    headers: {'Accept': 'application/json'}, signal: controller.signal
+                }).then(function (response) {
+                    if (!response.ok) { throw new Error('review_rejected'); }
+                    return response.json();
+                }).then(function (payload) {
+                    if (!payload || payload.status !== 'saved' || payload.reviewed !== sentValue) {
+                        throw new Error('review_unconfirmed');
+                    }
+                    state.pending = state.revision !== sentRevision;
+                }).catch(function () {
+                    // A transport error may occur after the server has written the flag.
+                    // Keep the latest choice and require an explicit retry.
+                    state.error = true;
+                    state.pending = true;
+                }).finally(function () {
+                    window.clearTimeout(timer);
+                    state.active = false;
+                    state.render();
+                    // Serialize changes: an older response cannot acknowledge a newer choice.
+                    if (state.pending && !state.error) { sendReview(); }
+                });
+            }
+            paintLocalReview();
+            state.render();
+            retry.addEventListener('click', sendReview);
+            review.addEventListener('change', function () {
+                state.desired = review.checked;
+                state.revision += 1;
+                state.pending = true;
+                paintLocalReview();
+                sendReview();
             });
         }
 
@@ -1100,7 +1163,7 @@
         nativeSubmit();
     };
     window.addEventListener('beforeunload', function (event) {
-        if (!formSubmitting && (answerDirty || saveActive)) {
+        if (!formSubmitting && (answerDirty || saveActive || Object.keys(reviewSaves).some(function (key) { return reviewSaves[key].pending; }))) {
             event.preventDefault();
             event.returnValue = '';
         }
