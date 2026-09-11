@@ -22,8 +22,7 @@ function f_get_boolean($v){return (bool)$v;}
 function F_db_query(...$args){return $GLOBALS['case']==='db'?false:true;}
 function F_db_fetch_array($r){$c=$GLOBALS['case'];return ['testuser_user_id'=>$c==='foreign'?2:1,'testuser_test_id'=>1,'testuser_status'=>$c==='closed'?4:1,'testuser_close_reason'=>$c==='blocked'?'blocked':null,'testuser_pregenerated'=>false,'test_begin_time'=>date('Y-m-d H:i:s',time()-100),'test_end_time'=>date('Y-m-d H:i:s',time()+100),'testuser_creation_time'=>date('Y-m-d H:i:s',time()-($c==='timeout'?4000:10)),'test_duration_time'=>60];}
 function check_csrf_token_for_script(...$args){return $GLOBALS['case']!=='csrf';}
-function get_plain_csrf_token_for_script($s){return 'plain';}
-function get_password_hash($s){return 'fresh';}
+function f_get_csrf_token_for_script($s){return 'fresh';}
 function f_tmf_answer_operation_is_valid($op){return strlen($op)===32;}
 function f_execute_test($id){return true;}
 function f_tmf_save_question_answer(...$args){return ['status'=>'saved','version'=>2];}

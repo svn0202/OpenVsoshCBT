@@ -87,4 +87,31 @@ An expired legacy form may need the existing CSRF refresh flow or a page reload;
 choose the window to cover ongoing exams and record it privately. Never roll HMAC
 issuance back to a binary that cannot validate it.
 
-Status: plan recorded; implementation and the acceptance matrix remain pending.
+## Implementation and local verification
+
+The HMAC reader/issuer and lazy login hashing are implemented. Ordinary CSRF
+operations are covered by spies that fail if password hashing is called; missing
+entropy fails closed. Local unit, Chromium navigation/conflict/access-error checks
+pass. Integration coverage includes all question types, token refresh, repeated
+heartbeats, and disabling uploads while an old form remains open. The last case
+must preserve the text answer and existing attachment while rejecting a new file.
+MySQL's unchanged-row count must not be interpreted as a closed attempt.
+
+Run unit tests with `php vendor/bin/phpunit --no-coverage --testsuite unit`.
+Integration tests can use a dedicated native database via `TCEXAM_DB_*` and
+`TCEXAM_APP_URL`; Docker is not required. Do not point destructive test fixtures
+at production or the only retained production database copy. A built-in PHP server
+does not enforce Apache's cache access rules: those checks require the configured
+Apache server, including in CI. Do not weaken their assertions for a local shortcut.
+Run `python3 test/answer_navigation_regression.py`,
+`python3 test/answer_conflict_regression.py`, and
+`python3 test/answer_access_regression.py` for browser regressions.
+`php tools/benchmark_csrf.php` measures synthetic primitive CPU/wall time without
+installation credentials or a database; it is not an application load test.
+
+For phase one set `OPENVSOSH_CSRF_ISSUE_LEGACY=1` and
+`OPENVSOSH_CSRF_LEGACY_UNTIL` to a fixed 10-digit Unix timestamp. After draining
+the old binary, remove legacy issuance on the next slot while retaining the same
+deadline. Legacy verification is off by default and after expiry. The rollback
+slot must support v2. CI, cross-slot acceptance, migration and production observation
+must be recorded as completed before declaring the rollout finished.
