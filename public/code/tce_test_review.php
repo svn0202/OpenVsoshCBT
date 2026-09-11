@@ -52,7 +52,7 @@ if (
 }
 
 $sql = 'UPDATE ' . K_TABLE_TESTS_LOGS
-    . ' SET testlog_reviewed=' . $reviewed
+    . " SET testlog_reviewed='" . $reviewed . "'"
     . ' WHERE testlog_id=' . $testlog_id;
 if (!f_legacy_db_query_result(F_db_query($sql, $db))) {
     F_tmf_review_json(500, ['status' => 'error']);
