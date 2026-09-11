@@ -61,6 +61,23 @@ if (
         || !check_csrf_token($_POST['csrf_token'])
     )
 ) {
+    // Reject the stale form without replaying its POST. Browser navigations get a
+    // fresh login page; API requests keep their explicit failure response.
+    $script_name = $_SERVER['SCRIPT_NAME'];
+    $fetch_dest = $_SERVER['HTTP_SEC_FETCH_DEST'] ?? '';
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    if (
+        str_starts_with($script_name, '/public/code/')
+        && ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') !== 'XMLHttpRequest'
+        && (
+            in_array($fetch_dest, ['document', 'iframe'], true)
+            || ($fetch_dest === '' && str_contains($accept, 'text/html'))
+        )
+    ) {
+        header('Cache-Control: no-store');
+        header('Location: /public/code/tce_login.php', true, 303);
+        exit();
+    }
     http_response_code(403);
     exit();
 }
