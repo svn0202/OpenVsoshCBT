@@ -156,11 +156,39 @@ if (isset($request['testid']) && $request['testid'] > 0) {
             $reaction_time = (int) $request['reaction_time'];
         }
 
+        // Final countdown save keeps the page intact until the result is known.
+        // Preserve the normal form path's attachment and comment handling.
+        if ($server['REQUEST_METHOD'] === 'POST' && ($post['final_save_json'] ?? '') === '1'
+            && ($request['forceterminate'] ?? '') === '' && f_is_right_testlog_user($test_id, $testlog_id)) {
+            $final_result = ($request['answer_version'] ?? null) !== null
+                ? F_tmf_save_question_answer($test_id, $testlog_id, $answpos, $answer_text,
+                    $reaction_time, (int) $request['answer_version'], bin2hex(random_bytes(16)))
+                : ['status' => f_update_question_log($test_id, $testlog_id, $answpos,
+                    $answer_text, $reaction_time) ? 'saved' : 'error'];
+            if ($final_result['status'] === 'saved' && ($files['answer_attachments'] ?? null) !== null) {
+                $attachment_result = F_tmf_attachment_store_uploads($test_id, $testlog_id, $files['answer_attachments']);
+                if (!in_array($attachment_result['status'], ['stored', 'empty'], strict: true)) {
+                    $final_result['status'] = 'attachment_error';
+                }
+            }
+            if (($request['testcomment'] ?? '') !== '') {
+                f_update_test_comment($test_id, (string) $request['testcomment']);
+            }
+            header('Content-Type: application/json; charset=UTF-8');
+            header('Cache-Control: no-store');
+            error_log('[openvsosh.answer.final] ' . json_encode([
+                'testid' => $test_id, 'testlogid' => $testlog_id, 'status' => $final_result['status'],
+            ]));
+            echo json_encode($final_result);
+            exit();
+        }
+
         if (!empty($request['forceterminate']) && f_is_right_testlog_user($test_id, $testlog_id)) {
+            $final_save_result = null;
             if ($request['forceterminate'] === 'lasttimedquestion') {
                 // update last question
                 if (isset($request['answer_version'])) {
-                    F_tmf_save_question_answer(
+                    $final_save_result = F_tmf_save_question_answer(
                         $test_id,
                         $testlog_id,
                         $answpos,
@@ -170,7 +198,9 @@ if (isset($request['testid']) && $request['testid'] > 0) {
                         bin2hex(random_bytes(16)),
                     );
                 } else {
-                    f_update_question_log($test_id, $testlog_id, $answpos, $answer_text, $reaction_time);
+                    $final_save_result = ['status' => f_update_question_log(
+                        $test_id, $testlog_id, $answpos, $answer_text, $reaction_time,
+                    ) ? 'saved' : 'error'];
                 }
             }
 
@@ -192,7 +222,28 @@ if (isset($request['testid']) && $request['testid'] > 0) {
                 if ($completion_message !== '') {
                     $session['session_test_completion_message'] = $completion_message;
                 }
-                f_terminate_user_test($test_id);
+                f_terminate_user_test($test_id, $final_save_result !== null ? 'timeout' : 'completed');
+                if ($final_save_result !== null) {
+                    error_log('[openvsosh.answer.final] ' . json_encode([
+                        'testid' => $test_id, 'testlogid' => $testlog_id, 'status' => $final_save_result['status'],
+                    ]));
+                    if (($post['final_save_json'] ?? '') === '1') {
+                        header('Content-Type: application/json; charset=UTF-8');
+                        header('Cache-Control: no-store');
+                        echo json_encode(['status' => $final_save_result['status'],
+                            'version' => $final_save_result['version'] ?? null]);
+                        exit();
+                    }
+                    if ($final_save_result['status'] !== 'saved') {
+                        header('Cache-Control: no-store');
+                        echo '<!doctype html><html lang="ru"><meta charset="UTF-8"><title>Сохранение ответа</title><body><main>';
+                        echo '<h1>Время истекло. Сохранение последнего ответа не подтверждено.</h1>';
+                        echo '<p>Попытка завершена. Передайте организатору оставшийся ниже ввод.</p><pre>';
+                        echo htmlspecialchars($answer_text . "\n" . (string) json_encode($answpos), ENT_QUOTES | ENT_SUBSTITUTE, encoding: 'UTF-8');
+                        echo '</pre><a href="index.php">На главную</a></main></body></html>';
+                        exit();
+                    }
+                }
                 // redirect the user to the index page
                 header('Location: index.php');
                 echo '<!DOCTYPE html>' . K_NEWLINE;

@@ -23,6 +23,7 @@
     var navigationActive = false;
     var answerConflict = false;
     var conflictVersion = null;
+    var finalSaveActive = false;
     var changedDuringSave = false;
     var answerDirty = false;
     var formSubmitting = false;
@@ -399,6 +400,7 @@
         setSaveStatus('saving', button.dataset.answerSaving);
 
         return sendAnswer(data, 0, button).then(function (payload) {
+            if (finalSaveActive) { return payload; }
             answerVersion.value = String(payload.version);
             answerConflict = false;
             conflictVersion = null;
@@ -419,6 +421,7 @@
             }
             return payload;
         }).catch(function (error) {
+            if (finalSaveActive) { throw error; }
             answerDirty = true;
             if (error.message === 'conflict' || error.httpStatus === 409) {
                 answerConflict = true;
@@ -431,7 +434,7 @@
             throw error;
         }).finally(function () {
             saveActive = false;
-            button.disabled = false;
+            button.disabled = finalSaveActive;
         });
     }
 
@@ -923,7 +926,7 @@
             }
             return response.text();
         }).then(function (html) {
-            if (answerDirty || saveActive) {
+            if (answerDirty || saveActive || finalSaveActive) {
                 throw new Error('answer_changed');
             }
             var parsed = new window.DOMParser().parseFromString(html, 'text/html');
@@ -988,6 +991,7 @@
     }
 
     form.addEventListener('submit', function (event) {
+        if (finalSaveActive) { event.preventDefault(); return; }
         if (ajaxBypass) {
             return;
         }
@@ -1009,7 +1013,7 @@
             setQuestionLoading(true);
         }
         saveCurrentAnswer().then(function () {
-            if (answerDirty) {
+            if (answerDirty || finalSaveActive) {
                 setQuestionLoading(false);
                 return;
             }
@@ -1018,7 +1022,7 @@
             }
             return loadQuestion(target);
         }).catch(function (error) {
-            if (error.message === 'answer_changed') {
+            if (error.message === 'answer_changed' || finalSaveActive) {
                 setQuestionLoading(false);
                 return;
             }
@@ -1033,7 +1037,65 @@
     });
 
     var nativeSubmit = form.submit.bind(form);
+    function saveAtDeadline() {
+        if (finalSaveActive) { return; }
+        finalSaveActive = true;
+        answerDirty = true;
+        // Snapshot before disabling controls, so all selected values are sent.
+        var finalData = new FormData(form);
+        form.querySelectorAll('input, textarea, select, button').forEach(function (control) {
+            control.disabled = true;
+        });
+        if (window.tmfQuestionTimerId) { window.clearTimeout(window.tmfQuestionTimerId); }
+        var notice = document.createElement('p');
+        notice.id = 'answer-final-save-status';
+        notice.setAttribute('role', 'status');
+        notice.textContent = 'Время ответа заканчивается. Проверяем последнее сохранение…';
+        form.appendChild(notice);
+        // Existing requests may have committed already. Keep the original expected
+        // version; a conflict is safer than silently overwriting that answer.
+        finalData.set('reaction_time', String(Math.max(0, Date.now() - Number(finalData.get('display_time') || Date.now()))));
+        finalData.set('answer_operation', operationId());
+        var controller = new AbortController();
+        var timeout = window.setTimeout(function () { controller.abort(); }, saveRequestTimeout);
+        finalData.set('final_save_json', '1');
+        window.fetch(form.action, {method: 'POST', body: finalData, credentials: 'same-origin',
+            headers: {'Accept': 'application/json'}, signal: controller.signal}).then(function (response) {
+            return response.json().catch(function () {
+                if (response.status >= 400 && response.status < 500) { return {status: 'rejected'}; }
+                throw new Error('unknown');
+            }).then(function (payload) {
+                if (!payload || typeof payload !== 'object') { throw new Error('unknown'); }
+                if (response.ok && payload.status === 'saved') {
+                    answerDirty = false;
+                    notice.textContent = 'Время ответа истекло. Последний ответ сохранён.';
+                } else {
+                    answerDirty = true;
+                    notice.textContent = payload.status === 'conflict'
+                        ? 'Время ответа истекло. Последний ответ не сохранён: конфликт с другим изменением. Ваш ввод остаётся на странице.'
+                        : 'Время ответа истекло. Сервер не подтвердил сохранение последнего ответа. Ваш ввод остаётся на странице. Обратитесь к организатору.';
+                }
+            });
+        }).catch(function () {
+            answerDirty = true;
+            notice.textContent = 'Время ответа истекло. Результат сохранения неизвестен: подтверждение не получено. Ваш ввод остаётся на странице. Обратитесь к организатору.';
+        }).finally(function () {
+            window.clearTimeout(timeout);
+            form.querySelectorAll('input, textarea, select, button').forEach(function (control) { control.disabled = true; });
+            var home = document.createElement('a');
+            home.href = 'index.php';
+            home.textContent = 'На главную';
+            notice.insertAdjacentElement('afterend', home);
+        });
+    }
     form.submit = function () {
+        var lastQuestion = form.querySelector('[name="forceterminate"]');
+        var finish = form.querySelector('[name="finish"]');
+        if (finalSaveActive) { return; }
+        if ((finish && finish.value === '1') || (lastQuestion && lastQuestion.value === 'lasttimedquestion')) {
+            saveAtDeadline();
+            return;
+        }
         formSubmitting = true;
         nativeSubmit();
     };
