@@ -68,7 +68,7 @@ if ($access !== 'allowed') {
 if ($refresh) {
     F_tmf_answer_json(200, [
         'status' => 'csrf_refreshed',
-        'csrf_token' => get_password_hash(get_plain_csrf_token_for_script(__DIR__ . '/tce_test_execute.php')),
+        'csrf_token' => f_get_csrf_token_for_script(__DIR__ . '/tce_test_execute.php'),
     ]);
 }
 if (!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token'])

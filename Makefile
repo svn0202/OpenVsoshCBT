@@ -130,7 +130,7 @@ lint:
 	./vendor/bin/mago --config ./mago.src.toml lint --baseline ./mago.lint.baseline.toml
 	bash tools/analyse-src.sh
 	@if [ -d test ] && ls test/*.php >/dev/null 2>&1; then \
-		./vendor/bin/mago --config ./mago.test.toml lint --baseline ./mago.test.lint.baseline.toml; \
+		./vendor/bin/mago --config ./mago.test.toml lint --baseline ./mago.test.lint.baseline.toml && \
 		./vendor/bin/mago --config ./mago.test.toml analyze --baseline ./mago.test.analyze.baseline.toml; \
 	else \
 		echo "Skipping test lint (no test/*.php yet — see plan Stage 5)"; \

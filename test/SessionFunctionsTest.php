@@ -289,21 +289,5 @@ final class SessionFunctionsTest extends TestCase
         }
     }
 
-    public function testScriptScopedCsrfTokenCanBeCheckedByWorkflowEndpoint(): void
-    {
-        $script = '/srv/tcexam/public/code/tce_test_execute.php';
-        $token = \get_password_hash(\get_plain_csrf_token_for_script($script));
 
-        $this->assertTrue(\check_csrf_token_for_script($token, $script));
-        $this->assertFalse(\check_csrf_token_for_script($token, '/srv/tcexam/public/code/other.php'));
-    }
-
-    public function testDefaultCsrfTokenRoundTrips(): void
-    {
-        $plain = \get_plain_csrf_token();
-        $token = \f_get_csrf_token();
-
-        self::assertNotSame('', $plain);
-        self::assertTrue(\check_csrf_token($token));
-    }
 }

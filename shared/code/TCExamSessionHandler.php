@@ -472,7 +472,9 @@ function get_plain_csrf_token_for_script(string $script): string
  */
 function check_csrf_token(#[\SensitiveParameter] string $token): bool
 {
-    return check_password(get_plain_csrf_token(), $token);
+    /** @var non-empty-list<non-empty-string> $inc */
+    $inc = get_included_files();
+    return check_csrf_token_for_script($token, $inc[0]);
 }
 
 /**
@@ -480,7 +482,19 @@ function check_csrf_token(#[\SensitiveParameter] string $token): bool
  */
 function check_csrf_token_for_script(#[\SensitiveParameter] string $token, string $script): bool
 {
-    return check_password(get_plain_csrf_token_for_script($script), $token);
+    if (!f_csrf_context_is_ready()) {
+        return false;
+    }
+    if (strlen($token) === 100 && preg_match('/\Av2\.[a-f0-9]{32}\.[a-f0-9]{64}\z/', $token) === 1) {
+        $nonce = substr($token, 3, 32);
+        return hash_equals(f_csrf_mac($script, $nonce), substr($token, 36));
+    }
+    // Only PHP bcrypt formats actually used by supported deployments are eligible.
+    // Never pass arbitrary algorithms or attacker-selected high costs to password_verify.
+    return f_csrf_legacy_window_is_open()
+        && strlen($token) === 60
+        && preg_match('/\A\$2y\$(?:10|12)\$[.\/A-Za-z0-9]{53}\z/', $token) === 1
+        && check_password(get_plain_csrf_token_for_script($script), $token);
 }
 
 /**
@@ -490,7 +504,55 @@ function check_csrf_token_for_script(#[\SensitiveParameter] string $token, strin
  */
 function f_get_csrf_token(): string
 {
-    return get_password_hash(get_plain_csrf_token());
+    /** @var non-empty-list<non-empty-string> $inc */
+    $inc = get_included_files();
+    return f_get_csrf_token_for_script($inc[0]);
+}
+
+/** Whether the session and installation signing secret are usable. */
+function f_csrf_context_is_ready(): bool
+{
+    return session_id() !== '' && f_is_random_security_configured()
+        && strlen(K_RANDOM_SECURITY) >= 32;
+}
+
+/** Fixed deployment deadline; absent or malformed configuration rejects legacy tokens. */
+function f_csrf_legacy_window_is_open(): bool
+{
+    $until = getenv('OPENVSOSH_CSRF_LEGACY_UNTIL');
+    return is_string($until) && preg_match('/\A[0-9]{10}\z/', $until) === 1
+        && time() < (int) $until;
+}
+
+/** Sign length-delimited fields, never exposing the session ID or secret in the token. */
+function f_csrf_mac(string $script, string $nonce): string
+{
+    $message = 'openvsosh-csrf-v2';
+    foreach ([(string) session_id(), $script, get_client_fingerprint(), $nonce] as $field) {
+        $message .= strlen($field) . ':' . $field;
+    }
+    return hash_hmac('sha256', $message, K_RANDOM_SECURITY);
+}
+
+/** Issue a token for a server-selected workflow script; tokens are reusable within the session. */
+function f_get_csrf_token_for_script(string $script): string
+{
+    if (!f_csrf_context_is_ready()) {
+        throw new Error('CSRF requires an active session and a configured installation secret.');
+    }
+    // First rollout phase: deploy dual readers before enabling v2 issuance.
+    if (getenv('OPENVSOSH_CSRF_ISSUE_LEGACY') === '1') {
+        if (!f_csrf_legacy_window_is_open()) {
+            throw new Error('Legacy CSRF issuance requires an explicit unexpired deadline.');
+        }
+        return get_password_hash(get_plain_csrf_token_for_script($script));
+    }
+    try {
+        $nonce = bin2hex(random_bytes(16));
+    } catch (Random\RandomException $exception) {
+        throw new Error('Secure random number generation is unavailable.', 0, $exception);
+    }
+    return 'v2.' . $nonce . '.' . f_csrf_mac($script, $nonce);
 }
 
 // ------------------------------------------------------------

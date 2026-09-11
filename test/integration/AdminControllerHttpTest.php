@@ -1896,6 +1896,11 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 );
                 $this->assertSame(200, $saveStatus, 'save for type ' . $type . ': ' . $saveBody);
                 $this->assertAnswerResult($saveBody, 'saved', 1);
+                $this->assertStringStartsWith('v2.', $token);
+                if ($type === 1) {
+                    $this->assertCsrfWorkflow($testId, (int) ($logIds[$type] ?? 0), $cookies, $token);
+                }
+
 
                 // Navigate to another question before loading the saved one again.
                 $nextType = $type === 5 ? 1 : $type + 1;
@@ -2234,6 +2239,53 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         self::assertMatchesRegularExpression('/^[a-f0-9]{32}$/D', $requestId);
         unset($result['request_id']);
         self::assertSame(['status' => $status, 'version' => $version], $result);
+    }
+
+    /**
+     * @param array<string,string> $cookies
+     * @throws \Random\RandomException
+     */
+    private function assertCsrfWorkflow(int $testId, int $logId, array $cookies, #[\SensitiveParameter] string $token): void
+    {
+        $before = $this->dbScalar('SELECT testlog_answer_version FROM tce_tests_logs WHERE testlog_id=' . $logId);
+        $fields = [
+            'testid' => (string) $testId, 'testlogid' => (string) $logId,
+            'answer_version' => $before, 'answer_operation' => bin2hex(random_bytes(16)),
+            'answertext' => 'Rejected CSRF must never replace the answer',
+            'event_id' => bin2hex(random_bytes(16)), 'reviewed' => '1',
+        ];
+        foreach (['answer_save' => 'saved', 'heartbeat' => 'active', 'focus' => 'recorded', 'review' => 'saved'] as $endpoint => $expected) {
+            $path = '/public/code/tce_test_' . $endpoint . '.php';
+            foreach (['', $token . 'x', ['malformed']] as $bad) {
+                [$status, $body] = $this->http('POST', $path, $cookies, $fields + ['csrf_token' => $bad]);
+                self::assertSame(403, $status, $endpoint . ': ' . $body);
+                $payload = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
+                self::assertIsArray($payload);
+                self::assertSame('csrf_failed', $payload['status'] ?? null);
+            }
+            if ($endpoint !== 'answer_save') {
+                [$status, $body] = $this->http('POST', $path, $cookies, $fields + ['csrf_token' => $token]);
+                self::assertSame(200, $status, $endpoint . ': ' . $body);
+                $payload = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
+                self::assertIsArray($payload);
+                self::assertSame($expected, $payload['status'] ?? null);
+            }
+        }
+        self::assertSame($before, $this->dbScalar('SELECT testlog_answer_version FROM tce_tests_logs WHERE testlog_id=' . $logId));
+        [$status, $body] = $this->http('GET', '/public/code/tce_test_answer_save.php?action=refresh_csrf&testid='
+            . $testId . '&testlogid=' . $logId, $cookies);
+        self::assertSame(200, $status);
+        $payload = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
+        self::assertIsArray($payload);
+        self::assertSame('csrf_refreshed', $payload['status'] ?? null);
+        $fresh = $payload['csrf_token'] ?? null;
+        self::assertIsString($fresh);
+        self::assertStringStartsWith('v2.', $fresh);
+        self::assertNotSame($token, $fresh);
+        foreach ([$token, $fresh] as $valid) {
+            [$status] = $this->http('POST', '/public/code/tce_test_heartbeat.php', $cookies, $fields + ['csrf_token' => $valid]);
+            self::assertSame(200, $status, 'Refreshing must preserve other open forms');
+        }
     }
 
 }

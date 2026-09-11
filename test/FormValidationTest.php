@@ -79,8 +79,10 @@ final class FormValidationTest extends TestCase
         );
     }
 
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
     public function testCsrfFieldContainsAValidToken(): void
     {
+        session_id(str_repeat('a', 32));
         $markup = \f_get_csrf_token_field();
         $matches = [];
 
