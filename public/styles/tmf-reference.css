@@ -2215,6 +2215,33 @@ body.app-page.exam-page .exam-mobile-toolbar {
     color: #fff;
     box-shadow: 0 4px 14px rgba(7, 38, 61, .18);
 }
+/* Long matching choices must not squeeze the situation into a narrow column. */
+body.app-page.exam-page .answergroup li.exam-matching-answer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .75rem;
+    min-width: 0;
+}
+body.app-page.exam-page .exam-matching-answer > label {
+    order: -1;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+body.app-page.exam-page .exam-matching-answer > select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+body.app-page.exam-page .exam-matching-selected-text {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--tmf-text);
+}
+
 body.app-page.exam-page .exam-focus-warning {
     width: min(32rem, calc(100% - 2rem));
     padding: 2rem;
