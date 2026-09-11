@@ -215,7 +215,70 @@
             .replace('{seconds}', String(delay / 1000));
     }
 
-    function sendAnswer(data, retryCount, button) {
+    function answerFailure(payload, httpStatus) {
+        var error = new Error(payload.status || 'access_denied');
+        error.httpStatus = httpStatus;
+        error.requestId = typeof payload.request_id === 'string' ? payload.request_id : '';
+        error.retryable = httpStatus >= 500;
+        return error;
+    }
+
+    function refreshAnswerToken(data, button) {
+        var url = new URL(button.dataset.answerSave, window.location.href);
+        url.searchParams.set('action', 'refresh_csrf');
+        url.searchParams.set('testid', data.get('testid'));
+        url.searchParams.set('testlogid', data.get('testlogid'));
+        var controller = new AbortController();
+        var timer = window.setTimeout(function () { controller.abort(); }, saveRequestTimeout);
+        return window.fetch(url.href, {credentials: 'same-origin', cache: 'no-store',
+            headers: {'Accept': 'application/json'}, signal: controller.signal}).then(function (response) {
+            return response.json().catch(function () { return {status: 'access_denied'}; }).then(function (payload) {
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload)) { payload = {status: 'access_denied'}; }
+                if (!response.ok || payload.status !== 'csrf_refreshed' || typeof payload.csrf_token !== 'string') {
+                    throw answerFailure(payload, response.status);
+                }
+                data.set('csrf_token', payload.csrf_token);
+                var token = form.querySelector('[name="csrf_token"]');
+                if (token) { token.value = payload.csrf_token; }
+            });
+        }).catch(function (error) {
+            // Failure to revalidate the session must never trigger automatic POST replay.
+            error.retryable = false;
+            error.httpStatus = error.httpStatus || 403;
+            throw error;
+        }).finally(function () { window.clearTimeout(timer); });
+    }
+
+    function answerFailureMessage(error, button) {
+        var messages = {
+            session_required: 'Сессия истекла или требует повторного входа. Войдите в другой вкладке, затем повторите сохранение здесь. Ответ остаётся в этой форме.',
+            csrf_failed: 'Не удалось обновить защиту запроса. Ответ не сохранён и остаётся в форме. Повторите вход и сохранение.',
+            time_expired: 'Время теста истекло. Последние изменения не сохранены; ответ остаётся в форме.',
+            attempt_closed: 'Попытка уже завершена. Последние изменения не сохранены; ответ остаётся в форме.',
+            attempt_blocked: 'Попытка заблокирована наблюдателем. Ответ не сохранён. Обратитесь к организатору.',
+            access_denied: 'Нет доступа к сохранению этого ответа. Ответ остаётся в форме. Обратитесь к организатору.',
+            invalid_request: 'Не удалось проверить данные запроса. Ответ не сохранён. Обратитесь к организатору.',
+            invalid: 'Сервер отклонил данные ответа. Ответ остаётся в форме. Проверьте заполнение.'
+        };
+        var message = messages[error.message] || (error.httpStatus === 403
+            ? 'Сервер запретил сохранение, причина не указана. Ответ остаётся в форме. Обратитесь к организатору.'
+            : button.dataset.answerError);
+        if (error.requestId && /^[a-f0-9]{24}$/.test(error.requestId)) { message += ' Код запроса: ' + error.requestId; }
+        var login = document.getElementById('answer-login-link');
+        if (login) { login.remove(); }
+        if (error.message === 'session_required' || error.message === 'csrf_failed') {
+            login = document.createElement('a');
+            login.id = 'answer-login-link';
+            login.href = 'tce_login.php';
+            login.target = '_blank';
+            login.rel = 'noopener';
+            login.textContent = 'Войти в другой вкладке';
+            saveStatus.insertAdjacentElement('afterend', login);
+        }
+        return message;
+    }
+
+    function sendAnswer(data, retryCount, button, csrfRetried) {
         var controller = window.AbortController ? new window.AbortController() : null;
         var timeout = controller
             ? window.setTimeout(function () {
@@ -236,11 +299,20 @@
             return response.json().catch(function () {
                 return {status: 'error'};
             }).then(function (payload) {
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload)) { payload = {status: 'error'}; }
                 if (response.ok && payload.status === 'saved') {
                     return payload;
                 }
-                var responseError = new Error(payload.status || 'error');
-                responseError.retryable = response.status >= 500;
+                if (response.status === 403 && payload.status === 'csrf_failed' && !csrfRetried) {
+                    csrfRetried = true;
+                    return refreshAnswerToken(data, button).then(function () {
+                        return sendAnswer(data, retryCount, button, true).catch(function (error) {
+                            error.retryable = false;
+                            throw error;
+                        });
+                    });
+                }
+                var responseError = answerFailure(payload, response.status);
                 if (payload.status === 'conflict' && Number.isFinite(Number(payload.version))) {
                     responseError.serverVersion = Number(payload.version);
                 }
@@ -262,7 +334,7 @@
             return new Promise(function (resolve) {
                 window.setTimeout(resolve, delay);
             }).then(function () {
-                return sendAnswer(data, nextRetry, button);
+                return sendAnswer(data, nextRetry, button, csrfRetried);
             });
         });
     }
@@ -287,6 +359,8 @@
 
         return sendAnswer(data, 0, button).then(function (payload) {
             answerVersion.value = String(payload.version);
+            var loginLink = document.getElementById('answer-login-link');
+            if (loginLink) { loginLink.remove(); }
             var liveScore = form.querySelector('#exam-live-score span');
             if (liveScore && Object.prototype.hasOwnProperty.call(payload, 'live_score')) {
                 liveScore.textContent = String(payload.live_score);
@@ -308,7 +382,7 @@
                 'error',
                 error.message === 'conflict'
                     ? button.dataset.answerConflict
-                    : button.dataset.answerError
+                    : answerFailureMessage(error, button)
             );
             throw error;
         }).finally(function () {
@@ -886,6 +960,10 @@
             }
             return loadQuestion(target);
         }).catch(function (error) {
+            if (error.httpStatus >= 400 && error.httpStatus < 500) {
+                setQuestionLoading(false);
+                return;
+            }
             if (error.message === 'conflict') {
                 // A different request has already stored the authoritative
                 // answer. Continue with that server state instead of posting

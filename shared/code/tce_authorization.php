@@ -80,6 +80,9 @@ if ($rs) {
             openvsosh_log_auth_event('session.rejected', 'fingerprint_mismatch');
             // display login form
             session_regenerate_id(true);
+            if (defined('OPENVSOSH_ANSWER_API')) {
+                F_tmf_answer_json(403, ['status' => 'session_required']);
+            }
             F_login_form();
             exit();
         }
@@ -563,6 +566,9 @@ if ($auth_ssl_level > 0 && $auth_ssl_level <= $pagelevel) {
             "WHERE ssl_hash='" . $client_hash . "' AND ssl_id IN (" . $sslids . ')',
         );
         if (f_legacy_int_equals($valid_ssl, 0)) {
+            if (defined('OPENVSOSH_ANSWER_API')) {
+                F_tmf_answer_json(403, ['status' => 'access_denied']);
+            }
             $thispage_title = $l['t_login_form']; //set page title
             require_once '../code/tce_page_header.php';
             F_print_error('ERROR', $l['m_ssl_certificate_required']);

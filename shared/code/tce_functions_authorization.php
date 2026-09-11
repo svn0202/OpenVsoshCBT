@@ -251,6 +251,10 @@ function f_login_throttle_next_delay(int $previous, int $ratio, int $maximum): i
  */
 function f_login_form(): void
 {
+    if (defined('OPENVSOSH_ANSWER_API')) {
+        F_tmf_answer_json(403, ['status' => (int) ($_SESSION['session_user_level'] ?? 0) > 0
+            ? 'access_denied' : 'session_required']);
+    }
     global $l, $thispage_title;
     global $xuser_name, $xuser_password;
     /** @var array{
