@@ -13,7 +13,8 @@ subprocess.run(['git','merge-base','--is-ancestor',BASE,commit],cwd=ROOT,check=T
 output = pathlib.Path(args.output).resolve(); output.mkdir(parents=True, exist_ok=False)
 paths = git('diff','--name-only','--diff-filter=ACMRT',BASE,commit).decode().splitlines()
 runtime = [s for s in paths if not s.startswith(('doc/','test/','tools/','docker/'))
-           and s.endswith(('.php','.js','.css','.png','.webmanifest'))]
+           and (s.endswith(('.php','.js','.css','.png','.webmanifest'))
+                or (s.startswith('install/') and s.endswith('.sql')))]
 if git('diff','--name-only','--diff-filter=D',BASE,commit).strip():
     raise RuntimeError('Deleted files require an explicit overlay migration')
 for name in runtime:
