@@ -81,3 +81,23 @@ jobs:
       # integration suites against it, copies the reports back, then tears the env down.
       - name: Run dockerised integration tests
         run: make dockertest DB_TYPE=${{ matrix.db }}
+      - name: Report integration failures
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import xml.etree.ElementTree as ET
+
+          reports = list(pathlib.Path('target').rglob('*junit*.xml'))
+          for report in reports:
+              for case in ET.parse(report).iter('testcase'):
+                  for tag in ('failure', 'error'):
+                      for issue in case.findall(tag):
+                          title = case.get('classname', '') + '::' + case.get('name', '')
+                          message = ''.join(issue.itertext())[:4000]
+                          def escape(value):
+                              return value.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                          print('::error::' + escape(title + '\n' + message))
+          if not reports:
+              print('::error::No JUnit report produced; inspect Docker build and startup logs.')
+          PY
