@@ -247,8 +247,6 @@ if (
         openvsosh_log_auth_event('login.rejected', 'rate_limited');
         F_print_error('WARNING', $l['m_login_brute_force'] . ' ' . $wait);
     } else {
-        // encode password
-        $xuser_password = get_password_hash($submitted_password);
         // check One-Time-Password if enabled
         $otp = false;
         $otp_login = openvsosh_authorization_bool(K_OTP_LOGIN);
@@ -338,7 +336,8 @@ if (
                 )) {
                     // the user name exist but the password is wrong
                     if ($altusr !== false) {
-                        // resync the password
+                        // Hash only when synchronizing an externally authenticated password.
+                        $xuser_password = get_password_hash($submitted_password);
                         $sqlu =
                             'UPDATE '
                             . K_TABLE_USERS
@@ -393,6 +392,7 @@ if (
                 } elseif ($altusr !== false) {
                     // this user do not exist on TCExam database
                     // replicate external user account on TCExam local database
+                    $xuser_password = get_password_hash($submitted_password);
                     $sql =
                         'INSERT INTO '
                         . K_TABLE_USERS
