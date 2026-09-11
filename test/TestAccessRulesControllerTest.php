@@ -73,7 +73,7 @@ PHP;
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$html, $queries] = $decoded;
         self::assertCount(3, $queries);
-        self::assertStringContainsString("test_allow_attachments='" . (int) $allowAttachments . "',", $queries[1]);
+        self::assertStringContainsString("test_allow_attachments='" . (int) $allowAttachments . "',", $queries[1] ?? '');
         $checked = 'name="allow_attachments" id="allow_attachments" value="1" checked="checked"';
         if ($allowAttachments) {
             self::assertStringContainsString($checked, $html);
@@ -97,6 +97,7 @@ PHP;
         self::assertStringContainsString('<CSRF></form>', $html);
         self::assertStringNotContainsString('<ERROR>', $html);
     }
+    /** @return array<string,array{bool}> */
     public static function attachmentSettings(): array
     {
         return ['enabled' => [true], 'disabled' => [false]];

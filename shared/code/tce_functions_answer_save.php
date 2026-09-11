@@ -105,7 +105,12 @@ function f_tmf_save_question_answer(
     return $result;
 }
 
-/** Transaction implementation; callers use the logged wrapper above. */
+/**
+ * Transaction implementation; callers use the logged wrapper above.
+ *
+ * @param array<array-key, mixed> $answer_positions
+ * @return array{status:string,version:int,live_score?:float}
+ */
 function f_tmf_save_question_answer_transaction(
     int $test_id,
     int $testlog_id,

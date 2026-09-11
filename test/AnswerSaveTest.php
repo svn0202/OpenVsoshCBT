@@ -110,7 +110,8 @@ final class AnswerSaveTest extends TestCase
          *     2: array{status: string, version: int, live_score: float},
          *     3: array{string, string, string, string, string},
          *     4: array{int, int, array<int, int>, string, int},
-         *     5: array{int, int}
+         *     5: array{int, int},
+         *     6: string
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
@@ -125,7 +126,12 @@ final class AnswerSaveTest extends TestCase
         self::assertSame([4, 9, [1 => 2], 'answer', 123], $decoded[4]);
         self::assertSame([4, 55], $decoded[5]);
         $lines = explode("\n", trim($decoded[6]));
-        $event = json_decode(substr($lines[1], strpos($lines[1], '{')), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(2, $lines);
+        $line = $lines[1] ?? '';
+        $start = strpos($line, '{');
+        self::assertIsInt($start);
+        /** @var array{status:string,expected_version:int,result_version:int,operation_id:string,testlogid:int} $event */
+        $event = json_decode(substr($line, $start), true, 512, JSON_THROW_ON_ERROR);
         self::assertSame('saved', $event['status']);
         self::assertSame(2, $event['expected_version']);
         self::assertSame(3, $event['result_version']);

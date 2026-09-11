@@ -42,7 +42,9 @@ PHP;
                 dirname(__DIR__) . '/shared/code',
             );
             self::assertSame(0, $status, $output);
-            [$result, $queries, $actualCounts] = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            /** @var array{array{status:string,count:int,message:string},array{string},int} $decoded */
+            $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            [$result, $queries, $actualCounts] = $decoded;
             self::assertSame($expected, $result['status']);
             self::assertSame($counts, $actualCounts);
             self::assertCount(1, $queries);
