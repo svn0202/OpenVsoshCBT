@@ -20,6 +20,7 @@
     var saveStatus = null;
     var answerVersion = null;
     var saveActive = false;
+    var navigationActive = false;
     var changedDuringSave = false;
     var answerDirty = false;
     var formSubmitting = false;
@@ -879,6 +880,9 @@
             }
             return response.text();
         }).then(function (html) {
+            if (answerDirty || saveActive) {
+                throw new Error('answer_changed');
+            }
             var parsed = new window.DOMParser().parseFromString(html, 'text/html');
             var replacement = parsed.querySelector('#testform');
             if (!replacement) {
@@ -907,6 +911,12 @@
                 // question with GET instead of submitting the old answer twice.
                 window.location.assign(url);
             }
+        }).catch(function (error) {
+            // A failed GET must not trigger a form submission with newer edits.
+            if (answerDirty || saveActive) {
+                throw new Error('answer_changed');
+            }
+            throw error;
         }).finally(function () {
             if (timeout !== null) {
                 window.clearTimeout(timeout);
@@ -948,18 +958,27 @@
         }
 
         event.preventDefault();
-        if (saveActive) {
+        if (saveActive || navigationActive) {
             return;
         }
+        navigationActive = true;
         if (String(target) !== String(testlogId)) {
             setQuestionLoading(true);
         }
         saveCurrentAnswer().then(function () {
+            if (answerDirty) {
+                setQuestionLoading(false);
+                return;
+            }
             if (String(target) === String(testlogId)) {
                 return;
             }
             return loadQuestion(target);
         }).catch(function (error) {
+            if (error.message === 'answer_changed') {
+                setQuestionLoading(false);
+                return;
+            }
             if (error.httpStatus >= 400 && error.httpStatus < 500) {
                 setQuestionLoading(false);
                 return;
@@ -971,6 +990,8 @@
                 return loadQuestion(target);
             }
             fallbackSubmit(submitterName, submitterValue);
+        }).finally(function () {
+            navigationActive = false;
         });
     });
 
