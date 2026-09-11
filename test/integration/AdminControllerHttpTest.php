@@ -831,7 +831,12 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             $this->assertStringContainsString('--login-background-image', $body);
             $this->assertStringContainsString('tce_site_asset.php?type=logo', $body);
             $this->assertStringContainsString('Тестовая олимпиадная площадка', $body);
-            $this->assertStringContainsString('Описание &lt;не HTML&gt;', $body);
+            $this->assertStringContainsString('<strong>в вашей образовательной организации</strong>', $body);
+            $this->assertStringNotContainsString('Описание <не HTML>', $body);
+            $this->assertSame(
+                'Описание <не HTML>',
+                $this->dbScalar("SELECT setting_value FROM tce_openvsosh_settings WHERE setting_key='site_description'"),
+            );
             $this->assertStringContainsString('Используйте логин из карточки.', $body);
             $this->assertStringContainsString('Координатор: +7 000 000-00-00', $body);
             $this->assertStringContainsString('FJ_configure_timer(600,180', $body);
@@ -1890,10 +1895,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                     ),
                 );
                 $this->assertSame(200, $saveStatus, 'save for type ' . $type . ': ' . $saveBody);
-                $this->assertSame(
-                    ['status' => 'saved', 'version' => 1],
-                    json_decode($saveBody, true, 8, JSON_THROW_ON_ERROR),
-                );
+                $this->assertAnswerResult($saveBody, 'saved', 1);
 
                 // Navigate to another question before loading the saved one again.
                 $nextType = $type === 5 ? 1 : $type + 1;
@@ -2099,10 +2101,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 ],
             );
             $this->assertSame(200, $saveStatus);
-            $this->assertSame(
-                ['status' => 'saved', 'version' => 1],
-                json_decode($saveBody, true, 8, JSON_THROW_ON_ERROR),
-            );
+            $this->assertAnswerResult($saveBody, 'saved', 1);
 
             // Repeating the same operation models a response lost after the
             // server commit: it must be acknowledged without a second write.
@@ -2120,10 +2119,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 ],
             );
             $this->assertSame(200, $duplicateStatus);
-            $this->assertSame(
-                ['status' => 'saved', 'version' => 1],
-                json_decode($duplicateBody, true, 8, JSON_THROW_ON_ERROR),
-            );
+            $this->assertAnswerResult($duplicateBody, 'saved', 1);
 
             [$staleStatus, $staleBody] = $this->http(
                 'POST',
@@ -2139,10 +2135,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 ],
             );
             $this->assertSame(409, $staleStatus);
-            $this->assertSame(
-                ['status' => 'conflict', 'version' => 1],
-                json_decode($staleBody, true, 8, JSON_THROW_ON_ERROR),
-            );
+            $this->assertAnswerResult($staleBody, 'conflict', 1);
             $this->assertSame(
                 'Confirmed before lost response',
                 $this->dbScalar('SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $testlogId),
@@ -2230,6 +2223,17 @@ final class AdminControllerHttpTest extends AppHttpTestCase
             );
             $this->deleteGroupById($groupId);
         }
+    }
+
+    private function assertAnswerResult(string $body, string $status, int $version): void
+    {
+        $result = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
+        self::assertIsArray($result);
+        $requestId = $result['request_id'] ?? null;
+        self::assertIsString($requestId);
+        self::assertMatchesRegularExpression('/^[a-f0-9]{32}$/D', $requestId);
+        unset($result['request_id']);
+        self::assertSame(['status' => $status, 'version' => $version], $result);
     }
 
 }
