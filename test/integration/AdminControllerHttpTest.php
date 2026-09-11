@@ -2183,6 +2183,46 @@ final class AdminControllerHttpTest extends AppHttpTestCase
                 'SELECT attachment_id FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId
             ) ?? '0');
             $this->assertGreaterThan(0, $attachmentId);
+            // A teacher may disable uploads while a participant's old form is open.
+            $this->dbExec("UPDATE tce_tests SET test_allow_attachments='0' WHERE test_id=" . $testId);
+            [$disabledStatus, $disabledPage] = $this->http(
+                'GET',
+                '/public/code/tce_test_execute.php?testid=' . $testId . '&testlogid=' . $testlogId,
+                $cookies,
+            );
+            $this->assertSame(200, $disabledStatus);
+            $this->assertStringNotContainsString('id="answer_attachments"', $disabledPage);
+            $this->assertStringNotContainsString('id="answer_camera"', $disabledPage);
+            $this->assertStringContainsString('evidence.png', $disabledPage);
+            $currentVersion = $this->dbScalar(
+                'SELECT testlog_answer_version FROM tce_tests_logs WHERE testlog_id=' . $testlogId,
+            );
+            [$disabledSaveStatus, $disabledSaveBody] = $this->httpUpload(
+                '/public/code/tce_test_execute.php',
+                $cookies,
+                [
+                    'testid' => (string) $testId,
+                    'testlogid' => (string) $testlogId,
+                    'answertext' => 'Text survives disabled uploads',
+                    'answer_version' => (string) $currentVersion,
+                    'answer_operation' => bin2hex(random_bytes(16)),
+                    'final_save_json' => '1',
+                    'csrf_token' => $token,
+                ],
+                'answer_attachments[]',
+                'rejected.png',
+                (string) $png,
+            );
+            $this->assertSame(200, $disabledSaveStatus, $disabledSaveBody);
+            $disabledResult = json_decode($disabledSaveBody, true, 8, JSON_THROW_ON_ERROR);
+            $this->assertIsArray($disabledResult);
+            $this->assertSame('attachment_error', $disabledResult['status'] ?? null);
+            $this->assertSame('Text survives disabled uploads', $this->dbScalar(
+                'SELECT testlog_answer_text FROM tce_tests_logs WHERE testlog_id=' . $testlogId,
+            ));
+            $this->assertSame('1', $this->dbScalar(
+                'SELECT COUNT(*) FROM tce_testlog_attachments WHERE attachment_testlog_id=' . $testlogId,
+            ));
             $storedName = $this->dbScalar(
                 'SELECT attachment_stored_name FROM tce_testlog_attachments WHERE attachment_id=' . $attachmentId
             ) ?? '';

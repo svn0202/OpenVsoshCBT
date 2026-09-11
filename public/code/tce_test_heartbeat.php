@@ -62,8 +62,25 @@ if (!$result) {
 }
 /** @var true|\mysqli_result|\PgSql\Result $result */
 $affected_rows = F_db_affected_rows($db, $result);
-if ($affected_rows === false || $affected_rows < 1) {
-    F_tmf_heartbeat_json(409, ['status' => 'closed']);
+if ($affected_rows === false) {
+    F_tmf_heartbeat_json(500, ['status' => 'error']);
+}
+if ($affected_rows < 1) {
+    // MySQL counts changed rows: another heartbeat in the same second can
+    // leave the timestamp unchanged even though the attempt is still active.
+    $active_result = f_legacy_db_query_result(F_db_query(
+        'SELECT testuser_id FROM ' . K_TABLE_TEST_USER
+        . ' WHERE testuser_test_id=' . $test_id
+        . ' AND testuser_user_id=' . $session_user_id
+        . ' AND testuser_status>0 AND testuser_status<4',
+        $db,
+    ));
+    if (!$active_result) {
+        F_tmf_heartbeat_json(500, ['status' => 'error']);
+    }
+    if (!F_db_fetch_array($active_result)) {
+        F_tmf_heartbeat_json(409, ['status' => 'closed']);
+    }
 }
 
 F_tmf_heartbeat_json(200, ['status' => 'active']);

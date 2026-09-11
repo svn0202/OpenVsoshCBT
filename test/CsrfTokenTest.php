@@ -93,6 +93,34 @@ PHP, $secret);
         }
     }
 
+    public function testV2AvoidsPasswordHashingAndRandomFailureHasNoFallback(): void
+    {
+        self::runChecks(<<<'PHP'
+$source = file_get_contents($argv[1]);
+$start = strpos($source, 'function get_plain_csrf_token()');
+$end = strpos($source, '// ------------------------------------------------------------', $start);
+$helpers = substr($source, $start, $end - $start);
+eval('namespace Harness; use Error; use Random;
+function f_is_random_security_configured() { return true; }
+function get_client_fingerprint() { return str_repeat("a", 32); }
+function get_password_hash($value) { throw new \\RuntimeException("Unexpected password hashing"); }
+function check_password($value, $hash) { throw new \\RuntimeException("Unexpected password verification"); }
+function random_bytes($n) {
+    if (!empty($GLOBALS["random_failure"])) { throw new \\Random\\RandomException("unavailable"); }
+    return \\random_bytes($n);
+}
+' . $helpers);
+$token = \Harness\f_get_csrf_token_for_script('/test.php');
+$checks = ['v2 avoids password functions' => \Harness\check_csrf_token_for_script($token, '/test.php')];
+putenv('OPENVSOSH_CSRF_LEGACY_UNTIL=' . (time() + 600));
+$checks['bad v2 does not downgrade'] = !\Harness\check_csrf_token_for_script($token . 'x', '/test.php');
+$GLOBALS['random_failure'] = true;
+try { \Harness\f_get_csrf_token_for_script('/test.php'); $checks['no weak randomness fallback'] = false; }
+catch (Error $e) { $checks['no weak randomness fallback'] = true; }
+echo json_encode($checks, JSON_THROW_ON_ERROR);
+PHP);
+    }
+
     private static function runChecks(string $script, #[\SensitiveParameter] string $secret = 'test-install-secret-0123456789abcdef'): void
     {
         $setup = 'define("K_COOKIE_SECURE", true); define("K_COOKIE_HTTPONLY", true); '
