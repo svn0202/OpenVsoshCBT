@@ -151,6 +151,7 @@ CREATE TABLE "tce_tests" (
 	"test_disable_previous" Boolean NOT NULL Default '0',
 	"test_disable_next" Boolean NOT NULL Default '0',
 	"test_hide_editor" Boolean NOT NULL Default '0',
+	"test_allow_attachments" Boolean NOT NULL Default '1',
 	"test_completion_message" Text,
 constraint "PK_tce_tests_test_id" primary key ("test_id")
 ) Without Oids;

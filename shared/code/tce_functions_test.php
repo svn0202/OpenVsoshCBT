@@ -2763,7 +2763,10 @@ function f_question_form(mixed $test_id, mixed $testlog_id, mixed $formname): ?s
                 $str .= (string) $m['testlog_answer_text'];
                 $str .= '</textarea>' . K_NEWLINE;
                 $attachment_count = count(F_tmf_attachment_list((int) $testlog_id));
-                if ($attachment_count < TMF_ATTACHMENT_MAX_FILES) {
+                if (
+                    f_get_boolean($testdata['test_allow_attachments'] ?? true)
+                    && $attachment_count < TMF_ATTACHMENT_MAX_FILES
+                ) {
                     $str .= '<div class="essay-attachment-upload"><label for="answer_attachments">'
                         . 'Приложить фото или PDF (до 3 файлов, каждый до 5 МБ)</label>'
                         . '<input type="file" name="answer_attachments[]" id="answer_attachments" multiple="multiple" '

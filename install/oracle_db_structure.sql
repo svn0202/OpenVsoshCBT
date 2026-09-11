@@ -162,6 +162,7 @@ CREATE TABLE tce_tests (
 	test_disable_previous NUMBER(1) DEFAULT '0' NOT NULL,
 	test_disable_next NUMBER(1) DEFAULT '0' NOT NULL,
 	test_hide_editor NUMBER(1) DEFAULT '0' NOT NULL,
+	test_allow_attachments NUMBER(1) DEFAULT '1' NOT NULL,
 	test_completion_message NCLOB NULL,
 constraint PK_tce_tests_test_id primary key (test_id)
 );

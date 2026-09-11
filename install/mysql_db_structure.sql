@@ -160,6 +160,7 @@ CREATE TABLE tce_tests (
 	test_disable_previous Bool NOT NULL DEFAULT '0',
 	test_disable_next Bool NOT NULL DEFAULT '0',
 	test_hide_editor Bool NOT NULL DEFAULT '0',
+	test_allow_attachments Bool NOT NULL DEFAULT '1',
 	test_completion_message Text NULL,
  Primary Key (test_id)
 ) ENGINE = InnoDB

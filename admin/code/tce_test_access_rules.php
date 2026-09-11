@@ -97,6 +97,7 @@ if (isset($_POST['save_rules'])) {
             . "test_disable_previous='" . (isset($_POST['disable_previous']) ? 1 : 0) . "',"
             . "test_disable_next='" . (isset($_POST['disable_next']) ? 1 : 0) . "',"
             . "test_hide_editor='" . (isset($_POST['hide_editor']) ? 1 : 0) . "',"
+            . "test_allow_attachments='" . (isset($_POST['allow_attachments']) ? 1 : 0) . "',"
             . 'test_completion_message=' . ($completion_message === ''
                 ? 'NULL'
                 : "'" . F_escape_sql($db, $completion_message) . "'")
@@ -125,6 +126,7 @@ $rules = [
     'test_disable_previous' => 0,
     'test_disable_next' => 0,
     'test_hide_editor' => 0,
+    'test_allow_attachments' => 1,
     'test_completion_message' => '',
 ];
 if ($test_id > 0) {
@@ -198,6 +200,7 @@ if ($test_id > 0) {
         'disable_previous' => ['test_disable_previous', 'Отключить кнопку «Назад»'],
         'disable_next' => ['test_disable_next', 'Отключить кнопку «Далее»'],
         'hide_editor' => ['test_hide_editor', 'Не загружать редактор для эссе'],
+        'allow_attachments' => ['test_allow_attachments', 'Разрешить прикрепление фото/PDF и съёмку камерой'],
     ] as $name => [$field, $label]) {
         echo '<div class="row"><span class="label"><label for="' . $name . '">' . $label
             . '</label></span><span class="formw"><input type="checkbox" name="' . $name

@@ -14,6 +14,43 @@ require_once __DIR__ . '/../shared/code/tce_functions_attachments.php';
 
 final class AttachmentsTest extends TestCase
 {
+    public function testUploadPermissionComesFromTheOwningTest(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_TABLE_TESTS', 'tests');
+define('K_TABLE_TESTS_LOGS', 'test_logs');
+define('K_TABLE_TEST_USER', 'test_users');
+define('K_TABLE_QUESTIONS', 'questions');
+define('K_TABLE_PREFIX', 'tce_');
+$db = 'db'; $_SESSION = ['session_user_id' => 9];
+$GLOBALS['queries'] = []; $GLOBALS['counts'] = 0;
+function F_db_query($sql, $db) { $GLOBALS['queries'][] = $sql; return fopen('php://memory', 'r'); }
+function F_db_fetch_array($r) { return ['question_type' => 3, 'test_allow_attachments' => $GLOBALS['argv'][2]]; }
+function f_get_boolean($v) { return $v === 't'; }
+function F_count_rows(...$args) { ++$GLOBALS['counts']; return 0; }
+$source = preg_replace('/^<\?php\s*/', '', file_get_contents($argv[1]));
+eval('namespace Harness; use \\RuntimeException; use \\Throwable; ' . $source);
+$files = ['name' => ['photo.png'], 'tmp_name' => [''], 'size' => [0],
+    'error' => [$argv[3] === 'empty' ? UPLOAD_ERR_NO_FILE : UPLOAD_ERR_PARTIAL]];
+$result = f_tmf_attachment_store_uploads(7, 77, $files);
+echo json_encode([$result, $GLOBALS['queries'], $GLOBALS['counts']], JSON_THROW_ON_ERROR);
+PHP;
+        foreach ([['f', 'upload', 'forbidden', 0], ['t', 'upload', 'invalid', 1], ['f', 'empty', 'empty', 0]] as [$allowed, $mode, $expected, $counts]) {
+            [$status, $output] = \F_tcecode_run_process(
+                [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/shared/code/tce_functions_attachments.php', $allowed, $mode],
+                dirname(__DIR__) . '/shared/code',
+            );
+            self::assertSame(0, $status, $output);
+            [$result, $queries, $actualCounts] = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            self::assertSame($expected, $result['status']);
+            self::assertSame($counts, $actualCounts);
+            self::assertCount(1, $queries);
+            self::assertStringContainsString('INNER JOIN tests t ON t.test_id=tu.testuser_test_id', $queries[0]);
+            self::assertStringContainsString('tu.testuser_test_id=7 AND tu.testuser_user_id=9', $queries[0]);
+        }
+    }
+
     /** @throws \RuntimeException */
     public function testRealPngIsAcceptedFromItsContents(): void
     {

@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 final class TestAccessRulesControllerTest extends TestCase
 {
-    public function testRulePersistenceAndRenderedFormRemainUnchanged(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('attachmentSettings')]
+    public function testRulePersistenceAndRenderedFormRemainUnchanged(bool $allowAttachments): void
     {
         $script = <<<'PHP'
 namespace Harness;
@@ -23,6 +24,7 @@ $_POST = [
     'results_publish_at' => '2026-07-27T10:00', 'results_unpublish_at' => '2026-07-28T10:00',
     'completion_message' => 'Готово безопасно',
 ];
+if ($argv[2] === '1') { $_POST['allow_attachments'] = '1'; }
 $GLOBALS['queries'] = [];
 $GLOBALS['rows'] = [
     'tests-list' => [['test_id' => 1, 'test_name' => 'Current'], ['test_id' => 2, 'test_name' => 'Required'], false],
@@ -34,7 +36,7 @@ $GLOBALS['rows'] = [
         'test_results_publish_at' => '2026-07-27 10:00:00',
         'test_results_unpublish_at' => '2026-07-28 10:00:00', 'test_results_anonymized' => 0,
         'test_disable_previous' => 0, 'test_disable_next' => 0, 'test_hide_editor' => 0,
-        'test_completion_message' => 'Готово безопасно',
+        'test_completion_message' => 'Готово безопасно', 'test_allow_attachments' => (int) $argv[2],
     ]],
 ];
 function F_select_tests_sql() { return 'AUTHORIZED TESTS'; }
@@ -62,7 +64,7 @@ echo json_encode([$html, $GLOBALS['queries']], JSON_THROW_ON_ERROR);
 PHP;
 
         [$status, $output] = \F_tcecode_run_process(
-            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_test_access_rules.php'],
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/admin/code/tce_test_access_rules.php', $allowAttachments ? '1' : '0'],
             dirname(__DIR__) . '/admin/code',
         );
 
@@ -71,6 +73,14 @@ PHP;
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$html, $queries] = $decoded;
         self::assertCount(3, $queries);
+        self::assertStringContainsString("test_allow_attachments='" . (int) $allowAttachments . "',", $queries[1]);
+        $checked = 'name="allow_attachments" id="allow_attachments" value="1" checked="checked"';
+        if ($allowAttachments) {
+            self::assertStringContainsString($checked, $html);
+        } else {
+            self::assertStringNotContainsString($checked, $html);
+            self::assertStringContainsString('name="allow_attachments" id="allow_attachments" value="1"', $html);
+        }
         self::assertSame('AUTHORIZED TESTS', $queries[0] ?? null);
         self::assertStringContainsString('UPDATE tests SET test_required_finished_id=2,', $queries[1] ?? '');
         self::assertStringContainsString('test_minimum_duration_time=7,', $queries[1] ?? '');
@@ -87,4 +97,9 @@ PHP;
         self::assertStringContainsString('<CSRF></form>', $html);
         self::assertStringNotContainsString('<ERROR>', $html);
     }
+    public static function attachmentSettings(): array
+    {
+        return ['enabled' => [true], 'disabled' => [false]];
+    }
+
 }

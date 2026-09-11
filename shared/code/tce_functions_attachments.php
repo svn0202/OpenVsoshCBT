@@ -109,8 +109,9 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
     /** @var mixed $db */
     $user_id = (int) ($_SESSION['session_user_id'] ?? 0);
     $owner_result = f_tmf_attachment_query_result(F_db_query(
-        'SELECT q.question_type FROM ' . K_TABLE_TESTS_LOGS . ' tl'
+        'SELECT q.question_type,t.test_allow_attachments FROM ' . K_TABLE_TESTS_LOGS . ' tl'
         . ' INNER JOIN ' . K_TABLE_TEST_USER . ' tu ON tu.testuser_id=tl.testlog_testuser_id'
+        . ' INNER JOIN ' . K_TABLE_TESTS . ' t ON t.test_id=tu.testuser_test_id'
         . ' INNER JOIN ' . K_TABLE_QUESTIONS . ' q ON q.question_id=tl.testlog_question_id'
         . ' WHERE tl.testlog_id=' . $testlog_id . ' AND tu.testuser_test_id=' . $test_id
         . ' AND tu.testuser_user_id=' . $user_id . ' AND tu.testuser_status<4 LIMIT 1',
@@ -123,6 +124,9 @@ function f_tmf_attachment_store_uploads(int $test_id, int $testlog_id, array $fi
     $uploads = F_tmf_attachment_normalize_uploads($files);
     if ($uploads === []) {
         return ['status' => 'empty', 'count' => 0, 'message' => ''];
+    }
+    if (!f_get_boolean($owner['test_allow_attachments'] ?? true)) {
+        return ['status' => 'forbidden', 'count' => 0, 'message' => 'Прикрепление файлов отключено в настройках этого теста.'];
     }
     $existing = (int) F_count_rows(
         F_tmf_attachment_table(),

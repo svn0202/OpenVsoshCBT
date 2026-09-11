@@ -389,7 +389,7 @@ PHP;
                     . 'set_error_handler(function($severity, $message) { $GLOBALS["warnings"][] = $message; return true; }); '
                     . 'function f_get_test_data($testId) { return ["test_noanswer_enabled" => false, '
                     . '"test_mcma_radio" => (int) $testId === 8, "test_duration_time" => 30, '
-                    . '"test_logout_on_timeout" => true]; } '
+                    . '"test_logout_on_timeout" => true, "test_allow_attachments" => (int) $testId !== 9]; } '
                     . 'function f_get_boolean($value) { return (bool) $value; } '
                     . 'function F_count_rows(...$arguments) { return 2; } '
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
@@ -424,7 +424,7 @@ PHP;
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$outputs = [$qualified(0, 0, "form"), $qualified(7, 0, "form"), '
-                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(7, 8, "form"), '
+                    . '$qualified(7, 8, "form"), $qualified(7, 8, "form"), $qualified(9, 8, "form"), '
                     . '$qualified(7, 8, "matching-form"), $qualified(7, 8, "single-form"), '
                     . '$qualified(7, 8, "multiple-form"), $qualified(7, 8, "ordering-form"), '
                     . '$qualified(8, 8, "radio-form")]; '
@@ -461,6 +461,9 @@ PHP;
         self::assertStringContainsString('>Saved answer</textarea>', $outputs[3]);
         self::assertStringContainsString('уже сохранено: 1.', $outputs[3]);
         self::assertStringContainsString('<ATTACHMENTS:8>', $outputs[3]);
+        self::assertStringNotContainsString('type="file"', $outputs[4]);
+        self::assertStringNotContainsString('answer_camera', $outputs[4]);
+        self::assertStringContainsString('<ATTACHMENTS:8>', $outputs[4]);
         self::assertStringContainsString('<MENU:55,8,0>', $outputs[3]);
         self::assertStringContainsString('<select class="matching-position"', $outputs[5]);
         self::assertStringContainsString('<option value="1">One &amp;</option>', $outputs[5]);
