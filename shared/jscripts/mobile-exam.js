@@ -21,6 +21,8 @@
     var answerVersion = null;
     var saveActive = false;
     var navigationActive = false;
+    var answerConflict = false;
+    var conflictVersion = null;
     var changedDuringSave = false;
     var answerDirty = false;
     var formSubmitting = false;
@@ -314,8 +316,8 @@
                     });
                 }
                 var responseError = answerFailure(payload, response.status);
-                if (payload.status === 'conflict' && Number.isFinite(Number(payload.version))) {
-                    responseError.serverVersion = Number(payload.version);
+                if (payload.status === 'conflict' && Number.isSafeInteger(payload.version) && payload.version >= 0) {
+                    responseError.serverVersion = payload.version;
                 }
                 throw responseError;
             });
@@ -340,16 +342,54 @@
         });
     }
 
-    function saveCurrentAnswer() {
+    function showAnswerConflict() {
+        var previous = document.getElementById('answer-conflict-actions');
+        if (previous) { previous.remove(); }
+        setSaveStatus('error', 'Ответ изменён другим запросом. Ваш вариант остаётся в форме. Просмотрите сохранённый ответ или явно выберите запись своего варианта.');
+        var actions = document.createElement('div');
+        actions.id = 'answer-conflict-actions';
+        var link = document.createElement('a');
+        var url = new URL('tce_test_execute.php', window.location.href);
+        url.searchParams.set('testid', testId);
+        url.searchParams.set('testlogid', testlogId);
+        link.href = url.href;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Открыть сохранённый ответ в другой вкладке';
+        actions.appendChild(link);
+        if (conflictVersion !== null) {
+            var overwrite = document.createElement('button');
+            overwrite.type = 'button';
+            overwrite.textContent = 'Сохранить мой вариант вместо серверного';
+            overwrite.addEventListener('click', function () {
+                if (saveActive || navigationActive) { return; }
+                if (!window.confirm('Заменить сохранённый ответ вашим текущим вариантом? Если ответ на сервере снова изменился, замена будет отклонена.')) { return; }
+                saveCurrentAnswer(conflictVersion).catch(function () {});
+            });
+            actions.appendChild(overwrite);
+        }
+        saveStatus.insertAdjacentElement('afterend', actions);
+    }
+
+    function saveCurrentAnswer(resolvedVersion) {
         if (!saveButton || !saveStatus || !answerVersion || !window.fetch) {
             return Promise.reject(new Error('unsupported'));
         }
         if (saveActive) {
             return Promise.reject(new Error('saving'));
         }
+        if (answerConflict && (conflictVersion === null || resolvedVersion !== conflictVersion)) {
+            showAnswerConflict();
+            var conflict = new Error('conflict');
+            conflict.httpStatus = 409;
+            return Promise.reject(conflict);
+        }
 
         var button = saveButton;
         var data = new FormData(form);
+        if (answerConflict) {
+            data.set('answer_version', String(resolvedVersion));
+        }
         var displayTime = Number((document.getElementById('display_time') || {}).value || Date.now());
         data.set('reaction_time', String(Math.max(0, Date.now() - displayTime)));
         data.set('answer_operation', operationId());
@@ -360,6 +400,10 @@
 
         return sendAnswer(data, 0, button).then(function (payload) {
             answerVersion.value = String(payload.version);
+            answerConflict = false;
+            conflictVersion = null;
+            var conflictActions = document.getElementById('answer-conflict-actions');
+            if (conflictActions) { conflictActions.remove(); }
             var loginLink = document.getElementById('answer-login-link');
             if (loginLink) { loginLink.remove(); }
             var liveScore = form.querySelector('#exam-live-score span');
@@ -376,15 +420,14 @@
             return payload;
         }).catch(function (error) {
             answerDirty = true;
-            if (error.message === 'conflict' && Number.isFinite(error.serverVersion)) {
-                answerVersion.value = String(error.serverVersion);
+            if (error.message === 'conflict' || error.httpStatus === 409) {
+                answerConflict = true;
+                conflictVersion = Number.isSafeInteger(error.serverVersion) && error.serverVersion >= 0
+                    ? error.serverVersion : null;
+                showAnswerConflict();
+            } else {
+                setSaveStatus('error', answerFailureMessage(error, button));
             }
-            setSaveStatus(
-                'error',
-                error.message === 'conflict'
-                    ? button.dataset.answerConflict
-                    : answerFailureMessage(error, button)
-            );
             throw error;
         }).finally(function () {
             saveActive = false;
@@ -982,12 +1025,6 @@
             if (error.httpStatus >= 400 && error.httpStatus < 500) {
                 setQuestionLoading(false);
                 return;
-            }
-            if (error.message === 'conflict') {
-                // A different request has already stored the authoritative
-                // answer. Continue with that server state instead of posting
-                // the stale version once more and producing a lasting error.
-                return loadQuestion(target);
             }
             fallbackSubmit(submitterName, submitterValue);
         }).finally(function () {
