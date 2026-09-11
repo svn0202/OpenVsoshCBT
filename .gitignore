@@ -26,3 +26,24 @@ rector.php
 shared/config/
 target
 vendor
+
+# Private operational records and generated local artifacts
+/work/
+/private/
+/cache/wordimport/
+**/__pycache__/
+/doc/admin/blue-green-deployment-2026-09-12.md
+/doc/admin/incident-release-2026-09-12.json
+/doc/admin/incident-release-2026-09-12.md
+/doc/admin/log-analysis-plan-2026-09-12.md
+/doc/admin/upstream-review-2026-09-12.md
+/doc/admin/deployment-vsosh-irro.md
+/doc/admin/client-ip.md
+/doc/admin/cpu-profile-2026-09-11.md
+/doc/admin/log-analysis-browser-2026-09-12.json
+/doc/admin/log-analysis-nginx-2026-09-12.json
+/doc/admin/log-analysis-server-2026-09-12.json
+/doc/admin/log-review-2026-09-12.md
+/doc/admin/society-focus-incident-2026-09-11.md
+/doc/admin/society-question10-browser-check-2026-09-12.md
+/doc/development/csrf-cpu-proposal-2026-09-11.md

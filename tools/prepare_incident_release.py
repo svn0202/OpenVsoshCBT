@@ -2,7 +2,7 @@
 """Build an immutable overlay package from committed files; never deploy it."""
 import argparse, hashlib, json, pathlib, subprocess, tarfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-BASE = '9e95c25a'
+BASE = 'c0fbd7849348a1ce5d724f6d556d49852c7a0dd1'
 BASE_IMAGE = 'localhost/openvsoshcbt:9e95c25a-clientip'
 BASE_IMAGE_ID = 'a83998812db43aeb33e100eec31cc49c24ab573b3e00b073b07b8b55e94c6eda'
 p = argparse.ArgumentParser(); p.add_argument('--ref', default='HEAD'); p.add_argument('--output', required=True)

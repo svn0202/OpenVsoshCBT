@@ -48,3 +48,6 @@
 Git хранит код и безопасные шаблоны. Конкретный сервер хранит собственные
 конфиги, секреты и runtime-данные в игнорируемых каталогах. Обновление кода не
 должно перетирать базу, ответы, загрузки или ключи экземпляра.
+
+- [Two-slot deployment](admin/blue-green-deployment.md)
+- [Public repository publication rules](PUBLICATION.md)
