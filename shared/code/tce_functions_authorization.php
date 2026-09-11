@@ -41,7 +41,7 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
     global $l;
     /** @var array{
      *   ov_rcoko_alt: string, a_meta_charset: string, ov_login_intro: string,
-     *   ov_login_intro_organization: string, w_username: string, h_login_name: string,
+     *   ov_login_intro_organization: string, a_meta_language?: string, w_username: string, h_login_name: string,
      *   ov_username_placeholder: string, w_password: string, h_password: string,
      *   ov_password_placeholder: string, ov_show_password: string, w_otpcode: string,
      *   h_otpcode: string, w_login: string, h_login_button: string, ov_access_control: string,
@@ -68,13 +68,22 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
     $str .= '<p>' . htmlspecialchars($site_settings['site_name'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
     $str .= '</div>' . K_NEWLINE;
     $intro = $site_settings['welcome'] !== '' ? $site_settings['welcome'] : $l['ov_login_intro'];
-    $description = $site_settings['site_description'] !== ''
-        ? $site_settings['site_description']
-        : $l['ov_login_intro_organization'];
+    $description = $l['ov_login_intro_organization'];
     $str .= '<p class="login-intro">'
         . nl2br(htmlspecialchars($intro, ENT_QUOTES, $l['a_meta_charset'])) . '<br />'
         . '<strong>' . htmlspecialchars($description, ENT_QUOTES, $l['a_meta_charset'])
         . '</strong></p>' . K_NEWLINE;
+    if (($_GET['login_error'] ?? null) === 'expired_form') {
+        $message = ($l['a_meta_language'] ?? 'ru') === 'ru'
+            ? 'Не удалось отправить форму: данные страницы устарели или браузер не сохранил сессию. '
+                . 'Мы загрузили новую форму. Введите логин и пароль ещё раз. '
+                . 'Если ошибка повторяется, разрешите cookies для этого сайта или откройте его в другом браузере.'
+            : 'The form could not be submitted: the page is out of date or the browser did not retain your session. '
+                . 'A fresh form has been loaded. Enter your username and password again. '
+                . 'If this happens again, allow cookies for this site or open it in another browser.';
+        $str .= '<div class="tcecontentbox" role="alert">'
+            . htmlspecialchars($message, ENT_QUOTES, $l['a_meta_charset']) . '</div>' . K_NEWLINE;
+    }
     $str .=
         '<form action="'
         . (string) $faction
@@ -315,6 +324,9 @@ function f_login_form(): void
     }
 
     require_once '../../shared/code/tce_functions_form.php';
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
     $thispage_title = $l['t_login_form']; //set page title
     require_once '../code/tce_page_header.php';
     echo f_login_form_markup(

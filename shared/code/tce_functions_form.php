@@ -61,6 +61,13 @@ if (
         || !check_csrf_token($_POST['csrf_token'])
     )
 ) {
+    require_once __DIR__ . '/tce_functions_auth_log.php';
+    $csrf_reason = match (true) {
+        !isset($_POST['csrf_token']) || $_POST['csrf_token'] === '' => 'missing_token',
+        !is_string($_POST['csrf_token']) => 'malformed_token',
+        default => 'token_mismatch',
+    };
+    openvsosh_log_auth_event('csrf.rejected', $csrf_reason);
     // Reject the stale form without replaying its POST. Browser navigations get a
     // fresh login page; API requests keep their explicit failure response.
     $script_name = $_SERVER['SCRIPT_NAME'];
@@ -74,8 +81,12 @@ if (
             || ($fetch_dest === '' && str_contains($accept, 'text/html'))
         )
     ) {
-        header('Cache-Control: no-store');
-        header('Location: /public/code/tce_login.php', true, 303);
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        // A unique GET URL also bypasses previously cached login responses.
+        header('Location: /public/code/tce_login.php?login_error=expired_form&fresh='
+            . bin2hex(random_bytes(16)), true, 303);
         exit();
     }
     http_response_code(403);

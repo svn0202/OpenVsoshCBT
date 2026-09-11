@@ -1,6 +1,15 @@
 (function () {
     'use strict';
 
+    // Restoring a login form from the back/forward cache can restore an old token.
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted && document.getElementById('form_login')) {
+            var freshUrl = new URL(window.location.href);
+            freshUrl.searchParams.set('fresh', Date.now().toString());
+            window.location.replace(freshUrl.href);
+        }
+    });
+
     var menuToggle = document.querySelector('.login-menu-toggle');
     var menu = document.getElementById('scrollayer');
     var body = document.body;

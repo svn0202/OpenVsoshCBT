@@ -127,7 +127,8 @@ final class AuthorizationFunctionsTest extends TestCase
         );
     }
 
-    public function testLoginFormPreservesStructureFieldsAndFallbackContent(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginFormRecoveryCases')]
+    public function testLoginFormPreservesStructureFieldsAndFallbackContent(string $error, bool $hasNotice): void
     {
         [$status, $output] = \F_tcecode_run_process(
             [
@@ -145,7 +146,7 @@ final class AuthorizationFunctionsTest extends TestCase
                     . 'function openvsosh_get_access_settings() { return ["registration_enabled" => false, '
                     . '"password_reset_enabled" => false, "access_help" => ""]; } '
                     . 'function openvsosh_get_site_settings() { return ["site_name" => "Test site", '
-                    . '"welcome" => "", "site_description" => "", "login_instruction" => "", '
+                    . '"welcome" => "", "site_description" => "Platform description", "login_instruction" => "", '
                     . '"site_contact" => ""]; } '
                     . 'function openvsosh_site_asset_metadata($type) { return null; } '
                     . 'function get_form_row_text_input($field) { return "<FIELD:" . $field . ">"; } '
@@ -159,8 +160,10 @@ final class AuthorizationFunctionsTest extends TestCase
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
+                    . '$_GET["login_error"] = $argv[2]; '
                     . 'echo $qualified("/login", "login-form", "post", "multipart/form-data", "alice");',
                 dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
+                $error,
             ],
             dirname(__DIR__) . '/shared/code',
         );
@@ -175,6 +178,23 @@ final class AuthorizationFunctionsTest extends TestCase
         self::assertStringContainsString('../../images/vsosh-logo.png', $output);
         self::assertStringContainsString('<p>Test site</p>', $output);
         self::assertStringContainsString('<p>Ask support</p>', $output);
+        self::assertStringContainsString('<strong>School</strong>', $output);
+        self::assertStringNotContainsString('Platform description', $output);
+        self::assertSame($hasNotice, str_contains($output, 'role="alert"'));
+        if ($hasNotice) {
+            self::assertStringContainsString('Мы загрузили новую форму.', $output);
+        }
+        self::assertStringNotContainsString('<script>alert', $output);
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function loginFormRecoveryCases(): array
+    {
+        return [
+            'normal login' => ['', false],
+            'expired form' => ['expired_form', true],
+            'untrusted query' => ['<script>alert(1)</script>', false],
+        ];
     }
 
     public function testLogoutPageSetsTitleRendersFormAndTerminates(): void

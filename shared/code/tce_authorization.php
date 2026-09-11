@@ -36,6 +36,7 @@ require_once '../../shared/code/tce_functions_authorization.php';
 require_once '../../shared/code/tce_functions_roles.php';
 require_once '../../shared/code/tce_functions_session.php';
 require_once '../../shared/code/tce_functions_otp.php';
+require_once __DIR__ . '/tce_functions_auth_log.php';
 
 /** @var mixed $db */
 /** @var string $PHPSESSID */
@@ -76,6 +77,7 @@ if ($rs) {
             openvsosh_authorization_bool(K_CHECK_SESSION_FINGERPRINT)
             && !$fingerprint_matches
         ) {
+            openvsosh_log_auth_event('session.rejected', 'fingerprint_mismatch');
             // display login form
             session_regenerate_id(true);
             F_login_form();
@@ -202,6 +204,7 @@ if (
     && isset($_POST['xuser_name'])
     && isset($_POST['xuser_password'])
 ) {
+    openvsosh_log_auth_event('login.attempt');
     $submitted_password = is_string($_POST['xuser_password']) ? $_POST['xuser_password'] : '';
     $submitted_username = is_string($_POST['xuser_name']) ? $_POST['xuser_name'] : '';
     $submitted_otpcode = is_string($_POST['xuser_otpcode'] ?? null) ? $_POST['xuser_otpcode'] : '';
@@ -238,6 +241,7 @@ if (
     }
 
     if ($bruteforce) {
+        openvsosh_log_auth_event('login.rejected', 'rate_limited');
         F_print_error('WARNING', $l['m_login_brute_force'] . ' ' . $wait);
     } else {
         // encode password
@@ -471,6 +475,14 @@ if (
             $login_error = true;
         }
 
+        openvsosh_log_auth_event(
+            $logged ? 'login.succeeded' : 'login.rejected',
+            match (true) {
+                $logged => '',
+                $otp_login && !$otp => 'otp_failed',
+                default => 'authentication_failed',
+            },
+        );
         if ($logged) {
             // A successful login ends the failure streak. Without this reset, ordinary
             // re-logins after a session timeout eventually grow into hour-long lockouts.
