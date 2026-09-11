@@ -16,6 +16,9 @@
 vendor
 target
 node_modules
+work
+*.dump
+tools/setup_vsosh_e2e_check.php
 
 # Generated at runtime by the entrypoint:
 cache/lang/*.php

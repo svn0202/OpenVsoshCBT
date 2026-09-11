@@ -44,8 +44,11 @@ sed -i \
     -e "s|define('K_PATH_MAIN', '')|define('K_PATH_MAIN', '/workspace/')|" \
     /workspace/shared/config/tce_paths.php
 
+# The installation secret lives in general constants, not tce_config.php.
+sed -i "s|define('K_RANDOM_SECURITY', '[^']*')|define('K_RANDOM_SECURITY', '${SECRET}')|" \
+    "/workspace/shared/config/tce_general_constants.php"
+
 sed -i \
-    -e "s|define('K_RANDOM_SECURITY', '[^']*')|define('K_RANDOM_SECURITY', '${SECRET}')|" \
     -e "s|define('K_BRUTE_FORCE_DELAY_RATIO', [0-9]*)|define('K_BRUTE_FORCE_DELAY_RATIO', 0)|" \
     /workspace/shared/config/tce_config.php
 
