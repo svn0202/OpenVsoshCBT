@@ -223,6 +223,40 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('deliberately-incorrect-integration-password', $body);
     }
 
+    public function testInvalidDuplicateCookieCannotTrapFreshLoginOrBypassCsrf(): void
+    {
+        [$status, $form, $cookies] = $this->http('GET', '/public/code/index.php');
+        self::assertSame(200, $status);
+        $id = $cookies['PHPSESSID'] ?? '';
+        self::assertMatchesRegularExpression('/\A[a-f0-9]{32}\z/', $id);
+        $headers = ['Cookie' => 'PHPSESSID=invalid-legacy-cookie; PHPSESSID=' . $id];
+        for ($i = 0; $i < 3; ++$i) {
+            [$status, $form] = $this->http('GET', '/public/code/index.php', [], [], false, $headers);
+            self::assertSame(200, $status);
+            [$status] = $this->http('POST', '/public/code/index.php', [], [
+                'csrf_token' => self::extractCsrfToken($form),
+            ], false, $headers);
+            self::assertSame(200, $status, 'A fresh form must not enter the expired-form redirect loop');
+        }
+        [$status, $foreignForm, $foreignCookies] = $this->http('GET', '/public/code/index.php');
+        self::assertSame(200, $status);
+        foreach (['invalid', self::extractCsrfToken($foreignForm)] as $token) {
+            [$status] = $this->http('POST', '/public/code/index.php', [], ['csrf_token' => $token], false, $headers);
+            self::assertSame(303, $status, 'Cookie recovery must still reject invalid or foreign-session tokens');
+        }
+        $ambiguous = ['Cookie' => $headers['Cookie'] . '; PHPSESSID=' . ($foreignCookies['PHPSESSID'] ?? '')];
+        [$status] = $this->http('POST', '/public/code/index.php', [], [
+            'csrf_token' => self::extractCsrfToken($form),
+        ], false, $ambiguous);
+        self::assertSame(303, $status, 'Do not guess between two valid session cookies');
+        [$status, $body] = $this->http('POST', '/public/code/index.php', [], [
+            'csrf_token' => self::extractCsrfToken($form), 'logaction' => 'login',
+            'xuser_name' => 'admin', 'xuser_password' => self::ADMIN_PW,
+        ], true, $headers);
+        self::assertSame(200, $status);
+        self::assertStringNotContainsString('form_login', $body);
+    }
+
     public function testLoginSurvivesNegotiatedHeadersButRejectsAnotherBrowser(): void
     {
         $headers = ['User-Agent' => 'StableContextIntegration/1', 'Accept-Language' => 'ru-RU,ru;q=0.9',

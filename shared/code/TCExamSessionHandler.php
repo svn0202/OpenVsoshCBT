@@ -96,6 +96,7 @@ class TCExamSessionHandler implements SessionHandlerInterface
 {
     /** Request-local diagnostic category; never retain the session ID or contents here. */
     public static string $readStatus = 'not_read';
+    public static bool $cookieRecovered = false;
 
     /**
      * Open session.
@@ -635,6 +636,37 @@ function f_get_csrf_token_for_script(string $script): string
     return 'v2.' . $nonce . '.' . f_csrf_mac($script, $nonce);
 }
 
+/**
+ * Recover a current cookie shadowed by an invalid legacy cookie with the same name.
+ * Keep PHP's choice when it is valid. Never guess between different valid IDs.
+ * This only selects the session; normal fingerprint and CSRF checks still apply.
+ */
+function f_select_session_cookie_id(mixed $cookie, mixed $header): ?string
+{
+    if (!is_string($cookie)) {
+        return null;
+    }
+    if (preg_match('/\A[a-f0-9]{32}\z/', $cookie) === 1) {
+        return $cookie;
+    }
+    if (!is_string($header)) {
+        return null;
+    }
+    /** @var array<string, true> $candidates */
+    $candidates = [];
+    foreach (explode(';', $header) as $part) {
+        $pair = explode('=', trim($part), 2);
+        if (!isset($pair[1]) || $pair[0] !== 'PHPSESSID') {
+            continue;
+        }
+        $value = urldecode($pair[1]);
+        if (preg_match('/\A[a-f0-9]{32}\z/', $value) === 1) {
+            $candidates[$value] = true;
+        }
+    }
+    return count($candidates) === 1 ? array_key_first($candidates) : null;
+}
+
 // ------------------------------------------------------------
 
 // The web session bootstrap below must not run under the CLI SAPI (e.g. PHPUnit), where there is
@@ -650,8 +682,12 @@ session_set_save_handler(new TCExamSessionHandler(), true);
 
 // start user session
 if (isset($_COOKIE['PHPSESSID']) && is_string($_COOKIE['PHPSESSID'])) {
-    // cookie takes precedence
-    $_REQUEST['PHPSESSID'] = $_COOKIE['PHPSESSID'];
+    // A stale cookie with a narrower path can precede the current site cookie.
+    // Preserve raw $_COOKIE for diagnostics; only use the unambiguous valid ID.
+    $primary_cookie = $_COOKIE['PHPSESSID'];
+    $cookie_id = f_select_session_cookie_id($primary_cookie, $_SERVER['HTTP_COOKIE'] ?? null);
+    TCExamSessionHandler::$cookieRecovered = $cookie_id !== null && $cookie_id !== $primary_cookie;
+    $_REQUEST['PHPSESSID'] = $cookie_id ?? '';
 }
 
 if (isset($_REQUEST['PHPSESSID']) && is_string($_REQUEST['PHPSESSID'])) {

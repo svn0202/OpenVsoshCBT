@@ -24,6 +24,24 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testSessionCookieRecoveryRequiresAnUnambiguousValidCandidate(): void
+    {
+        $id = str_repeat('a', 32);
+        $other = str_repeat('b', 32);
+        self::assertSame($id, \f_select_session_cookie_id($id, 'PHPSESSID=' . $other));
+        self::assertSame($id, \f_select_session_cookie_id('invalid', 'PHPSESSID=invalid; PHPSESSID=' . $id));
+        self::assertSame($id, \f_select_session_cookie_id('', 'Other=ignored; PHPSESSID=' . $id));
+        self::assertSame($id, \f_select_session_cookie_id('invalid', 'PHPSESSID=' . $id . '; PHPSESSID=' . $id));
+        self::assertSame($id, \f_select_session_cookie_id('invalid', 'PHPSESSID=' . str_repeat('%61', 32)));
+        self::assertNull(\f_select_session_cookie_id('invalid', 'PHPSESSID=' . $id . '; PHPSESSID=' . $other));
+        self::assertNull(\f_select_session_cookie_id('invalid', 'PHPSESSID=invalid'));
+        self::assertNull(\f_select_session_cookie_id('invalid', 'Other=' . $id));
+        self::assertNull(\f_select_session_cookie_id('invalid', 'PHPSESSID=' . $id . 'suffix'));
+        self::assertNull(\f_select_session_cookie_id('invalid', null));
+        self::assertNull(\f_select_session_cookie_id([], 'PHPSESSID=' . $id));
+        self::assertNull(\f_select_session_cookie_id(null, 'PHPSESSID=' . $id));
+    }
+
     public function testRejectedSessionDropsCredentialsAndStaleFingerprint(): void
     {
         $before = $_SESSION ?? [];

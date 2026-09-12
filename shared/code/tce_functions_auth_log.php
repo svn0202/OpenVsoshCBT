@@ -22,6 +22,7 @@ function openvsosh_log_auth_event(string $event, string $reason = ''): void
         'user_agent' => $text($_SERVER['HTTP_USER_AGENT'] ?? '', 512),
         'login' => $text($_POST['xuser_name'] ?? '', 255),
         'session_cookie_present' => isset($_COOKIE['PHPSESSID']),
+        'session_cookie_recovered' => TCExamSessionHandler::$cookieRecovered,
     ];
     if ($event === 'csrf.rejected' || $event === 'session.rejected') {
         // Diagnostic categories only: never emit tokens, session IDs or fingerprint hashes.
