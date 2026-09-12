@@ -100,11 +100,20 @@ printf 'admin error log exit code: %s\n' "$?"
 
 ```sh
 APP_UNIT='replace-with-unit.service'
-sudo -n journalctl -u "$APP_UNIT" --since "$START" --until "$END" \
+# GNU date на Linux: journalctl не всех версий понимает ISO 8601 с T и +00:00.
+JOURNAL_START="$(date -u -d "$START" '+%Y-%m-%d %H:%M:%S UTC')"
+JOURNAL_END="$(date -u -d "$END" '+%Y-%m-%d %H:%M:%S UTC')"
+sudo -n journalctl -u "$APP_UNIT" --since "$JOURNAL_START" --until "$JOURNAL_END" \
   --utc --no-pager -o short-iso-precise > "$LOG_REMOTE/service.log"
-sudo -n journalctl -k --since "$START" --until "$END" \
+sudo -n journalctl -k --since "$JOURNAL_START" --until "$JOURNAL_END" \
   --utc --no-pager -o short-iso-precise > "$LOG_REMOTE/kernel.log"
 ```
+
+При драйвере логирования `journald` для проверки тишины старого слота используйте
+курсор `journalctl -u "$APP_UNIT" -n 1 --show-cursor --no-pager` и отсутствие
+активных соединений к старому порту. Не полагайтесь только на `podman logs --tail 1`:
+чтение большого журнала может задержаться. Исходный systemd journal сохраняется
+после удаления контейнера в пределах настроенного срока хранения.
 
 Аналогично соберите службы прокси. Для access/error log nginx и хостового Apache
 сохраните нужный период из действующих файлов и ротаций. У разных форматов разбор
