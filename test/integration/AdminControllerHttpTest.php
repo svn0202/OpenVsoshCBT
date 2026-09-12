@@ -504,7 +504,8 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringContainsString("APP_ROOT + 'admin/'", $worker);
         $this->assertStringContainsString("APP_ROOT + 'cache/'", $worker);
         $this->assertStringContainsString("url.search !== ''", $worker);
-        $this->assertStringContainsString("fetch(request, {cache: 'no-store'})", $worker);
+        // Browser-level coverage verifies that controlled navigation keeps its request headers.
+        $this->assertStringNotContainsString("fetch(request, {cache: 'no-store'})", $worker);
     }
 
     public function testEssayRatingOffersFractionalQuickScores(): void
