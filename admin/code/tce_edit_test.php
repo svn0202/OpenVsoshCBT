@@ -695,9 +695,9 @@ switch ($menu_mode) {
                     . ", test_ip_range='"
                     . F_escape_sql($db, $test_ip_range)
                     . "', test_results_to_users="
-                    . (int) $test_results_to_users
+                    . f_empty_to_null((string) (int) $test_results_to_users)
                     . ', test_report_to_users='
-                    . (int) $test_report_to_users
+                    . f_empty_to_null((string) (int) $test_report_to_users)
                     . ', test_repeatable='
                     . (int) $test_repeatable
                     . (empty($new_test_password) ? '' : ', test_password=' . f_empty_to_null($test_password))

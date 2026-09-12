@@ -54,6 +54,8 @@ final class AdminTestEditorUpdateTest extends TestCase
                     $test_ip_range = '*';
                     $test_begin_time = '2026-09-10 00:00:00';
                     $test_end_time = '2026-09-30 00:00:00';
+                    $test_results_to_users = false;
+                    $test_report_to_users = true;
                     $new_test_password = '';
                     $sslcerts = [];
                     $db = null;
@@ -82,6 +84,8 @@ final class AdminTestEditorUpdateTest extends TestCase
         self::assertStringContainsString('test_name=', $update);
         self::assertStringContainsString('test_end_time=', $update);
         self::assertStringContainsString('test_repeatable=', $update);
+        self::assertStringContainsString("test_results_to_users='0'", $update);
+        self::assertStringContainsString("test_report_to_users='1'", $update);
         if ($hasAttempts) {
             foreach ([
                 'test_score_',
