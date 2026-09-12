@@ -33,7 +33,7 @@ def run(browser):
                 r.fulfill(json={'status': 'saved', 'version': 2})
             return
         if path.endswith('/fixture'):
-            html = markup().replace('<textarea', '<input name="csrf_token" value="old"><textarea')
+            html = markup().replace('</form>', '<li><select class="matching-position" name="answpos[3]"><option value="0">Choose</option><option value="1">LONG_MATCHING_ANSWER</option></select></li></form>').replace('<textarea', '<input name="csrf_token" value="old"><textarea')
             html = html.replace('id="testuser_id" value="1"', 'id="testuser_id" value="%s"' % state['attempt'])
             r.fulfill(content_type='text/html', body=html)
             return
@@ -43,6 +43,7 @@ def run(browser):
     page.goto('https://recovery.invalid/fixture')
     page.add_script_tag(content=SOURCE)
     page.locator('textarea').fill('MY_ANSWER')
+    page.locator('select.matching-position').select_option('1')
     page.locator('[data-answer-save]').click()
     page.wait_for_selector('#answer-login-link')
     assert len(requests) == 1 and page.locator('textarea').input_value() == 'MY_ANSWER'
@@ -50,7 +51,7 @@ def run(browser):
     assert 'MY_ANSWER' in stored and 'csrf_token' not in stored and '"old"' not in stored
     with page.expect_download() as download:
         page.locator('#answer-draft-export').click()
-    assert json.loads(Path(download.value.path()).read_text()) == [['answertext', 'MY_ANSWER']]
+    assert json.loads(Path(download.value.path()).read_text()) == [['answertext', 'MY_ANSWER'], ['answpos[3]', '1']]
     state['authorized'] = True
     page.locator('[data-answer-save]').click()
     page.wait_for_function("document.querySelector('#answer-save-status').dataset.state === 'saved'")
@@ -66,6 +67,8 @@ def run(browser):
     assert page.locator('textarea').input_value() == ''
     page.locator('#answer-draft-restore button').first.click()
     assert page.locator('textarea').input_value() == 'UNSAVED_AFTER_LOGIN'
+    assert page.locator('select.matching-position').input_value() == '1'
+    assert page.locator('.exam-matching-selected-text').inner_text() == 'LONG_MATCHING_ANSWER'
     page.locator('[data-answer-save]').click()
     page.wait_for_selector('#answer-conflict-actions')
     assert page.locator('textarea').input_value() == 'UNSAVED_AFTER_LOGIN'

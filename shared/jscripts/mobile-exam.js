@@ -91,6 +91,7 @@
             });
             // Keep the draft's base version: restoring must not overwrite a newer server answer.
             answerVersion.value = String(draft.version);
+            bindMatchingAnswerPreviews();
             answerDirty = true;
             setSaveStatus('dirty', 'Черновик восстановлен в форму. Проверьте ответ и нажмите «Сохранить».');
             actions.remove();
