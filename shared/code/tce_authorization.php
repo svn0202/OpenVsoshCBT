@@ -71,15 +71,10 @@ if ($rs) {
         // decode session data
         session_decode($ms['cpsession_data']);
         // check for possible session hijacking
-        $legacy_fingerprint = get_legacy_client_fingerprint();
         $session_hash = isset($_SESSION['session_hash'])
             ? openvsosh_authorization_string($_SESSION['session_hash'])
             : null;
-        $fingerprint_matches = $session_hash !== null
-            && (
-                hash_equals($session_hash, $fingerprintkey)
-                || hash_equals($session_hash, $legacy_fingerprint)
-            );
+        $fingerprint_matches = $session_hash !== null && f_session_fingerprint_matches($session_hash);
         if (
             openvsosh_authorization_bool(K_CHECK_SESSION_FINGERPRINT)
             && !$fingerprint_matches
@@ -94,8 +89,8 @@ if ($rs) {
             F_login_form();
             exit();
         }
-        if ($fingerprint_matches && !hash_equals($session_hash, $fingerprintkey)) {
-            $_SESSION['session_hash'] = $fingerprintkey;
+        if ($fingerprint_matches && $session_hash !== null) {
+            $_SESSION['session_hash'] = f_upgraded_session_fingerprint($session_hash);
         }
 
         // update session expiration time

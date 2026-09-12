@@ -331,6 +331,25 @@ function f_session_string_to_array(string $sd): array
  */
 function get_client_fingerprint(): string
 {
+    $stable = get_stable_client_fingerprint();
+    $stored = $_SESSION['session_hash'] ?? null;
+    return getenv('OPENVSOSH_STABLE_SESSION_CONTEXT') === '1'
+        || (is_string($stored) && hash_equals($stored, $stable))
+        ? $stable : get_v1_client_fingerprint();
+}
+
+/** Browser identity must not depend on negotiated language, compression or DNT. */
+function get_stable_client_fingerprint(): string
+{
+    $agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $agent = is_string($agent) ? $agent : '';
+    return substr(hash_hmac('sha256', 'openvsosh-session-v2:' . strlen($agent) . ':' . $agent,
+        K_RANDOM_SECURITY), 0, 32);
+}
+
+/** Keep the previous context readable while the two application slots are upgraded. */
+function get_v1_client_fingerprint(): string
+{
     $sid = K_RANDOM_SECURITY;
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
         $sid .= $_SERVER['HTTP_USER_AGENT'];
@@ -349,6 +368,26 @@ function get_client_fingerprint(): string
     }
 
     return md5($sid);
+}
+
+/** Validate both generations; do not replace a stable session with a v1 hash on an old issuer. */
+function f_session_fingerprint_matches(string $hash): bool
+{
+    return hash_equals($hash, get_stable_client_fingerprint())
+        || hash_equals($hash, get_v1_client_fingerprint())
+        || hash_equals($hash, get_legacy_client_fingerprint());
+}
+
+/** Preserve a stable session during mixed-issuer rollout; migrate only a validated hash. */
+function f_upgraded_session_fingerprint(string $hash): string
+{
+    if (!f_session_fingerprint_matches($hash)) {
+        return $hash;
+    }
+    if (hash_equals($hash, get_stable_client_fingerprint())) {
+        return $hash;
+    }
+    return get_client_fingerprint();
 }
 
 /**
@@ -491,7 +530,7 @@ function get_plain_csrf_token(): string
  */
 function get_plain_csrf_token_for_script(string $script): string
 {
-    return $script . (string) session_id() . K_RANDOM_SECURITY . get_client_fingerprint();
+    return $script . (string) session_id() . K_RANDOM_SECURITY . get_v1_client_fingerprint();
 }
 
 /**
@@ -517,7 +556,8 @@ function check_csrf_token_for_script(#[\SensitiveParameter] string $token, strin
     }
     if (strlen($token) === 100 && preg_match('/\Av2\.[a-f0-9]{32}\.[a-f0-9]{64}\z/', $token) === 1) {
         $nonce = substr($token, 3, 32);
-        return hash_equals(f_csrf_mac($script, $nonce), substr($token, 36));
+        return hash_equals(f_csrf_mac($script, $nonce, get_stable_client_fingerprint()), substr($token, 36))
+            || hash_equals(f_csrf_mac($script, $nonce, get_v1_client_fingerprint()), substr($token, 36));
     }
     // Only PHP bcrypt formats actually used by supported deployments are eligible.
     // Never pass arbitrary algorithms or attacker-selected high costs to password_verify.
@@ -555,10 +595,10 @@ function f_csrf_legacy_window_is_open(): bool
 }
 
 /** Sign length-delimited fields, never exposing the session ID or secret in the token. */
-function f_csrf_mac(string $script, string $nonce): string
+function f_csrf_mac(string $script, string $nonce, ?string $fingerprint = null): string
 {
     $message = 'openvsosh-csrf-v2';
-    foreach ([(string) session_id(), $script, get_client_fingerprint(), $nonce] as $field) {
+    foreach ([(string) session_id(), $script, $fingerprint ?? get_client_fingerprint(), $nonce] as $field) {
         $message .= strlen($field) . ':' . $field;
     }
     return hash_hmac('sha256', $message, K_RANDOM_SECURITY);

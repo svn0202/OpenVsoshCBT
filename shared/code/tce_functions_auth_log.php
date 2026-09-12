@@ -28,8 +28,7 @@ function openvsosh_log_auth_event(string $event, string $reason = ''): void
         $session_hash = $_SESSION['session_hash'] ?? null;
         $entry['session_context_present'] = is_string($session_hash) && $session_hash !== '';
         $entry['session_fingerprint_matches'] = is_string($session_hash)
-            && (hash_equals($session_hash, get_client_fingerprint())
-                || hash_equals($session_hash, get_legacy_client_fingerprint()));
+            && f_session_fingerprint_matches($session_hash);
         $token = $_POST['csrf_token'] ?? null;
         $entry['csrf_format'] = match (true) {
             $token === null || $token === '' => 'missing',

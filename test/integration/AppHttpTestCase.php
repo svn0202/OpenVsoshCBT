@@ -47,6 +47,7 @@ abstract class AppHttpTestCase extends TestCase
      * @param array<string,mixed>  $post    Form fields for a POST request (values may be arrays,
      *                                       e.g. multi-select `name[]` fields).
      *
+     * @param array<string,string> $requestHeaders Additional headers for browser-context regressions.
      * @return array{0:int,1:string,2:array<string,string>} [status, body, cookies(sent+received)]
      */
     protected function http(
@@ -55,9 +56,13 @@ abstract class AppHttpTestCase extends TestCase
         array $cookies = [],
         array $post = [],
         bool $followRedirects = true,
+        array $requestHeaders = [],
     ): array
     {
         $header = "Accept: text/html\r\n";
+        foreach ($requestHeaders as $name => $value) {
+            $header .= $name . ': ' . $value . "\r\n";
+        }
         if ($cookies !== []) {
             $pairs = [];
             foreach ($cookies as $k => $v) {

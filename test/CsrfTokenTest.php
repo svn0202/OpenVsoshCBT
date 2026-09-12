@@ -52,6 +52,46 @@ echo json_encode($checks, JSON_THROW_ON_ERROR);
 PHP);
     }
 
+    public function testStableContextSurvivesHeaderNegotiationAndMixedIssuerRollout(): void
+    {
+        self::runChecks(<<<'PHP'
+$_SERVER = ['HTTP_USER_AGENT' => 'Browser/1.0', 'HTTP_ACCEPT_ENCODING' => 'gzip, br',
+    'HTTP_ACCEPT_LANGUAGE' => 'ru-RU,ru;q=0.9', 'HTTP_DNT' => '1'];
+$scope = '/srv/public/code/tce_test_execute.php';
+$oldHash = get_v1_client_fingerprint();
+$oldToken = f_get_csrf_token_for_script($scope);
+$_SESSION = ['session_hash' => $oldHash];
+$checks = ['phase one keeps legacy issuer' => get_client_fingerprint() === $oldHash];
+putenv('OPENVSOSH_STABLE_SESSION_CONTEXT=1');
+$checks['old session validates before migration'] = f_session_fingerprint_matches($oldHash);
+$checks['old token survives migration'] = check_csrf_token_for_script($oldToken, $scope);
+$_SESSION['session_hash'] = f_upgraded_session_fingerprint($oldHash);
+$checks['validated session migrates'] = $_SESSION['session_hash'] === get_stable_client_fingerprint();
+$newToken = f_get_csrf_token_for_script($scope);
+$_SERVER['HTTP_ACCEPT_ENCODING'] = 'gzip, deflate, br, zstd';
+$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru';
+unset($_SERVER['HTTP_DNT']);
+$checks['negotiated headers do not reject session'] = f_session_fingerprint_matches($_SESSION['session_hash']);
+$checks['negotiated headers do not reject token'] = check_csrf_token_for_script($newToken, $scope);
+putenv('OPENVSOSH_STABLE_SESSION_CONTEXT');
+$checks['old issuer reads new session'] = f_session_fingerprint_matches($_SESSION['session_hash']);
+$checks['old issuer does not downgrade'] = f_upgraded_session_fingerprint($_SESSION['session_hash']) === get_stable_client_fingerprint();
+$checks['old issuer reads new token'] = check_csrf_token_for_script($newToken, $scope);
+$mixedToken = f_get_csrf_token_for_script($scope);
+$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en-US,en;q=0.5';
+$checks['mixed issuer keeps migrated token stable'] = check_csrf_token_for_script($mixedToken, $scope);
+$checks['scope remains bound'] = !check_csrf_token_for_script($newToken, '/other.php');
+session_id(str_repeat('c', 32));
+$checks['session remains bound'] = !check_csrf_token_for_script($newToken, $scope);
+session_id(str_repeat('a', 32));
+$_SERVER['HTTP_USER_AGENT'] = 'OtherBrowser/1.0';
+$checks['other browser rejected'] = !f_session_fingerprint_matches($_SESSION['session_hash'])
+    && !check_csrf_token_for_script($newToken, $scope);
+$checks['invalid hash never migrated'] = f_upgraded_session_fingerprint('invalid') === 'invalid';
+echo json_encode($checks, JSON_THROW_ON_ERROR);
+PHP);
+    }
+
     public function testLegacyTransitionHasFixedDeadlineAndBoundedCost(): void
     {
         self::runChecks(<<<'PHP'
@@ -103,6 +143,8 @@ $helpers = substr($source, $start, $end - $start);
 eval('namespace Harness; use Error; use Random;
 function f_is_random_security_configured() { return true; }
 function get_client_fingerprint() { return str_repeat("a", 32); }
+function get_v1_client_fingerprint() { return str_repeat("a", 32); }
+function get_stable_client_fingerprint() { return str_repeat("a", 32); }
 function get_password_hash($value) { throw new \\RuntimeException("Unexpected password hashing"); }
 function check_password($value, $hash) { throw new \\RuntimeException("Unexpected password verification"); }
 function random_bytes($n) {
@@ -126,7 +168,7 @@ PHP);
         $setup = 'define("K_COOKIE_SECURE", true); define("K_COOKIE_HTTPONLY", true); '
             . 'define("K_COOKIE_SAMESITE", "Strict"); define("K_RANDOM_SECURITY", $argv[2]); '
             . 'require $argv[1]; session_id(str_repeat("a", 32)); $_SERVER = []; '
-            . 'putenv("OPENVSOSH_CSRF_LEGACY_UNTIL"); putenv("OPENVSOSH_CSRF_ISSUE_LEGACY"); ';
+            . 'putenv("OPENVSOSH_CSRF_LEGACY_UNTIL"); putenv("OPENVSOSH_CSRF_ISSUE_LEGACY"); putenv("OPENVSOSH_STABLE_SESSION_CONTEXT"); ';
         [$status, $output] = \F_tcecode_run_process(
             [PHP_BINARY, '-r', $setup . $script, dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php', $secret],
             dirname(__DIR__),

@@ -115,3 +115,28 @@ the old binary, remove legacy issuance on the next slot while retaining the same
 deadline. Legacy verification is off by default and after expiry. The rollback
 slot must support v2. CI, cross-slot acceptance, migration and production observation
 must be recorded as completed before declaring the rollout finished.
+
+## Stable browser context (two-slot transition)
+
+Language, compression and DNT are negotiated request headers. They must not cause
+an authenticated browser's session or CSRF token to change. The stable context
+uses a keyed, domain-separated digest of User-Agent; CSRF still binds the session,
+script, random nonce and installation secret. A different User-Agent still requires
+re-authentication. This fingerprint is supplementary; it is not an authentication credential.
+
+1. Deploy the dual reader with `OPENVSOSH_STABLE_SESSION_CONTEXT` absent or `0`.
+   It continues issuing the previous context for existing sessions, but can read
+   stable sessions and tokens. Verify both slots, switch and drain the original binary.
+2. Only after both runnable/rollback binaries contain the dual reader, deploy the
+   same code with `OPENVSOSH_STABLE_SESSION_CONTEXT=1`. Validated old sessions are
+   upgraded lazily; stable sessions are never downgraded on the other slot. A dual
+   reader serving a migrated session also issues stable tokens when its flag is `0`.
+3. Verify old forms, same-session cross-slot saves, language/compression/DNT changes,
+   foreign-session/script/token rejection and User-Agent changes. Observe auth events.
+   Existing v1 contexts that already fail fingerprint validation still require a
+   fresh login; do not migrate an unvalidated session or replay a rejected POST.
+
+Do not roll back to a binary without the dual reader after step 2. Bcrypt acceptance
+remains subject to the original fixed deadline; this transition does not extend it.
+HTTP integration tests use the enabled stable context; unit tests cover both issuers,
+legacy verification and negotiation changes. No database schema migration is needed.

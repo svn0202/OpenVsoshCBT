@@ -14,6 +14,9 @@
 
 set -e
 
+# HTTP integration tests exercise the final stable-context rollout phase.
+export OPENVSOSH_STABLE_SESSION_CONTEXT="${OPENVSOSH_STABLE_SESSION_CONTEXT:-1}"
+
 APP=/var/www/html
 cd "${APP}"
 

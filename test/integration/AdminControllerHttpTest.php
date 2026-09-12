@@ -223,6 +223,31 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('deliberately-incorrect-integration-password', $body);
     }
 
+    public function testLoginSurvivesNegotiatedHeadersButRejectsAnotherBrowser(): void
+    {
+        $headers = ['User-Agent' => 'StableContextIntegration/1', 'Accept-Language' => 'ru-RU,ru;q=0.9',
+            'DNT' => '1'];
+        [$status, $form, $cookies] = $this->http('GET', '/public/code/index.php', [], [], true, $headers);
+        self::assertSame(200, $status);
+        $headers['Accept-Language'] = 'ru';
+        unset($headers['DNT']);
+        [$status, $body, $cookies] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'csrf_token' => self::extractCsrfToken($form), 'logaction' => 'login',
+            'xuser_name' => 'admin', 'xuser_password' => self::ADMIN_PW,
+        ], true, $headers);
+        self::assertSame(200, $status);
+        self::assertStringNotContainsString('form_login', $body);
+        $headers['Accept-Language'] = 'en-US,en;q=0.5';
+        [$status, $body, $cookies] = $this->http('GET', '/admin/code/tce_edit_user.php', $cookies, [], true, $headers);
+        self::assertSame(200, $status);
+        self::assertStringContainsString('form_usereditor', $body);
+        $headers['User-Agent'] = 'DifferentBrowserIntegration/1';
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_user.php', $cookies, [], true, $headers);
+        self::assertSame(200, $status);
+        self::assertStringContainsString('form_login', $body);
+        self::assertStringNotContainsString('form_usereditor', $body);
+    }
+
     public function testRejectedFingerprintCanRecoverWithFreshLogin(): void
     {
         $cookies = $this->loginCredentials('admin', self::ADMIN_PW);
