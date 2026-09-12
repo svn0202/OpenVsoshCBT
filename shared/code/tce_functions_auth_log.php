@@ -25,10 +25,27 @@ function openvsosh_log_auth_event(string $event, string $reason = ''): void
     ];
     if ($event === 'csrf.rejected' || $event === 'session.rejected') {
         // Diagnostic categories only: never emit tokens, session IDs or fingerprint hashes.
+        $cookie = $_COOKIE['PHPSESSID'] ?? null;
+        $entry['session_cookie_valid'] = is_string($cookie)
+            && preg_match('/\A[a-f0-9]{32}\z/', $cookie) === 1;
+        $active_id = session_id();
+        $entry['session_id_matches_cookie'] = is_string($cookie)
+            && is_string($active_id) && $active_id !== '' && hash_equals($active_id, $cookie);
+        $cookie_header = $_SERVER['HTTP_COOKIE'] ?? null;
+        $entry['session_cookie_count'] = is_string($cookie_header)
+            ? preg_match_all('/(?:^|;)\s*PHPSESSID=/', $cookie_header) : null;
+        $entry['session_read_status'] = TCExamSessionHandler::$readStatus;
         $session_hash = $_SESSION['session_hash'] ?? null;
         $entry['session_context_present'] = is_string($session_hash) && $session_hash !== '';
         $entry['session_fingerprint_matches'] = is_string($session_hash)
             && f_session_fingerprint_matches($session_hash);
+        $entry['session_context_kind'] = match (true) {
+            !is_string($session_hash) || $session_hash === '' => 'missing',
+            hash_equals(get_stable_client_fingerprint(), $session_hash) => 'stable',
+            hash_equals(get_v1_client_fingerprint(), $session_hash) => 'v1',
+            hash_equals(get_legacy_client_fingerprint(), $session_hash) => 'legacy',
+            default => 'unmatched',
+        };
         $token = $_POST['csrf_token'] ?? null;
         $entry['csrf_format'] = match (true) {
             $token === null || $token === '' => 'missing',

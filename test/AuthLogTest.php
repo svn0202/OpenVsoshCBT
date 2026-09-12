@@ -6,6 +6,55 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthLogTest extends TestCase
 {
+    public function testCookieDiagnosticsDistinguishDuplicatesWithoutLoggingValues(): void
+    {
+        require_once dirname(__DIR__) . '/shared/code/tce_functions_auth_log.php';
+        $file = tempnam(sys_get_temp_dir(), 'auth-cookie-');
+        self::assertIsString($file);
+        $previous = ini_get('error_log');
+        $before = [$_SERVER, $_POST, $_COOKIE, $_SESSION ?? [], \TCExamSessionHandler::$readStatus];
+        try {
+            ini_set('error_log', $file);
+            $_POST = ['csrf_token' => 'private-csrf'];
+            $_COOKIE = ['PHPSESSID' => 'invalid-cookie-secret'];
+            $_SERVER['HTTP_COOKIE'] = 'PHPSESSID=invalid-cookie-secret; PHPSESSID=other-secret';
+            $_SESSION = [];
+            \TCExamSessionHandler::$readStatus = 'missing';
+            \openvsosh_log_auth_event('csrf.rejected', 'token_mismatch');
+            $_COOKIE = ['PHPSESSID' => str_repeat('a', 32)];
+            $_SERVER['HTTP_COOKIE'] = 'PHPSESSID=' . $_COOKIE['PHPSESSID'];
+            $_SESSION = ['session_hash' => \get_stable_client_fingerprint()];
+            \TCExamSessionHandler::$readStatus = 'loaded';
+            \openvsosh_log_auth_event('csrf.rejected', 'token_mismatch');
+            $output = (string) file_get_contents($file);
+            self::assertStringNotContainsString('cookie-secret', $output);
+            self::assertStringNotContainsString('other-secret', $output);
+            self::assertStringNotContainsString('private-csrf', $output);
+            self::assertStringNotContainsString(str_repeat('a', 32), $output);
+            self::assertStringNotContainsString(\get_stable_client_fingerprint(), $output);
+            $entries = [];
+            foreach (explode("\n", trim($output)) as $line) {
+                $entries[] = json_decode(substr($line, (int) strpos($line, '{')), true, 512, JSON_THROW_ON_ERROR);
+            }
+            self::assertCount(2, $entries);
+            self::assertIsArray($entries[0]);
+            self::assertIsArray($entries[1]);
+            self::assertFalse($entries[0]['session_cookie_valid']);
+            self::assertFalse($entries[0]['session_id_matches_cookie']);
+            self::assertSame(2, $entries[0]['session_cookie_count']);
+            self::assertSame('missing', $entries[0]['session_read_status']);
+            self::assertSame('missing', $entries[0]['session_context_kind']);
+            self::assertTrue($entries[1]['session_cookie_valid']);
+            self::assertSame(1, $entries[1]['session_cookie_count']);
+            self::assertSame('loaded', $entries[1]['session_read_status']);
+            self::assertSame('stable', $entries[1]['session_context_kind']);
+        } finally {
+            ini_set('error_log', (string) $previous);
+            [$_SERVER, $_POST, $_COOKIE, $_SESSION, \TCExamSessionHandler::$readStatus] = $before;
+            unlink($file);
+        }
+    }
+
     public function testRejectedContextCategoriesDoNotExposeSessionOrTokens(): void
     {
         require_once dirname(__DIR__) . '/shared/code/tce_functions_auth_log.php';

@@ -94,6 +94,9 @@ if (PHP_SAPI !== 'cli') {
  */
 class TCExamSessionHandler implements SessionHandlerInterface
 {
+    /** Request-local diagnostic category; never retain the session ID or contents here. */
+    public static string $readStatus = 'not_read';
+
     /**
      * Open session.
      * @param string $path path were to store session data
@@ -126,25 +129,32 @@ class TCExamSessionHandler implements SessionHandlerInterface
         global $db;
         $id = F_escape_sql($db, $id);
         $sql =
-            'SELECT cpsession_data
+            'SELECT cpsession_data, cpsession_expiry
 				FROM '
             . K_TABLE_SESSIONS
             . '
 				WHERE cpsession_id=\''
             . $id
             . '\'
-					AND cpsession_expiry>=\''
-            . date(K_TIMESTAMP_FORMAT)
-            . '\'
 				LIMIT 1';
         $result = F_db_query($sql, $db);
         /** @var \mysqli_result|\PgSql\Result|false $result */
         if ($result === false) {
+            self::$readStatus = 'db_error';
             return '';
         }
 
         $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
         $row = $normalize_row(F_db_fetch_array($result));
+        if ($row === null) {
+            self::$readStatus = 'missing';
+            return '';
+        }
+        if ((string) ($row['cpsession_expiry'] ?? '') < date(K_TIMESTAMP_FORMAT)) {
+            self::$readStatus = 'expired';
+            return '';
+        }
+        self::$readStatus = empty($row['cpsession_data']) ? 'empty' : 'loaded';
         return (string) ($row['cpsession_data'] ?? '');
     }
 

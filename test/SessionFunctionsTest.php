@@ -146,18 +146,28 @@ final class SessionFunctionsTest extends TestCase
                     . 'function F_db_connect(...$arguments) { $GLOBALS["connect"] = $arguments; return "connected"; } '
                     . 'require $argv[1]; $handler = new TCExamSessionHandler(); '
                     . '$GLOBALS["query_results"] = ["read-result"]; '
-                    . '$GLOBALS["rows"] = [["cpsession_data" => "stored"]]; $read = $handler->read("sid"); '
+                    . '$GLOBALS["rows"] = [["cpsession_data" => "stored", '
+                    . '"cpsession_expiry" => "2999-01-01 00:00:00"]]; $read = $handler->read("sid"); '
+                    . '$states = [TCExamSessionHandler::$readStatus]; '
                     . '$GLOBALS["query_results"] = ["read-result"]; $GLOBALS["rows"] = [false]; '
                     . '$missing = $handler->read("missing"); '
+                    . '$states[] = TCExamSessionHandler::$readStatus; '
                     . '$GLOBALS["query_results"] = [false]; $failed = $handler->read("failed"); '
+                    . '$states[] = TCExamSessionHandler::$readStatus; '
                     . '$GLOBALS["query_results"] = ["select-result", true]; $GLOBALS["rows"] = [["cpsession_id" => "sid"]]; '
                     . '$updated = $handler->write("sid\'", "payload\'"); '
                     . '$GLOBALS["query_results"] = ["select-result", true]; $GLOBALS["rows"] = [false]; '
                     . '$inserted = $handler->write("new", "data"); '
                     . '$GLOBALS["query_results"] = [true]; $destroyed = $handler->destroy("old"); '
                     . '$GLOBALS["query_results"] = ["delete-result"]; $collected = $handler->gc(1); '
+                    . '$GLOBALS["query_results"] = [true, true]; $GLOBALS["rows"] = '
+                    . '[["cpsession_data" => "expired-secret", "cpsession_expiry" => "2000-01-01 00:00:00"], '
+                    . '["cpsession_data" => "", "cpsession_expiry" => "2999-01-01 00:00:00"]]; '
+                    . '$expired = $handler->read("expired"); $states[] = TCExamSessionHandler::$readStatus; '
+                    . '$empty = $handler->read("empty"); $states[] = TCExamSessionHandler::$readStatus; '
                     . 'echo json_encode([[$read, $missing, $failed, $updated, $inserted, $destroyed, $collected], '
-                    . '$GLOBALS["queries"], $GLOBALS["affected"], isset($GLOBALS["connect"])]);',
+                    . '$GLOBALS["queries"], $GLOBALS["affected"], isset($GLOBALS["connect"]), '
+                    . '$states, $expired, $empty]);',
                 dirname(__DIR__) . '/shared/code/TCExamSessionHandler.php',
             ],
             dirname(__DIR__) . '/shared/code',
@@ -169,7 +179,7 @@ final class SessionFunctionsTest extends TestCase
          *     0: array{string, string, string, bool, bool, bool, int},
          *     1: array{string, string, string, string, string, string, string, string, string},
          *     2: array{string, string},
-         *     3: bool
+         *     3: bool, 4: list<string>, 5: string, 6: string
          * } $decoded
          */
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
@@ -186,6 +196,9 @@ final class SessionFunctionsTest extends TestCase
         self::assertStringContainsString('DELETE FROM sessions WHERE cpsession_expiry<=', $decoded[1][8]);
         self::assertSame(['db-link', 'delete-result'], $decoded[2]);
         self::assertFalse($decoded[3]);
+        self::assertSame(['loaded', 'missing', 'db_error', 'expired', 'empty'], $decoded[4]);
+        self::assertSame('', $decoded[5]);
+        self::assertSame('', $decoded[6]);
     }
 
     public function testPlainCsrfTokenUsesEntryScriptSessionAndFingerprint(): void
