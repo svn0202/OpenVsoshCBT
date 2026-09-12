@@ -1,0 +1,3 @@
+/* Recovery styling for retired HTML. Functional migration is explicit, never automatic. */
+@import url("default.css");
+body { font-family: system-ui, sans-serif; }

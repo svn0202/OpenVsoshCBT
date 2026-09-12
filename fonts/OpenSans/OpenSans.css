@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('OpenSans'), local('OpenSans'), url(OpenSans-300.woff) format('woff');
+}
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('OpenSans'), local('OpenSans'), url(OpenSans-400.woff) format('woff');
+}
+
+* {font-family:"OpenSans", system-ui, -apple-system, "Segoe UI", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"}

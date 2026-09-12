@@ -40,6 +40,69 @@
     var pendingFocusEvents = [];
     var focusWarning = null;
     var allowedSystemDialogOpen = false;
+    var answerNeedsAuthorization = false;
+
+    function draftKey() {
+        return 'openvsosh:answer-draft:' + testuserId + ':' + testlogId;
+    }
+
+    function rememberAnswerDraft() {
+        if (testuserId === '0' || testlogId === '0' || !answerVersion) { return; }
+        var controls = [];
+        form.querySelectorAll('[name="answertext"], [name="answpos"], [name^="answpos["]').forEach(function (control) {
+            controls.push({name: control.name, value: control.value, checked: control.checked === true});
+        });
+        try {
+            window.sessionStorage.setItem(draftKey(), JSON.stringify({
+                updated: Date.now(), version: answerVersion.value, controls: controls
+            }));
+        } catch (error) {
+            // The in-page answer and explicit export remain available if storage is blocked/full.
+        }
+    }
+
+    function clearAnswerDraft() {
+        try { window.sessionStorage.removeItem(draftKey()); } catch (error) { /* Storage may be disabled. */ }
+        var actions = document.getElementById('answer-draft-restore');
+        if (actions) { actions.remove(); }
+    }
+
+    function offerAnswerDraft() {
+        var draft;
+        try { draft = JSON.parse(window.sessionStorage.getItem(draftKey())); } catch (error) { return; }
+        if (!draft || !Array.isArray(draft.controls) || !/^[0-9]+$/.test(String(draft.version))
+            || !Number.isFinite(draft.updated) || Date.now() - draft.updated > 86400000) { return; }
+        var actions = document.createElement('div');
+        actions.id = 'answer-draft-restore';
+        var restore = document.createElement('button');
+        restore.type = 'button';
+        restore.textContent = 'Восстановить черновик из этой вкладки';
+        restore.addEventListener('click', function () {
+            if (saveActive || navigationActive || finalSaveActive) { return; }
+            form.querySelectorAll('[name="answertext"], [name="answpos"], [name^="answpos["]').forEach(function (control) {
+                var choice = control.type === 'checkbox' || control.type === 'radio';
+                var stored = draft.controls.find(function (item) {
+                    return item && item.name === control.name && typeof item.value === 'string'
+                        && (!choice || item.value === control.value);
+                });
+                if (!stored) { return; }
+                if (choice) { control.checked = stored.checked === true; }
+                else { control.value = stored.value; }
+            });
+            // Keep the draft's base version: restoring must not overwrite a newer server answer.
+            answerVersion.value = String(draft.version);
+            answerDirty = true;
+            setSaveStatus('dirty', 'Черновик восстановлен в форму. Проверьте ответ и нажмите «Сохранить».');
+            actions.remove();
+        });
+        actions.appendChild(restore);
+        var discard = document.createElement('button');
+        discard.type = 'button';
+        discard.textContent = 'Удалить черновик';
+        discard.addEventListener('click', clearAnswerDraft);
+        actions.appendChild(discard);
+        saveStatus.insertAdjacentElement('afterend', actions);
+    }
 
     function focusEventId() {
         return operationId();
@@ -272,13 +335,36 @@
         if (error.requestId && /^(?:[a-f0-9]{24}|[a-f0-9]{32})$/.test(error.requestId)) { message += ' Код запроса: ' + error.requestId; }
         var login = document.getElementById('answer-login-link');
         if (login) { login.remove(); }
+        var exportButton = document.getElementById('answer-draft-export');
+        if (!exportButton) {
+            exportButton = document.createElement('button');
+            exportButton.id = 'answer-draft-export';
+            exportButton.type = 'button';
+            exportButton.textContent = 'Скачать черновик ответа';
+            exportButton.addEventListener('click', function () {
+                var entries = [];
+                new FormData(form).forEach(function (value, name) {
+                    if (typeof value === 'string' && (name === 'answertext' || name === 'answpos'
+                        || /^answpos\[/.test(name))) { entries.push([name, value]); }
+                });
+                var url = URL.createObjectURL(new Blob([JSON.stringify(entries, null, 2)], {type: 'application/json'}));
+                var download = document.createElement('a');
+                download.href = url;
+                download.download = 'answer-draft.json';
+                download.click();
+                window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+            });
+            saveStatus.insertAdjacentElement('afterend', exportButton);
+        }
         if (error.message === 'session_required' || error.message === 'csrf_failed') {
+            answerNeedsAuthorization = true;
             login = document.createElement('a');
             login.id = 'answer-login-link';
             login.href = 'tce_login.php';
             login.target = '_blank';
             login.rel = 'noopener';
             login.textContent = 'Войти в другой вкладке';
+            login.addEventListener('click', function () { allowedSystemDialogOpen = true; });
             saveStatus.insertAdjacentElement('afterend', login);
         }
         return message;
@@ -401,7 +487,12 @@
         button.disabled = true;
         setSaveStatus('saving', button.dataset.answerSaving);
 
-        activeSavePromise = sendAnswer(data, 0, button).then(function (payload) {
+        rememberAnswerDraft();
+        var ready = answerNeedsAuthorization ? refreshAnswerToken(data, button) : Promise.resolve();
+        activeSavePromise = ready.then(function () {
+            answerNeedsAuthorization = false;
+            return sendAnswer(data, 0, button);
+        }).then(function (payload) {
             answerVersion.value = String(payload.version);
             if (finalSaveActive) { return payload; }
             answerConflict = false;
@@ -410,15 +501,19 @@
             if (conflictActions) { conflictActions.remove(); }
             var loginLink = document.getElementById('answer-login-link');
             if (loginLink) { loginLink.remove(); }
+            var exportButton = document.getElementById('answer-draft-export');
+            if (exportButton) { exportButton.remove(); }
             var liveScore = form.querySelector('#exam-live-score span');
             if (liveScore && Object.prototype.hasOwnProperty.call(payload, 'live_score')) {
                 liveScore.textContent = String(payload.live_score);
             }
             if (changedDuringSave) {
                 answerDirty = true;
+                rememberAnswerDraft();
                 setSaveStatus('dirty', button.dataset.answerUnsaved);
             } else {
                 answerDirty = false;
+                clearAnswerDraft();
                 setSaveStatus('saved', button.dataset.answerSaved);
             }
             return payload;
@@ -723,6 +818,7 @@
             function (control) {
                 var markDirty = function () {
                     answerDirty = true;
+                    rememberAnswerDraft();
                     if (saveActive) {
                         changedDuringSave = true;
                     } else {
@@ -738,6 +834,7 @@
                 // The visible status contains the actionable result.
             });
         });
+        offerAnswerDraft();
     }
 
     function bindQuestionMenu() {
