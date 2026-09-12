@@ -150,7 +150,11 @@ request_id=... application_request_id=... method=POST path=... status=200 durati
 Повтор одного `operation_id` может успешно вернуть уже сохранённую версию.
 
 После JSON Apache может дописать `, referer: ...`. Поэтому `json.loads()` всей
-оставшейся строки отвергнет корректное событие. Пример извлечения событий из уже
+оставшейся строки отвергнет корректное событие. Кроме того, Apache экранирует
+обратные слеши и может записывать байты UTF-8 как `\xHH`. Сначала снимите **один**
+слой экранирования Apache, затем разбирайте JSON. Иначе кириллица даст ошибку,
+а пути и User-Agent могут незаметно получить лишние слеши. К исходному JSON без
+обёртки Apache это преобразование применять нельзя. Пример извлечения событий из уже
 собранного среза контейнера (на рабочем компьютере):
 
 ```sh
@@ -158,6 +162,16 @@ python3 - "$LOG_CASE/container.log" > "$LOG_CASE/events.jsonl" <<'PY'
 import json, re, sys
 pattern = re.compile(r'\[openvsosh\.(auth|answer(?:\.[a-z_]+)?)\]\s*')
 decoder = json.JSONDecoder()
+def apache_unescape(value):
+    controls = {b'\\\\': b'\\', b'\\n': b'\n', b'\\r': b'\r',
+                b'\\t': b'\t', b'\\v': b'\v', b'\\b': b'\b'}
+    return re.sub(
+        rb'\\(?:x[0-9a-fA-F]{2}|[\\nrtvb])',
+        lambda m: bytes([int(m[0][2:], 16)]) if m[0][1:2] == b'x'
+        else controls[m[0]],
+        value.encode('utf-8'),
+    ).decode('utf-8')
+
 bad = 0
 with open(sys.argv[1], encoding='utf-8', errors='replace') as source:
     for line in source:
@@ -165,7 +179,10 @@ with open(sys.argv[1], encoding='utf-8', errors='replace') as source:
         if not match:
             continue
         try:
-            event, _ = decoder.raw_decode(line[match.end():].lstrip())
+            payload = line[match.end():].lstrip()
+            if re.search(r'\[php[^\]:]*:[^\]]+\]', line[:match.start()]):
+                payload = apache_unescape(payload)
+            event, _ = decoder.raw_decode(payload)
             if not isinstance(event, dict):
                 raise ValueError('event is not an object')
         except ValueError:
