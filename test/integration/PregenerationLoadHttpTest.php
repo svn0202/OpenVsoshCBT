@@ -127,6 +127,12 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         $statuses = [];
         $milliseconds = [];
         foreach ($handles as $handle) {
+            $responseBody = (string) curl_multi_getcontent($handle);
+            self::assertDoesNotMatchRegularExpression(
+                '/Deadlock found|SQLSTATE|Cannot modify header|Fatal error|foreign key constraint|Duplicate entry/i',
+                $responseBody,
+                $responseBody,
+            );
             $statuses[] = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
             /** @var float $totalTime */
             $totalTime = curl_getinfo($handle, CURLINFO_TOTAL_TIME);

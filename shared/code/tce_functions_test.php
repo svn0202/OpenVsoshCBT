@@ -1572,9 +1572,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
         if ($lock === false || !F_db_fetch_array($lock)) {
             return false;
         }
-        $existing = F_db_query('SELECT testuser_status FROM ' . K_TABLE_TEST_USER
+        $existing = F_db_query('SELECT testuser_id, testuser_status FROM ' . K_TABLE_TEST_USER
             . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
-            . ' AND testuser_status<5 FOR UPDATE', $db);
+            . ' AND testuser_status<5', $db);
         if ($existing === false) {
             return false;
         }
@@ -1583,8 +1583,11 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             // A concurrent request completed creation while we waited.
             $ready = (int) ($row['testuser_status'] ?? 0) < 4;
         } else {
-            if (F_db_query('DELETE FROM ' . K_TABLE_TEST_USER
-                . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
+            // The user row already serializes creation. Locking an absent
+            // attempt range (including DELETE of no rows) takes MySQL gap locks
+            // that can deadlock different participants inserting adjacent keys.
+            if (is_array($row) && F_db_query('DELETE FROM ' . K_TABLE_TEST_USER
+                . ' WHERE testuser_id=' . (int) ($row['testuser_id'] ?? 0)
                 . ' AND testuser_status=0', $db) === false) {
                 return false;
             }
