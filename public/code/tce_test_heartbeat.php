@@ -1,6 +1,7 @@
 <?php
 
 ob_start();
+define('OPENVSOSH_ANSWER_API', true);
 
 require_once '../config/tce_config.php';
 /** @var mixed $db Database connection initialized by tce_config.php. */

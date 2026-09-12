@@ -24,6 +24,28 @@ use PHPUnit\Framework\TestCase;
  */
 final class SessionFunctionsTest extends TestCase
 {
+    public function testRejectedSessionDropsCredentialsAndStaleFingerprint(): void
+    {
+        $before = $_SESSION ?? [];
+        try {
+            $_SESSION = [
+                'session_hash' => 'stale',
+                'session_user_id' => 99,
+                'session_user_level' => 10,
+                'session_test_login' => 'old-test-password',
+                'session_login_redirect' => '/admin/code/index.php',
+            ];
+            \f_reset_rejected_session();
+            self::assertSame(\get_client_fingerprint(), $_SESSION['session_hash'] ?? null);
+            self::assertSame(1, $_SESSION['session_user_id'] ?? null);
+            self::assertSame(0, $_SESSION['session_user_level'] ?? null);
+            self::assertSame('', $_SESSION['session_test_login'] ?? null);
+            self::assertArrayNotHasKey('session_login_redirect', $_SESSION);
+        } finally {
+            $_SESSION = $before;
+        }
+    }
+
     public function testSecurityHeadersAreSentInOrderUsingHeaderDefaults(): void
     {
         [$status, $output] = \F_tcecode_run_process(

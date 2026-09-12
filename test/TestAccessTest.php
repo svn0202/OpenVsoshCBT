@@ -514,7 +514,7 @@ PHP;
                     . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
                     . '$GLOBALS["testdata"] = $testdata; '
                     . '$source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (f_create_test)\\(/", '
+                    . 'preg_match("/function (f_create_test_rows)\\(/", '
                     . '$source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
@@ -607,7 +607,7 @@ PHP;
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
                     . '$GLOBALS["testdata"] = $testdata; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (f_create_test)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . 'preg_match("/function (f_create_test_rows)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
                     . '$name = $match[1][0]; $start = $match[0][1]; '
                     . '$end = strpos($source, "\\n/**", $start); '
                     . '$function = substr($source, $start, $end - $start); '
@@ -714,12 +714,12 @@ PHP;
                     . 'function f_legacy_int_equals($value, $expected) { return (int) $value === $expected; } '
                     . 'function f_legacy_literal_equals($value, $expected) { return $value === $expected; } '
                     . '$GLOBALS["testdata"] = $testdata; $source = file_get_contents($argv[1]); '
-                    . 'preg_match("/function (f_create_test)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
+                    . 'preg_match("/function (f_create_test_rows)\\(/", $source, $match, PREG_OFFSET_CAPTURE); '
                     . '$start = $match[0][1]; $end = strpos($source, "\\n/**", $start); '
                     . '$function = substr($source, $start, $end - $start); '
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
-                    . '$result = f_create_test("7", "11"); echo json_encode([$result, $GLOBALS["queries"], '
+                    . '$result = f_create_test_rows("7", "11"); echo json_encode([$result, $GLOBALS["queries"], '
                     . '$GLOBALS["log_calls"], $GLOBALS["answer_calls"]]);',
                 dirname(__DIR__) . '/shared/code/tce_functions_test.php',
             ],

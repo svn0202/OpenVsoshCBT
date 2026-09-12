@@ -20,6 +20,23 @@
  * @since 2001-09-26
  */
 
+/** @param array<array-key, mixed> $payload */
+function f_authorization_api_json(int $status_code, array $payload): never
+{
+    // The save endpoint also records a correlated answer outcome.
+    if (function_exists('f_tmf_answer_json')) {
+        f_tmf_answer_json($status_code, $payload);
+    }
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store');
+    http_response_code($status_code);
+    if (ob_get_level() > 0) {
+        ob_clean();
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit();
+}
+
 /**
  * Returns XHTML / CSS formatted string for login form.<br>
  * The CSS classes used are:
@@ -262,7 +279,7 @@ function f_send_auth_cache_headers(): void
 function f_login_form(): void
 {
     if (defined('OPENVSOSH_ANSWER_API')) {
-        F_tmf_answer_json(403, ['status' => (int) ($_SESSION['session_user_level'] ?? 0) > 0
+        f_authorization_api_json(403, ['status' => (int) ($_SESSION['session_user_level'] ?? 0) > 0
             ? 'access_denied' : 'session_required']);
     }
     global $l, $thispage_title;

@@ -84,7 +84,7 @@ abstract class AppHttpTestCase extends TestCase
         /** @var list<string> $headers */
         $headers = $http_response_header ?? [];
 
-        return [self::statusFrom($headers), (string) $body, $cookies + self::cookiesFrom($headers)];
+        return [self::statusFrom($headers), (string) $body, array_replace($cookies, self::cookiesFrom($headers))];
     }
 
     /**
@@ -136,7 +136,7 @@ abstract class AppHttpTestCase extends TestCase
         $response = file_get_contents($this->base . $path, false, $context);
         /** @var list<string> $headers */
         $headers = $http_response_header ?? [];
-        return [self::statusFrom($headers), (string) $response, $cookies + self::cookiesFrom($headers)];
+        return [self::statusFrom($headers), (string) $response, array_replace($cookies, self::cookiesFrom($headers))];
     }
 
     /** Extract the CSRF token embedded in a form, or null when absent. */

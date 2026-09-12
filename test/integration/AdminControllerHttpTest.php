@@ -174,8 +174,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         }
 
         // GET an admin page to obtain a session cookie, then POST the login credentials to it.
-        [, , $cookies] = $this->http('GET', '/admin/code/index.php');
-        [, , $cookies] = $this->http('POST', '/admin/code/index.php', $cookies, [
+        [, $form, $cookies] = $this->http('GET', '/public/code/index.php');
+        [, , $cookies] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'csrf_token' => self::extractCsrfToken($form),
             'logaction' => 'login',
             'xuser_name' => 'admin',
             'xuser_password' => self::ADMIN_PW,
@@ -192,8 +193,9 @@ final class AdminControllerHttpTest extends AppHttpTestCase
      */
     private function loginCredentials(string $username, #[\SensitiveParameter] string $password): array
     {
-        [, , $cookies] = $this->http('GET', '/admin/code/index.php');
-        [, , $cookies] = $this->http('POST', '/admin/code/index.php', $cookies, [
+        [, $form, $cookies] = $this->http('GET', '/public/code/index.php');
+        [, , $cookies] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'csrf_token' => self::extractCsrfToken($form),
             'logaction' => 'login',
             'xuser_name' => $username,
             'xuser_password' => $password,
@@ -219,6 +221,79 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('Cannot modify header', $body);
         $this->assertStringNotContainsString('headers already sent', $body);
         $this->assertStringNotContainsString('deliberately-incorrect-integration-password', $body);
+    }
+
+    public function testRejectedFingerprintCanRecoverWithFreshLogin(): void
+    {
+        $cookies = $this->loginCredentials('admin', self::ADMIN_PW);
+        $id = $cookies['PHPSESSID'] ?? '';
+        self::assertMatchesRegularExpression('/\A[a-f0-9]{32}\z/', $id);
+        $data = $this->dbScalar("SELECT cpsession_data FROM tce_sessions WHERE cpsession_id='" . $id . "'");
+        self::assertNotNull($data);
+        $changed = preg_replace('/session_hash\|s:32:"[^"]*";/', 'session_hash|s:32:"' . str_repeat('0', 32) . '";', $data);
+        self::assertNotSame($data, $changed);
+        $db = $this->dbConnect();
+        try {
+            self::assertNotFalse(\F_db_query("UPDATE tce_sessions SET cpsession_data='"
+                . \F_escape_sql($db, (string) $changed) . "' WHERE cpsession_id='" . $id . "'", $db));
+        } finally {
+            \F_db_close($db);
+        }
+        [$status, $form, $cookies] = $this->http('GET', '/public/code/index.php', $cookies);
+        self::assertSame(200, $status);
+        self::assertStringContainsString('form_login', $form);
+        self::assertNotSame($id, $cookies['PHPSESSID'] ?? '');
+        [$status, $body, $cookies] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'csrf_token' => self::extractCsrfToken($form),
+            'logaction' => 'login', 'xuser_name' => 'admin', 'xuser_password' => self::ADMIN_PW,
+        ]);
+        self::assertSame(200, $status, $body);
+        [$status, $body] = $this->http('GET', '/admin/code/tce_edit_user.php', $cookies);
+        self::assertSame(200, $status);
+        self::assertStringContainsString('form_usereditor', $body);
+        self::assertStringNotContainsString('Cannot modify header', $body);
+    }
+
+    public function testSizeSpecificAppleIconsResolve(): void
+    {
+        foreach (['/apple-touch-icon-120x120.png', '/apple-touch-icon-120x120-precomposed.png'] as $path) {
+            [$status, $body] = $this->http('GET', $path);
+            self::assertSame(200, $status);
+            self::assertStringStartsWith("\x89PNG", $body);
+        }
+    }
+
+    public function testAnonymousExamApisReturnSessionRequiredJson(): void
+    {
+        foreach (['answer_save', 'heartbeat', 'focus', 'review'] as $endpoint) {
+            [$status, $body] = $this->http('POST', '/public/code/tce_test_' . $endpoint . '.php', [], [
+                'testid' => '1', 'testlogid' => '1', 'csrf_token' => 'expired',
+            ], false);
+            self::assertSame(403, $status, $body);
+            self::assertSame('session_required', json_decode($body, true, 8, JSON_THROW_ON_ERROR)['status'] ?? null);
+        }
+    }
+
+    public function testStaleFormsRejectBeforeOutputAndPreserveExamDraft(): void
+    {
+        [, , $cookies] = $this->http('GET', '/public/code/index.php');
+        foreach (['index.php', 'tce_login.php', 'tce_popup_test_info.php'] as $page) {
+            [$status, $body] = $this->http('POST', '/public/code/' . $page, $cookies, [
+                'logaction' => 'login', 'xuser_name' => 'admin', 'xuser_password' => self::ADMIN_PW,
+                'csrf_token' => 'invalid',
+            ], false);
+            self::assertSame(303, $status, $body);
+            self::assertStringNotContainsString('Cannot modify header', $body);
+        }
+        [$status, $body] = $this->http('POST', '/public/code/tce_test_execute.php', $cookies, [
+            'csrf_token' => 'invalid', 'answertext' => 'draft <script>alert(1)</script>',
+            'testid' => '1', 'testlogid' => '1',
+        ], false);
+        self::assertSame(403, $status);
+        self::assertStringContainsString('draft &lt;script&gt;', $body);
+        self::assertStringNotContainsString('<script>alert', $body);
+        self::assertStringNotContainsString('Cannot modify header', $body);
+        self::assertStringNotContainsString('invalid', $body);
     }
 
     public function testAdminLoginSucceeds(): void
@@ -888,6 +963,7 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         $this->assertStringNotContainsString('Панель администратора', $body);
 
         [$status, $body] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'csrf_token' => self::extractCsrfToken($body),
             'logaction' => 'login',
             'xuser_name' => 'admin',
             'xuser_password' => self::ADMIN_PW,

@@ -74,3 +74,43 @@ Resume a deliberately paused deployment only when the operator requests it.
 References: [Linux memory hotplug](https://kernel.org/doc/html/latest/admin-guide/mm/memory-hotplug.html),
 [Podman live resource updates](https://docs.podman.io/en/latest/markdown/podman-update.1.html),
 [Apache MPM limits](https://httpd.apache.org/docs/2.4/mod/mpm_common.html).
+
+## Connection reuse between reverse proxies
+
+Inspect the actual upstream `Keep-Alive` response before changing the proxy pool.
+The proxy must retire idle connections earlier than the next hop. For an Apache
+hop advertising `timeout=5, max=100`, use the following inside nginx's upstream:
+
+```nginx
+keepalive 64;
+keepalive_timeout 1s;
+keepalive_requests 90;
+```
+
+These values apply to the upstream pool, not the client keepalive or request/read
+timeouts. Keep the idle timeout and request limit below the corresponding Apache
+limits if those limits change. Validate with `nginx -t`, reload gracefully, and
+compare immediate upstream-header closures and final HTTP 502 outcomes under live
+traffic. This mitigates reuse of connections retired by the next hop; it does not
+prove that all connection closures share that cause. Do not enable automatic
+retry of non-idempotent POST requests to hide transport errors. Correlate saving
+with request IDs and database versions before interpreting a failure as lost work.
+
+Reference: [nginx upstream keepalive](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive_timeout).
+
+## Authentication and attempt-creation regression checks
+
+Validate form CSRF before authentication can rotate a session or print a warning.
+JSON endpoints validate their workflow-scoped token and return a distinct reason
+for session loss, denied access or expired CSRF. An expired ordinary exam form
+must not automatically navigate away; retain the submitted draft for recovery.
+A rejected fingerprint must clear authenticated state and initialize a fresh
+anonymous fingerprint, so a subsequent login can succeed.
+
+Attempt creation must commit its parent, questions and answers together. Serialize
+creation for one participant, recheck existing attempts after acquiring the lock,
+and roll back incomplete variants. Status readers must not delete in-progress
+attempts. Pregeneration must use the same lock while retaining ownership of its
+transaction. Test concurrent tabs, failure halfway through generation, existing
+answers, ordinary starts and pregenerated starts. The integration suite includes
+a small concurrent cohort by default; a larger performance profile remains opt-in.

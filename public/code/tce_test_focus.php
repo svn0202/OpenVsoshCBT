@@ -1,6 +1,7 @@
 <?php
 
 ob_start();
+define('OPENVSOSH_ANSWER_API', true);
 
 require_once '../config/tce_config.php';
 

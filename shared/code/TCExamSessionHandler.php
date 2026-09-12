@@ -177,6 +177,20 @@ class TCExamSessionHandler implements SessionHandlerInterface
         $data = F_escape_sql($db, $data);
         $session_life = (int) constant('K_SESSION_LIFE');
         $expiry = date(K_TIMESTAMP_FORMAT, time() + $session_life);
+        // PostgreSQL/MySQL upserts avoid racing the first write of one session.
+        /** @var string $database_type */
+        $database_type = defined('K_DATABASE_TYPE') ? constant('K_DATABASE_TYPE') : '';
+        if (in_array($database_type, ['POSTGRESQL', 'MYSQL'], true)) {
+            $sql = 'INSERT INTO ' . K_TABLE_SESSIONS
+                . " (cpsession_id, cpsession_expiry, cpsession_data) VALUES ('"
+                . $id . "', '" . $expiry . "', '" . $data . "')";
+            $sql .= $database_type === 'POSTGRESQL'
+                ? ' ON CONFLICT (cpsession_id) DO UPDATE SET cpsession_expiry=EXCLUDED.cpsession_expiry,'
+                    . ' cpsession_data=EXCLUDED.cpsession_data'
+                : ' ON DUPLICATE KEY UPDATE cpsession_expiry=VALUES(cpsession_expiry),'
+                    . ' cpsession_data=VALUES(cpsession_data)';
+            return F_db_query($sql, $db) !== false;
+        }
         // check if this session already exist on database
         $sql = 'SELECT cpsession_id
 				FROM ' . K_TABLE_SESSIONS . '
@@ -266,6 +280,22 @@ class TCExamSessionHandler implements SessionHandlerInterface
 
         return (int) F_db_affected_rows($db, $result);
     }
+}
+
+/** Reset rejected credentials as well as the fingerprint to prevent a rejection loop. */
+function f_reset_rejected_session(): void
+{
+    $_SESSION = [
+        'session_hash' => get_client_fingerprint(),
+        'session_user_id' => 1,
+        'session_user_name' => '-',
+        'session_user_ip' => get_normalized_ip($_SERVER['REMOTE_ADDR'] ?? ''),
+        'session_user_level' => 0,
+        'session_user_firstname' => '',
+        'session_user_lastname' => '',
+        'session_test_login' => '',
+        'session_last_visit' => 0,
+    ];
 }
 
 /**

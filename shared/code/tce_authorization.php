@@ -40,6 +40,10 @@ require_once __DIR__ . '/tce_functions_auth_log.php';
 
 // Send cache policy before login validation can render a warning or error.
 f_send_auth_cache_headers();
+if (!defined('OPENVSOSH_ANSWER_API')) {
+    require_once __DIR__ . '/tce_request_csrf.php';
+}
+
 
 /** @var mixed $db */
 /** @var string $PHPSESSID */
@@ -83,8 +87,9 @@ if ($rs) {
             openvsosh_log_auth_event('session.rejected', 'fingerprint_mismatch');
             // display login form
             session_regenerate_id(true);
+            f_reset_rejected_session();
             if (defined('OPENVSOSH_ANSWER_API')) {
-                F_tmf_answer_json(403, ['status' => 'session_required']);
+                f_authorization_api_json(403, ['status' => 'session_required']);
             }
             F_login_form();
             exit();
@@ -543,6 +548,18 @@ if (
                     . $wait
                     . '\'
 					)';
+                // Concurrent failed logins can both observe an absent throttle row.
+                // Preserve the longer existing delay if another request inserted first.
+                if (f_legacy_literal_equals(K_DATABASE_TYPE, 'POSTGRESQL')) {
+                    $sqls .= ' ON CONFLICT (cpsession_id) DO UPDATE SET cpsession_expiry=GREATEST('
+                        . K_TABLE_SESSIONS . '.cpsession_expiry, EXCLUDED.cpsession_expiry),'
+                        . ' cpsession_data=GREATEST(CAST(' . K_TABLE_SESSIONS
+                        . '.cpsession_data AS INTEGER), CAST(EXCLUDED.cpsession_data AS INTEGER))';
+                } elseif (f_legacy_literal_equals(K_DATABASE_TYPE, 'MYSQL')) {
+                    $sqls .= ' ON DUPLICATE KEY UPDATE cpsession_expiry=GREATEST(cpsession_expiry,'
+                        . ' VALUES(cpsession_expiry)), cpsession_data=GREATEST(CAST(cpsession_data AS UNSIGNED),'
+                        . ' CAST(VALUES(cpsession_data) AS UNSIGNED))';
+                }
                 $stored_attempt = F_db_query($sqls, $db);
             }
             if (!$stored_attempt) {
@@ -570,7 +587,7 @@ if ($auth_ssl_level > 0 && $auth_ssl_level <= $pagelevel) {
         );
         if (f_legacy_int_equals($valid_ssl, 0)) {
             if (defined('OPENVSOSH_ANSWER_API')) {
-                F_tmf_answer_json(403, ['status' => 'access_denied']);
+                f_authorization_api_json(403, ['status' => 'access_denied']);
             }
             $thispage_title = $l['t_login_form']; //set page title
             require_once '../code/tce_page_header.php';
@@ -597,8 +614,8 @@ if ($pagelevel > 0 && $session_user_level < $pagelevel) {
 
 if (
     $logged
-    && defined('K_AUTH_ADMINISTRATOR')
-    && $session_user_level >= openvsosh_authorization_int(K_AUTH_ADMINISTRATOR)
+    && $session_user_level >= (defined('K_AUTH_ADMINISTRATOR')
+        ? openvsosh_authorization_int(K_AUTH_ADMINISTRATOR) : 10)
 ) {
     require_once __DIR__ . '/tce_functions_roles.php';
     openvsosh_ensure_admin_default_group($session_user_id);

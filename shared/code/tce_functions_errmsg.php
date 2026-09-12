@@ -64,7 +64,9 @@ function f_print_error(mixed $messagetype = 'MESSAGE', mixed $messagetoprint = '
         $logsttring .= $messagetype . K_TAB;
         $logsttring .= $_SERVER['SCRIPT_NAME'] . K_TAB;
         $logsttring .= $messagetoprint . K_NEWLINE;
-        error_log($logsttring, 3, '../log/tce_errors.log');
+        // Entry points such as /public/sw.js may have a different working directory.
+        $area = str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/admin/') ? 'admin' : 'public';
+        error_log($logsttring, 3, dirname(__DIR__, 2) . '/' . $area . '/log/tce_errors.log');
     }
 
     if (strlen($messagetoprint) > 0) {

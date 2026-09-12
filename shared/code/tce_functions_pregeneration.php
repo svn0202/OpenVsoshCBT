@@ -220,6 +220,12 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
         return 'error';
     }
     try {
+        $lock = F_db_query('SELECT user_id FROM ' . K_TABLE_USERS
+            . ' WHERE user_id=' . $user_id . ' FOR UPDATE', $db);
+        if ($lock === false || !F_db_fetch_array($lock)) {
+            F_db_query('ROLLBACK', $db);
+            return 'error';
+        }
         $existing = F_count_rows(
             K_TABLE_TEST_USER,
             'WHERE testuser_test_id=' . $test_id . '
@@ -232,7 +238,7 @@ function f_tmf_pregenerate_user(int $test_id, int $user_id): string
         }
 
         $hash = F_tmf_pregeneration_hash($test_id, $user_id);
-        if (!f_create_test($test_id, $user_id)) {
+        if (!f_create_test_rows($test_id, $user_id)) {
             F_db_query('ROLLBACK', $db);
             return 'error';
         }

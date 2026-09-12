@@ -899,7 +899,7 @@ final class TestReviewTest extends TestCase
                     . '"testuser_creation_time" => "future", "testuser_pregenerated" => false]]; '
                     . '$GLOBALS["counts"] = [0, 0, 1, 0, 0]; $GLOBALS["queries"] = []; '
                     . '$GLOBALS["date_timestamps"] = []; '
-                    . '$GLOBALS["query_results"] = [true, true, true, true, true, true, true, true, true, '
+                    . '$GLOBALS["query_results"] = [true, true, true, true, true, true, true, true, '
                     . 'true, true, false, true, false, true, false]; $GLOBALS["errors"] = 0; '
                     . 'function date($format, $timestamp = null) { if ($timestamp === null) { '
                     . 'return "2026-08-10 12:00:00"; } $GLOBALS["date_timestamps"][] = $timestamp; '
@@ -954,7 +954,6 @@ final class TestReviewTest extends TestCase
                     "UPDATE test_users SET testuser_status=4, testuser_close_reason='timeout', "
                         . "testuser_last_activity='2026-08-10 12:00:00' WHERE testuser_id=101",
                     $select,
-                    'DELETE FROM test_users WHERE testuser_id=102',
                     $select,
                     'UPDATE test_users SET testuser_status=2 WHERE testuser_id=103',
                     $select,

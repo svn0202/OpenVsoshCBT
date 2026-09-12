@@ -661,17 +661,9 @@ function f_check_test_status(mixed $user_id, mixed $test_id, mixed $duration): a
             } else {
                 switch ($test_status) {
                     case 0:
-                        // 0 = the test generation process is started but not completed
-                            // delete incomplete test (also deletes test logs using database referential integrity)
-                            $sqld = 'DELETE FROM ' . K_TABLE_TEST_USER . '
-							WHERE testuser_id=' . $testuser_id . '';
-                            $rd = F_db_query($sqld, $db);
-                            /** @var mixed $rd */
-                            if (!$rd) {
-                                F_display_db_error();
-                            }
-
-                            break;
+                        // Cleanup belongs to the serialized creation transaction. A status
+                        // reader must never delete another request's in-progress attempt.
+                        break;
                     case 1:
                         // 1 = the test has been successfully created
                             // check if all questions were displayed
@@ -1565,6 +1557,57 @@ function f_update_testuser_stat(mixed $date): void
  */
 function f_create_test(mixed $test_id, mixed $user_id): bool
 {
+    global $db;
+    $test_id = (int) $test_id;
+    $user_id = (int) $user_id;
+    if (F_db_query('START TRANSACTION', $db) === false) {
+        return false;
+    }
+    $committed = false;
+    try {
+        // A persistent parent row serializes even the first attempt (when no
+        // testuser row exists yet). Other participants remain independent.
+        $lock = F_db_query('SELECT user_id FROM ' . K_TABLE_USERS
+            . ' WHERE user_id=' . $user_id . ' FOR UPDATE', $db);
+        if ($lock === false || !F_db_fetch_array($lock)) {
+            return false;
+        }
+        $existing = F_db_query('SELECT testuser_status FROM ' . K_TABLE_TEST_USER
+            . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
+            . ' AND testuser_status<5 FOR UPDATE', $db);
+        if ($existing === false) {
+            return false;
+        }
+        $row = F_db_fetch_array($existing);
+        if (is_array($row) && (int) ($row['testuser_status'] ?? 0) > 0) {
+            // A concurrent request completed creation while we waited.
+            $ready = (int) ($row['testuser_status'] ?? 0) < 4;
+        } else {
+            if (F_db_query('DELETE FROM ' . K_TABLE_TEST_USER
+                . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
+                . ' AND testuser_status=0', $db) === false) {
+                return false;
+            }
+            $ready = f_create_test_rows($test_id, $user_id);
+        }
+        if (!$ready) {
+            return false;
+        }
+        if (F_db_query('COMMIT', $db) === false) {
+            return false;
+        }
+        $committed = true;
+        return true;
+    } finally {
+        if (!$committed) {
+            F_db_query('ROLLBACK', $db);
+        }
+    }
+}
+
+/** Build the complete attempt inside f_create_test's transaction. */
+function f_create_test_rows(mixed $test_id, mixed $user_id): bool
+{
     require_once '../config/tce_config.php';
     require_once '../../shared/code/tce_functions_tcecode.php';
     global $db, $l;
@@ -1920,7 +1963,10 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
             foreach ($questions_data as $key => $q) {
                 ++$question_order;
                 $testlog_id = f_new_test_log($testuser_id, $q['id'], $q['score'], $question_order, $q['answers']);
-                // Add answers
+                // Add answers only after the question insert succeeded.
+                if ((int) $testlog_id <= 0) {
+                    return false;
+                }
                 if (!f_add_question_answers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
                     return false;
                 }
@@ -1965,7 +2011,10 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
                     $question_order,
                     $m['testlog_num_answers'],
                 );
-                // Add answers
+                // Add answers only after the question insert succeeded.
+                if ((int) $testlog_id <= 0) {
+                    return false;
+                }
                 if (!f_add_question_answers(
                     $testlog_id,
                     $m['question_id'],

@@ -70,9 +70,12 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
         string $entrypoint = '/public/code/index.php',
     ): array
     {
-        [, , $cookies] = $this->http('GET', $entrypoint);
+        // Login forms are served by the public endpoint even for administrators.
+        $entrypoint = '/public/code/index.php';
+        [, $form, $cookies] = $this->http('GET', $entrypoint);
         [, , $cookies] = $this->http('POST', $entrypoint, $cookies, [
             'logaction' => 'login',
+            'csrf_token' => self::extractCsrfToken($form),
             'xuser_name' => $username,
             'xuser_password' => $password,
         ]);
@@ -158,10 +161,9 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
     public function testConcurrentStartsWithAndWithoutPregeneration(): void
     {
         $participantCount = (int) getenv('TMF_PREGEN_LOAD_PARTICIPANTS');
-        if ($participantCount === 0) {
-            self::markTestSkipped(
-                'Set TMF_PREGEN_LOAD_PARTICIPANTS to run the pregeneration load profile.',
-            );
+        $loadProfile = $participantCount !== 0;
+        if (!$loadProfile) {
+            $participantCount = 2;
         }
         self::assertGreaterThanOrEqual(2, $participantCount);
         self::assertLessThanOrEqual(500, $participantCount);
@@ -290,6 +292,16 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
                 }
             }
 
+            // An incomplete variant must leave no parent or child rows behind.
+            $this->dbExec('UPDATE tce_test_subject_set SET tsubset_quantity=41 WHERE tsubset_id=' . $subsetId);
+            $firstCookies = $directCookies[0] ?? [];
+            self::assertNotEmpty($firstCookies);
+            $this->http('GET', '/public/code/tce_test_execute.php?testid=' . $testId, $firstCookies);
+            self::assertSame('0', $this->dbScalar(
+                'SELECT COUNT(*) FROM tce_tests_users WHERE testuser_test_id=' . $testId
+            ));
+            $this->dbExec('UPDATE tce_test_subject_set SET tsubset_quantity=20 WHERE tsubset_id=' . $subsetId);
+
             $direct = $this->concurrentGet(
                 $directCookies,
                 '/public/code/tce_test_execute.php?testid=' . $testId,
@@ -305,6 +317,22 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
                 $adminPassword,
                 '/admin/code/index.php',
             );
+            // Several tabs racing the same attempt must see one complete variant.
+            $duplicateStarts = $this->concurrentGet(
+                array_values(array_merge($preparedCookies, $preparedCookies, $preparedCookies)),
+                '/public/code/tce_test_execute.php?testid=' . $testId,
+            );
+            self::assertSame(array_fill(0, $participantCount * 3, 200), $duplicateStarts['statuses']);
+            self::assertSame((string) ($participantCount * 2), $this->dbScalar(
+                'SELECT COUNT(*) FROM tce_tests_users WHERE testuser_test_id=' . $testId
+            ));
+            self::assertSame((string) ($participantCount * 2 * 20), $this->dbScalar(
+                'SELECT COUNT(*) FROM tce_tests_logs JOIN tce_tests_users ON '
+                . 'testlog_testuser_id=testuser_id WHERE testuser_test_id=' . $testId
+            ));
+            // Reset only this synthetic cohort before checking pregeneration.
+            $this->dbExec('DELETE FROM tce_tests_users WHERE testuser_test_id=' . $testId
+                . ' AND testuser_user_id IN (' . implode(',', array_slice($userIds, $participantCount)) . ')');
             $generationStarted = hrtime(true);
             $prepared = 0;
             $maximumBatches = (int) ceil($participantCount / 25) + 1;
@@ -398,7 +426,9 @@ final class PregenerationLoadHttpTest extends AppHttpTestCase
                 json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
             ));
             self::assertLessThanOrEqual($maximumP95, $pregeneratedP95);
-            self::assertLessThan($directP95, $pregeneratedP95);
+            if ($loadProfile) {
+                self::assertLessThan($directP95, $pregeneratedP95);
+            }
         } finally {
             if ($testId > 0) {
                 $this->dbExec(
