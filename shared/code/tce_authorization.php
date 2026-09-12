@@ -38,6 +38,9 @@ require_once '../../shared/code/tce_functions_session.php';
 require_once '../../shared/code/tce_functions_otp.php';
 require_once __DIR__ . '/tce_functions_auth_log.php';
 
+// Send cache policy before login validation can render a warning or error.
+f_send_auth_cache_headers();
+
 /** @var mixed $db */
 /** @var string $PHPSESSID */
 /**

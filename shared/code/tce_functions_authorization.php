@@ -246,9 +246,19 @@ function f_login_throttle_next_delay(int $previous, int $ratio, int $maximum): i
 }
 
 /**
- * Display login page.
- * NOTE: This function calls exit() after execution.
+ * Send authentication cache policy before output; repeated late calls are harmless.
  */
+function f_send_auth_cache_headers(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
+
+/** Display the login form, preserving any warning already rendered by authorization. */
 function f_login_form(): void
 {
     if (defined('OPENVSOSH_ANSWER_API')) {
@@ -328,9 +338,7 @@ function f_login_form(): void
     }
 
     require_once '../../shared/code/tce_functions_form.php';
-    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-    header('Pragma: no-cache');
-    header('Expires: 0');
+    f_send_auth_cache_headers();
     $thispage_title = $l['t_login_form']; //set page title
     require_once '../code/tce_page_header.php';
     echo f_login_form_markup(

@@ -201,6 +201,26 @@ final class AdminControllerHttpTest extends AppHttpTestCase
         return $cookies;
     }
 
+    public function testFailedPublicLoginPreservesWarningWithoutHeaderErrors(): void
+    {
+        [$status, $page, $cookies] = $this->http('GET', '/public/code/index.php');
+        $this->assertSame(200, $status);
+        $token = self::extractCsrfToken($page);
+        $this->assertNotNull($token);
+        [$status, $body] = $this->http('POST', '/public/code/index.php', $cookies, [
+            'logaction' => 'login',
+            'xuser_name' => 'admin',
+            'xuser_password' => 'deliberately-incorrect-integration-password',
+            'csrf_token' => $token,
+        ]);
+        $this->assertSame(200, $status);
+        $this->assertStringContainsString('form_login', $body);
+        $this->assertStringContainsString('class="warning"', $body);
+        $this->assertStringNotContainsString('Cannot modify header', $body);
+        $this->assertStringNotContainsString('headers already sent', $body);
+        $this->assertStringNotContainsString('deliberately-incorrect-integration-password', $body);
+    }
+
     public function testAdminLoginSucceeds(): void
     {
         $cookies = $this->login();

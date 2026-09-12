@@ -6,6 +6,21 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthorizationFunctionsTest extends TestCase
 {
+    public function testAuthCacheHeadersDoNotWarnAfterAnExistingMessage(): void
+    {
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-d', 'output_buffering=0', '-r',
+                'require $argv[1]; f_send_auth_cache_headers(); '
+                . 'echo "existing warning;"; '
+                . 'set_error_handler(static function () { throw new RuntimeException("late header"); }); '
+                . 'f_send_auth_cache_headers(); echo "done";',
+                dirname(__DIR__) . '/shared/code/tce_functions_authorization.php'],
+            dirname(__DIR__) . '/shared/code',
+        );
+        self::assertSame(0, $status, $output);
+        self::assertSame('existing warning;done', $output);
+    }
+
     public function testNullTestPasswordPreservesAuthorizationTypeError(): void
     {
         [$status, $output] = \F_tcecode_run_process(
