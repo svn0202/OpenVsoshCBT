@@ -2387,7 +2387,8 @@ body.app-page.exam-page .exam-review-nav {
     border-radius: 0;
     background: #f5d85d;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 body.app-page.exam-page .exam-review-nav:has(input:checked) {
     background: #ffd83d;
@@ -2436,6 +2437,8 @@ body.app-page.exam-page .exam-question-list li.question-menu-link:focus-visible 
 body.app-page.exam-page .navlink {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     margin: 0;
 }
 body.app-page.exam-page .navlink input[type="submit"],
@@ -2446,19 +2449,40 @@ body.app-page.exam-page .navlink #saveanswer {
     min-width: 0;
     margin: 0;
 }
+body.app-page.exam-page .exam-review-toggle input { flex-shrink: 0; }
+body.app-page.exam-page .exam-review-feedback {
+    order: 2;
+    flex: 1 1 100%;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-size: .875rem;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+body.app-page.exam-page .exam-review-feedback [data-review-retry] {
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    white-space: normal;
+}
+body.app-page.exam-page [data-review-retry][hidden] { display: none; }
 body.app-page.exam-page .answer-save-status {
-    position: absolute;
-    top: calc(100% + 5px);
-    left: 50%;
-    z-index: 2;
+    position: static;
+    order: 3;
+    flex: 1 1 100%;
+    grid-column: 1 / -1;
     min-width: 0;
     padding: 4px 9px;
     border-radius: 4px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(7, 38, 61, .14);
     font-weight: 700;
-    white-space: nowrap;
-    transform: translateX(-50%);
+    white-space: normal;
+    overflow-wrap: anywhere;
     pointer-events: none;
 }
 body.app-page.exam-page .answer-save-status:empty { display: none; }
@@ -2596,7 +2620,7 @@ body.app-page.exam-page #terminatetest { margin: 18px 0 0; }
     body.app-page.exam-page .navlink #saveanswer { grid-column: 1 / 2; }
     body.app-page.exam-page .answer-save-status {
         position: static;
-        grid-column: 2 / 3;
+        grid-column: 1 / -1;
         align-self: center;
         min-width: 0;
         box-shadow: none;

@@ -494,8 +494,12 @@
             retry.type = 'button';
             retry.textContent = 'Повторить сохранение отметки';
             retry.dataset.reviewRetry = '1';
-            review.insertAdjacentElement('afterend', status);
-            status.insertAdjacentElement('afterend', retry);
+            var feedback = document.createElement('div');
+            feedback.className = 'exam-review-feedback';
+            feedback.appendChild(status);
+            feedback.appendChild(retry);
+            var reviewLabel = review.closest('.exam-review-toggle');
+            (reviewLabel || review).insertAdjacentElement('afterend', feedback);
             state.render = function () {
                 review.checked = state.desired;
                 status.textContent = state.active ? 'Сохраняем отметку…'
