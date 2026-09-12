@@ -23,6 +23,24 @@ function openvsosh_log_auth_event(string $event, string $reason = ''): void
         'login' => $text($_POST['xuser_name'] ?? '', 255),
         'session_cookie_present' => isset($_COOKIE['PHPSESSID']),
     ];
+    if ($event === 'csrf.rejected' || $event === 'session.rejected') {
+        // Diagnostic categories only: never emit tokens, session IDs or fingerprint hashes.
+        $session_hash = $_SESSION['session_hash'] ?? null;
+        $entry['session_context_present'] = is_string($session_hash) && $session_hash !== '';
+        $entry['session_fingerprint_matches'] = is_string($session_hash)
+            && (hash_equals($session_hash, get_client_fingerprint())
+                || hash_equals($session_hash, get_legacy_client_fingerprint()));
+        $token = $_POST['csrf_token'] ?? null;
+        $entry['csrf_format'] = match (true) {
+            $token === null || $token === '' => 'missing',
+            !is_string($token) => 'invalid',
+            preg_match('/\Av2\.[a-f0-9]{32}\.[a-f0-9]{64}\z/', $token) === 1 => 'v2',
+            preg_match('/\A\$2y\$(?:10|12)\$[.\/A-Za-z0-9]{53}\z/', $token) === 1 => 'legacy',
+            default => 'invalid',
+        };
+        $entry['fetch_mode'] = $text($_SERVER['HTTP_SEC_FETCH_MODE'] ?? '', 32);
+        $entry['fetch_destination'] = $text($_SERVER['HTTP_SEC_FETCH_DEST'] ?? '', 32);
+    }
     $json = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     if (is_string($json)) {
         error_log('[openvsosh.auth] ' . $json);

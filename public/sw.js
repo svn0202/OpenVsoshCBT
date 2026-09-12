@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'openvsosh-public-static-v2';
+const CACHE_NAME = 'openvsosh-public-static-v3';
 const PUBLIC_SCOPE = new URL(self.registration.scope).pathname;
 const APP_ROOT = PUBLIC_SCOPE.replace(/public\/$/, '');
 const STATIC_PATHS = new Set([
@@ -58,7 +58,10 @@ self.addEventListener('fetch', function (event) {
         return url.pathname.includes(prefix);
     });
     if (isPrivate || url.search !== '' || !STATIC_PATHS.has(url.pathname)) {
-        event.respondWith(fetch(request, {cache: 'no-store'}));
+        // Leave navigation and API requests to the browser. Re-fetching a
+        // navigation here changes its mode, destination and referrer, and can
+        // change browser-managed headers used by the session/CSRF context.
+        // Dynamic responses already carry no-store from the application/server.
         return;
     }
     event.respondWith(

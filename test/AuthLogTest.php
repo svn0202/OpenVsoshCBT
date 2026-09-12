@@ -6,6 +6,51 @@ use PHPUnit\Framework\TestCase;
 
 final class AuthLogTest extends TestCase
 {
+    public function testRejectedContextCategoriesDoNotExposeSessionOrTokens(): void
+    {
+        require_once dirname(__DIR__) . '/shared/code/tce_functions_auth_log.php';
+        $file = tempnam(sys_get_temp_dir(), 'auth-context-');
+        self::assertIsString($file);
+        $previous = ini_get('error_log');
+        $session = $_SESSION ?? [];
+        $post = $_POST;
+        try {
+            ini_set('error_log', $file);
+            $cases = [
+                ['v2.' . str_repeat('a', 32) . '.' . str_repeat('b', 64), 'v2', true],
+                ['$2y$10$' . str_repeat('a', 53), 'legacy', false],
+                ['secret-invalid-token', 'invalid', false],
+                [[], 'invalid', false],
+                ['', 'missing', false],
+            ];
+            foreach ($cases as [$token, $format, $matches]) {
+                $_POST = ['csrf_token' => $token];
+                $_SESSION = $matches ? ['session_hash' => \get_client_fingerprint()] : [];
+                \openvsosh_log_auth_event('csrf.rejected', 'token_mismatch');
+            }
+            $output = (string) file_get_contents($file);
+            self::assertStringNotContainsString('secret-invalid-token', $output);
+            self::assertStringNotContainsString(\get_client_fingerprint(), $output);
+            self::assertStringNotContainsString(str_repeat('b', 64), $output);
+            $lines = explode("\n", trim($output));
+            self::assertCount(count($cases), $lines);
+            foreach ($lines as $i => $line) {
+                /** @var array{csrf_format:string,session_context_present:bool,session_fingerprint_matches:bool} $entry */
+                $entry = json_decode(substr($line, (int) strpos($line, '{')), true, 512, JSON_THROW_ON_ERROR);
+                $case = $cases[$i] ?? null;
+                self::assertNotNull($case);
+                self::assertSame($case[1], $entry['csrf_format']);
+                self::assertSame($case[2], $entry['session_context_present']);
+                self::assertSame($case[2], $entry['session_fingerprint_matches']);
+            }
+        } finally {
+            ini_set('error_log', (string) $previous);
+            $_SESSION = $session;
+            $_POST = $post;
+            unlink($file);
+        }
+    }
+
     public function testEventsAreCorrelatedAndDoNotExposeSecrets(): void
     {
         require_once dirname(__DIR__) . '/shared/code/tce_functions_auth_log.php';

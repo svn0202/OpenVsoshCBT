@@ -1,5 +1,8 @@
 # Журнал входов и отказов проверки формы
 
+Общий порядок сбора за выбранный период, сопоставления запросов и проверки БД:
+[Сбор и разбор ошибок в журналах](error-log-collection.md).
+
 Приложение пишет JSON-события с префиксом `[openvsosh.auth]` через PHP `error_log()`.
 В контейнерном проде они поступают в stderr Apache и журнал контейнера; отдельный
 файл внутри сменяемого контейнера не создаётся. Хранение и ротация — у существующего
@@ -37,3 +40,9 @@ sudo journalctl -u openvsoshcbt.service --since '30 minutes ago' --no-pager \
   | grep -F '[openvsosh.auth]' \
   | grep -E 'st980251|st1118577'
 ```
+
+Для `csrf.rejected` и `session.rejected` дополнительно записываются безопасные
+диагностические признаки: `session_context_present` (есть ли отпечаток в загруженной
+сессии), `session_fingerprint_matches`, `csrf_format` (`v2`, `legacy`, `invalid`,
+`missing`), `fetch_mode` и `fetch_destination`. Это контекст отказа, а не отдельная
+проверка подлинности токена. Значения токенов и хеши отпечатков не записываются.

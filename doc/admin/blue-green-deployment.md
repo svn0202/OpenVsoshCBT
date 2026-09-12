@@ -30,6 +30,9 @@ An old binary that cannot validate v2 is not a valid rollback target once v2 is 
 Host-specific unit files, network topology, image inventories and execution reports
 belong in private operational documentation. Reboot recovery must be tested separately.
 
+For bounded log collection and answer persistence checks, see the
+[log investigation procedure](error-log-collection.md) (Russian).
+
 ## CPU and memory expansion before deployment
 
 The safe pause point is after the backup and candidate build, before schema changes,

@@ -256,7 +256,8 @@ final class AdminControllerHttpTest extends AppHttpTestCase
 
     public function testSizeSpecificAppleIconsResolve(): void
     {
-        foreach (['/apple-touch-icon-120x120.png', '/apple-touch-icon-120x120-precomposed.png'] as $path) {
+        foreach (['/apple-touch-icon-120x120.png', '/apple-touch-icon-120x120-precomposed.png',
+            '/apple-touch-icon-152x152.png', '/apple-touch-icon-152x152-precomposed.png'] as $path) {
             [$status, $body] = $this->http('GET', $path);
             self::assertSame(200, $status);
             self::assertStringStartsWith("\x89PNG", $body);

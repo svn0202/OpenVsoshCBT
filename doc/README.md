@@ -13,6 +13,7 @@
 - [Listening-тесты и лимит аудио](admin/listening-tests.md)
 - [Резервное копирование и восстановление](admin/backup-restore.md)
 - [Надёжное сохранение ответов](admin/answer-saving.md)
+- [Сбор и разбор ошибок в журналах](admin/error-log-collection.md)
 - [Обновление без потери рабочего экземпляра](admin/upgrade.md)
 - [Решение известных проблем](admin/troubleshooting.md)
 - [Карта официальной документации TCExam](admin/tcexam-reference.md)

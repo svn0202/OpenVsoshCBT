@@ -20,6 +20,7 @@
     var saveStatus = null;
     var answerVersion = null;
     var saveActive = false;
+    var activeSavePromise = null;
     var navigationActive = false;
     var answerConflict = false;
     var conflictVersion = null;
@@ -400,9 +401,9 @@
         button.disabled = true;
         setSaveStatus('saving', button.dataset.answerSaving);
 
-        return sendAnswer(data, 0, button).then(function (payload) {
-            if (finalSaveActive) { return payload; }
+        activeSavePromise = sendAnswer(data, 0, button).then(function (payload) {
             answerVersion.value = String(payload.version);
+            if (finalSaveActive) { return payload; }
             answerConflict = false;
             conflictVersion = null;
             var conflictActions = document.getElementById('answer-conflict-actions');
@@ -436,7 +437,9 @@
         }).finally(function () {
             saveActive = false;
             button.disabled = finalSaveActive;
+            activeSavePromise = null;
         });
+        return activeSavePromise;
     }
 
     function getReviewed() {
@@ -1096,6 +1099,9 @@
         var submitterValue = submitter && submitter.value ? submitter.value : '';
         var target = navigationTarget(submitter);
         if (!target) {
+            // Native finish/comment/upload submissions also carry answer_version.
+            // Do not race them against an outstanding save from this page.
+            if (saveActive || navigationActive) { event.preventDefault(); return; }
             formSubmitting = true;
             return;
         }
@@ -1148,15 +1154,22 @@
         notice.setAttribute('role', 'status');
         notice.textContent = 'Время ответа заканчивается. Проверяем последнее сохранение…';
         form.appendChild(notice);
-        // Existing requests may have committed already. Keep the original expected
-        // version; a conflict is safer than silently overwriting that answer.
+        // Serialize behind this page's outstanding save. Only its confirmed result
+        // can advance the snapshot version; never adopt a conflict's server version.
+        var precedingSave = activeSavePromise || Promise.resolve(null);
         finalData.set('reaction_time', String(Math.max(0, Date.now() - Number(finalData.get('display_time') || Date.now()))));
         finalData.set('answer_operation', operationId());
         var controller = new AbortController();
-        var timeout = window.setTimeout(function () { controller.abort(); }, saveRequestTimeout);
+        var timeout = null;
         finalData.set('final_save_json', '1');
-        window.fetch(form.action, {method: 'POST', body: finalData, credentials: 'same-origin',
-            headers: {'Accept': 'application/json'}, signal: controller.signal}).then(function (response) {
+        precedingSave.then(function (saved) {
+            if (saved && saved.status === 'saved' && Number.isSafeInteger(saved.version)) {
+                finalData.set('answer_version', String(saved.version));
+            }
+            timeout = window.setTimeout(function () { controller.abort(); }, saveRequestTimeout);
+            return window.fetch(form.action, {method: 'POST', body: finalData, credentials: 'same-origin',
+                headers: {'Accept': 'application/json'}, signal: controller.signal});
+        }).then(function (response) {
             return response.json().catch(function () {
                 if (response.status >= 400 && response.status < 500) { return {status: 'rejected'}; }
                 throw new Error('unknown');
@@ -1172,9 +1185,11 @@
                         : 'Время ответа истекло. Сервер не подтвердил сохранение последнего ответа. Ваш ввод остаётся на странице. Обратитесь к организатору.';
                 }
             });
-        }).catch(function () {
+        }).catch(function (error) {
             answerDirty = true;
-            notice.textContent = 'Время ответа истекло. Результат сохранения неизвестен: подтверждение не получено. Ваш ввод остаётся на странице. Обратитесь к организатору.';
+            notice.textContent = error.message === 'conflict'
+                ? 'Время ответа истекло. Последний ответ не сохранён: конфликт с другим изменением. Ваш ввод остаётся на странице.'
+                : 'Время ответа истекло. Результат сохранения не подтверждён. Ваш ввод остаётся на странице. Обратитесь к организатору.';
         }).finally(function () {
             window.clearTimeout(timeout);
             form.querySelectorAll('input, textarea, select, button').forEach(function (control) { control.disabled = true; });
