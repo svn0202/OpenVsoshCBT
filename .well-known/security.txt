@@ -1,0 +1,3 @@
+Contact: mailto:admin@edzsoft.ru
+Expires: 2027-03-01T00:00:00Z
+Preferred-Languages: ru, en
