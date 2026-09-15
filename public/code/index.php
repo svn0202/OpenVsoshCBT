@@ -184,6 +184,7 @@ echo <<<'HTML'
 
     rows.forEach(function (row) {
         row.dataset.search = row.textContent.toLocaleLowerCase(locale);
+        var beginTimestamp = Number(row.getAttribute('data-begin-timestamp')) * 1000;
         var moments = [];
         [2, 3].forEach(function (position) {
             var cell = row.querySelector('td:nth-child(' + position + ')');
@@ -243,7 +244,7 @@ echo <<<'HTML'
         } else if (row.querySelector('a.buttonblue')) {
             row.classList.add('test-card-repeat');
             status.textContent = text.statusRepeat;
-        } else if (moments[2] && moments[2].getTime() > Date.now()) {
+        } else if (Number.isFinite(beginTimestamp) && beginTimestamp > Date.now()) {
             row.classList.add('test-card-upcoming');
             status.textContent = text.statusUpcoming;
         } else {
@@ -309,6 +310,10 @@ echo <<<'HTML'
     });
 
     function timestamp(row, attribute) {
+        var serverTimestamp = Number(row.getAttribute(attribute + '-timestamp')) * 1000;
+        if (Number.isFinite(serverTimestamp) && serverTimestamp > 0) {
+            return serverTimestamp;
+        }
         var value = new Date((row.getAttribute(attribute) || '').replace(' ', 'T')).getTime();
         return Number.isNaN(value) ? 0 : value;
     }

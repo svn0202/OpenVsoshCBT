@@ -139,8 +139,12 @@ function f_get_user_tests(): string
 
                 $str .= '<tr data-test-id="' . (int) $catalog_test_id . '" data-begin="'
                     . htmlspecialchars($test_begin_time, ENT_QUOTES)
+                    . '" data-begin-timestamp="'
+                    . $test_begin_timestamp
                     . '" data-end="'
                     . htmlspecialchars($test_end_time, ENT_QUOTES)
+                    . '" data-end-timestamp="'
+                    . $test_end_timestamp
                     . '">' . K_NEWLINE;
                 $test_password = $m['test_password'];
                 if ($test_password !== null && strlen($test_password) > 0) {

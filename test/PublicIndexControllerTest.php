@@ -17,6 +17,21 @@ final class PublicIndexControllerTest extends TestCase
         self::assertGreaterThan($authorization, $sessionBinding);
     }
 
+    public function testCatalogUsesServerTimestampsForScheduleClassification(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../public/code/index.php');
+
+        self::assertStringContainsString(
+            "Number(row.getAttribute('data-begin-timestamp')) * 1000",
+            $source,
+        );
+        self::assertStringContainsString(
+            'Number.isFinite(beginTimestamp) && beginTimestamp > Date.now()',
+            $source,
+        );
+        self::assertStringNotContainsString('moments[2].getTime() > Date.now()', $source);
+    }
+
     public function testCatalogPreservesWelcomeOnboardingTranslationsAndFlashMessage(): void
     {
         $script = <<<'PHP'

@@ -284,7 +284,15 @@ PHP;
         self::assertStringContainsString('<th scope="col">Action</th>', $results[3]);
         self::assertStringContainsString('data-test-id="22"', $results[3]);
         self::assertStringContainsString('data-begin="2026-08-09 00:00:00"', $results[3]);
+        self::assertStringContainsString(
+            'data-begin-timestamp="' . strtotime('2026-08-09 00:00:00') . '"',
+            $results[3],
+        );
         self::assertStringContainsString('data-end="2026-08-11 00:00:00"', $results[3]);
+        self::assertStringContainsString(
+            'data-end-timestamp="' . strtotime('2026-08-11 00:00:00') . '"',
+            $results[3],
+        );
         self::assertStringContainsString('<td>2026-08-09 00:00:00</td>', $results[3]);
         self::assertStringContainsString('<td>2026-08-11 00:00:00</td>', $results[3]);
         self::assertStringContainsString('<td style="background-color:#ffffcc;"><strong>INFO:Exam</strong>', $results[3]);
