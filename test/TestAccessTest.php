@@ -219,6 +219,7 @@ PHP;
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
+                    . 'function f_tmf_group_test_ids($user) { if ($user !== 11) throw new \\RuntimeException("Wrong user"); return [22 => true]; } '
                     . 'function f_is_valid_test_user(...$arguments) { '
                     . '$GLOBALS["test_ids"][] = $arguments[0]; $GLOBALS["validity_args"][] = $arguments; '
                     . 'return array_shift($GLOBALS["ip"]); } '
@@ -318,12 +319,12 @@ PHP;
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
         self::assertSame(['22', '22', '22', '22', '22', '22'], $testIds);
         self::assertSame([
-            ['22', '127.0.0.1', '*'],
-            ['22', '127.0.0.1', '*'],
-            ['22', '127.0.0.1', '*'],
-            ['22', '127.0.0.1', '*'],
-            ['22', '127.0.0.1', '*'],
-            ['22', '127.0.0.1', '*'],
+            ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', [22 => true]],
         ], $validityArgs);
         self::assertSame([
             [11, '22', '30'],

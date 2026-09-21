@@ -30,6 +30,7 @@ require_once __DIR__ . '/tce_functions_answer_save.php';
 require_once __DIR__ . '/tce_functions_monitoring.php';
 require_once __DIR__ . '/tce_functions_pregeneration.php';
 require_once __DIR__ . '/tce_functions_test_access.php';
+require_once __DIR__ . '/tce_functions_test_groups.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
 require_once __DIR__ . '/tce_functions_result_publication.php';
 require_once __DIR__ . '/tce_functions_ai_trap.php';
@@ -73,6 +74,7 @@ function f_get_user_tests(): string
     /** @var int $current_timestamp */
     $current_timestamp = strtotime($current_time);
     $hide_unattempted_expired_tests = openvsosh_hide_unattempted_expired_tests();
+    $group_test_ids = f_tmf_group_test_ids($user_id);
     // Return the complete catalogue. The public page separates current,
     // future and completed tests and applies a useful date order to each.
     $sql =
@@ -113,7 +115,7 @@ function f_get_user_tests(): string
             // check user's authorization
             /** @var string|null $session_user_ip */
             $session_user_ip = $_SESSION['session_user_ip'] ?? null;
-            if (f_is_valid_test_user($catalog_test_id, $session_user_ip, $test_ip_range)) {
+            if (f_is_valid_test_user($catalog_test_id, $session_user_ip, $test_ip_range, $group_test_ids)) {
                 $access_status = F_tmf_test_access_status((int) $catalog_test_id, $user_id);
                 // the user's IP is valid, check test status
                 [$test_status, $testuser_id, $test_pregenerated] = f_check_test_status(
@@ -513,15 +515,21 @@ function f_is_valid_ssl_cert(mixed $test_id): bool
  * @param mixed $test_id ID of the selected test
  * @param mixed $user_ip User's IP address.
  * @param mixed $test_ip Test IP valid addresses. Various IP addresses may be separated using comma character. The asterisk character may be used to indicate "any number".
+ * @param array<int,true>|null $group_test_ids Group snapshot for the current catalogue user only.
  * @return bool true if the user is authorized, false otherwise
  */
-function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip): bool
+function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip, ?array $group_test_ids = null): bool
 {
     require_once '../config/tce_config.php';
     global $db, $l;
     /** @var array{session_user_id:int|numeric-string} $_SESSION */
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
+    // The catalogue supplies a snapshot for this user and this rendering only.
+    // Direct access keeps the live database check below.
+    if ($group_test_ids !== null && !isset($group_test_ids[$test_id])) {
+        return false;
+    }
     // check user's IP
     if (!f_is_valid_ip($user_ip, $test_ip)) {
         return false;
@@ -533,6 +541,9 @@ function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip): b
     }
 
     // check user's group
+    if ($group_test_ids !== null) {
+        return true;
+    }
     return (
         F_count_rows(K_TABLE_USERGROUP . ', ' . K_TABLE_TEST_GROUPS, 'WHERE usrgrp_group_id=tstgrp_group_id
 			AND tstgrp_test_id='
