@@ -120,6 +120,7 @@ CREATE OR REPLACE TRIGGER tce_answers_trigger BEFORE INSERT ON tce_answers FOR E
 CREATE TABLE tce_tests (
 	test_id NUMBER(19,0) NOT NULL,
 	test_name VARCHAR2(255) NOT NULL,
+	test_family_key VARCHAR2(191) NULL,
 	test_description NCLOB NOT NULL,
 	test_begin_time DATE,
 	test_end_time DATE,

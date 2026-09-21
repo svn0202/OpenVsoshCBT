@@ -47,6 +47,7 @@ final class MigrationTest extends TestCase
             'openvsosh_user_card.sql',
             'openvsosh_result_publication.sql',
             'openvsosh_attachment_setting.sql',
+            'openvsosh_test_families.sql',
         ], array_map(static fn (string $path): string => basename($path), $files));
     }
 }

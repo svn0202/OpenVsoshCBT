@@ -118,6 +118,7 @@ CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 CREATE TABLE tce_tests (
 	test_id Bigint UNSIGNED NOT NULL AUTO_INCREMENT,
 	test_name Varchar(255) NOT NULL,
+	test_family_key VARCHAR(191) NULL,
 	test_description Text NOT NULL,
 	test_begin_time Datetime,
 	test_end_time Datetime,

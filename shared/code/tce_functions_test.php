@@ -31,6 +31,7 @@ require_once __DIR__ . '/tce_functions_monitoring.php';
 require_once __DIR__ . '/tce_functions_pregeneration.php';
 require_once __DIR__ . '/tce_functions_test_access.php';
 require_once __DIR__ . '/tce_functions_test_groups.php';
+require_once __DIR__ . '/tce_functions_test_families.php';
 require_once __DIR__ . '/tce_functions_attachments.php';
 require_once __DIR__ . '/tce_functions_result_publication.php';
 require_once __DIR__ . '/tce_functions_ai_trap.php';
@@ -537,6 +538,10 @@ function f_is_valid_test_user(mixed $test_id, mixed $user_ip, mixed $test_ip, ?a
 
     // check user's SSL certificate
     if (!f_is_valid_ssl_cert($test_id)) {
+        return false;
+    }
+
+    if (!f_tmf_test_family_allows($test_id, $user_id)) {
         return false;
     }
 
@@ -1142,6 +1147,9 @@ function f_execute_test(mixed $test_id): bool
                 $test_id,
                 (int) $session_user_id,
             );
+            if ($pregeneration === 'denied') {
+                return false;
+            }
             if ($pregeneration === 'invalidated') {
                 return f_create_test($test_id, (int) $session_user_id);
             }
@@ -1585,6 +1593,9 @@ function f_create_test(mixed $test_id, mixed $user_id): bool
         $lock = F_db_query('SELECT user_id FROM ' . K_TABLE_USERS
             . ' WHERE user_id=' . $user_id . ' FOR UPDATE', $db);
         if ($lock === false || !F_db_fetch_array($lock)) {
+            return false;
+        }
+        if (!f_tmf_test_family_allows($test_id, $user_id, true)) {
             return false;
         }
         $existing = F_db_query('SELECT testuser_id, testuser_status FROM ' . K_TABLE_TEST_USER

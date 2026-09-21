@@ -76,6 +76,7 @@ function F_tmf_migration_files(string $directory): array
         'openvsosh_user_card.sql',
         'openvsosh_result_publication.sql',
         'openvsosh_attachment_setting.sql',
+        'openvsosh_test_families.sql',
     ];
     return array_values(array_filter(
         array_map(static fn (string $name): string => $directory . '/' . $name, $order),

@@ -159,9 +159,51 @@ function f_tmf_pregeneration_invalidate(int $test_id, ?int $user_id = null): int
 /**
  * Validate and claim an unopened pre-generated attempt on first entry.
  *
- * @return string "none", "activated" or "invalidated"
+ * @return string "none", "activated", "invalidated" or "denied"
  */
 function f_tmf_pregeneration_activate(int $test_id, int $user_id): string
+{
+    require_once __DIR__ . '/tce_functions_test_families.php';
+    global $db;
+    // Most entries continue ordinary work. Only unopened prepared attempts need
+    // family resolution and the activation transaction. Recheck inside it below.
+    $prepared = F_db_query('SELECT testuser_id FROM ' . K_TABLE_TEST_USER
+        . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id
+        . " AND testuser_status=1 AND testuser_pregenerated='1' LIMIT 1", $db);
+    if ($prepared === false) {
+        return 'denied';
+    }
+    if (!is_array(F_db_fetch_array($prepared))) {
+        return 'none';
+    }
+    if (f_tmf_test_family($test_id) === []) {
+        return f_tmf_pregeneration_activate_locked($test_id, $user_id);
+    }
+    if (F_db_query('START TRANSACTION', $db) === false) {
+        return 'denied';
+    }
+    $committed = false;
+    try {
+        $lock = F_db_query('SELECT user_id FROM ' . K_TABLE_USERS
+            . ' WHERE user_id=' . $user_id . ' FOR UPDATE', $db);
+        if ($lock === false || !F_db_fetch_array($lock)
+            || !f_tmf_test_family_allows($test_id, $user_id, true)) {
+            return 'denied';
+        }
+        $status = f_tmf_pregeneration_activate_locked($test_id, $user_id);
+        if (F_db_query('COMMIT', $db) === false) {
+            return 'denied';
+        }
+        $committed = true;
+        return $status;
+    } finally {
+        if (!$committed) {
+            F_db_query('ROLLBACK', $db);
+        }
+    }
+}
+
+function f_tmf_pregeneration_activate_locked(int $test_id, int $user_id): string
 {
     require_once '../config/tce_config.php';
     global $db;

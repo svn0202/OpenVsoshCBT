@@ -71,4 +71,39 @@ PHP;
         self::assertSame(0, $status, $output);
         self::assertCount(20, json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
+
+    public function testActivationSkipsFamiliesOnlyWhenNoPreparedAttemptExists(): void
+    {
+        $script = <<<'PHP'
+namespace Harness;
+define('K_TABLE_TEST_USER', 'attempts');
+$GLOBALS['db'] = 'db';
+$GLOBALS['row'] = false;
+$GLOBALS['failed'] = false;
+$GLOBALS['families'] = 0;
+function F_db_query($sql,$db) { return $GLOBALS['failed'] ? false : 'result'; }
+function F_db_fetch_array($result) { return $GLOBALS['row']; }
+function f_tmf_test_family($id) { ++$GLOBALS['families']; return []; }
+function f_tmf_pregeneration_activate_locked($test,$user) { return 'activated'; }
+$source = file_get_contents($argv[1]);
+$start = strpos($source, 'function f_tmf_pregeneration_activate(');
+$end = strpos($source, "\n}\n", $start) + 2;
+$function = substr($source, $start, $end-$start);
+$function = preg_replace('/^\s*require_once [^;]+;\n/m', '', $function);
+eval('namespace Harness; '.$function);
+$none = f_tmf_pregeneration_activate(10,7);
+$GLOBALS['failed'] = true;
+$failure = f_tmf_pregeneration_activate(10,7);
+$GLOBALS['failed'] = false;
+$GLOBALS['row'] = ['testuser_id'=>42];
+$prepared = f_tmf_pregeneration_activate(10,7);
+echo json_encode([$none,$failure,$prepared,$GLOBALS['families']]);
+PHP;
+        [$status, $output] = \F_tcecode_run_process(
+            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/shared/code/tce_functions_pregeneration.php'],
+            __DIR__,
+        );
+        self::assertSame(0, $status, $output);
+        self::assertSame(['none', 'denied', 'activated', 1], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+    }
 }

@@ -1099,6 +1099,7 @@ final class TestReviewTest extends TestCase
                     . 'return array_shift($GLOBALS["ip_results"]); } '
                     . 'function f_is_valid_ssl_cert($testId) { $GLOBALS["ssl_calls"][] = $testId; '
                     . 'return array_shift($GLOBALS["ssl_results"]); } '
+                    . 'function f_tmf_test_family_allows($testId, $userId) { return true; } '
                     . 'function F_count_rows($tables, $where) { $GLOBALS["count_calls"][] = [$tables, $where]; '
                     . 'return array_shift($GLOBALS["counts"]); } '
                     . '$source = file_get_contents($argv[1]); '

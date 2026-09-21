@@ -109,6 +109,7 @@ constraint "PK_tce_answers_answer_id" primary key ("answer_id")
 CREATE TABLE "tce_tests" (
 	"test_id" BigSerial NOT NULL,
 	"test_name" Varchar(255) NOT NULL,
+	"test_family_key" VARCHAR(191) NULL,
 	"test_description" Text NOT NULL,
 	"test_begin_time" Timestamp,
 	"test_end_time" Timestamp,
