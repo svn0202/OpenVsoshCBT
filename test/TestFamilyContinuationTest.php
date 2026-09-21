@@ -69,7 +69,9 @@ PHP;
             __DIR__,
         );
         self::assertSame(0, $status, $output);
-        self::assertCount(20, json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        $results = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($results);
+        self::assertCount(20, $results);
     }
 
     public function testActivationSkipsFamiliesOnlyWhenNoPreparedAttemptExists(): void

@@ -94,7 +94,9 @@ PHP;
             __DIR__,
         );
         self::assertSame(0, $status, $output);
-        self::assertCount(20, json_decode($output, true, 512, JSON_THROW_ON_ERROR));
+        $results = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($results);
+        self::assertCount(20, $results);
     }
     public function testCreationAndActivationDenyBeforeMutatingAttempts(): void
     {
@@ -132,16 +134,20 @@ PHP;
             __DIR__,
         );
         self::assertSame(0, $status, $output);
-        [$created, $activated, $queries] = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-        self::assertFalse($created);
-        self::assertSame('denied', $activated);
         self::assertSame([
-            'START TRANSACTION', 'SELECT user_id FROM users WHERE user_id=7 FOR UPDATE', 'ROLLBACK',
-            "SELECT testuser_id FROM attempts WHERE testuser_test_id=11 AND testuser_user_id=7 AND testuser_status=1 AND testuser_pregenerated='1' LIMIT 1",
-            'START TRANSACTION', 'SELECT user_id FROM users WHERE user_id=7 FOR UPDATE', 'ROLLBACK',
-        ], $queries);
+            false,
+            'denied',
+            [
+                'START TRANSACTION', 'SELECT user_id FROM users WHERE user_id=7 FOR UPDATE', 'ROLLBACK',
+                "SELECT testuser_id FROM attempts WHERE testuser_test_id=11 AND testuser_user_id=7 AND testuser_status=1 AND testuser_pregenerated='1' LIMIT 1",
+                'START TRANSACTION', 'SELECT user_id FROM users WHERE user_id=7 FOR UPDATE', 'ROLLBACK',
+            ],
+        ], json_decode($output, true, 512, JSON_THROW_ON_ERROR));
     }
 
+    /**
+     * @throws \PDOException
+     */
     public function testNewlyImportedVariantIsDiscoveredOnTheNextRequest(): void
     {
         $path = tempnam(sys_get_temp_dir(), 'test-family-import-');
