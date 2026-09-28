@@ -1,0 +1,12 @@
+[Unit]
+Description=Archive TCExam HTTP logs with checksum verification
+RequiresMountsFor=/mnt/log-archives
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/tcexam-log-archive
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=1h

@@ -1,0 +1,7 @@
+{
+  "mount": "/mnt/log-archives",
+  "mount_source": "//storage.example.org/archives",
+  "mount_fstype": "cifs",
+  "archive_subdirectory": "tcexam/httpd",
+  "ssh_target": "deploy@tcexam.example.org"
+}
