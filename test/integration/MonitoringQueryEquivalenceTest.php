@@ -26,10 +26,13 @@ final class MonitoringQueryEquivalenceTest extends TestCase
         pg_query($db, "SET LOCAL statement_timeout='10s'");
         $fixtures = __DIR__ . '/fixtures/monitoring/';
         $fixture = file_get_contents($fixtures . 'boundary-fixture.sql');
+        self::assertIsString($fixture);
         $builders = ['stats' => 'tce_monitor_summary_sql', 'history' => 'tce_monitor_history_sql'];
         try {
             foreach ($builders as $name => $builder) {
-                $original = str_replace('tce_', 'fixture_', file_get_contents($fixtures . $name . '.original.sql'));
+                $original = file_get_contents($fixtures . $name . '.original.sql');
+                self::assertIsString($original);
+                $original = str_replace('tce_', 'fixture_', $original);
                 $candidate = $builder('fixture_');
                 foreach (['2026-09-30 00:00:00', '2026-09-30 11:29:59.999999', '2026-09-30 11:30:00', '2026-09-30 12:00:00'] as $now) {
                     foreach ([false, true] as $empty) {
@@ -38,6 +41,7 @@ final class MonitoringQueryEquivalenceTest extends TestCase
                         if ($empty) {
                             $data = preg_replace('/\)\s*$/', '), empty_users AS (SELECT * FROM fixture_tests_users WHERE false) ', $data);
                         }
+                        self::assertIsString($data);
                         $run = static function (string $sql) use ($db, $data, $now, $empty): array {
                             if ($empty) {
                                 $sql = str_replace('fixture_tests_users', 'empty_users', $sql);
@@ -59,10 +63,14 @@ final class MonitoringQueryEquivalenceTest extends TestCase
                         self::assertSame($expected, $actual, $name . ' ' . $now . ' empty=' . (int) $empty);
                         if (!$empty && $now === '2026-09-30 12:00:00') {
                             if ($name === 'stats') {
-                                self::assertSame(['4', '1', '3', '2', '2', '3', '2'], array_values($actual[1][0]));
+                                $statsRow = $actual[1][0] ?? null;
+                                self::assertIsArray($statsRow);
+                                self::assertSame(['4', '1', '3', '2', '2', '3', '2'], array_values($statsRow));
                             } else {
                                 self::assertCount(97, $actual[1]);
-                                self::assertSame(['4', '1'], array_slice(array_values($actual[1][96]), 1));
+                                $historyRow = $actual[1][96] ?? null;
+                                self::assertIsArray($historyRow);
+                                self::assertSame(['4', '1'], array_slice(array_values($historyRow), 1));
                             }
                         }
                     }
