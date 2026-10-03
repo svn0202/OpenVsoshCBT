@@ -51115,5 +51115,37 @@ YYYYMMDDhhmmss_tcexam_backup.sql.gz، جہاں YYYYMMDDhhmmss سال (Y)، ما�
             <seg>ВСОШ — Всероссийская олимпиада школьников</seg>
          </tuv>
       </tu>
+      <tu tuid="ov_access_notice_title" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>For access to olympiads, please contact your place of registration (your school)</seg></tuv>
+         <tuv xml:lang="RU"><seg>По вопросам предоставления доступа к олимпиадам следует обратиться по месту регистрации (в школу)</seg></tuv>
+      </tu>
+      <tu tuid="ov_access_notice_situations" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Forgot your password? Need another attempt for a valid reason? Experienced a problem with your computer or internet connection? Contact the person responsible for the olympiad at your school.</seg></tuv>
+         <tuv xml:lang="RU"><seg>Забыли пароль? Нужна повторная попытка по уважительной причине? Во время работы произошёл сбой на вашем компьютере или пропало интернет-соединение? Обратитесь к ответственному за проведение олимпиады в вашей школе.</seg></tuv>
+      </tu>
+      <tu tuid="ov_access_notice_authority" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Only your school can configure your access, help restore your login details and authorize additional attempts. Platform technical support does not handle these requests from participants.</seg></tuv>
+         <tuv xml:lang="RU"><seg>Только школа может настроить ваш доступ, помочь восстановить данные для входа и разрешить дополнительные попытки. Техническая поддержка платформы не решает эти вопросы по обращениям участников.</seg></tuv>
+      </tu>
+      <tu tuid="ov_login_error_help" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Unable to sign in. Check your username and password. If you have forgotten your login details, contact the person responsible for the olympiad at your school.</seg></tuv>
+         <tuv xml:lang="RU"><seg>Не удалось войти. Проверьте логин и пароль. Если вы забыли данные для входа, обратитесь к ответственному за проведение олимпиады в вашей школе.</seg></tuv>
+      </tu>
+      <tu tuid="ov_completed_access_help" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>For access to olympiads, please contact your place of registration (your school)</seg></tuv>
+         <tuv xml:lang="RU"><seg>По вопросам предоставления доступа к олимпиадам следует обратиться по месту регистрации (в школу)</seg></tuv>
+      </tu>
+      <tu tuid="ov_attempt_complete" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Attempt complete</seg></tuv>
+         <tuv xml:lang="RU"><seg>Попытка завершена</seg></tuv>
+      </tu>
+      <tu tuid="ov_login_error_help_label" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Message after a failed login</seg></tuv>
+         <tuv xml:lang="RU"><seg>Сообщение при ошибке ввода логина или пароля</seg></tuv>
+      </tu>
+      <tu tuid="ov_login_error_help_hint" datatype="plaintext">
+         <tuv xml:lang="EN"><seg>Leave blank to use the default message in the participant’s language. Custom text is shown in the language in which you enter it.</seg></tuv>
+         <tuv xml:lang="RU"><seg>Оставьте поле пустым, чтобы использовать стандартное сообщение на языке участника. Свой текст отображается на том языке, на котором вы его введёте.</seg></tuv>
+      </tu>
    </body>
 </tmx>

@@ -310,7 +310,7 @@ function openvsosh_save_catalog_settings(bool $hide_unattempted_expired_tests): 
 }
 
 /**
- * @return array{site_name:string,site_description:string,site_contact:string,welcome:string,login_instruction:string}
+ * @return array{site_name:string,site_description:string,site_contact:string,welcome:string,login_instruction:string,login_error_help:string}
  */
 function openvsosh_get_site_settings(): array
 {
@@ -320,6 +320,7 @@ function openvsosh_get_site_settings(): array
         'site_contact' => '',
         'welcome' => '',
         'login_instruction' => '',
+        'login_error_help' => '',
     ];
     foreach ($defaults as $key => $default) {
         $value = openvsosh_get_setting($key);
@@ -344,6 +345,7 @@ function openvsosh_save_site_settings(array $input): array
         'site_contact' => 250,
         'welcome' => 1000,
         'login_instruction' => 2000,
+        'login_error_help' => 2000,
     ];
     $values = [];
     $errors = [];

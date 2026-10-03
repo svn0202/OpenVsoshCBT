@@ -149,7 +149,7 @@ final class AuthorizationFunctionsTest extends TestCase
             [
                 PHP_BINARY,
                 '-r',
-                'namespace Harness; define("K_NEWLINE", "\\n"); define("K_OTP_LOGIN", false); '
+                'namespace Harness; require $argv[3]; define("K_NEWLINE", "\\n"); define("K_OTP_LOGIN", false); '
                     . '$GLOBALS["l"] = ["ov_rcoko_alt" => "Logo", "a_meta_charset" => "UTF-8", '
                     . '"ov_login_intro" => "Welcome", "ov_login_intro_organization" => "School", '
                     . '"w_username" => "User", "h_login_name" => "Login", '
@@ -158,11 +158,15 @@ final class AuthorizationFunctionsTest extends TestCase
                     . '"ov_show_password" => "Show", "w_login" => "Sign in", '
                     . '"h_login_button" => "Submit", "ov_login_support" => "Ask support", '
                     . '"ov_results_site" => "Results"]; '
+                    . '$tmx = simplexml_load_file($argv[4]); '
+                    . 'foreach ($tmx->body->tu as $unit) { foreach ($unit->tuv as $variant) { '
+                    . 'if ((string) $variant->attributes("xml", true)->lang === "RU" && !isset($GLOBALS["l"][(string) $unit["tuid"]])) { '
+                    . '$GLOBALS["l"][(string) $unit["tuid"]] = (string) $variant->seg; } } } '
                     . 'function openvsosh_get_access_settings() { return ["registration_enabled" => false, '
                     . '"password_reset_enabled" => false, "access_help" => ""]; } '
                     . 'function openvsosh_get_site_settings() { return ["site_name" => "Test site", '
                     . '"welcome" => "", "site_description" => "Platform description", "login_instruction" => "", '
-                    . '"site_contact" => ""]; } '
+                    . '"site_contact" => "", "login_error_help" => $GLOBALS["argv"][2] === "custom_credentials" ? "Школьный ответ <script>alert(1)</script>" : ""]; } '
                     . 'function openvsosh_site_asset_metadata($type) { return null; } '
                     . 'function get_form_row_text_input($field) { return "<FIELD:" . $field . ">"; } '
                     . 'function f_get_csrf_token_field() { return "<CSRF>"; } '
@@ -176,9 +180,12 @@ final class AuthorizationFunctionsTest extends TestCase
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; '
                     . '$_GET["login_error"] = $argv[2]; '
+                    . 'if (in_array($argv[2], ["invalid_credentials", "custom_credentials"], true)) { $_POST["logaction"] = "login"; } '
                     . 'echo $qualified("/login", "login-form", "post", "multipart/form-data", "alice");',
                 dirname(__DIR__) . '/shared/code/tce_functions_authorization.php',
                 $error,
+                dirname(__DIR__) . '/shared/code/tce_functions_access_notice.php',
+                dirname(__DIR__) . '/shared/config.default/lang/language_tmx.xml',
             ],
             dirname(__DIR__) . '/shared/code',
         );
@@ -192,12 +199,21 @@ final class AuthorizationFunctionsTest extends TestCase
         self::assertStringContainsString('<CSRF>', $output);
         self::assertStringContainsString('../../images/vsosh-logo.png', $output);
         self::assertStringContainsString('<p>Test site</p>', $output);
-        self::assertStringContainsString('<p>Ask support</p>', $output);
+        self::assertStringContainsString('По вопросам предоставления доступа к олимпиадам следует обратиться по месту регистрации (в школу)', $output);
+        self::assertStringContainsString('Только школа может настроить ваш доступ', $output);
+        self::assertStringNotContainsString('<p>Ask support</p>', $output);
         self::assertStringContainsString('<strong>School</strong>', $output);
         self::assertStringNotContainsString('Platform description', $output);
         self::assertSame($hasNotice, str_contains($output, 'role="alert"'));
-        if ($hasNotice) {
+        if ($error === 'expired_form') {
             self::assertStringContainsString('Мы загрузили новую форму.', $output);
+        } elseif ($error === 'invalid_credentials') {
+            self::assertStringContainsString('Не удалось войти. Проверьте логин и пароль.', $output);
+            self::assertStringContainsString('Если вы забыли данные для входа', $output);
+        }
+        if ($error === 'custom_credentials') {
+            self::assertStringContainsString('Школьный ответ &lt;script&gt;alert(1)&lt;/script&gt;', $output);
+            self::assertStringNotContainsString('Не удалось войти. Проверьте логин и пароль.', $output);
         }
         self::assertStringNotContainsString('<script>alert', $output);
     }
@@ -208,6 +224,8 @@ final class AuthorizationFunctionsTest extends TestCase
         return [
             'normal login' => ['', false],
             'expired form' => ['expired_form', true],
+            'invalid credentials' => ['invalid_credentials', true],
+            'custom message' => ['custom_credentials', true],
             'untrusted query' => ['<script>alert(1)</script>', false],
         ];
     }

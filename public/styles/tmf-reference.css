@@ -2796,3 +2796,37 @@ body.app-page .monitor-message {
         align-items: stretch;
     }
 }
+
+/* School is the point of contact for participant access and additional attempts. */
+.participant-access-notice {
+    margin: 0 0 24px;
+    padding: 18px 22px;
+    border: 1px solid #d5e1ec;
+    border-left: 4px solid #2f6da8;
+    border-radius: 8px;
+    background: #f7fafc;
+    color: #384f63;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+}
+.participant-access-notice h2 { margin: 0 0 10px; font-size: 18px; line-height: 1.35; }
+.participant-access-notice p { margin: 0 0 10px; }
+.participant-access-notice p:last-child { margin-bottom: 0; }
+body.login-page .login-support .participant-access-notice p { margin: 0 0 10px; }
+body.login-page .login-support .participant-access-notice p:last-child { margin-bottom: 0; }
+
+body.app-page table.testlist .completed-access-help {
+    margin: 12px 0 0;
+    color: #384f63;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+body.app-page.theme-dark table.testlist .completed-access-help { color: #c4d5e5; }
+body.app-page.theme-dark .participant-access-notice {
+    background: #203247;
+    border-color: #496681;
+    color: #dce8f3;
+}

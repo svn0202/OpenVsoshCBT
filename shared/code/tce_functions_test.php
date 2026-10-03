@@ -69,11 +69,17 @@ function f_get_user_tests(): string
     $normalize_row = static fn(mixed $row): ?array => is_array($row) && $row !== [] ? $row : null;
     $session_user_id = $_SESSION['session_user_id'];
     $user_id = (int) $session_user_id;
+    require_once '../../shared/code/tce_functions_onboarding.php';
+    $intro_ids = array_values(f_get_onboarding_config());
+    $has_today_olympiads = false;
+    $has_today_assignment = false;
     $str = ''; // temp string
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
     /** @var int $current_timestamp */
     $current_timestamp = strtotime($current_time);
+    $today_start = strtotime(substr($current_time, 0, 10) . ' 00:00:00');
+    $tomorrow_start = strtotime('+1 day', $today_start);
     $hide_unattempted_expired_tests = openvsosh_hide_unattempted_expired_tests();
     $group_test_ids = f_tmf_group_test_ids($user_id);
     // Return the complete catalogue. The public page separates current,
@@ -113,6 +119,13 @@ function f_get_user_tests(): string
             /** @var int $test_end_timestamp */
             $test_end_timestamp = strtotime($test_end_time);
             $upcoming = $current_timestamp < $test_begin_timestamp;
+            if (!in_array((int) $catalog_test_id, $intro_ids, true)
+                && $test_begin_timestamp < $tomorrow_start && $test_end_timestamp > $today_start) {
+                $has_today_olympiads = true;
+                if (isset($group_test_ids[(int) $catalog_test_id])) {
+                    $has_today_assignment = true;
+                }
+            }
             // check user's authorization
             /** @var string|null $session_user_ip */
             $session_user_ip = $_SESSION['session_user_ip'] ?? null;
@@ -132,6 +145,11 @@ function f_get_user_tests(): string
                     continue;
                 }
                 $catalog_test_status = F_tmf_catalog_test_status((int) $test_status, $test_pregenerated);
+                $has_remaining_attempts = $catalog_test_status >= 4 && !$upcoming
+                    && $current_timestamp < $test_end_timestamp
+                    && (f_legacy_int_equals($test_repeatable, 1)
+                        || ((int) $test_repeatable > 1
+                            && f_count_user_test($session_user_id, $catalog_test_id) < $test_repeatable));
                 if ($current_timestamp >= $test_end_timestamp) {
                     // the test is expired.
                     $expired = true;
@@ -140,7 +158,7 @@ function f_get_user_tests(): string
                     $datestyle = '';
                 }
 
-                $str .= '<tr data-test-id="' . (int) $catalog_test_id . '" data-begin="'
+                $str .= '<tr data-test-status="' . (int) $catalog_test_status . '" data-test-id="' . (int) $catalog_test_id . '" data-begin="'
                     . htmlspecialchars($test_begin_time, ENT_QUOTES)
                     . '" data-begin-timestamp="'
                     . $test_begin_timestamp
@@ -157,7 +175,13 @@ function f_get_user_tests(): string
                 }
 
                 $test_name = $m['test_name'];
-                $str .= '<strong>' . f_test_info_link($catalog_test_id, $test_name) . '</strong></td>' . K_NEWLINE;
+                $str .= '<strong>' . f_test_info_link($catalog_test_id, $test_name) . '</strong>';
+                if ($catalog_test_status >= 4 && !$expired && !$upcoming && !$has_remaining_attempts) {
+                    $completed_help = $l['ov_completed_access_help'];
+                    $str .= '<p class="completed-access-help">'
+                        . htmlspecialchars($completed_help, ENT_QUOTES, $l['a_meta_charset']) . '</p>';
+                }
+                $str .= '</td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $test_begin_time . '</td>' . K_NEWLINE;
                 $str .= '<td' . $datestyle . '>' . $test_end_time . '</td>' . K_NEWLINE;
                 // status
@@ -282,8 +306,7 @@ function f_get_user_tests(): string
                         default:
                             // 4 or greater = test can be repeated
                                 if (
-                                    f_count_user_test($session_user_id, $catalog_test_id) < $test_repeatable
-                                    || f_legacy_int_equals($test_repeatable, 1)
+                                    $has_remaining_attempts
                                 ) {
                                     // print execute test link
                                     $str .= '<a href="';
@@ -337,6 +360,11 @@ function f_get_user_tests(): string
         $out = $l['m_no_test_available'];
     }
 
+    if ($has_today_olympiads && !$has_today_assignment) {
+        $out = '<p class="participant-access-notice" role="status">'
+            . htmlspecialchars($l['ov_completed_access_help'], ENT_QUOTES, $l['a_meta_charset'])
+            . '</p>' . K_NEWLINE . $out;
+    }
     return $out;
 }
 

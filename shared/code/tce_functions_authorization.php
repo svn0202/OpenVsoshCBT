@@ -74,6 +74,14 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
     $access_settings = openvsosh_get_access_settings();
     $site_settings = openvsosh_get_site_settings();
     $str = '<div class="container login-container">' . K_NEWLINE;
+    if (($_POST['logaction'] ?? null) === 'login' && ($_GET['login_error'] ?? null) !== 'expired_form') {
+        $login_help = ($site_settings['login_error_help'] ?? '') !== ''
+            ? $site_settings['login_error_help']
+            : $l['ov_login_error_help'];
+        $str .= '<div class="login-error-notice" role="alert">'
+            . nl2br(htmlspecialchars($login_help, ENT_QUOTES, $l['a_meta_charset'])) . '</div>' . K_NEWLINE;
+    }
+
     $str .= '<div class="tceformbox login-box">' . K_NEWLINE;
     $str .= '<div class="login-brand">' . K_NEWLINE;
     $logo_url = openvsosh_site_asset_metadata('logo')
@@ -201,7 +209,9 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
         }
         $str .= '</nav>' . K_NEWLINE;
     }
+    require_once '../../shared/code/tce_functions_access_notice.php';
     $str .= '<div class="login-support">' . K_NEWLINE;
+    $str .= \openvsosh_access_notice_markup($l) . K_NEWLINE;
     if ($site_settings['login_instruction'] !== '') {
         $str .= '<div class="login-site-instruction">'
             . nl2br(htmlspecialchars($site_settings['login_instruction'], ENT_QUOTES, $l['a_meta_charset']))
@@ -211,8 +221,6 @@ function f_login_form_markup(mixed $faction, mixed $fid, mixed $fmethod, mixed $
         $str .= '<div class="login-access-help">'
             . nl2br(htmlspecialchars($access_settings['access_help'], ENT_QUOTES, $l['a_meta_charset']))
             . '</div>' . K_NEWLINE;
-    } else {
-        $str .= '<p>' . htmlspecialchars($l['ov_login_support'], ENT_QUOTES, $l['a_meta_charset']) . '</p>' . K_NEWLINE;
     }
     if ($site_settings['site_contact'] !== '') {
         $str .= '<p>' . htmlspecialchars($site_settings['site_contact'], ENT_QUOTES, $l['a_meta_charset'])

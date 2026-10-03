@@ -207,6 +207,7 @@ $site_fields = [
     'site_contact' => ['Контакт', 250],
     'welcome' => ['Приветствие участника', 1000],
     'login_instruction' => ['Дополнительная инструкция входа', 2000],
+    'login_error_help' => [$l['ov_login_error_help_label'], 2000],
 ];
 foreach ($site_fields as $key => [$label, $limit]) {
     echo '<div class="row"><label for="' . $key . '">' . $label . '</label>';
@@ -216,6 +217,10 @@ foreach ($site_fields as $key => [$label, $limit]) {
     } else {
         echo '<input type="text" name="' . $key . '" id="' . $key . '" maxlength="' . $limit
             . '" value="' . htmlspecialchars($site_config[$key] ?? '', ENT_QUOTES, $l['a_meta_charset']) . '" />';
+    }
+    if ($key === 'login_error_help') {
+        echo '<p class="field-help">'
+            . htmlspecialchars($l['ov_login_error_help_hint'], ENT_QUOTES, $settings_charset) . '</p>';
     }
     echo '</div>' . K_NEWLINE;
 }

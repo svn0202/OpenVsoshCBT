@@ -195,7 +195,7 @@ PHP;
                     . '$GLOBALS["l"] += ["w_passed" => "Passed", "w_not_passed" => "Failed", '
                     . '"h_result" => "Result", "h_execute" => "label", "w_execute" => "label", '
                     . '"h_continue" => "label", "w_continue" => "label", '
-                    . '"h_repeat_test" => "label", "w_repeat" => "label"]; '
+                    . '"h_repeat_test" => "label", "w_repeat" => "label", "ov_completed_access_help" => "Contact your school"]; '
                     . '$row = ["test_id" => "22", "test_ip_range" => "*", "test_duration_time" => "30", '
                     . '"test_begin_time" => "2026-08-09 00:00:00", "test_end_time" => "2026-08-11 00:00:00", '
                     . '"test_password" => null, "test_name" => "Exam", "test_repeatable" => "0", '
@@ -203,12 +203,12 @@ PHP;
                     . '$protectedRow = $row; $protectedRow["test_password"] = "secret"; '
                     . '$repeatRow = $row; $repeatRow["test_repeatable"] = "2"; '
                     . '$GLOBALS["results"] = [false, "empty", "unauthorized", "blocked", "published", '
-                    . '"start", "continue", "repeat"]; '
+                    . '"start", "continue", "repeat", "unassigned"]; '
                     . '$GLOBALS["rows"] = ["empty" => [false], "unauthorized" => [$row, false], '
                     . '"blocked" => [$protectedRow, false], "published" => [$row, false], '
                     . '"start" => [$protectedRow, false], "continue" => [$row, false], '
-                    . '"repeat" => [$repeatRow, false]]; '
-                    . '$GLOBALS["ip"] = [false, true, true, true, true, true]; '
+                    . '"repeat" => [$repeatRow, false], "unassigned" => [$row, false]]; '
+                    . '$GLOBALS["ip"] = [false, true, true, true, true, true, false]; '
                     . '$GLOBALS["test_statuses"] = [0, 4, 0, 1, 4]; '
                     . '$GLOBALS["access_allowed"] = [false, true, true, true, true]; '
                     . '$GLOBALS["count_args"] = []; '
@@ -219,7 +219,7 @@ PHP;
                     . 'function F_db_query($sql, $db) { $GLOBALS["queries"][] = '
                     . 'preg_replace("/\\s+/", " ", trim($sql)); return array_shift($GLOBALS["results"]); } '
                     . 'function F_db_fetch_array($result) { return array_shift($GLOBALS["rows"][$result]); } '
-                    . 'function f_tmf_group_test_ids($user) { if ($user !== 11) throw new \\RuntimeException("Wrong user"); return [22 => true]; } '
+                    . 'function f_tmf_group_test_ids($user) { if ($user !== 11) throw new \\RuntimeException("Wrong user"); return ($GLOBALS["i"] ?? 0) === 8 ? [] : [22 => true]; } '
                     . 'function f_is_valid_test_user(...$arguments) { '
                     . '$GLOBALS["test_ids"][] = $arguments[0]; $GLOBALS["validity_args"][] = $arguments; '
                     . 'return array_shift($GLOBALS["ip"]); } '
@@ -230,6 +230,7 @@ PHP;
                     . '$GLOBALS["status_args"][] = $arguments; '
                     . 'return [array_shift($GLOBALS["test_statuses"]), 99, false]; } '
                     . 'function F_tmf_catalog_test_status($status, $pregenerated) { return $status; } '
+                    . 'function f_get_onboarding_config() { return [0, 0]; } '
                     . 'function openvsosh_hide_unattempted_expired_tests() { return false; } '
                     . 'function F_tmf_results_are_published($test) { '
                     . '$GLOBALS["published"][] = $test; return true; } '
@@ -250,7 +251,7 @@ PHP;
                     . '$function = preg_replace("/^\\s*require_once [^;]+;\\n/m", "", $function); '
                     . 'eval("namespace Harness; " . $function); '
                     . '$qualified = __NAMESPACE__ . "\\\\" . $name; $catalogues = []; '
-                    . 'for ($i = 0; $i < 8; ++$i) { $catalogues[] = $qualified(); } '
+                    . 'for ($i = 0; $i < 9; ++$i) { $catalogues[] = $qualified(); } '
                     . 'echo json_encode([$catalogues, count($GLOBALS["queries"]), '
                     . '$GLOBALS["errors"], $GLOBALS["published"], $GLOBALS["test_ids"], '
                     . '$GLOBALS["validity_args"], $GLOBALS["status_args"], $GLOBALS["count_args"]]);',
@@ -276,6 +277,9 @@ PHP;
         $decoded = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
         [$results, $queryCount, $errors, $published, $testIds, $validityArgs, $statusArgs, $countArgs] = $decoded;
         self::assertSame(['NONE', 'NONE', 'NONE'], array_slice($results, 0, 3));
+        self::assertStringContainsString('role="status">Contact your school</p>', $results[8]);
+        self::assertStringContainsString('<p class="completed-access-help">Contact your school</p>', $results[4]);
+        self::assertStringNotContainsString('completed-access-help', $results[7]);
         self::assertStringContainsString('<table class="testlist">', $results[3]);
         self::assertStringContainsString('<caption class="sr-only">Tests</caption>', $results[3]);
         self::assertStringContainsString('<th scope="col">Test</th>', $results[3]);
@@ -317,7 +321,7 @@ PHP;
             $results[7],
         );
         self::assertSame('1', $published[0]['test_results_to_users'] ?? null);
-        self::assertSame(['22', '22', '22', '22', '22', '22'], $testIds);
+        self::assertSame(['22', '22', '22', '22', '22', '22', '22'], $testIds);
         self::assertSame([
             ['22', '127.0.0.1', '*', [22 => true]],
             ['22', '127.0.0.1', '*', [22 => true]],
@@ -325,6 +329,7 @@ PHP;
             ['22', '127.0.0.1', '*', [22 => true]],
             ['22', '127.0.0.1', '*', [22 => true]],
             ['22', '127.0.0.1', '*', [22 => true]],
+            ['22', '127.0.0.1', '*', []],
         ], $validityArgs);
         self::assertSame([
             [11, '22', '30'],
@@ -333,8 +338,8 @@ PHP;
             [11, '22', '30'],
             [11, '22', '30'],
         ], $statusArgs);
-        self::assertSame([['11', '22'], ['11', '22']], $countArgs);
-        self::assertSame(8, $queryCount);
+        self::assertSame([['11', '22']], $countArgs);
+        self::assertSame(9, $queryCount);
         self::assertSame(1, $errors);
     }
 

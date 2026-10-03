@@ -94,6 +94,9 @@ echo '<div>' . nl2br(htmlspecialchars(
 )) . '</div>' . K_NEWLINE;
 echo '</div>' . K_NEWLINE;
 
+require_once '../../shared/code/tce_functions_access_notice.php';
+echo openvsosh_access_notice_markup($l) . K_NEWLINE;
+
 if (!empty($pending_onboarding)) {
     echo '<section class="onboarding-prompt" id="onboarding-prompt" aria-labelledby="onboarding-title">' . K_NEWLINE;
     echo '<div class="onboarding-prompt-copy">' . K_NEWLINE;
@@ -141,6 +144,7 @@ $catalog_translations = [
     'statusRepeat' => $l['ov_status_repeat'],
     'statusUpcoming' => $l['ov_status_upcoming'],
     'statusClosed' => $l['ov_status_closed'],
+    'attemptComplete' => $l['ov_attempt_complete'],
     'testUnavailable' => $l['ov_test_unavailable'],
     'sectionActive' => $l['ov_section_active'],
     'sectionActiveDescription' => $l['ov_section_active_description'],
@@ -249,7 +253,9 @@ echo <<<'HTML'
             status.textContent = text.statusUpcoming;
         } else {
             row.classList.add('test-card-closed');
-            status.textContent = text.statusClosed;
+            status.textContent = Number(row.getAttribute('data-test-status')) >= 4
+                ? text.attemptComplete
+                : text.statusClosed;
         }
         if (row.classList.contains('test-card-closed') || row.classList.contains('test-card-upcoming')) {
             var titleCell = row.querySelector('td:first-child');
