@@ -264,7 +264,7 @@ PHP;
         self::assertJson($output);
         /**
          * @var array{
-         *   0: array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string},
+         *   0: array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string,8:string},
          *   1: int,
          *   2: int,
          *   3: array{0:array<string,mixed>},

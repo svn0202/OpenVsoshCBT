@@ -47,11 +47,15 @@ $l = [
     'ov_catalog_search_placeholder' => 'Find a test', 'a_meta_language' => 'ru_RU',
     'ov_status_available' => 'Available', 'ov_status_progress' => 'In progress',
     'ov_status_repeat' => 'Repeat', 'ov_status_upcoming' => 'Upcoming', 'ov_status_closed' => 'Closed',
+    'ov_attempt_complete' => 'Attempt complete',
     'ov_test_unavailable' => 'Unavailable', 'ov_section_active' => 'Active',
     'ov_section_active_description' => 'Active tests', 'ov_section_future' => 'Future',
     'ov_section_future_description' => 'Future tests', 'ov_section_past' => 'Past',
     'ov_section_past_description' => 'Past tests', 'ov_test_count' => '%d tests',
     'ov_search_count' => '%d found',
+    'ov_access_notice_title' => 'School <access>',
+    'ov_access_notice_situations' => 'Missing & completed tests',
+    'ov_access_notice_authority' => 'Contact your school',
 ];
 function f_get_pending_onboarding_tests($userId) {
     $GLOBALS['onboarding_user'] = $userId;
@@ -63,6 +67,7 @@ function openvsosh_get_site_settings() {
     return ['site_name' => 'Olympiad <2026>', 'welcome' => "Welcome & learn\nCarefully"];
 }
 function f_get_user_tests() { return '<table class="testlist"><tbody></tbody></table>'; }
+require $argv[2];
 $source = file_get_contents($argv[1]);
 $source = preg_replace('/^<\?php\s*/', '', $source);
 $source = preg_replace('/^\s*require_once [^;]+;\s*$/m', '', $source);
@@ -77,7 +82,10 @@ echo json_encode([
 PHP;
 
         [$status, $output] = \F_tcecode_run_process(
-            [PHP_BINARY, '-r', $script, dirname(__DIR__) . '/public/code/index.php'],
+            [
+                PHP_BINARY, '-r', $script, dirname(__DIR__) . '/public/code/index.php',
+                dirname(__DIR__) . '/shared/code/tce_functions_access_notice.php',
+            ],
             dirname(__DIR__) . '/public/code',
         );
 
@@ -90,6 +98,9 @@ PHP;
         self::assertStringContainsString('<p>Olympiad &lt;2026&gt;</p>', $result['html']);
         self::assertStringContainsString("Welcome &amp; learn<br />\nCarefully", $result['html']);
         self::assertStringContainsString('data-onboarding-test="5"', $result['html']);
+        self::assertStringContainsString('aria-label="School &lt;access&gt;"', $result['html']);
+        self::assertStringContainsString('<p>Missing &amp; completed tests</p>', $result['html']);
+        self::assertStringContainsString('<p>Contact your school</p>', $result['html']);
         self::assertStringContainsString('Step &lt;1&gt;', $result['html']);
         self::assertStringContainsString('Rules &amp; demo', $result['html']);
         self::assertStringContainsString('<table class="testlist"><tbody></tbody></table>', $result['html']);

@@ -10,14 +10,17 @@ final class TestStartEndpointTest extends TestCase
     /** @return iterable<string, array{array<string, string>, string, int}> */
     public static function requestProvider(): iterable
     {
+        $notice = '<section class="participant-access-notice" aria-label="School &lt;access&gt;">'
+            . '<h2>School &lt;access&gt;</h2><p>Missing &amp; completed tests</p>'
+            . '<p>Contact your school</p></section>' . "\n";
         yield 'no selected test' => [
             [],
-            '<HEADER>' . "\n<div class=\"popupcontainer\">\n</div>\n<FOOTER>\n",
+            '<HEADER>' . "\n<div class=\"popupcontainer\">\n" . $notice . "</div>\n<FOOTER>\n",
             0,
         ];
         yield 'selected repeat test' => [
             ['testid' => '17', 'repeat' => '1'],
-            '<HEADER>' . "\n<div class=\"popupcontainer\">\n"
+            '<HEADER>' . "\n<div class=\"popupcontainer\">\n" . $notice
                 . '<INFO:17:false><br />' . "\n<div class=\"row\">\n"
                 . '<a href="tce_test_execute.php?testid=17&amp;repeat=1" title="Execute now" '
                 . 'class="xmlbutton">Execute</a> '
@@ -42,6 +45,9 @@ $l = [
     'w_execute' => 'Execute',
     'h_cancel' => 'Cancel test',
     'w_cancel' => 'Cancel',
+    'ov_access_notice_title' => 'School <access>',
+    'ov_access_notice_situations' => 'Missing & completed tests',
+    'ov_access_notice_authority' => 'Contact your school',
 ];
 PHP;
         $headerSource = <<<'PHP'
@@ -64,6 +70,7 @@ PHP;
                     . 'mkdir($root . "/public/code", 0700, true); mkdir($root . "/public/config", 0700); '
                     . 'mkdir($root . "/shared/code", 0700, true); '
                     . 'copy($argv[1], $root . "/public/code/tce_test_start.php"); '
+                    . 'copy($argv[6], $root . "/shared/code/tce_functions_access_notice.php"); '
                     . 'file_put_contents($root . "/public/config/tce_config.php", base64_decode($argv[3], true)); '
                     . 'file_put_contents($root . "/public/code/tce_page_header.php", base64_decode($argv[4], true)); '
                     . 'file_put_contents($root . "/public/code/tce_page_footer.php", "<?php echo \\"<FOOTER>\\\\n\\";"); '
@@ -74,7 +81,8 @@ PHP;
                     . '$result = [$page, $GLOBALS["header_context"], $test_id]; '
                     . 'foreach (["/public/code/tce_test_start.php", "/public/code/tce_page_header.php", '
                     . '"/public/code/tce_page_footer.php", "/public/config/tce_config.php", '
-                    . '"/shared/code/tce_authorization.php", "/shared/code/tce_functions_test.php"] as $file) '
+                    . '"/shared/code/tce_authorization.php", "/shared/code/tce_functions_access_notice.php", '
+                    . '"/shared/code/tce_functions_test.php"] as $file) '
                     . '{ unlink($root . $file); } rmdir($root . "/public/code"); rmdir($root . "/public/config"); '
                     . 'rmdir($root . "/public"); rmdir($root . "/shared/code"); rmdir($root . "/shared"); '
                     . 'rmdir($root); echo json_encode($result);',
@@ -83,6 +91,7 @@ PHP;
                 base64_encode($configSource),
                 base64_encode($headerSource),
                 base64_encode($functionsSource),
+                dirname(__DIR__) . '/shared/code/tce_functions_access_notice.php',
             ],
             dirname(__DIR__) . '/public/code',
         );
